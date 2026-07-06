@@ -1,0 +1,89 @@
+// LTKCodeEditor — minimal code editor shell.
+// Uses Slint TextInput for raw editing; host provides syntax highlighting.
+// JetBrains Mono font, monospace metrics, line numbers, scrollable.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKCodeEditor inherits Rectangle {
+    in property <string>  language;
+    in-out property <string> code;
+    in property <bool>    line-numbers:   true;
+    in property <bool>    word-wrap:      false;
+    in property <bool>    read-only:      false;
+    in property <int>     tab-size:       4;
+    in property <color>   editor-bg:      #0D0F13;
+    in property <color>   gutter-bg:      #0A0C10;
+    in property <color>   gutter-fg:      LTKPalette.text-tertiary;
+
+    callback code-changed(v: string);
+    callback save-requested();
+
+    border-radius: LTKRadius.md;
+    border-width: 1px;
+    border-color: LTKPalette.border-base;
+    clip: true;
+    background: root.editor-bg;
+
+    HorizontalLayout {
+        spacing: 0px;
+
+        // Gutter (line numbers)
+        if root.line-numbers : Rectangle {
+            width: 48px;
+            background: root.gutter-bg;
+            border-width: 0px;
+
+            // Right border
+            Rectangle {
+                x: parent.width - 1px;
+                width: 1px; height: parent.height;
+                background: LTKPalette.border-subtle;
+            }
+
+            VerticalLayout {
+                padding-top: LTKSpace.space-2;
+                padding-bottom: LTKSpace.space-2;
+                alignment: LayoutAlignment.start;
+
+                // Line numbers — host generates via model
+                Text {
+                    text: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10";
+                    color: root.gutter-fg;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-code;
+                    horizontal-alignment: right;
+                    padding-right: LTKSpace.space-1;
+                }
+            }
+        }
+
+        // Editor area
+        ScrollView {
+            horizontal-stretch: 1;
+
+            TextInput {
+                text <=> root.code;
+                enabled: !root.read-only;
+                multi-line: true;
+                wrap: root.word-wrap ? TextWrap.word-wrap : TextWrap.no-wrap;
+                color: #CDD6F4;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-code;
+                selection-background-color: LTKPalette.accent.with-alpha(0.25);
+                selection-foreground-color: #CDD6F4;
+                padding: LTKSpace.space-2;
+                edited => { root.code-changed(root.code); }
+                key-pressed(e) => {
+                    if e.modifiers.control && e.text == "s" {
+                        root.save-requested();
+                        accept
+                    } else { reject }
+                }
+            }
+        }
+    }
+}

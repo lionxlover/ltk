@@ -1,0 +1,106 @@
+// LTKSplitView — macOS NSSplitView / GNOME Paned.
+// Resizable handle; horizontal or vertical split; min sizes enforced.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKSplitView inherits Rectangle {
+    in property <bool>    vertical:  false;   // true = top/bottom split
+    in property <float>   ratio:     0.40;    // 0.0–1.0
+    in property <bool>    resizable: true;
+    in property <length>  min-a:     100px;
+    in property <length>  min-b:     100px;
+    in-out property <float> live-ratio: root.ratio;
+
+    property <length> handle-size: 5px;
+
+    if !root.vertical : HorizontalLayout {
+        spacing: 0px;
+
+        // Pane A
+        Rectangle {
+            width: max(root.min-a, (parent.width - root.handle-size) * root.live-ratio);
+            clip: true;
+            background: LTKPalette.bg-base;
+        }
+
+        // Drag handle
+        if root.resizable : Rectangle {
+            width: root.handle-size;
+            background: LTKPalette.border-subtle;
+            mouse-cursor: ew-resize;
+
+            Rectangle {
+                width: 2px; height: 32px;
+                border-radius: 1px;
+                background: LTKPalette.border-strong;
+                x: 1.5px; y: (parent.height - 32px) / 2;
+            }
+
+            TouchArea {
+                mouse-cursor: ew-resize;
+                pointer-event(e) => {
+                    if e.kind == PointerEventKind.move {
+                        root.live-ratio = clamp(
+                            e.position.x / (parent.width - root.handle-size),
+                            root.min-a / (parent.width - root.handle-size),
+                            1.0 - root.min-b / (parent.width - root.handle-size)
+                        );
+                    }
+                }
+            }
+        }
+
+        // Pane B
+        Rectangle {
+            horizontal-stretch: 1;
+            min-width: root.min-b;
+            clip: true;
+            background: LTKPalette.bg-base;
+        }
+    }
+
+    if root.vertical : VerticalLayout {
+        spacing: 0px;
+
+        Rectangle {
+            height: max(root.min-a, (parent.height - root.handle-size) * root.live-ratio);
+            clip: true;
+            background: LTKPalette.bg-base;
+        }
+
+        if root.resizable : Rectangle {
+            height: root.handle-size;
+            background: LTKPalette.border-subtle;
+            mouse-cursor: ns-resize;
+
+            Rectangle {
+                height: 2px; width: 32px;
+                border-radius: 1px;
+                background: LTKPalette.border-strong;
+                x: (parent.width - 32px) / 2; y: 1.5px;
+            }
+
+            TouchArea {
+                mouse-cursor: ns-resize;
+                pointer-event(e) => {
+                    if e.kind == PointerEventKind.move {
+                        root.live-ratio = clamp(
+                            e.position.y / (parent.height - root.handle-size),
+                            root.min-a / (parent.height - root.handle-size),
+                            1.0 - root.min-b / (parent.height - root.handle-size)
+                        );
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            min-height: root.min-b;
+            clip: true;
+            background: LTKPalette.bg-base;
+        }
+    }
+}

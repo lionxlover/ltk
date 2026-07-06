@@ -1,0 +1,199 @@
+// LTKChatPanel — LionOS AI / LLLM chat interface.
+// macOS Messages bubble aesthetic + GNOME typographic layout.
+// User: right-aligned accent bubble. AI: left-aligned glass bubble.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+import { LTKSpinner } from "../containers/LTKSpinner.slint";
+
+export struct LTKChatMessage {
+    id:        string,
+    role:      string,     // "user" | "assistant" | "system"
+    content:   string,
+    timestamp: string,
+    thinking:  bool,       // true while streaming
+}
+
+export component LTKChatPanel inherits Rectangle {
+    in property <[LTKChatMessage]> messages;
+    in property <bool>             is-typing:  false;
+    in property <string>           model-name: "LionAI";
+    in property <string>           placeholder:"Ask LionAI anything…";
+    in-out property <string>       input-text;
+
+    callback send-message(text: string);
+    callback input-changed(text: string);
+
+    background: LTKPalette.bg-base;
+    border-radius: LTKRadius.xl;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // ── Header ────────────────────────────────────────────────────
+        Rectangle {
+            height: 44px;
+            background: LTKPalette.bg-headerbar;
+            border-bottom-width: 1px;
+            border-color: LTKPalette.border-subtle;
+            HorizontalLayout {
+                padding-left: LTKSpace.space-3;
+                padding-right: LTKSpace.space-3;
+                spacing: LTKSpace.space-1;
+                alignment: center;
+                Rectangle {
+                    width: 8px; height: 8px; border-radius: 4px;
+                    background: LTKPalette.state-success;
+                }
+                Text {
+                    text: root.model-name;
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: LTKType.weight-semibold;
+                    horizontal-stretch: 1;
+                }
+                if root.is-typing : LTKSpinner { size: 14px; color: LTKPalette.accent; }
+            }
+        }
+
+        // ── Messages ──────────────────────────────────────────────────
+        ScrollView {
+            vertical-stretch: 1;
+            VerticalLayout {
+                padding: LTKSpace.space-3;
+                spacing: LTKSpace.space-2;
+                alignment: start;
+
+                for msg in root.messages : Rectangle {
+                    background: transparent;
+                    height: bubble.preferred-height;
+
+                    bubble := HorizontalLayout {
+                        alignment: msg.role == "user" ? LayoutAlignment.end : LayoutAlignment.start;
+                        spacing: LTKSpace.space-1;
+
+                        // AI avatar
+                        if msg.role == "assistant" : Rectangle {
+                            width: 28px; height: 28px;
+                            border-radius: 14px;
+                            background: LTKPalette.accent.with-alpha(0.15);
+                            Image {
+                                source: LTKIcons.cpu;
+                                width: 14px; height: 14px;
+                                colorize: LTKPalette.accent;
+                            }
+                        }
+
+                        // Message bubble
+                        Rectangle {
+                            max-width: 340px;
+                            border-radius:
+                                msg.role == "user"
+                                    ? LTKRadius.xl
+                                    : LTKRadius.xl;
+                            // macOS messages: user top-right is smaller
+                            background:
+                                msg.role == "user"      ? LTKPalette.accent
+                              : msg.role == "system"    ? LTKPalette.border-subtle
+                              : LTKPalette.glass-regular;
+                            border-width: msg.role == "assistant" ? 1px : 0px;
+                            border-color: LTKPalette.border-base;
+                            padding: LTKSpace.space-2;
+                            height: msg-text.preferred-height + LTKSpace.space-2 * 2;
+
+                            if msg.thinking : HorizontalLayout {
+                                spacing: 4px; alignment: center; vertical-alignment: center;
+                                for i in [1, 2, 3] : Rectangle {
+                                    width: 6px; height: 6px; border-radius: 3px;
+                                    background: LTKPalette.text-tertiary;
+                                    opacity: 0.4 + 0.6 * sin(animation-tick() / 200ms + i * 1.05rad);
+                                }
+                            }
+
+                            if !msg.thinking : msg-text := Text {
+                                text: msg.content;
+                                color: msg.role == "user" ? #FFFFFF : LTKPalette.text-primary;
+                                font-family: LTKType.font-body;
+                                font-size: LTKType.text-base;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Input bar ─────────────────────────────────────────────────
+        Rectangle {
+            height: 60px;
+            background: LTKPalette.bg-surface;
+            border-top-width: 1px;
+            border-color: LTKPalette.border-subtle;
+
+            HorizontalLayout {
+                padding: LTKSpace.space-2;
+                spacing: LTKSpace.space-1;
+                alignment: center;
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    height: 40px;
+                    border-radius: LTKRadius.full;
+                    border-width: 1px;
+                    border-color: LTKPalette.border-base;
+                    background: LTKPalette.bg-raised;
+
+                    TextInput {
+                        text <=> root.input-text;
+                        placeholder-text: root.placeholder;
+                        placeholder-color: LTKPalette.text-tertiary;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-body;
+                        font-size: LTKType.text-base;
+                        vertical-alignment: center;
+                        padding-left: LTKSpace.space-3;
+                        padding-right: LTKSpace.space-1;
+                        edited => { root.input-changed(root.input-text); }
+                        accepted => {
+                            if root.input-text != "" {
+                                root.send-message(root.input-text);
+                                root.input-text = "";
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 40px; height: 40px;
+                    border-radius: 20px;
+                    background: root.input-text != "" ? LTKPalette.accent : LTKPalette.border-base;
+                    animate background { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+
+                    Image {
+                        source: LTKIcons.up;
+                        width: 18px; height: 18px;
+                        colorize: root.input-text != "" ? #FFFFFF : LTKPalette.text-tertiary;
+                        animate colorize { duration: LTKMotion.fast; }
+                    }
+
+                    TouchArea {
+                        enabled: root.input-text != "";
+                        mouse-cursor: pointer;
+                        clicked => {
+                            root.send-message(root.input-text);
+                            root.input-text = "";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

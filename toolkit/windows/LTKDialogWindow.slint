@@ -1,0 +1,150 @@
+// LTKDialogWindow — macOS-style modal dialog / alert sheet.
+// Can render as a centered modal or as an attached sheet (GNOME / macOS).
+
+import { LTKPalette }   from "../theme/palette.slint";
+import { LTKType }      from "../theme/typography.slint";
+import { LTKSpace }     from "../theme/spacing.slint";
+import { LTKMotion }    from "../theme/motion.slint";
+import { LTKRadius }    from "../theme/radius.slint";
+import { LTKIcons }     from "../theme/icons.slint";
+
+export component LTKDialogWindow inherits Rectangle {
+    in property <bool>    open:           false;
+    in property <string>  title;
+    in property <string>  message;
+    in property <bool>    closable:       true;
+    in property <bool>    sheet-mode:     false;   // GNOME bottom-sheet style
+    in property <length>  dialog-width:   440px;
+    callback close-requested();
+
+    background: transparent;
+    z: 800;
+
+    // ── Backdrop scrim ─────────────────────────────────────────────────
+    if root.open : Rectangle {
+        width: parent.width; height: parent.height;
+        background: LTKPalette.shadow-xl;
+        opacity: 0.72;
+        animate opacity { duration: LTKMotion.base; easing: LTKMotion.ease-decelerate; }
+
+        if root.closable : TouchArea {
+            clicked => { root.close-requested(); }
+        }
+    }
+
+    // ── Dialog panel ───────────────────────────────────────────────────
+    if root.open && !root.sheet-mode : Rectangle {
+        x: (parent.width - root.dialog-width) / 2;
+        y: clamp((parent.height - dlg-body.preferred-height) / 2 - 40px, 60px, parent.height - dlg-body.preferred-height - 20px);
+        width: root.dialog-width;
+        height: dlg-body.preferred-height;
+        border-radius: LTKRadius.dialog;
+        border-width: 1px;
+        border-color: LTKPalette.border-base;
+        background: LTKPalette.bg-overlay;
+        drop-shadow-blur:    56px;
+        drop-shadow-offset-y: 20px;
+        drop-shadow-color:   LTKPalette.shadow-xl;
+        clip: true;
+        z: 801;
+
+        // Subtle top highlight (macOS glass edge)
+        Rectangle {
+            y: 0px; height: 1px; width: parent.width;
+            background: LTKPalette.border-strong;
+        }
+
+        dlg-body := VerticalLayout {
+            spacing: 0px;
+
+            // Title bar
+            if root.title != "" : Rectangle {
+                height: LTKSpace.headerbar-height;
+                background: LTKPalette.bg-headerbar;
+
+                Rectangle {
+                    y: parent.height - 1px; height: 1px; width: parent.width;
+                    background: LTKPalette.border-subtle;
+                }
+
+                HorizontalLayout {
+                    padding-left: LTKSpace.space-4;
+                    padding-right: LTKSpace.space-2;
+                    alignment: center;
+                    Text {
+                        text: root.title;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-sm;
+                        font-weight: LTKType.weight-semibold;
+                        horizontal-stretch: 1;
+                    }
+                    if root.closable : TouchArea {
+                        width: 28px; height: 28px;
+                        mouse-cursor: pointer;
+                        clicked => { root.close-requested(); }
+                        Rectangle {
+                            border-radius: 14px;
+                            background: cl-h.has-hover ? LTKPalette.border-strong : LTKPalette.border-base;
+                            Image {
+                                source: LTKIcons.x;
+                                width: 12px; height: 12px;
+                                colorize: LTKPalette.text-secondary;
+                            }
+                            cl-h := TouchArea { }
+                        }
+                    }
+                }
+            }
+
+            // Content slot
+            Rectangle {
+                padding: LTKSpace.space-5;
+                @children
+            }
+        }
+    }
+
+    // ── Sheet mode (GNOME bottom sheet) ────────────────────────────────
+    if root.open && root.sheet-mode : Rectangle {
+        y: parent.height - sheet-col.preferred-height;
+        width: parent.width;
+        height: sheet-col.preferred-height;
+        border-radius: LTKRadius.sheet;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        background: LTKPalette.bg-overlay;
+        drop-shadow-blur: 48px;
+        drop-shadow-color: LTKPalette.shadow-xl;
+        z: 801;
+        clip: true;
+
+        sheet-col := VerticalLayout {
+            // Drag handle
+            Rectangle {
+                height: 28px;
+                background: transparent;
+                Rectangle {
+                    width: 36px; height: 4px;
+                    border-radius: 2px;
+                    background: LTKPalette.border-strong;
+                    x: (parent.width - 36px) / 2;
+                    y: 12px;
+                }
+                TouchArea { mouse-cursor: row-resize; }
+            }
+            if root.title != "" : Rectangle {
+                padding: LTKSpace.space-3;
+                padding-top: 0px;
+                Text {
+                    text: root.title;
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-display;
+                    font-size: LTKType.text-lg;
+                    font-weight: LTKType.weight-bold;
+                }
+            }
+            Rectangle { padding: LTKSpace.space-3; padding-top: 0px; @children }
+        }
+    }
+}

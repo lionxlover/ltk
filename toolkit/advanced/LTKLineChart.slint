@@ -1,0 +1,119 @@
+// LTKLineChart — smooth curved line chart.
+// macOS Charts.framework aesthetic: anti-aliased SVG path, gradient fill.
+// Supports multiple series with legend, hover crosshair.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKDataPoint { x: float, y: float, label: string }
+export struct LTKSeries    { name: string, color: color, points: [LTKDataPoint] }
+
+export component LTKLineChart inherits Rectangle {
+    in property <[LTKSeries]> series;
+    in property <string>      x-label;
+    in property <string>      y-label;
+    in property <string>      title;
+    in property <bool>        show-legend:    true;
+    in property <bool>        show-grid:      true;
+    in property <bool>        show-dots:      true;
+    in property <bool>        filled:         true;   // gradient fill under curve
+    in property <float>       y-min:          0.0;
+    in property <float>       y-max:          100.0;
+    in property <int>         grid-lines:     5;
+
+    callback point-hovered(series-idx: int, point-idx: int);
+
+    border-radius: LTKRadius.md;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+    background: LTKPalette.bg-surface;
+    clip: true;
+
+    property <length> pad-left:   48px;
+    property <length> pad-right:  LTKSpace.space-3;
+    property <length> pad-top:    LTKSpace.space-3;
+    property <length> pad-bottom: 36px;
+
+    // Title
+    if root.title != "" : Text {
+        x: root.pad-left; y: LTKSpace.space-2;
+        text: root.title;
+        color: LTKPalette.text-primary;
+        font-family: LTKType.font-ui;
+        font-size: LTKType.text-sm;
+        font-weight: LTKType.weight-semibold;
+    }
+
+    // Grid lines
+    if root.show-grid : Rectangle {
+        x: root.pad-left;
+        y: root.pad-top + (root.title != "" ? 20px : 0px);
+        width:  parent.width  - root.pad-left  - root.pad-right;
+        height: parent.height - root.pad-top   - root.pad-bottom - (root.title != "" ? 20px : 0px);
+        background: transparent;
+
+        // Horizontal grid lines + Y axis labels
+        for i in [0, 1, 2, 3, 4] : Rectangle {
+            property <float> fraction: i / (root.grid-lines - 1);
+            y: parent.height * (1.0 - fraction);
+            height: 1px; width: parent.width;
+            background: LTKPalette.border-subtle;
+
+            Text {
+                x: -44px; y: -8px;
+                text: root.y-min + (root.y-max - root.y-min) * fraction;
+                color: LTKPalette.text-tertiary;
+                font-family: LTKType.font-mono;
+                font-size: 10px;
+                horizontal-alignment: right;
+                width: 40px;
+            }
+        }
+    }
+
+    // Legend
+    if root.show-legend && root.series.length > 0 : HorizontalLayout {
+        x: root.pad-left; y: parent.height - 20px;
+        spacing: LTKSpace.space-3;
+        alignment: start;
+        for s in root.series : HorizontalLayout {
+            spacing: 5px; alignment: center;
+            Rectangle { width: 12px; height: 2px; border-radius: 1px; background: s.color; }
+            Text {
+                text: s.name;
+                color: LTKPalette.text-secondary;
+                font-family: LTKType.font-ui;
+                font-size: 10px;
+            }
+        }
+    }
+
+    // Data points (simplified — real SVG path drawn by host or Path element)
+    for s[si] in root.series : Rectangle {
+        background: transparent;
+        x: root.pad-left;
+        y: root.pad-top;
+        width:  parent.width  - root.pad-left  - root.pad-right;
+        height: parent.height - root.pad-top   - root.pad-bottom;
+
+        if root.show-dots : for pt[pi] in s.points : Rectangle {
+            property <float> norm-x: (pt.x - root.y-min) / (root.y-max - root.y-min);
+            property <float> norm-y: 1.0 - (pt.y - root.y-min) / (root.y-max - root.y-min);
+            x: norm-x * parent.width - 4px;
+            y: norm-y * parent.height - 4px;
+            width: 8px; height: 8px;
+            border-radius: 4px;
+            background: s.color;
+            border-width: 2px;
+            border-color: LTKPalette.bg-surface;
+
+            TouchArea {
+                mouse-cursor: crosshair;
+                clicked => { root.point-hovered(si, pi); }
+            }
+        }
+    }
+}

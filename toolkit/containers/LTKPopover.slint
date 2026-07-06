@@ -1,0 +1,78 @@
+// LTKPopover — macOS NSPopover / GNOME Popover.
+// Appears relative to an anchor widget; arrow pointing to anchor.
+// Spring-in entrance animation (scale from 0.92 + fade).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKShadow }  from "../theme/shadows.slint";
+
+export component LTKPopover inherits Rectangle {
+    in property <bool>    open:          false;
+    in property <length>  pop-width:     240px;
+    in property <length>  pop-offset:    6px;
+    in property <bool>    show-arrow:    true;
+    in property <bool>    flip-up:       false;   // show above anchor
+    callback dismissed();
+
+    background: transparent;
+
+    // Scrim for click-away dismiss
+    if root.open : TouchArea {
+        width: parent.width * 10;
+        height: parent.height * 10;
+        x: -parent.width * 4;
+        y: -parent.height * 4;
+        z: 390;
+        clicked => { root.dismissed(); }
+    }
+
+    // Panel
+    if root.open : Rectangle {
+        y: root.flip-up ? -(pop-col.preferred-height + root.pop-offset + 6px) : parent.height + root.pop-offset;
+        x: -(root.pop-width - parent.width) / 2;
+        width: root.pop-width;
+        height: pop-col.preferred-height;
+        border-radius: LTKRadius.popover;
+        border-width: 1px;
+        border-color: LTKPalette.border-base;
+        background: LTKPalette.bg-raised;
+        drop-shadow-blur:    LTKShadow.blur-lg;
+        drop-shadow-offset-y: LTKShadow.offset-md;
+        drop-shadow-color:   LTKPalette.shadow-md;
+        clip: true;
+        z: 400;
+
+        // Spring scale-in
+        opacity: 1.0;
+        animate opacity { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+
+        // Arrow (macOS popover style)
+        if root.show-arrow && !root.flip-up : Path {
+            x: root.pop-width / 2 - 8px;
+            y: -6px;
+            commands: "M 0 6 L 8 0 L 16 6";
+            fill: LTKPalette.bg-raised;
+            stroke: LTKPalette.border-base;
+            stroke-width: 1px;
+        }
+        if root.show-arrow && root.flip-up : Path {
+            x: root.pop-width / 2 - 8px;
+            y: pop-col.preferred-height;
+            commands: "M 0 0 L 8 6 L 16 0";
+            fill: LTKPalette.bg-raised;
+            stroke: LTKPalette.border-base;
+            stroke-width: 1px;
+        }
+
+        pop-col := VerticalLayout {
+            padding: LTKSpace.space-1;
+            @children
+        }
+    }
+
+    // Anchor slot
+    @children
+}

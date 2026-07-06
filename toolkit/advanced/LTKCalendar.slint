@@ -1,0 +1,161 @@
+// LTKCalendar — macOS DatePicker calendar grid + GNOME calendar style.
+// Month/year navigation, today highlight, selected day accent.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export component LTKCalendar inherits Rectangle {
+    in property <int>      year:  2026;
+    in property <int>      month: 7;     // 1–12
+    in property <int>      today-day: 5;
+    in-out property <int>  selected-day: 5;
+    in property <[int]>    marked-days;  // highlight these days
+
+    callback day-selected(day: int);
+    callback prev-month();
+    callback next-month();
+
+    border-radius: LTKRadius.lg;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+    background: LTKPalette.bg-surface;
+    clip: true;
+    min-width: 280px;
+
+    property <[string]> month-names: [
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+    ];
+    property <[string]> day-names: ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // ── Month navigation header ───────────────────────────────────
+        Rectangle {
+            height: 48px;
+            background: LTKPalette.bg-headerbar;
+            border-bottom-width: 1px;
+            border-color: LTKPalette.border-subtle;
+
+            HorizontalLayout {
+                padding-left: LTKSpace.space-2;
+                padding-right: LTKSpace.space-2;
+                alignment: center;
+                vertical-alignment: center;
+
+                // Prev button
+                Rectangle {
+                    width: 32px; height: 32px;
+                    border-radius: 16px;
+                    background: prev-t.has-hover ? LTKPalette.border-base : transparent;
+                    animate background { duration: LTKMotion.fast; }
+                    Image { source: LTKIcons.back; width: 14px; height: 14px; colorize: LTKPalette.text-secondary; }
+                    prev-t := TouchArea { mouse-cursor: pointer; clicked => { root.prev-month(); } }
+                }
+
+                // Month + Year
+                Text {
+                    text: root.month-names[root.month - 1] + " " + root.year;
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: LTKType.weight-semibold;
+                    horizontal-stretch: 1;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                // Next button
+                Rectangle {
+                    width: 32px; height: 32px;
+                    border-radius: 16px;
+                    background: next-t.has-hover ? LTKPalette.border-base : transparent;
+                    animate background { duration: LTKMotion.fast; }
+                    Image { source: LTKIcons.forward; width: 14px; height: 14px; colorize: LTKPalette.text-secondary; }
+                    next-t := TouchArea { mouse-cursor: pointer; clicked => { root.next-month(); } }
+                }
+            }
+        }
+
+        // ── Day-of-week headers ───────────────────────────────────────
+        HorizontalLayout {
+            padding-left: LTKSpace.space-2;
+            padding-right: LTKSpace.space-2;
+            padding-top: LTKSpace.space-1;
+            for d in root.day-names : Rectangle {
+                horizontal-stretch: 1;
+                height: 28px;
+                Text {
+                    text: d;
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-xs;
+                    font-weight: LTKType.weight-semibold;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // ── Day grid (7×6 = 42 cells) ─────────────────────────────────
+        GridLayout {
+            padding-left: LTKSpace.space-2;
+            padding-right: LTKSpace.space-2;
+            padding-bottom: LTKSpace.space-2;
+            spacing: 2px;
+
+            // Simplified: show days 1–31 in rows
+            for day in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] : Rectangle {
+                row: (day - 1) / 7;
+                col: mod(day - 1, 7);
+                width: 36px; height: 36px;
+                border-radius: 18px;
+
+                background:
+                    day == root.selected-day ? LTKPalette.accent
+                  : day == root.today-day   ? LTKPalette.accent.with-alpha(0.12)
+                  : day-t.has-hover          ? LTKPalette.border-base
+                  : transparent;
+
+                animate background { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+                y: day == root.selected-day ? -0.5px : 0px;
+                animate y { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+
+                Text {
+                    text: day;
+                    color: day == root.selected-day ? #FFFFFF
+                         : day == root.today-day   ? LTKPalette.accent
+                         : LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: day == root.today-day || day == root.selected-day
+                        ? LTKType.weight-semibold : LTKType.weight-regular;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                    animate color { duration: LTKMotion.fast; }
+                }
+
+                // Marked dot
+                if root.marked-days.contains(day) : Rectangle {
+                    width: 4px; height: 4px; border-radius: 2px;
+                    background: day == root.selected-day ? #FFFFFF : LTKPalette.accent;
+                    x: (parent.width - 4px) / 2;
+                    y: parent.height - 6px;
+                }
+
+                day-t := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        root.selected-day = day;
+                        root.day-selected(day);
+                    }
+                }
+            }
+        }
+    }
+}

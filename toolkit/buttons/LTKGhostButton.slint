@@ -1,0 +1,14 @@
+// Transparent — lowest hierarchy. Used in toolbars, sidebars.
+// macOS "borderless button" style.
+import { LTKButton }  from "LTKButton.slint";
+import { LTKPalette } from "../theme/palette.slint";
+
+export component LTKGhostButton inherits LTKButton {
+    bg:        transparent;
+    bg-hover:  LTKPalette.border-base;
+    fg:        LTKPalette.text-secondary;
+    border-col:transparent;
+    bw:        0px;
+    drop-shadow-blur: 0px;
+    drop-shadow-offset-y: 0px;
+}

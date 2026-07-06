@@ -1,0 +1,19 @@
+// LTKAnimatedContainer — spring-in container that animates on appear.
+// Usage: wrap any content; it fades + slides up on first show.
+
+import { LTKMotion } from "../theme/motion.slint";
+
+export component LTKAnimatedContainer inherits Rectangle {
+    in property <bool>   show:        true;
+    in property <length> slide-dist:  20px;
+    in property <bool>   fade:        true;
+    in property <bool>   slide:       true;
+
+    opacity: root.show && root.fade ? 1.0 : (root.fade ? 0.0 : 1.0);
+    y:       root.show && root.slide ? 0px : root.slide-dist;
+
+    animate opacity { duration: LTKMotion.base; easing: LTKMotion.ease-decelerate; }
+    animate y       { duration: LTKMotion.spring; easing: LTKMotion.ease-spring; }
+
+    @children
+}

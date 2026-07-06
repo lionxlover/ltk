@@ -1,0 +1,160 @@
+// LTKTimeline — macOS Time Machine / GNOME Nautilus "recent" timeline.
+// Vertical date-grouped event list with connecting line.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LeonuxRadius, LeonuxSpace } from "../theme/leonux_tokens.slint";
+
+export struct LTKTimelineEvent {
+    id:       string,
+    date:     string,
+    time:     string,
+    title:    string,
+    body:     string,
+    tag:      string,
+    tag-color:color,
+    icon:     image,
+    has-icon: bool,
+}
+
+export component LTKTimeline inherits Rectangle {
+    in property <[LTKTimelineEvent]> events;
+    in property <bool>               show-time: true;
+    callback event-clicked(id: string);
+
+    background: transparent;
+
+    ScrollView {
+        VerticalLayout {
+            padding-left: LeonuxSpace.lg;
+            padding-right: LeonuxSpace.md;
+            padding-top: LeonuxSpace.md;
+            spacing: 0px;
+
+            for evt[i] in root.events : Rectangle {
+                height: evt-col.preferred-height + LeonuxSpace.md;
+                background: transparent;
+
+                // Connecting line
+                Rectangle {
+                    x: -LeonuxSpace.lg + 15px;
+                    y: 20px;
+                    width: 2px;
+                    height: parent.height;
+                    background: i < root.events.length - 1 ? LTKPalette.border-base : transparent;
+                }
+
+                // Dot on timeline
+                Rectangle {
+                    x: -LeonuxSpace.lg + 8px;
+                    y: 14px;
+                    width: 16px; height: 16px;
+                    border-radius: 8px;
+                    background: evt.tag-color != transparent ? evt.tag-color : LTKPalette.accent;
+                    border-width: 3px;
+                    border-color: LTKPalette.bg-base;
+                    z: 1;
+                }
+
+                evt-col := VerticalLayout {
+                    x: LeonuxSpace.xs;
+                    spacing: LeonuxSpace.micro;
+                    padding-bottom: LeonuxSpace.md;
+
+                    // Date header (show only when date changes)
+                    if i == 0 || root.events[i - 1].date != evt.date : Text {
+                        text: evt.date;
+                        color: LTKPalette.text-tertiary;
+                        font-family: LTKType.font-mono;
+                        font-size: LTKType.text-xs;
+                        letter-spacing: 0.7px;
+                        padding-bottom: LeonuxSpace.xs;
+                    }
+
+                    Rectangle {
+                        border-radius: LeonuxRadius.r2;  // Secondary = 16px
+                        background: e-touch.has-hover ? LTKPalette.bg-raised : LTKPalette.bg-surface;
+                        border-width: 1px;
+                        border-color: LTKPalette.border-subtle;
+                        animate background { duration: LTKMotion.fast; }
+
+                        y: e-touch.pressed ? 1px : 0px;
+                        animate y { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+                        HorizontalLayout {
+                            padding: LeonuxSpace.sm;
+                            spacing: LeonuxSpace.sm;
+                            alignment: start;
+
+                            if evt.has-icon : Rectangle {
+                                width: 32px; height: 32px;
+                                border-radius: LeonuxRadius.r3;  // Tertiary = 10px
+                                background: evt.tag-color != transparent
+                                    ? evt.tag-color.with-alpha(0.12)
+                                    : LTKPalette.accent.with-alpha(0.12);
+                                Image {
+                                    source: evt.icon;
+                                    width: 16px; height: 16px;
+                                    colorize: evt.tag-color != transparent ? evt.tag-color : LTKPalette.accent;
+                                }
+                            }
+
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                spacing: 3px;
+                                alignment: center;
+
+                                HorizontalLayout {
+                                    spacing: LeonuxSpace.xs;
+                                    Text {
+                                        text: evt.title;
+                                        color: LTKPalette.text-primary;
+                                        font-family: LTKType.font-ui;
+                                        font-size: LTKType.text-sm;
+                                        font-weight: LTKType.weight-medium;
+                                        horizontal-stretch: 1;
+                                    }
+                                    if evt.tag != "" : Rectangle {
+                                        border-radius: LeonuxRadius.r5;  // Quinary = 3px
+                                        background: evt.tag-color.with-alpha(0.12);
+                                        height: 16px; width: tg.preferred-width + 8px;
+                                        tg := Text {
+                                            text: evt.tag;
+                                            color: evt.tag-color;
+                                            font-family: LTKType.font-mono;
+                                            font-size: 9px; font-weight: LTKType.weight-semibold;
+                                            horizontal-alignment: center; vertical-alignment: center;
+                                        }
+                                    }
+                                    if root.show-time : Text {
+                                        text: evt.time;
+                                        color: LTKPalette.text-tertiary;
+                                        font-family: LTKType.font-mono;
+                                        font-size: LTKType.text-xs;
+                                        vertical-alignment: center;
+                                    }
+                                }
+
+                                if evt.body != "" : Text {
+                                    text: evt.body;
+                                    color: LTKPalette.text-secondary;
+                                    font-family: LTKType.font-ui;
+                                    font-size: LTKType.text-sm;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+
+                        e-touch := TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.event-clicked(evt.id); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,54 @@
+// LTK Spacing — 8px grid matching both macOS HIG and GNOME HIG.
+// Every value is a multiple of 4px (half-steps only for tight padding).
+
+export global LTKSpace {
+    // ── Base spacing tokens ────────────────────────────────────────────
+    out property <length> px1:  1px;   // hairline
+    out property <length> px2:  2px;   // separator
+    out property <length> px4:  4px;   // micro gap (icon–label)
+
+    // Named scale (GNOME HIG names + macOS layout margin equivalents)
+    out property <length> space-1:   8px;   // XSmall — field internal
+    out property <length> space-2:   12px;  // Small  — tight sections
+    out property <length> space-3:   16px;  // Base   — standard gap
+    out property <length> space-4:   20px;  // Medium — form fields
+    out property <length> space-5:   24px;  // Large  — section gap
+    out property <length> space-6:   32px;  // XLarge — view padding
+    out property <length> space-7:   40px;
+    out property <length> space-8:   48px;  // Hero sections
+    out property <length> space-10:  64px;
+    out property <length> space-12:  96px;
+    out property <length> space-14: 112px;
+    out property <length> space-16: 128px;
+
+    // ── Component-specific metrics ─────────────────────────────────────
+    // macOS control heights (standard / large / small)
+    out property <length> control-sm:   24px;
+    out property <length> control-md:   32px;  // standard
+    out property <length> control-lg:   38px;  // GNOME default button
+
+    // Input row heights
+    out property <length> input-sm:     28px;
+    out property <length> input-md:     36px;  // matches GNOME entry
+    out property <length> input-lg:     44px;
+
+    // Window chrome
+    out property <length> titlebar-height:   38px;   // macOS compact titlebar
+    out property <length> headerbar-height:  47px;   // GNOME headerbar
+    out property <length> toolbar-height:    40px;
+    out property <length> statusbar-height:  24px;
+    out property <length> sidebar-width:     260px;
+    out property <length> nav-rail-width:    72px;
+    out property <length> inspector-width:   280px;
+    out property <length> traffic-size:      12px;   // traffic light diameter
+    out property <length> traffic-gap:        8px;   // gap between traffic lights
+    out property <length> traffic-margin:    14px;   // left margin
+
+    // Avatar sizes
+    out property <length> avatar-xs:  20px;
+    out property <length> avatar-sm:  28px;
+    out property <length> avatar-md:  36px;
+    out property <length> avatar-lg:  48px;
+    out property <length> avatar-xl:  64px;
+    out property <length> avatar-2xl: 96px;
+}

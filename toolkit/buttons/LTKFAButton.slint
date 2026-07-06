@@ -1,0 +1,60 @@
+// Floating Action Button — macOS squircle shape, spring animation on press.
+// Used for primary creation action in GNOME-style apps.
+
+import { LTKPalette }  from "../theme/palette.slint";
+import { LTKRadius }   from "../theme/radius.slint";
+import { LTKType }     from "../theme/typography.slint";
+import { LTKSpace }    from "../theme/spacing.slint";
+import { LTKMotion }   from "../theme/motion.slint";
+
+export component LTKFAButton inherits Rectangle {
+    in property <image>  icon;
+    in property <string> label;                    // set for extended FAB
+    in property <bool>   extended:  false;
+    in property <bool>   enabled:   true;
+    in property <color>  bg:        LTKPalette.accent;
+    in property <color>  fg:        LTKPalette.on-accent;
+    callback clicked();
+
+    // Squircle: macOS app-icon-like shape (rounded square morphs to circle on hover)
+    width:        root.extended ? row.preferred-width + LTKSpace.space-6 : 56px;
+    height:       56px;
+    border-radius:touch.has-hover ? 28px : 20px;   // squircle → circle on hover
+    background:   root.bg;
+    opacity:      root.enabled ? 1.0 : 0.38;
+
+    drop-shadow-blur:    touch.has-hover ? 28px : 10px;
+    drop-shadow-offset-y: touch.has-hover ? 8px  : 4px;
+    drop-shadow-color:    LTKPalette.accent-glow;
+
+    animate border-radius    { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+    animate drop-shadow-blur { duration: LTKMotion.base; easing: LTKMotion.ease-soft; }
+    animate width            { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+
+    // Spring press sink
+    y: touch.pressed ? 2px : 0px;
+    animate y { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+    row := HorizontalLayout {
+        spacing: LTKSpace.space-1;
+        alignment: center;
+        Image {
+            source: root.icon;
+            width: 22px; height: 22px;
+            colorize: root.fg;
+        }
+        if root.extended : Text {
+            text: root.label;
+            color: root.fg;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-sm;
+            font-weight: LTKType.weight-semibold;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}

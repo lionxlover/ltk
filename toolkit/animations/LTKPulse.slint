@@ -1,0 +1,32 @@
+// LTKPulse — macOS pulsing ring (like AirDrop / Notification dot).
+// Expanding translucent ring that fades out.
+
+import { LTKPalette } from "../theme/palette.slint";
+
+export component LTKPulse inherits Rectangle {
+    in property <color>  pulse-color: LTKPalette.accent;
+    in property <bool>   active:      true;
+
+    background: transparent;
+    // Outer ring
+    if root.active : Rectangle {
+        border-radius: min(parent.width, parent.height) / 2;
+        border-width: 2px;
+        border-color: root.pulse-color.with-alpha(
+            0.5 * (1.0 - mod(animation-tick() / 800ms, 1.0))
+        );
+        width:  min(parent.width, parent.height) * (0.6 + 0.4 * mod(animation-tick() / 800ms, 1.0));
+        height: self.width;
+        x: (parent.width  - self.width)  / 2;
+        y: (parent.height - self.height) / 2;
+    }
+    // Inner dot
+    Rectangle {
+        border-radius: min(parent.width, parent.height) * 0.3;
+        width:  min(parent.width, parent.height) * 0.6;
+        height: self.width;
+        x: (parent.width  - self.width)  / 2;
+        y: (parent.height - self.height) / 2;
+        background: root.pulse-color;
+    }
+}

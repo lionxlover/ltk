@@ -1,0 +1,120 @@
+// LTKAdaptiveLayout — GNOME AdwNavigationSplitView clone for LionOS.
+//
+// Breakpoints (matching GNOME HIG):
+//   mobile  < 360px  → single column, overlay sidebar
+//   narrow  360–640  → single column, overlay sidebar
+//   compact 640–900  → persistent sidebar (collapsed icons only)
+//   medium  900–1200 → persistent sidebar (full labels)
+//   wide    > 1200   → sidebar + content + optional inspector
+//
+// The host supplies:
+//   @children[0] = sidebar content
+//   @children[1] = main content
+//   @children[2] = inspector / detail (optional, only on wide)
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKAdaptiveLayout inherits Rectangle {
+    in property <bool>    sidebar-open:        true;
+    in property <length>  sidebar-full-width:  LTKSpace.sidebar-width;
+    in property <length>  sidebar-icon-width:  LTKSpace.nav-rail-width;
+    in property <bool>    show-inspector:      false;
+    in property <length>  inspector-width:     LTKSpace.inspector-width;
+    in property <bool>    immersive:           false;  // hide all chrome
+
+    callback sidebar-toggled(open: bool);
+
+    // ── Computed breakpoints ──────────────────────────────────────────
+    out property <bool> is-mobile:  root.width < 360px;
+    out property <bool> is-narrow:  root.width >= 360px && root.width < 640px;
+    out property <bool> is-compact: root.width >= 640px && root.width < 900px;
+    out property <bool> is-medium:  root.width >= 900px && root.width < 1200px;
+    out property <bool> is-wide:    root.width >= 1200px;
+
+    // Sidebar visibility rules
+    out property <bool> sidebar-persistent: !root.is-mobile && !root.is-narrow;
+    out property <bool> sidebar-icon-only:  root.is-compact;
+    out property <bool> sidebar-visible:    root.sidebar-open || root.sidebar-persistent;
+
+    // Effective sidebar width
+    property <length> eff-sidebar-w:
+        root.sidebar-icon-only ? root.sidebar-icon-width : root.sidebar-full-width;
+
+    background: LTKPalette.bg-base;
+
+    HorizontalLayout {
+        spacing: 0px;
+
+        // ── Persistent sidebar (compact+) ─────────────────────────────
+        if root.sidebar-persistent && root.sidebar-open : Rectangle {
+            width: root.eff-sidebar-w;
+            background: LTKPalette.bg-sidebar;
+            clip: true;
+            animate width { duration: LTKMotion.medium; easing: LTKMotion.ease-decelerate; }
+
+            Rectangle {
+                x: parent.width - 1px;
+                width: 1px; height: parent.height;
+                background: LTKPalette.border-subtle;
+            }
+
+            // Sidebar content injected by host
+        }
+
+        // ── Main content ──────────────────────────────────────────────
+        Rectangle {
+            horizontal-stretch: 1;
+            background: LTKPalette.bg-base;
+            clip: true;
+            // Main content injected by host
+        }
+
+        // ── Inspector panel (wide only) ────────────────────────────────
+        if root.is-wide && root.show-inspector : Rectangle {
+            width: root.inspector-width;
+            background: LTKPalette.bg-sidebar;
+            clip: true;
+            Rectangle {
+                width: 1px; height: parent.height;
+                background: LTKPalette.border-subtle;
+            }
+            // Inspector content injected by host
+        }
+    }
+
+    // ── Overlay sidebar (mobile / narrow) ─────────────────────────────
+    if !root.sidebar-persistent && root.sidebar-open : Rectangle {
+        x: 0px; y: 0px;
+        width: parent.width; height: parent.height;
+        z: 100;
+
+        // Scrim
+        Rectangle {
+            background: LTKPalette.shadow-xl;
+            opacity: 0.65;
+            animate opacity { duration: LTKMotion.medium; easing: LTKMotion.ease-decelerate; }
+            TouchArea {
+                clicked => {
+                    root.sidebar-open = false;
+                    root.sidebar-toggled(false);
+                }
+            }
+        }
+
+        // Sliding panel
+        Rectangle {
+            x: 0px;
+            width: root.sidebar-full-width;
+            height: parent.height;
+            background: LTKPalette.bg-sidebar;
+            drop-shadow-blur:     24px;
+            drop-shadow-offset-x:  4px;
+            drop-shadow-color:    LTKPalette.shadow-lg;
+            clip: true;
+            animate x { duration: LTKMotion.medium; easing: LTKMotion.ease-decelerate; }
+            // Sidebar content
+        }
+    }
+}

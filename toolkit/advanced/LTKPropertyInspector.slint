@@ -1,0 +1,138 @@
+// LTKPropertyInspector — Xcode / GNOME Builder property sidebar.
+// Key-value rows with type-specific controls (text, number, colour, toggle).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKProperty {
+    key:      string,
+    value:    string,
+    kind:     string,    // "text" | "number" | "bool" | "color" | "readonly"
+    section:  string,
+}
+
+export component LTKPropertyInspector inherits Rectangle {
+    in property <[LTKProperty]> properties;
+    in property <string>        title: "Properties";
+    callback value-changed(key: string, value: string);
+
+    background: LTKPalette.bg-sidebar;
+    border-left-width: 1px;
+    border-color: LTKPalette.border-subtle;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // Header
+        Rectangle {
+            height: 38px;
+            background: LTKPalette.bg-headerbar;
+            HorizontalLayout {
+                padding-left: LTKSpace.space-3;
+                alignment: center;
+                Text {
+                    text: root.title;
+                    color: LTKPalette.text-secondary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-xs;
+                    font-weight: LTKType.weight-semibold;
+                    letter-spacing: 0.5px;
+                }
+            }
+            Rectangle {
+                y: parent.height - 1px; height: 1px; width: parent.width;
+                background: LTKPalette.border-subtle;
+            }
+        }
+
+        ScrollView {
+            VerticalLayout {
+                spacing: 0px;
+                padding: LTKSpace.space-1;
+
+                for prop in root.properties : Rectangle {
+                    // Section header
+                    if prop.section != "" : Rectangle {
+                        height: 28px;
+                        padding-left: LTKSpace.space-2;
+                        background: LTKPalette.bg-headerbar;
+                        VerticalLayout {
+                            alignment: end;
+                            padding-bottom: 4px;
+                            Text {
+                                text: prop.section;
+                                color: LTKPalette.text-tertiary;
+                                font-family: LTKType.font-mono;
+                                font-size: LTKType.text-xs;
+                                letter-spacing: 0.7px;
+                            }
+                        }
+                        Rectangle {
+                            y: parent.height - 1px; height: 1px; width: parent.width;
+                            background: LTKPalette.border-subtle;
+                        }
+                    }
+
+                    // Property row
+                    if prop.section == "" : Rectangle {
+                        height: 32px;
+                        border-radius: LTKRadius.sm;
+                        background: row-h.has-hover ? LTKPalette.border-subtle : transparent;
+                        animate background { duration: LTKMotion.fast; }
+
+                        HorizontalLayout {
+                            padding-left: LTKSpace.space-2;
+                            padding-right: LTKSpace.space-2;
+                            spacing: LTKSpace.space-1;
+                            alignment: center;
+                            vertical-alignment: center;
+
+                            Text {
+                                text: prop.key;
+                                color: LTKPalette.text-secondary;
+                                font-family: LTKType.font-mono;
+                                font-size: LTKType.text-xs;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                            }
+
+                            if prop.kind == "readonly" || prop.kind == "text" : Text {
+                                text: prop.value;
+                                color: prop.kind == "readonly" ? LTKPalette.text-tertiary : LTKPalette.text-primary;
+                                font-family: LTKType.font-mono;
+                                font-size: LTKType.text-xs;
+                                horizontal-alignment: right;
+                                vertical-alignment: center;
+                                overflow: elide;
+                                max-width: 100px;
+                            }
+
+                            if prop.kind == "bool" : Rectangle {
+                                width: 30px; height: 18px;
+                                border-radius: 9px;
+                                background: prop.value == "true" ? LTKPalette.accent : LTKPalette.border-strong;
+                                Rectangle {
+                                    width: 14px; height: 14px; border-radius: 7px;
+                                    x: prop.value == "true" ? 14px : 2px; y: 2px;
+                                    background: #FFFFFF;
+                                }
+                            }
+
+                            if prop.kind == "color" : Rectangle {
+                                width: 20px; height: 20px;
+                                border-radius: 4px;
+                                border-width: 1px;
+                                border-color: LTKPalette.border-base;
+                                background: Colors.transparent; // actual colour from prop.value
+                            }
+                        }
+                        row-h := TouchArea { }
+                    }
+                }
+            }
+        }
+    }
+}

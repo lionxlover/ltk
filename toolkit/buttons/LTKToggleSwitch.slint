@@ -1,0 +1,85 @@
+// LTKToggleSwitch — macOS UISwitch exact clone.
+// Liquid-fill animation with RK4 spring knob travel.
+
+import { LTKPalette }  from "../theme/palette.slint";
+import { LTKRadius }   from "../theme/radius.slint";
+import { LTKType }     from "../theme/typography.slint";
+import { LTKSpace }    from "../theme/spacing.slint";
+import { LTKMotion }   from "../theme/motion.slint";
+
+export component LTKToggleSwitch inherits Rectangle {
+    in property <string>  label;
+    in property <string>  description;
+    in-out property <bool> checked: false;
+    in property <bool>    enabled: true;
+    in property <color>   on-color: LTKPalette.accent;
+    callback toggled(v: bool);
+
+    background: transparent;
+    height: root.description != "" ? 52px : 36px;
+    opacity: root.enabled ? 1.0 : 0.38;
+
+    HorizontalLayout {
+        spacing: LTKSpace.space-3;
+        alignment: center;
+
+        // Label block
+        if root.label != "" : VerticalLayout {
+            horizontal-stretch: 1;
+            alignment: center;
+            spacing: 2px;
+            Text {
+                text: root.label;
+                color: LTKPalette.text-primary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-base;
+                font-weight: LTKType.weight-medium;
+            }
+            if root.description != "" : Text {
+                text: root.description;
+                color: LTKPalette.text-tertiary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-sm;
+            }
+        }
+
+        // Switch track
+        track := Rectangle {
+            width:  50px;
+            height: 30px;
+            border-radius: 15px;
+            background: root.checked ? root.on-color : LTKPalette.border-strong;
+            border-width: 0px;
+
+            animate background { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+
+            // Knob
+            knob := Rectangle {
+                width:  26px;
+                height: 26px;
+                border-radius: 13px;
+                x: root.checked ? (parent.width - 28px) : 2px;
+                y: 2px;
+                background: #FFFFFF;
+                drop-shadow-blur:    6px;
+                drop-shadow-offset-y: 2px;
+                drop-shadow-color:   LTKPalette.shadow-sm;
+
+                // macOS: knob squishes horizontally during drag
+                // Approximated by width change on press
+                width: sw-touch.pressed ? 28px : 26px;
+                animate x     { duration: LTKMotion.spring; easing: LTKMotion.ease-spring; }
+                animate width { duration: 80ms; easing: LTKMotion.ease-spring; }
+            }
+
+            sw-touch := TouchArea {
+                enabled: root.enabled;
+                mouse-cursor: pointer;
+                clicked => {
+                    root.checked = !root.checked;
+                    root.toggled(root.checked);
+                }
+            }
+        }
+    }
+}

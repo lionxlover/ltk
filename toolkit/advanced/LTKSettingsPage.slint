@@ -1,0 +1,128 @@
+// LTKSettingsPage — full GNOME Preferences page shell.
+// Section groups + rows with macOS hover/select aesthetics.
+// Sidebar navigation on wide, stacked on narrow (adaptive).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export struct LTKSettingsSection { id: string, label: string, icon: image }
+
+export component LTKSettingsPage inherits Rectangle {
+    in property <[LTKSettingsSection]> sections;
+    in-out property <string>           active-section;
+    in property <string>               title: "Settings";
+
+    callback section-changed(id: string);
+
+    background: LTKPalette.bg-base;
+
+    HorizontalLayout {
+        spacing: 0px;
+
+        // Settings sidebar (macOS System Preferences icon grid → list hybrid)
+        Rectangle {
+            width: 220px;
+            background: LTKPalette.bg-sidebar;
+            border-right-width: 1px;
+            border-color: LTKPalette.border-subtle;
+
+            VerticalLayout {
+                spacing: 0px;
+
+                // Header
+                Rectangle {
+                    height: 52px;
+                    HorizontalLayout {
+                        padding-left: LTKSpace.space-4;
+                        alignment: center;
+                        Text {
+                            text: root.title;
+                            color: LTKPalette.text-primary;
+                            font-family: LTKType.font-display;
+                            font-size: LTKType.title-3;
+                            font-weight: LTKType.weight-bold;
+                        }
+                    }
+                }
+                Rectangle { height: 1px; background: LTKPalette.border-subtle; }
+
+                ScrollView {
+                    VerticalLayout {
+                        padding: LTKSpace.space-1;
+                        spacing: 1px;
+                        padding-top: LTKSpace.space-2;
+
+                        for sec in root.sections : Rectangle {
+                            height: 38px;
+                            border-radius: LTKRadius.md;
+                            background:
+                                sec.id == root.active-section ? LTKPalette.accent
+                              : sec-t.has-hover               ? LTKPalette.border-subtle
+                              : transparent;
+                            animate background { duration: LTKMotion.fast; }
+
+                            HorizontalLayout {
+                                padding-left: LTKSpace.space-2;
+                                padding-right: LTKSpace.space-2;
+                                spacing: LTKSpace.space-2;
+                                alignment: center;
+
+                                Rectangle {
+                                    width: 28px; height: 28px;
+                                    border-radius: 7px;
+                                    background: sec.id == root.active-section
+                                        ? #FFFFFF22
+                                        : LTKPalette.accent.with-alpha(0.10);
+                                    Image {
+                                        source: sec.icon;
+                                        width: 15px; height: 15px;
+                                        colorize: sec.id == root.active-section ? #FFFFFF : LTKPalette.accent;
+                                        animate colorize { duration: LTKMotion.fast; }
+                                    }
+                                }
+
+                                Text {
+                                    text: sec.label;
+                                    color: sec.id == root.active-section ? #FFFFFF : LTKPalette.text-primary;
+                                    font-family: LTKType.font-ui;
+                                    font-size: LTKType.text-base;
+                                    font-weight: sec.id == root.active-section ? LTKType.weight-medium : LTKType.weight-regular;
+                                    vertical-alignment: center;
+                                    animate color { duration: LTKMotion.fast; }
+                                }
+                            }
+
+                            sec-t := TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => {
+                                    root.active-section = sec.id;
+                                    root.section-changed(sec.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Content area
+        Rectangle {
+            horizontal-stretch: 1;
+            background: LTKPalette.bg-base;
+            clip: true;
+            ScrollView {
+                VerticalLayout {
+                    padding: LTKSpace.space-6;
+                    padding-top: LTKSpace.space-5;
+                    spacing: LTKSpace.space-4;
+                    max-width: 640px;
+                    @children
+                }
+            }
+        }
+    }
+}

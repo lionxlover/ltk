@@ -1,0 +1,76 @@
+// LTKSegmentControl — macOS UISegmentedControl exact clone.
+// Pill container, selected segment gets glass-raised background + spring pop.
+
+import { LTKPalette }  from "../theme/palette.slint";
+import { LTKRadius }   from "../theme/radius.slint";
+import { LTKType }     from "../theme/typography.slint";
+import { LTKSpace }    from "../theme/spacing.slint";
+import { LTKMotion }   from "../theme/motion.slint";
+
+export struct LTKSegment { label: string, icon: image, has-icon: bool }
+
+export component LTKSegmentControl inherits Rectangle {
+    in property <[LTKSegment]> segments;
+    in-out property <int>      selected: 0;
+    in property <bool>         icon-only: false;
+    callback changed(index: int);
+
+    height: LTKSpace.control-md;
+    border-radius: LTKRadius.full;
+    background: LTKPalette.bg-raised;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+
+    HorizontalLayout {
+        padding: 3px;
+        spacing: 2px;
+
+        for seg[i] in root.segments : Rectangle {
+            // Selected pill
+            border-radius: LTKRadius.full;
+            background: i == root.selected ? LTKPalette.bg-surface : transparent;
+            border-width: i == root.selected ? 1px : 0px;
+            border-color: LTKPalette.border-base;
+            drop-shadow-blur:    i == root.selected ? 4px : 0px;
+            drop-shadow-offset-y:i == root.selected ? 1px : 0px;
+            drop-shadow-color:   LTKPalette.shadow-xs;
+
+            // Spring pop when selected
+            y: i == root.selected ? -0.5px : 0px;
+            animate background    { duration: LTKMotion.base;  easing: LTKMotion.ease-spring; }
+            animate border-width  { duration: LTKMotion.fast;  }
+            animate drop-shadow-blur { duration: LTKMotion.base; }
+            animate y             { duration: LTKMotion.base;  easing: LTKMotion.ease-spring; }
+
+            HorizontalLayout {
+                padding-left:  root.icon-only ? 10px : 14px;
+                padding-right: root.icon-only ? 10px : 14px;
+                spacing: 5px;
+                alignment: center;
+
+                if seg.has-icon : Image {
+                    source: seg.icon;
+                    width: 14px; height: 14px;
+                    colorize: i == root.selected ? LTKPalette.text-primary : LTKPalette.text-secondary;
+                    animate colorize { duration: LTKMotion.fast; }
+                }
+
+                if !root.icon-only : Text {
+                    text: seg.label;
+                    color: i == root.selected ? LTKPalette.text-primary : LTKPalette.text-secondary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: i == root.selected ? LTKType.weight-semibold : LTKType.weight-medium;
+                    vertical-alignment: center;
+                    animate color       { duration: LTKMotion.fast; }
+                    animate font-weight { duration: LTKMotion.fast; }
+                }
+            }
+
+            TouchArea {
+                mouse-cursor: pointer;
+                clicked => { root.selected = i; root.changed(i); }
+            }
+        }
+    }
+}

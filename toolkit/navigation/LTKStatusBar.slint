@@ -1,0 +1,54 @@
+// LTKStatusBar — macOS bottom status bar + GNOME action bar combined.
+// Left: status text. Right: action buttons / info.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+
+export component LTKStatusBar inherits Rectangle {
+    in property <string> left-text;
+    in property <string> right-text;
+    in property <string> center-text;
+    in property <bool>   borderless: false;
+
+    height: LTKSpace.statusbar-height;
+    background: LTKPalette.glass-thick;
+
+    if !root.borderless : Rectangle {
+        y: 0px; height: 1px; width: parent.width;
+        background: LTKPalette.border-subtle;
+    }
+
+    HorizontalLayout {
+        padding-left:  LTKSpace.space-3;
+        padding-right: LTKSpace.space-3;
+        vertical-alignment: center;
+
+        Text {
+            text: root.left-text;
+            color: LTKPalette.text-tertiary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            vertical-alignment: center;
+        }
+        Rectangle { horizontal-stretch: 1; }
+        Text {
+            text: root.center-text;
+            color: LTKPalette.text-tertiary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+        Rectangle { horizontal-stretch: 1; }
+        Text {
+            text: root.right-text;
+            color: LTKPalette.text-tertiary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            vertical-alignment: center;
+        }
+        // Trailing slot for action buttons
+        @children
+    }
+}

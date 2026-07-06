@@ -1,0 +1,29 @@
+// LTK Radius — macOS squircle-inspired progression.
+// Larger radii > 12px should use squircle approximation via Path when available.
+
+export global LTKRadius {
+    out property <length> none:    0px;
+    out property <length> xs:      3px;   // tags, small chips
+    out property <length> sm:      6px;   // inputs, small cards
+    out property <length> md:     10px;   // buttons, standard cards
+    out property <length> lg:     14px;   // panels, menus
+    out property <length> xl:     18px;   // drawers, modals
+    out property <length> xl2:    24px;   // sheets, large overlays
+    out property <length> xl3:    32px;   // app icon shape (macOS 22.5%)
+    out property <length> full: 9999px;   // pills, toggles
+
+    // ── Component aliases ──────────────────────────────────────────────
+    out property <length> button:  9999px;  // always pill (macOS style)
+    out property <length> input:      6px;  // GNOME entry corners
+    out property <length> card:      12px;  // macOS card radius
+    out property <length> popover:   12px;  // macOS popover
+    out property <length> menu:       8px;  // macOS contextual menu
+    out property <length> dialog:    12px;  // macOS alert / sheet
+    out property <length> sheet:     14px;  // GNOME bottom sheet
+    out property <length> sidebar:    0px;  // flush to window edge
+    out property <length> tooltip:    6px;
+    out property <length> badge:   9999px;  // always pill
+    out property <length> chip:    9999px;  // always pill
+    out property <length> toggle:  9999px;  // always pill (switch)
+    out property <length> tag:        3px;  // tight, macOS label
+}

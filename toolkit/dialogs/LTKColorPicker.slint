@@ -1,0 +1,117 @@
+// LTKColorPicker — macOS NSColorPanel inspired.
+// Swatch grid of system colours + custom hex input.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKColorPicker inherits Rectangle {
+    in property <bool>  open:       false;
+    in-out property <color> value:  LTKPalette.accent;
+    callback color-changed(c: color);
+    callback closed();
+
+    background: transparent;
+
+    property <[color]> swatches: [
+        // macOS system colours
+        #5B9DFA, #9D7AFA, #F472B6, #F28B82, #FB923C, #FBBF24, #5EE29A, #8B8FA8,
+        // Greys
+        #FFFFFF, #D1D5DB, #9CA3AF, #6B7280, #374151, #1F2937, #111827, #000000,
+        // Vivid
+        #EF4444, #F97316, #EAB308, #22C55E, #06B6D4, #3B82F6, #8B5CF6, #EC4899,
+    ];
+
+    if root.open : Rectangle {
+        x: 0px; y: parent.height + LTKSpace.px4;
+        width: 220px;
+        border-radius: LTKRadius.popover;
+        border-width: 1px;
+        border-color: LTKPalette.border-base;
+        background: LTKPalette.bg-raised;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: LTKPalette.shadow-md;
+        clip: true;
+        z: 600;
+        height: picker-col.preferred-height;
+
+        picker-col := VerticalLayout {
+            padding: LTKSpace.space-2;
+            spacing: LTKSpace.space-1;
+
+            // Preview strip
+            Rectangle {
+                height: 28px;
+                border-radius: LTKRadius.sm;
+                background: root.value;
+                border-width: 1px;
+                border-color: LTKPalette.border-base;
+            }
+
+            // Swatch grid (6 columns)
+            Rectangle {
+                height: 120px;
+                GridLayout {
+                    spacing: 4px;
+                    for swatch[i] in root.swatches : Rectangle {
+                        row: i / 6;
+                        col: mod(i, 6);
+                        width: 26px; height: 26px;
+                        border-radius: LTKRadius.xs;
+                        background: swatch;
+                        border-width: swatch == root.value ? 2px : 1px;
+                        border-color: swatch == root.value ? LTKPalette.text-primary : LTKPalette.border-subtle;
+                        animate border-width { duration: LTKMotion.fast; }
+                        TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.value = swatch; root.color-changed(swatch); }
+                        }
+                    }
+                }
+            }
+
+            // Hex input
+            HorizontalLayout {
+                spacing: LTKSpace.px4;
+                alignment: center;
+                Text {
+                    text: "#";
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-sm;
+                    vertical-alignment: center;
+                }
+                TextInput {
+                    text: "5B9DFA";
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-sm;
+                    horizontal-stretch: 1;
+                    vertical-alignment: center;
+                }
+            }
+
+            Rectangle {
+                height: 30px;
+                border-radius: 9999px;
+                background: LTKPalette.glass-regular;
+                border-width: 1px;
+                border-color: LTKPalette.border-base;
+                Text {
+                    text: "Done";
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: LTKType.weight-semibold;
+                    horizontal-alignment: center; vertical-alignment: center;
+                }
+                TouchArea { mouse-cursor: pointer; clicked => { root.closed(); } }
+            }
+        }
+    }
+
+    // Trigger (anchor widget)
+    @children
+}

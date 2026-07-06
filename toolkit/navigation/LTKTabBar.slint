@@ -1,0 +1,115 @@
+// LTKTabBar — macOS tab style (pill group) OR GNOME ViewSwitcher (underline).
+// Toggleable between styles.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKTab { id: string, label: string, icon: image, badge: string, has-icon: bool }
+
+export enum LTKTabStyle { Pill, Underline, Solid }
+
+export component LTKTabBar inherits Rectangle {
+    in property <[LTKTab]>   tabs;
+    in-out property <int>    current: 0;
+    in property <LTKTabStyle> style: LTKTabStyle.Pill;
+    callback changed(index: int);
+
+    // Pill style sizing
+    height: root.style == LTKTabStyle.Underline ? 40px : LTKSpace.control-md;
+    background:
+        root.style == LTKTabStyle.Pill ? LTKPalette.bg-raised
+      : transparent;
+    border-radius: root.style == LTKTabStyle.Pill ? LTKRadius.full : 0px;
+    border-width:  root.style == LTKTabStyle.Pill ? 1px : 0px;
+    border-color:  LTKPalette.border-subtle;
+
+    HorizontalLayout {
+        padding: root.style == LTKTabStyle.Pill ? 3px : 0px;
+        spacing: root.style == LTKTabStyle.Pill ? 2px : 0px;
+        alignment: root.style == LTKTabStyle.Underline ? LayoutAlignment.start : LayoutAlignment.center;
+
+        for tab[i] in root.tabs : Rectangle {
+            // Pill selected indicator
+            border-radius: root.style == LTKTabStyle.Pill ? LTKRadius.full : 0px;
+            background:
+                root.style == LTKTabStyle.Pill && i == root.current ? LTKPalette.bg-surface
+              : root.style == LTKTabStyle.Solid && i == root.current ? LTKPalette.accent.with-alpha(0.12)
+              : tab-touch.has-hover ? LTKPalette.border-subtle
+              : transparent;
+            border-width: root.style == LTKTabStyle.Pill && i == root.current ? 1px : 0px;
+            border-color: LTKPalette.border-base;
+            drop-shadow-blur:    root.style == LTKTabStyle.Pill && i == root.current ? 4px : 0px;
+            drop-shadow-offset-y:root.style == LTKTabStyle.Pill && i == root.current ? 1px : 0px;
+            drop-shadow-color:   LTKPalette.shadow-xs;
+            min-width: 64px;
+
+            animate background    { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+            animate border-width  { duration: LTKMotion.fast; }
+            animate drop-shadow-blur { duration: LTKMotion.base; }
+
+            HorizontalLayout {
+                padding-left: 14px; padding-right: 14px;
+                spacing: 6px;
+                alignment: center;
+
+                if tab.has-icon : Image {
+                    source: tab.icon;
+                    width: 15px; height: 15px;
+                    colorize:
+                        i == root.current ? LTKPalette.accent
+                      : LTKPalette.text-secondary;
+                    animate colorize { duration: LTKMotion.fast; }
+                }
+
+                Text {
+                    text: tab.label;
+                    color:
+                        i == root.current
+                            ? (root.style == LTKTabStyle.Pill ? LTKPalette.text-primary : LTKPalette.accent)
+                            : LTKPalette.text-secondary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight:
+                        i == root.current ? LTKType.weight-semibold : LTKType.weight-regular;
+                    vertical-alignment: center;
+                    animate color       { duration: LTKMotion.fast; }
+                    animate font-weight { duration: LTKMotion.fast; }
+                }
+
+                if tab.badge != "" : Rectangle {
+                    border-radius: LTKRadius.badge;
+                    background: LTKPalette.state-error;
+                    height: 16px; width: b-t.preferred-width + 7px;
+                    b-t := Text {
+                        text: tab.badge;
+                        color: #FFFFFF;
+                        font-size: LTKType.text-xs;
+                        font-weight: LTKType.weight-bold;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            // GNOME underline indicator
+            if root.style == LTKTabStyle.Underline && i == root.current : Rectangle {
+                y: parent.height - 3px;
+                height: 3px;
+                width: parent.width - 24px;
+                x: 12px;
+                border-radius: 1.5px;
+                background: LTKPalette.accent;
+                animate x     { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+                animate width { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+            }
+
+            tab-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => { root.current = i; root.changed(i); }
+            }
+        }
+    }
+}

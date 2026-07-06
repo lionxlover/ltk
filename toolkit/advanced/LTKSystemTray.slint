@@ -1,0 +1,50 @@
+// LTKSystemTray — macOS menu bar extra / GNOME system tray area.
+// Horizontal strip of small icon buttons with popovers.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKTrayItem { icon: image, tooltip: string, badge: string, urgent: bool }
+
+export component LTKSystemTray inherits HorizontalLayout {
+    in property <[LTKTrayItem]> items;
+    spacing: 2px;
+    alignment: center;
+    callback item-clicked(i: int);
+
+    for item[i] in root.items : Rectangle {
+        width: 26px; height: 24px;
+        border-radius: 6px;
+        background: tray-t.has-hover ? LTKPalette.border-base : transparent;
+        animate background { duration: LTKMotion.fast; }
+
+        Image {
+            source: item.icon;
+            width: 16px; height: 16px;
+            colorize: item.urgent ? LTKPalette.state-error : LTKPalette.text-secondary;
+        }
+
+        if item.badge != "" : Rectangle {
+            x: 14px; y: -1px;
+            width: 12px; height: 12px;
+            border-radius: 6px;
+            background: LTKPalette.state-error;
+            Text {
+                text: item.badge;
+                color: #FFFFFF;
+                font-family: LTKType.font-ui;
+                font-size: 8px;
+                font-weight: LTKType.weight-bold;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        tray-t := TouchArea {
+            mouse-cursor: pointer;
+            clicked => { root.item-clicked(i); }
+        }
+    }
+}

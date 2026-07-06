@@ -1,0 +1,172 @@
+// LTKSidebar — GNOME AdwNavigationPage sidebar.
+// Inspired by macOS Finder/Settings sidebar + GNOME nautilus sidebar.
+// Section headers, badge counts, icon colouring on active item.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKNavEntry {
+    id:             string,
+    label:          string,
+    icon:           image,
+    badge:          string,
+    section-header: string,
+    enabled:        bool,
+    danger:         bool,
+}
+
+export component LTKSidebar inherits Rectangle {
+    in property <[LTKNavEntry]> items;
+    in-out property <string>    active-id;
+    in property <string>        app-name: "LionOS App";
+    in property <bool>          compact:  false;
+
+    callback activated(id: string);
+
+    width:      root.compact ? LTKSpace.nav-rail-width : LTKSpace.sidebar-width;
+    background: LTKPalette.bg-sidebar;
+    clip:       true;
+    animate width { duration: LTKMotion.medium; easing: LTKMotion.ease-decelerate; }
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // ── App name header ──────────────────────────────────────────
+        if !root.compact : Rectangle {
+            height: 38px;
+            padding-left: LTKSpace.space-3;
+            padding-bottom: LTKSpace.px4;
+            VerticalLayout {
+                alignment: end;
+                Text {
+                    text: root.app-name;
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-xs;
+                    font-weight: LTKType.weight-semibold;
+                    letter-spacing: 0.6px;
+                }
+            }
+        }
+
+        // ── Separator ────────────────────────────────────────────────
+        Rectangle {
+            height: 1px;
+            background: LTKPalette.border-subtle;
+        }
+
+        // ── Nav items ────────────────────────────────────────────────
+        ScrollView {
+            VerticalLayout {
+                padding: LTKSpace.space-1;
+                padding-top: LTKSpace.space-1;
+                spacing: 1px;
+
+                for item in root.items : Rectangle {
+                    // Section header
+                    if item.section-header != "" && !root.compact : Rectangle {
+                        height: 30px;
+                        padding-left: LTKSpace.space-2;
+                        background: transparent;
+                        VerticalLayout {
+                            alignment: end;
+                            padding-bottom: 4px;
+                            Text {
+                                text: item.section-header;
+                                color: LTKPalette.text-tertiary;
+                                font-family: LTKType.font-mono;
+                                font-size: LTKType.text-xs;
+                                letter-spacing: 0.8px;
+                            }
+                        }
+                    }
+
+                    // Nav row
+                    if item.section-header == "" : Rectangle {
+                        height: root.compact ? 44px : 32px;
+                        border-radius: LTKRadius.md;
+                        opacity: item.enabled ? 1.0 : 0.38;
+
+                        // Active: filled accent background (macOS sidebar style)
+                        // Hover: subtle tint
+                        background:
+                            item.id == root.active-id ? LTKPalette.accent
+                          : nav-t.has-hover           ? LTKPalette.border-subtle
+                          : transparent;
+
+                        animate background { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+
+                        HorizontalLayout {
+                            padding-left:  root.compact ? 0px : LTKSpace.space-1-5;
+                            padding-right: root.compact ? 0px : LTKSpace.space-1-5;
+                            spacing: root.compact ? 0px : LTKSpace.space-1-5;
+                            alignment: root.compact ? LayoutAlignment.center : LayoutAlignment.start;
+                            vertical-alignment: center;
+
+                            Image {
+                                source: item.icon;
+                                width:  root.compact ? 22px : 16px;
+                                height: root.compact ? 22px : 16px;
+                                colorize:
+                                    item.danger && item.id != root.active-id ? LTKPalette.state-error
+                                  : item.id == root.active-id ? #FFFFFF
+                                  : LTKPalette.text-secondary;
+                                animate colorize { duration: LTKMotion.fast; }
+                            }
+
+                            if !root.compact : Text {
+                                text: item.label;
+                                color:
+                                    item.danger && item.id != root.active-id ? LTKPalette.state-error
+                                  : item.id == root.active-id ? #FFFFFF
+                                  : LTKPalette.text-primary;
+                                font-family: LTKType.font-ui;
+                                font-size: LTKType.text-base;
+                                font-weight:
+                                    item.id == root.active-id ? LTKType.weight-medium : LTKType.weight-regular;
+                                vertical-alignment: center;
+                                animate color       { duration: LTKMotion.fast; }
+                                animate font-weight { duration: LTKMotion.fast; }
+                            }
+
+                            if !root.compact : Rectangle { horizontal-stretch: 1; }
+
+                            // Badge
+                            if item.badge != "" && !root.compact : Rectangle {
+                                border-radius: LTKRadius.badge;
+                                background:
+                                    item.id == root.active-id ? #FFFFFF33
+                                  : LTKPalette.accent.with-alpha(0.15);
+                                height: 17px;
+                                width: badge-t.preferred-width + 8px;
+                                badge-t := Text {
+                                    text: item.badge;
+                                    color:
+                                        item.id == root.active-id ? #FFFFFF
+                                      : LTKPalette.accent;
+                                    font-family: LTKType.font-mono;
+                                    font-size: LTKType.text-xs;
+                                    font-weight: LTKType.weight-semibold;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        nav-t := TouchArea {
+                            enabled: item.enabled;
+                            mouse-cursor: pointer;
+                            clicked => {
+                                root.active-id = item.id;
+                                root.activated(item.id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,286 @@
+// LTKFileChooser — macOS Open panel / GNOME FileChooserDialog.
+// Sidebar with bookmarks, breadcrumb navigation, file grid/list.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export struct LTKFileItem { name: string, is-dir: bool, size: string, modified: string, icon: image }
+
+export component LTKFileChooser inherits Rectangle {
+    in property <bool>         open:         false;
+    in property <string>       title:        "Open File";
+    in property <string>       current-path: "/home/lion";
+    in property <[LTKFileItem]>items;
+    in property <bool>         allow-multiple: false;
+    in property <bool>         save-mode:      false;
+    in property <string>       save-filename;
+
+    callback confirmed(path: string);
+    callback cancelled();
+    callback path-changed(path: string);
+
+    background: transparent;
+    z: 700;
+
+    if root.open : Rectangle {
+        width: parent.width; height: parent.height;
+        background: LTKPalette.shadow-xl.with-alpha(0.65);
+        TouchArea { }
+    }
+
+    if root.open : Rectangle {
+        width: 720px; height: 500px;
+        x: (parent.width  - 720px) / 2;
+        y: (parent.height - 500px) / 2;
+        border-radius: LTKRadius.dialog;
+        border-width: 1px;
+        border-color: LTKPalette.border-base;
+        background: LTKPalette.bg-surface;
+        drop-shadow-blur: 56px;
+        drop-shadow-color: LTKPalette.shadow-xl;
+        clip: true;
+        z: 701;
+
+        VerticalLayout {
+            spacing: 0px;
+
+            // Title bar
+            Rectangle {
+                height: 44px;
+                background: LTKPalette.bg-headerbar;
+                border-bottom-width: 1px;
+                border-color: LTKPalette.border-subtle;
+
+                HorizontalLayout {
+                    padding-left: LTKSpace.space-3;
+                    padding-right: LTKSpace.space-3;
+                    alignment: center;
+
+                    Text {
+                        text: root.title;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-sm;
+                        font-weight: LTKType.weight-semibold;
+                        horizontal-stretch: 1;
+                    }
+
+                    // Search field
+                    Rectangle {
+                        width: 180px; height: 28px;
+                        border-radius: 14px;
+                        border-width: 1px;
+                        border-color: LTKPalette.border-base;
+                        background: LTKPalette.bg-surface;
+                        HorizontalLayout {
+                            padding-left: 10px; spacing: 6px; alignment: center;
+                            Image { source: LTKIcons.search; width: 12px; height: 12px; colorize: LTKPalette.text-tertiary; }
+                            TextInput {
+                                placeholder-text: "Search…";
+                                placeholder-color: LTKPalette.text-tertiary;
+                                color: LTKPalette.text-primary;
+                                font-size: LTKType.text-sm;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 0px;
+                vertical-stretch: 1;
+
+                // Sidebar bookmarks
+                Rectangle {
+                    width: 160px;
+                    background: LTKPalette.bg-sidebar;
+                    border-right-width: 1px;
+                    border-color: LTKPalette.border-subtle;
+
+                    VerticalLayout {
+                        padding: LTKSpace.space-1;
+                        spacing: 1px;
+
+                        for bm in [
+                            { label: "Recent",    icon: LTKIcons.clock   },
+                            { label: "Desktop",   icon: LTKIcons.image   },
+                            { label: "Documents", icon: LTKIcons.document },
+                            { label: "Downloads", icon: LTKIcons.download },
+                            { label: "Pictures",  icon: LTKIcons.image   },
+                            { label: "Music",     icon: LTKIcons.audio   },
+                            { label: "Videos",    icon: LTKIcons.video   },
+                            { label: "Home",      icon: LTKIcons.home    },
+                        ] : Rectangle {
+                            height: 30px;
+                            border-radius: LTKRadius.sm;
+                            background: bm-t.has-hover ? LTKPalette.border-subtle : transparent;
+                            animate background { duration: LTKMotion.fast; }
+
+                            HorizontalLayout {
+                                padding-left: LTKSpace.space-1;
+                                padding-right: LTKSpace.space-1;
+                                spacing: LTKSpace.space-1;
+                                alignment: center;
+                                Image { source: bm.icon; width: 14px; height: 14px; colorize: LTKPalette.text-secondary; }
+                                Text {
+                                    text: bm.label;
+                                    color: LTKPalette.text-primary;
+                                    font-family: LTKType.font-ui;
+                                    font-size: LTKType.text-sm;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            bm-t := TouchArea { mouse-cursor: pointer; }
+                        }
+                    }
+                }
+
+                // File list
+                Rectangle {
+                    horizontal-stretch: 1;
+                    background: LTKPalette.bg-base;
+
+                    // Breadcrumb
+                    Rectangle {
+                        height: 36px;
+                        background: LTKPalette.bg-surface;
+                        border-bottom-width: 1px;
+                        border-color: LTKPalette.border-subtle;
+                        HorizontalLayout {
+                            padding-left: LTKSpace.space-2;
+                            spacing: 4px; alignment: center;
+                            Image { source: LTKIcons.folder; width: 13px; height: 13px; colorize: LTKPalette.text-tertiary; }
+                            Text {
+                                text: root.current-path;
+                                color: LTKPalette.text-secondary;
+                                font-family: LTKType.font-mono;
+                                font-size: LTKType.text-xs;
+                                overflow: elide;
+                            }
+                        }
+                    }
+
+                    ScrollView {
+                        y: 36px;
+                        height: parent.height - 36px;
+                        width: parent.width;
+                        VerticalLayout {
+                            spacing: 0px;
+                            for item[i] in root.items : Rectangle {
+                                height: 36px;
+                                background: fi-t.has-hover ? LTKPalette.border-subtle : transparent;
+                                animate background { duration: LTKMotion.fast; }
+
+                                HorizontalLayout {
+                                    padding-left: LTKSpace.space-3;
+                                    padding-right: LTKSpace.space-3;
+                                    spacing: LTKSpace.space-2; alignment: center;
+                                    Image {
+                                        source: item.is-dir ? LTKIcons.folder : LTKIcons.file;
+                                        width: 16px; height: 16px;
+                                        colorize: item.is-dir ? LTKPalette.accent : LTKPalette.text-secondary;
+                                    }
+                                    Text {
+                                        text: item.name;
+                                        color: LTKPalette.text-primary;
+                                        font-family: LTKType.font-ui;
+                                        font-size: LTKType.text-sm;
+                                        horizontal-stretch: 1;
+                                        overflow: elide;
+                                        vertical-alignment: center;
+                                    }
+                                    Text {
+                                        text: item.size;
+                                        color: LTKPalette.text-tertiary;
+                                        font-family: LTKType.font-mono;
+                                        font-size: LTKType.text-xs;
+                                        width: 60px;
+                                        horizontal-alignment: right;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                                Rectangle {
+                                    y: parent.height - 1px; height: 1px; width: parent.width;
+                                    background: LTKPalette.border-subtle;
+                                }
+                                fi-t := TouchArea {
+                                    mouse-cursor: pointer;
+                                    double-clicked => {
+                                        if item.is-dir { root.path-changed(root.current-path + "/" + item.name); }
+                                        else { root.confirmed(root.current-path + "/" + item.name); }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Bottom bar
+            Rectangle {
+                height: 52px;
+                background: LTKPalette.bg-surface;
+                border-top-width: 1px;
+                border-color: LTKPalette.border-subtle;
+
+                HorizontalLayout {
+                    padding-left: LTKSpace.space-3;
+                    padding-right: LTKSpace.space-3;
+                    spacing: LTKSpace.space-1;
+                    alignment: center;
+
+                    if root.save-mode : Rectangle {
+                        horizontal-stretch: 1; height: 34px;
+                        border-radius: LTKRadius.input;
+                        border-width: 1px; border-color: LTKPalette.border-base;
+                        background: LTKPalette.bg-raised;
+                        TextInput {
+                            text: root.save-filename;
+                            color: LTKPalette.text-primary;
+                            font-family: LTKType.font-ui;
+                            font-size: LTKType.text-sm;
+                            padding-left: 10px;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Rectangle { horizontal-stretch: root.save-mode ? 0 : 1; }
+
+                    // Cancel
+                    Rectangle {
+                        width: 80px; height: 34px; border-radius: 9999px;
+                        background: LTKPalette.glass-regular;
+                        border-width: 1px; border-color: LTKPalette.border-strong;
+                        Text {
+                            text: "Cancel"; color: LTKPalette.text-primary;
+                            font-family: LTKType.font-ui; font-size: LTKType.text-sm;
+                            font-weight: LTKType.weight-semibold;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                        TouchArea { mouse-cursor: pointer; clicked => { root.cancelled(); } }
+                    }
+
+                    // Open/Save
+                    Rectangle {
+                        width: 80px; height: 34px; border-radius: 9999px;
+                        background: LTKPalette.accent;
+                        drop-shadow-blur: 8px; drop-shadow-color: LTKPalette.accent-glow;
+                        Text {
+                            text: root.save-mode ? "Save" : "Open";
+                            color: #FFFFFF;
+                            font-family: LTKType.font-ui; font-size: LTKType.text-sm;
+                            font-weight: LTKType.weight-bold;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                        TouchArea { mouse-cursor: pointer; clicked => { root.confirmed(root.current-path); } }
+                    }
+                }
+            }
+        }
+    }
+}

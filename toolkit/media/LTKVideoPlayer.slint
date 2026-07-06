@@ -1,0 +1,178 @@
+// LTKVideoPlayer — macOS AVKit / GNOME Totem inspired.
+// Controls overlay: scrubber, play/pause, volume, fullscreen.
+// Controls auto-hide after 3s (managed by host via timer).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export component LTKVideoPlayer inherits Rectangle {
+    in property <bool>   playing:         false;
+    in property <float>  progress:        0.0;    // 0.0–1.0
+    in property <float>  volume:          1.0;
+    in property <string> time-elapsed:    "0:00";
+    in property <string> time-total:      "0:00";
+    in property <string> title;
+    in property <bool>   show-controls:   true;
+    in property <bool>   fullscreen:      false;
+
+    callback play-toggled(playing: bool);
+    callback seek(position: float);
+    callback volume-changed(v: float);
+    callback fullscreen-toggled(v: bool);
+
+    background: #000;
+    border-radius: root.fullscreen ? 0px : LTKRadius.lg;
+    clip: true;
+
+    // Video content area (host renders actual video here)
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: #000;
+        // Actual video element goes here
+    }
+
+    // Controls overlay
+    if root.show-controls : Rectangle {
+        y: parent.height - 90px;
+        width: parent.width; height: 90px;
+        background: @linear-gradient(180deg, transparent 0%, #000000CC 100%);
+
+        VerticalLayout {
+            padding-left: LTKSpace.space-4;
+            padding-right: LTKSpace.space-4;
+            padding-bottom: LTKSpace.space-2;
+            spacing: LTKSpace.px4;
+            alignment: end;
+
+            // Scrubber
+            Rectangle {
+                height: 20px;
+                Rectangle {
+                    y: 8px; height: 4px;
+                    border-radius: 2px;
+                    background: #FFFFFF33;
+                    // Progress fill
+                    Rectangle {
+                        width: parent.width * root.progress;
+                        height: 4px;
+                        border-radius: 2px;
+                        background: #FFFFFF;
+                        animate width { duration: 200ms; }
+                    }
+                    // Thumb
+                    Rectangle {
+                        width: 12px; height: 12px;
+                        border-radius: 6px;
+                        background: #FFFFFF;
+                        x: parent.width * root.progress - 6px;
+                        y: -4px;
+                        drop-shadow-blur: 4px;
+                        drop-shadow-color: #00000088;
+                    }
+                }
+                TouchArea {
+                    mouse-cursor: ew-resize;
+                    pointer-event(e) => {
+                        if e.kind == PointerEventKind.move || e.kind == PointerEventKind.down {
+                            root.seek(clamp(e.position.x / parent.width, 0.0, 1.0));
+                        }
+                    }
+                }
+            }
+
+            // Control buttons
+            HorizontalLayout {
+                spacing: LTKSpace.space-2;
+                alignment: center;
+                vertical-alignment: center;
+
+                // Play/Pause
+                TouchArea {
+                    width: 36px; height: 36px;
+                    mouse-cursor: pointer;
+                    clicked => { root.play-toggled(!root.playing); }
+                    Rectangle {
+                        border-radius: 18px;
+                        background: parent.has-hover ? #FFFFFF22 : transparent;
+                        Image {
+                            source: root.playing ? LTKIcons.pause : LTKIcons.play;
+                            width: 20px; height: 20px;
+                            colorize: #FFFFFF;
+                        }
+                    }
+                }
+
+                // Time
+                Text {
+                    text: root.time-elapsed + " / " + root.time-total;
+                    color: #FFFFFFAA;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-xs;
+                    vertical-alignment: center;
+                }
+
+                // Title
+                if root.title != "" : Text {
+                    text: root.title;
+                    color: #FFFFFF88;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-xs;
+                    horizontal-stretch: 1;
+                    overflow: elide;
+                    vertical-alignment: center;
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                // Volume
+                HorizontalLayout {
+                    spacing: 4px;
+                    alignment: center;
+                    Image {
+                        source: root.volume > 0.0 ? LTKIcons.volume : LTKIcons.volume-mute;
+                        width: 16px; height: 16px;
+                        colorize: #FFFFFFAA;
+                    }
+                    Rectangle {
+                        width: 64px; height: 20px;
+                        Rectangle {
+                            y: 8px; height: 4px;
+                            border-radius: 2px;
+                            background: #FFFFFF33;
+                            Rectangle {
+                                width: parent.width * root.volume;
+                                height: 4px;
+                                border-radius: 2px;
+                                background: #FFFFFF;
+                            }
+                        }
+                        TouchArea {
+                            pointer-event(e) => {
+                                if e.kind == PointerEventKind.move || e.kind == PointerEventKind.down {
+                                    root.volume-changed(clamp(e.position.x / parent.width, 0.0, 1.0));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Fullscreen
+                TouchArea {
+                    width: 28px; height: 28px;
+                    mouse-cursor: pointer;
+                    clicked => { root.fullscreen-toggled(!root.fullscreen); }
+                    Image {
+                        source: LTKIcons.fullscreen;
+                        width: 16px; height: 16px;
+                        colorize: #FFFFFFAA;
+                    }
+                }
+            }
+        }
+    }
+}

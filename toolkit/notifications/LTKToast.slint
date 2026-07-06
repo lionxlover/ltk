@@ -1,0 +1,101 @@
+// LTKToast — macOS Banner notification style + GNOME in-app notification.
+// Appears at top-right (macOS) or bottom-center (GNOME) based on position.
+// Spring entrance: slides in + fades. Auto-dismisses after duration.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export enum LTKToastKind { Info, Success, Warning, Error }
+export enum LTKToastPosition { TopRight, BottomCenter }
+
+export component LTKToast inherits Rectangle {
+    in property <string>           message;
+    in property <string>           action-label;
+    in property <LTKToastKind>     kind:     LTKToastKind.Info;
+    in property <LTKToastPosition> position: LTKToastPosition.BottomCenter;
+    in property <bool>             visible:  false;
+    in property <bool>             closable: true;
+    callback action-clicked();
+    callback dismissed();
+
+    property <color> kind-color:
+        root.kind == LTKToastKind.Success ? LTKPalette.state-success
+      : root.kind == LTKToastKind.Warning ? LTKPalette.state-warning
+      : root.kind == LTKToastKind.Error   ? LTKPalette.state-error
+      : LTKPalette.accent;
+
+    visible: root.visible;
+    min-width: 260px;
+    max-width: 420px;
+    height: content-row.preferred-height + LTKSpace.space-2;
+    border-radius: LTKRadius.lg;
+    border-width: 1px;
+    border-color: root.kind-color.with-alpha(0.25);
+    background: LTKPalette.bg-raised;
+    drop-shadow-blur:    LTKSpace.space-4;
+    drop-shadow-offset-y: LTKSpace.space-1;
+    drop-shadow-color:   LTKPalette.shadow-lg;
+    clip: true;
+
+    opacity: root.visible ? 1.0 : 0.0;
+    animate opacity { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+
+    // Left accent stripe (GNOME banner style)
+    Rectangle {
+        width: 3px; height: parent.height;
+        background: root.kind-color;
+    }
+
+    content-row := HorizontalLayout {
+        padding-left: LTKSpace.space-2;
+        padding-right: root.closable ? LTKSpace.space-1 : LTKSpace.space-2;
+        padding-top: LTKSpace.space-1;
+        padding-bottom: LTKSpace.space-1;
+        spacing: LTKSpace.space-1;
+        alignment: center;
+
+        Text {
+            text: root.message;
+            color: LTKPalette.text-primary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        if root.action-label != "" : TouchArea {
+            mouse-cursor: pointer;
+            clicked => { root.action-clicked(); }
+            Text {
+                text: root.action-label;
+                color: LTKPalette.accent;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-sm;
+                font-weight: LTKType.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        if root.closable : TouchArea {
+            width: 28px; height: 28px;
+            mouse-cursor: pointer;
+            clicked => { root.dismissed(); }
+            Rectangle {
+                border-radius: 14px;
+                background: cl-h.has-hover ? LTKPalette.border-base : transparent;
+                Text {
+                    text: "×";
+                    color: LTKPalette.text-tertiary;
+                    font-size: 16px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                cl-h := TouchArea { }
+            }
+        }
+    }
+}

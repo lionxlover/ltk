@@ -1,0 +1,75 @@
+// LTK Palette — OKLCH-based, macOS accent system + GNOME surface naming.
+// Switch accent at runtime; dark/light applied globally.
+
+export global LTKPalette {
+    // ── Mode ──────────────────────────────────────────────────────────
+    in-out property <bool> dark-mode: true;
+
+    // ── Accent hue (0–360°, default LionOS Blue 213°) ─────────────────
+    in-out property <color> accent:        #5B9DFA;
+    in-out property <color> accent-dim:    #3B7DD8;
+    in-out property <color> accent-glow:   #5B9DFA44;
+    in-out property <color> accent-subtle: #5B9DFA1A;
+    in-out property <color> on-accent:     #FFFFFF;
+
+    // ── Named accent swatches (macOS system colour set) ─────────────────
+    out property <color> blue:     #5B9DFA;
+    out property <color> purple:   #9D7AFA;
+    out property <color> pink:     #F472B6;
+    out property <color> red:      #F28B82;
+    out property <color> orange:   #FB923C;
+    out property <color> yellow:   #FBBF24;
+    out property <color> green:    #5EE29A;
+    out property <color> graphite: #8B8FA8;
+
+    // ── Surfaces (GNOME HIG layering model) ────────────────────────────
+    // Dark mode
+    out property <color> bg-base:       dark-mode ? #0B0D0F : #EFEDE8;
+    out property <color> bg-surface:    dark-mode ? #15171B : #FFFFFF;
+    out property <color> bg-raised:     dark-mode ? #1C1F25 : #F4F2EF;
+    out property <color> bg-overlay:    dark-mode ? #24272F : #E8E6E2;
+    out property <color> bg-headerbar:  dark-mode ? #12141A : #DDDBD6;
+    out property <color> bg-sidebar:    dark-mode ? #0F1115 : #E8E5E0;
+
+    // ── Glass / vibrancy tint (varies by dark/light) ───────────────────
+    out property <color> glass-thin:    dark-mode ? #15171B66 : #FFFFFF66;
+    out property <color> glass-regular: dark-mode ? #15171BAA : #FFFFFFAA;
+    out property <color> glass-thick:   dark-mode ? #15171BD9 : #FFFFFFD9;
+
+    // ── Text ───────────────────────────────────────────────────────────
+    out property <color> text-primary:    dark-mode ? #F1F2F5 : #1A1B1F;
+    out property <color> text-secondary:  dark-mode ? #9CA3AF : #5A5E6B;
+    out property <color> text-tertiary:   dark-mode ? #5C6370 : #9499A5;
+    out property <color> text-disabled:   dark-mode ? #3A3F4A : #C4C8D4;
+    out property <color> text-on-accent:  #FFFFFF;
+    out property <color> text-on-dark:    #FFFFFF;
+
+    // ── Borders ────────────────────────────────────────────────────────
+    out property <color> border-subtle:   dark-mode ? #FFFFFF0F : #0000000F;
+    out property <color> border-base:     dark-mode ? #FFFFFF1A : #0000001A;
+    out property <color> border-strong:   dark-mode ? #FFFFFF2E : #0000002E;
+    out property <color> border-focus:    accent;
+    out property <color> border-error:    #F28B82;
+
+    // ── State colours ──────────────────────────────────────────────────
+    out property <color> state-success:    dark-mode ? #5EE29A : #16A34A;
+    out property <color> state-warning:    dark-mode ? #FBBF24 : #D97706;
+    out property <color> state-error:      dark-mode ? #F28B82 : #DC2626;
+    out property <color> state-info:       accent;
+    out property <color> state-success-bg: dark-mode ? #5EE29A1A : #16A34A14;
+    out property <color> state-warning-bg: dark-mode ? #FBBF241A : #D9770614;
+    out property <color> state-error-bg:   dark-mode ? #F28B821A : #DC26261A;
+
+    // ── macOS traffic light colours ─────────────────────────────────────
+    out property <color> traffic-close:    #FF5F57;
+    out property <color> traffic-minimize: #FFBD2E;
+    out property <color> traffic-zoom:     #28C840;
+    out property <color> traffic-inactive: dark-mode ? #3A3D45 : #C8C9CB;
+
+    // ── Shadow colours ─────────────────────────────────────────────────
+    out property <color> shadow-xs: dark-mode ? #00000033 : #00000014;
+    out property <color> shadow-sm: dark-mode ? #00000055 : #0000001E;
+    out property <color> shadow-md: dark-mode ? #00000077 : #0000002A;
+    out property <color> shadow-lg: dark-mode ? #000000AA : #00000038;
+    out property <color> shadow-xl: dark-mode ? #000000CC : #00000050;
+}

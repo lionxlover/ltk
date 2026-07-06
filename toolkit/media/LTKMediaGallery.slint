@@ -1,0 +1,103 @@
+// LTKMediaGallery — macOS Photos / GNOME Photos grid.
+// Responsive masonry-like grid, hover overlay, selection mode.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKMediaItem { id: string, thumbnail: image, title: string, duration: string, is-video: bool }
+
+export component LTKMediaGallery inherits Rectangle {
+    in property <[LTKMediaItem]> items;
+    in property <int>            columns:        4;
+    in property <bool>           selection-mode: false;
+    in property <[string]>       selected-ids;
+    in property <length>         cell-gap:       LTKSpace.px4;
+
+    callback item-clicked(id: string);
+    callback item-selected(id: string, selected: bool);
+
+    background: LTKPalette.bg-base;
+
+    ScrollView {
+        GridLayout {
+            spacing: root.cell-gap;
+            padding: root.cell-gap;
+
+            for item[i] in root.items : Rectangle {
+                row: i / root.columns;
+                col: mod(i, root.columns);
+                height: self.width;   // square cells
+                border-radius: LTKRadius.md;
+                clip: true;
+                background: LTKPalette.bg-raised;
+
+                // Thumbnail
+                Image {
+                    source: item.thumbnail;
+                    width: parent.width; height: parent.height;
+                    image-fit: cover;
+                }
+
+                // Hover overlay
+                Rectangle {
+                    width: parent.width; height: parent.height;
+                    background: #00000000;
+                    border-radius: parent.border-radius;
+                    animate background { duration: LTKMotion.fast; }
+
+                    // On hover: darken + show title
+                    if g-touch.has-hover : Rectangle {
+                        width: parent.width; height: parent.height;
+                        background: #00000055;
+                        border-radius: parent.border-radius;
+                    }
+
+                    // Duration badge (video)
+                    if item.is-video : Rectangle {
+                        x: LTKSpace.space-1; y: LTKSpace.space-1;
+                        border-radius: 4px;
+                        background: #000000BB;
+                        height: 18px;
+                        width: dur-t.preferred-width + 8px;
+                        dur-t := Text {
+                            text: item.duration;
+                            color: #FFFFFF;
+                            font-family: LTKType.font-mono;
+                            font-size: 10px;
+                            font-weight: LTKType.weight-semibold;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                    }
+
+                    // Selection checkbox (selection mode)
+                    if root.selection-mode : Rectangle {
+                        x: LTKSpace.space-1; y: LTKSpace.space-1;
+                        width: 22px; height: 22px;
+                        border-radius: 11px;
+                        background: root.selected-ids.contains(item.id) ? LTKPalette.accent : #FFFFFF44;
+                        border-width: root.selected-ids.contains(item.id) ? 0px : 1.5px;
+                        border-color: #FFFFFF;
+                        animate background { duration: LTKMotion.fast; }
+
+                        if root.selected-ids.contains(item.id) : Path {
+                            commands: "M 5 11 L 9 15 L 17 7";
+                            stroke: #FFFFFF; stroke-width: 2px; fill: transparent;
+                        }
+                    }
+                }
+
+                g-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        if root.selection-mode {
+                            root.item-selected(item.id, !root.selected-ids.contains(item.id));
+                        } else { root.item-clicked(item.id); }
+                    }
+                }
+            }
+        }
+    }
+}

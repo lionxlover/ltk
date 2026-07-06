@@ -1,0 +1,55 @@
+// LTKBreadcrumb — macOS Finder path bar + GNOME file manager path.
+// Separator: › chevron with soft colour. Last item is primary/bold.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKCrumb { label: string, icon: image, has-icon: bool }
+
+export component LTKBreadcrumb inherits HorizontalLayout {
+    in property <[LTKCrumb]> crumbs;
+    spacing: 2px;
+    alignment: LayoutAlignment.start;
+    vertical-alignment: center;
+    callback clicked(index: int);
+
+    for crumb[i] in root.crumbs : HorizontalLayout {
+        spacing: 2px;
+        alignment: center;
+
+        if crumb.has-icon : Image {
+            source: crumb.icon;
+            width: 13px; height: 13px;
+            colorize: i == root.crumbs.length - 1 ? LTKPalette.text-primary : LTKPalette.text-tertiary;
+        }
+
+        if i < root.crumbs.length - 1 : TouchArea {
+            mouse-cursor: pointer;
+            clicked => { root.clicked(i); }
+            Text {
+                text: crumb.label;
+                color: bc-h.has-hover ? LTKPalette.accent : LTKPalette.text-tertiary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-sm;
+                animate color { duration: LTKMotion.fast; }
+                bc-h := TouchArea { }
+            }
+        }
+        if i == root.crumbs.length - 1 : Text {
+            text: crumb.label;
+            color: LTKPalette.text-primary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-sm;
+            font-weight: LTKType.weight-medium;
+        }
+
+        // Separator ›
+        if i < root.crumbs.length - 1 : Text {
+            text: "›";
+            color: LTKPalette.text-tertiary;
+            font-size: LTKType.text-sm;
+        }
+    }
+}

@@ -1,0 +1,61 @@
+// LTKTooltip — macOS system tooltip: dark pill, white text, kbd shortcut badge.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKTooltip inherits Rectangle {
+    in property <string>  tip-text;
+    in property <string>  shortcut;
+    in property <bool>    visible: false;
+
+    visible: root.visible;
+    border-radius: LTKRadius.md;
+    border-width: 1px;
+    border-color: LTKPalette.border-strong;
+    // macOS tooltip is always dark regardless of theme
+    background: #1C1E22EE;
+    drop-shadow-blur: 12px;
+    drop-shadow-color: #00000044;
+    height: tip-row.preferred-height;
+    width: tip-row.preferred-width;
+    opacity: root.visible ? 1.0 : 0.0;
+    animate opacity { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+    z: 2000;
+
+    tip-row := HorizontalLayout {
+        padding-left:  LTKSpace.space-1;
+        padding-right: LTKSpace.space-1;
+        padding-top:   LTKSpace.px4;
+        padding-bottom:LTKSpace.px4;
+        spacing: LTKSpace.space-1;
+        alignment: center;
+
+        Text {
+            text: root.tip-text;
+            color: #FFFFFFDE;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-sm;
+            font-weight: LTKType.weight-medium;
+        }
+
+        if root.shortcut != "" : Rectangle {
+            border-radius: 4px;
+            border-width: 1px;
+            border-color: #FFFFFF33;
+            background: #FFFFFF14;
+            height: 18px;
+            width: sc-t.preferred-width + 8px;
+            sc-t := Text {
+                text: root.shortcut;
+                color: #FFFFFF88;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-xs;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

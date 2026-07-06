@@ -1,0 +1,149 @@
+// LTKListView — high-performance virtualized list.
+// macOS NSTableView row style + GNOME Nautilus list view aesthetic.
+// Alternating row tint, selection highlight, hover state.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export struct LTKListItem {
+    id:       string,
+    title:    string,
+    subtitle: string,
+    meta:     string,
+    icon:     image,
+    has-icon: bool,
+    badge:    string,
+    checked:  bool,
+}
+
+export component LTKListView inherits Rectangle {
+    in property <[LTKListItem]> model;
+    in-out property <int>       selected-index: -1;
+    in property <bool>          show-checkboxes: false;
+    in property <bool>          alternating:     false;
+    in property <bool>          show-separator:  true;
+    in property <length>        row-height:      44px;
+    callback selection-changed(index: int, id: string);
+    callback item-activated(index: int, id: string);  // double-click
+
+    background: LTKPalette.bg-surface;
+    border-radius: LTKRadius.md;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+    clip: true;
+
+    ScrollView {
+        VerticalLayout {
+            spacing: 0px;
+
+            for item[i] in root.model : Rectangle {
+                height: root.row-height;
+                background:
+                    i == root.selected-index   ? LTKPalette.accent
+                  : row-touch.has-hover        ? LTKPalette.border-subtle
+                  : root.alternating && mod(i, 2) == 1 ? LTKPalette.border-subtle.with-alpha(0.5)
+                  : transparent;
+
+                animate background { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+
+                HorizontalLayout {
+                    padding-left:  LTKSpace.space-3;
+                    padding-right: LTKSpace.space-3;
+                    spacing: LTKSpace.space-2;
+                    alignment: center;
+                    vertical-alignment: center;
+
+                    if root.show-checkboxes : Rectangle {
+                        width: 18px; height: 18px;
+                        border-radius: 4px;
+                        border-width: 1.5px;
+                        border-color: item.checked
+                            ? LTKPalette.accent
+                            : (i == root.selected-index ? #FFFFFF66 : LTKPalette.border-strong);
+                        background: item.checked ? LTKPalette.accent : transparent;
+                        if item.checked : Path {
+                            commands: "M 3 9 L 7 13 L 15 5";
+                            stroke: #FFFFFF;
+                            stroke-width: 2px;
+                            fill: transparent;
+                        }
+                    }
+
+                    if item.has-icon : Image {
+                        source: item.icon;
+                        width: 20px; height: 20px;
+                        colorize: i == root.selected-index ? #FFFFFF : LTKPalette.text-secondary;
+                        animate colorize { duration: LTKMotion.fast; }
+                    }
+
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        alignment: center;
+                        spacing: 2px;
+
+                        Text {
+                            text: item.title;
+                            color: i == root.selected-index ? #FFFFFF : LTKPalette.text-primary;
+                            font-family: LTKType.font-ui;
+                            font-size: LTKType.text-base;
+                            font-weight: LTKType.weight-regular;
+                            overflow: elide;
+                            animate color { duration: LTKMotion.fast; }
+                        }
+                        if item.subtitle != "" : Text {
+                            text: item.subtitle;
+                            color: i == root.selected-index ? #FFFFFFAA : LTKPalette.text-tertiary;
+                            font-family: LTKType.font-ui;
+                            font-size: LTKType.text-sm;
+                            overflow: elide;
+                            animate color { duration: LTKMotion.fast; }
+                        }
+                    }
+
+                    if item.meta != "" : Text {
+                        text: item.meta;
+                        color: i == root.selected-index ? #FFFFFF88 : LTKPalette.text-tertiary;
+                        font-family: LTKType.font-mono;
+                        font-size: LTKType.text-xs;
+                        vertical-alignment: center;
+                    }
+
+                    if item.badge != "" : Rectangle {
+                        border-radius: 9999px;
+                        height: 18px;
+                        width: bt.preferred-width + 8px;
+                        background: i == root.selected-index ? #FFFFFF33 : LTKPalette.accent.with-alpha(0.15);
+                        bt := Text {
+                            text: item.badge;
+                            color: i == root.selected-index ? #FFFFFF : LTKPalette.accent;
+                            font-family: LTKType.font-mono;
+                            font-size: LTKType.text-xs;
+                            font-weight: LTKType.weight-bold;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                    }
+                }
+
+                if root.show-separator && i < root.model.length - 1 : Rectangle {
+                    y: parent.height - 1px; height: 1px;
+                    x: item.has-icon ? LTKSpace.space-3 + 20px + LTKSpace.space-2 : LTKSpace.space-3;
+                    width: parent.width - x;
+                    background: i == root.selected-index ? transparent : LTKPalette.border-subtle;
+                }
+
+                row-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        root.selected-index = i;
+                        root.selection-changed(i, item.id);
+                    }
+                    double-clicked => { root.item-activated(i, item.id); }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,213 @@
+// LTKKanban — macOS Reminders / GNOME Planner kanban board.
+// Columns with header, card stack, add card button.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export struct LTKKanbanCard   { id: string, title: string, tag: string, tag-color: color, assignee: string, priority: int }
+export struct LTKKanbanColumn { id: string, title: string, color: color, cards: [LTKKanbanCard], limit: int }
+
+export component LTKKanban inherits Rectangle {
+    in property <[LTKKanbanColumn]> columns;
+    callback card-clicked(col-id: string, card-id: string);
+    callback add-card(col-id: string);
+
+    background: LTKPalette.bg-base;
+
+    ScrollView {
+        HorizontalLayout {
+            padding: LTKSpace.space-4;
+            spacing: LTKSpace.space-3;
+            alignment: LayoutAlignment.start;
+
+            for col in root.columns : Rectangle {
+                width: 280px;
+                border-radius: LTKRadius.lg;
+                background: LTKPalette.bg-raised;
+                border-width: 1px;
+                border-color: LTKPalette.border-subtle;
+                clip: true;
+
+                VerticalLayout {
+                    spacing: 0px;
+
+                    // Column header
+                    Rectangle {
+                        height: 42px;
+                        background: col.color.with-alpha(0.08);
+                        border-bottom-width: 1px;
+                        border-color: col.color.with-alpha(0.15);
+
+                        HorizontalLayout {
+                            padding-left: LTKSpace.space-2;
+                            padding-right: LTKSpace.space-2;
+                            spacing: LTKSpace.space-1;
+                            alignment: center;
+
+                            Rectangle {
+                                width: 8px; height: 8px; border-radius: 4px;
+                                background: col.color;
+                            }
+
+                            Text {
+                                text: col.title;
+                                color: LTKPalette.text-primary;
+                                font-family: LTKType.font-ui;
+                                font-size: LTKType.text-sm;
+                                font-weight: LTKType.weight-semibold;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                            }
+
+                            // Card count badge
+                            Rectangle {
+                                border-radius: 9999px;
+                                background: col.color.with-alpha(0.15);
+                                height: 20px; width: cnt-t.preferred-width + 8px;
+                                cnt-t := Text {
+                                    text: col.cards.length;
+                                    color: col.color;
+                                    font-family: LTKType.font-mono;
+                                    font-size: LTKType.text-xs;
+                                    font-weight: LTKType.weight-bold;
+                                    horizontal-alignment: center; vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+
+                    // Cards
+                    ScrollView {
+                        max-height: 600px;
+                        VerticalLayout {
+                            padding: LTKSpace.space-1;
+                            spacing: LTKSpace.space-1;
+
+                            for card in col.cards : Rectangle {
+                                border-radius: LTKRadius.md;
+                                background: c-touch.has-hover ? LTKPalette.bg-overlay : LTKPalette.bg-surface;
+                                border-width: 1px;
+                                border-color: LTKPalette.border-subtle;
+                                drop-shadow-blur: c-touch.has-hover ? 8px : 2px;
+                                drop-shadow-offset-y: c-touch.has-hover ? 3px : 1px;
+                                drop-shadow-color: LTKPalette.shadow-xs;
+                                animate background { duration: LTKMotion.fast; }
+                                animate drop-shadow-blur { duration: LTKMotion.base; easing: LTKMotion.ease-soft; }
+                                y: c-touch.pressed ? 1px : 0px;
+                                animate y { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+                                VerticalLayout {
+                                    padding: LTKSpace.space-2;
+                                    spacing: LTKSpace.space-1;
+
+                                    // Tag
+                                    if card.tag != "" : Rectangle {
+                                        border-radius: 3px;
+                                        background: card.tag-color.with-alpha(0.15);
+                                        height: 18px; width: tag-t.preferred-width + 8px;
+                                        tag-t := Text {
+                                            text: card.tag;
+                                            color: card.tag-color;
+                                            font-family: LTKType.font-mono;
+                                            font-size: 10px;
+                                            font-weight: LTKType.weight-semibold;
+                                            horizontal-alignment: center; vertical-alignment: center;
+                                        }
+                                    }
+
+                                    Text {
+                                        text: card.title;
+                                        color: LTKPalette.text-primary;
+                                        font-family: LTKType.font-ui;
+                                        font-size: LTKType.text-sm;
+                                        font-weight: LTKType.weight-medium;
+                                        wrap: word-wrap;
+                                    }
+
+                                    // Priority + assignee
+                                    HorizontalLayout {
+                                        spacing: LTKSpace.px4;
+                                        alignment: start;
+                                        if card.priority > 0 : Text {
+                                            text: card.priority == 1 ? "🔴" : card.priority == 2 ? "🟡" : "🟢";
+                                            font-size: 11px;
+                                            vertical-alignment: center;
+                                        }
+                                        if card.assignee != "" : Rectangle {
+                                            width: 20px; height: 20px; border-radius: 10px;
+                                            background: LTKPalette.accent.with-alpha(0.20);
+                                            Text {
+                                                text: card.assignee.slice(0, 1);
+                                                color: LTKPalette.accent;
+                                                font-family: LTKType.font-ui;
+                                                font-size: 10px; font-weight: LTKType.weight-bold;
+                                                horizontal-alignment: center; vertical-alignment: center;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                c-touch := TouchArea {
+                                    mouse-cursor: pointer;
+                                    clicked => { root.card-clicked(col.id, card.id); }
+                                }
+                            }
+
+                            // Add card button
+                            Rectangle {
+                                height: 32px;
+                                border-radius: LTKRadius.sm;
+                                background: add-t.has-hover ? LTKPalette.border-subtle : transparent;
+                                animate background { duration: LTKMotion.fast; }
+
+                                HorizontalLayout {
+                                    spacing: 6px; alignment: center;
+                                    Image { source: LTKIcons.add; width: 13px; height: 13px; colorize: LTKPalette.text-tertiary; }
+                                    Text {
+                                        text: "Add card";
+                                        color: LTKPalette.text-tertiary;
+                                        font-family: LTKType.font-ui;
+                                        font-size: LTKType.text-sm;
+                                        vertical-alignment: center;
+                                    }
+                                }
+
+                                add-t := TouchArea {
+                                    mouse-cursor: pointer;
+                                    clicked => { root.add-card(col.id); }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add column button
+            Rectangle {
+                width: 200px; height: 48px;
+                border-radius: LTKRadius.lg;
+                background: add-col-t.has-hover ? LTKPalette.border-subtle : LTKPalette.border-subtle.with-alpha(0.5);
+                border-width: 1px; border-color: LTKPalette.border-base;
+                border-style: dashed;
+                animate background { duration: LTKMotion.fast; }
+
+                HorizontalLayout {
+                    spacing: LTKSpace.space-1; alignment: center;
+                    Image { source: LTKIcons.add; width: 16px; height: 16px; colorize: LTKPalette.text-tertiary; }
+                    Text {
+                        text: "Add column";
+                        color: LTKPalette.text-tertiary;
+                        font-family: LTKType.font-ui; font-size: LTKType.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+
+                add-col-t := TouchArea { mouse-cursor: pointer; }
+            }
+        }
+    }
+}

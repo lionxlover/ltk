@@ -1,0 +1,543 @@
+// LTKControlCenter — LionOS Control Center (macOS Control Center × GNOME Quick Settings).
+//
+// 15 modules arranged in a glass panel:
+//   Row 1: Wi-Fi · Bluetooth · Volume · Brightness
+//   Row 2: Night Light · Dark Mode · Focus / DnD · Battery
+//   Row 3: Screenshot · Screen Recording · Accessibility · Power
+//   Row 4 (wide): VPN · Audio Output · AI Assistant
+//
+// Design:
+//   - Glass-thick panel, Primary radius (24px), spring-in from top-right
+//   - Each module tile: Secondary radius (16px) for outer, Tertiary (10px) for icon bg
+//   - Active state: accent-filled tile, spring pop
+//   - macOS-style: compact tiles in a 2-column grid on narrow, 4-col on wide
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+import { LeonuxRadius, LeonuxSpace } from "../theme/leonux_tokens.slint";
+
+// ── Module tile sub-component ─────────────────────────────────────────
+component CCTile inherits Rectangle {
+    in property <image>  icon;
+    in property <string> label;
+    in property <string> value;      // e.g. "Connected", "85%", "Off"
+    in property <bool>   active:     false;
+    in property <bool>   enabled:    true;
+    in property <color>  accent:     LTKPalette.accent;
+    in property <bool>   wide:       false;   // 2-col span for featured tiles
+
+    callback clicked();
+    callback long-pressed();
+
+    width:  root.wide ? 172px : 82px;
+    height: root.wide ? 72px  : 82px;
+
+    border-radius: LeonuxRadius.r2;    // Secondary = 16px (card level)
+    background:
+        root.active   ? root.accent
+      : t.has-hover   ? LTKPalette.bg-raised
+      : LTKPalette.glass-regular;
+    border-width: 1px;
+    border-color:
+        root.active   ? root.accent.with-alpha(0.4)
+      : LTKPalette.border-subtle;
+
+    drop-shadow-blur:
+        t.has-hover && !root.active ? 12px : root.active ? 16px : 2px;
+    drop-shadow-color:
+        root.active ? root.accent.with-alpha(0.30) : LTKPalette.shadow-xs;
+
+    // Spring press sink
+    y: t.pressed ? 1px : 0px;
+    // Spring pop on activate
+    property <float> scale-factor: root.active ? 1.0 : 1.0;
+
+    animate background        { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+    animate border-color      { duration: LTKMotion.fast; }
+    animate drop-shadow-blur  { duration: LTKMotion.base; easing: LTKMotion.ease-soft; }
+    animate y                 { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+    if root.wide : HorizontalLayout {
+        padding-left: LeonuxSpace.md;
+        padding-right: LeonuxSpace.sm;
+        spacing: LeonuxSpace.sm;
+        alignment: center;
+        vertical-alignment: center;
+
+        // Icon bg — Tertiary radius (10px) inside Secondary (16px)
+        Rectangle {
+            width: 36px; height: 36px;
+            border-radius: LeonuxRadius.r3;  // Tertiary = 10px
+            background: root.active ? #FFFFFF22 : root.accent.with-alpha(0.12);
+            Image {
+                source: root.icon;
+                width: 18px; height: 18px;
+                colorize: root.active ? #FFFFFF : root.accent;
+                animate colorize { duration: LTKMotion.fast; }
+            }
+        }
+
+        VerticalLayout {
+            spacing: 1px;
+            alignment: center;
+            Text {
+                text: root.label;
+                color: root.active ? #FFFFFF : LTKPalette.text-primary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-sm;
+                font-weight: LTKType.weight-semibold;
+                animate color { duration: LTKMotion.fast; }
+            }
+            Text {
+                text: root.value;
+                color: root.active ? #FFFFFFBB : LTKPalette.text-tertiary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-xs;
+                animate color { duration: LTKMotion.fast; }
+            }
+        }
+    }
+
+    if !root.wide : VerticalLayout {
+        padding: LeonuxSpace.sm;
+        spacing: LeonuxSpace.xs;
+        alignment: center;
+
+        // Icon bg — Tertiary inside Secondary
+        Rectangle {
+            width: 36px; height: 36px;
+            border-radius: LeonuxRadius.r3;  // 10px
+            background: root.active ? #FFFFFF22 : root.accent.with-alpha(0.12);
+            animate background { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+
+            Image {
+                source: root.icon;
+                width: 18px; height: 18px;
+                colorize: root.active ? #FFFFFF : root.accent;
+                animate colorize { duration: LTKMotion.fast; }
+            }
+        }
+
+        Text {
+            text: root.label;
+            color: root.active ? #FFFFFF : LTKPalette.text-primary;
+            font-family: LTKType.font-ui;
+            font-size: 10px;
+            font-weight: LTKType.weight-semibold;
+            horizontal-alignment: center;
+            overflow: elide;
+            animate color { duration: LTKMotion.fast; }
+        }
+    }
+
+    t := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+// ── Volume slider tile ────────────────────────────────────────────────
+component CCVolumeSlider inherits Rectangle {
+    in-out property <float> volume: 0.70;
+    callback changed(v: float);
+
+    width: 172px; height: 72px;
+    border-radius: LeonuxRadius.r2;
+    background: LTKPalette.glass-regular;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+
+    HorizontalLayout {
+        padding: LeonuxSpace.md;
+        spacing: LeonuxSpace.sm;
+        alignment: center;
+
+        Rectangle {
+            width: 32px; height: 32px;
+            border-radius: LeonuxRadius.r3;
+            background: LTKPalette.accent.with-alpha(0.12);
+            Image {
+                source: LTKIcons.volume;
+                width: 16px; height: 16px;
+                colorize: LTKPalette.accent;
+            }
+        }
+
+        // Track
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            alignment: center;
+            Text {
+                text: "Volume";
+                color: LTKPalette.text-primary;
+                font-family: LTKType.font-ui;
+                font-size: 10px;
+                font-weight: LTKType.weight-semibold;
+            }
+            Rectangle {
+                height: 5px;
+                border-radius: 2.5px;
+                background: LTKPalette.border-base;
+                clip: true;
+                Rectangle {
+                    width: parent.width * root.volume;
+                    height: 5px;
+                    border-radius: 2.5px;
+                    background: LTKPalette.accent;
+                    animate width { duration: 30ms; }
+                }
+                TouchArea {
+                    pointer-event(e) => {
+                        if e.kind == PointerEventKind.move || e.kind == PointerEventKind.down {
+                            root.volume = clamp(e.position.x / parent.width, 0.0, 1.0);
+                            root.changed(root.volume);
+                        }
+                    }
+                }
+            }
+            Text {
+                text: round(root.volume * 100) + "%";
+                color: LTKPalette.text-tertiary;
+                font-family: LTKType.font-mono;
+                font-size: 9px;
+            }
+        }
+    }
+}
+
+// ── Brightness slider tile ────────────────────────────────────────────
+component CCBrightnessSlider inherits Rectangle {
+    in-out property <float> brightness: 0.80;
+    callback changed(v: float);
+
+    width: 172px; height: 72px;
+    border-radius: LeonuxRadius.r2;
+    background: LTKPalette.glass-regular;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+
+    HorizontalLayout {
+        padding: LeonuxSpace.md;
+        spacing: LeonuxSpace.sm;
+        alignment: center;
+
+        Rectangle {
+            width: 32px; height: 32px;
+            border-radius: LeonuxRadius.r3;
+            background: LTKPalette.accent-glow;
+            Image {
+                source: LTKIcons.brightness;
+                width: 16px; height: 16px;
+                colorize: LTKPalette.accent;
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            alignment: center;
+            Text { text: "Brightness"; color: LTKPalette.text-primary; font-family: LTKType.font-ui; font-size: 10px; font-weight: LTKType.weight-semibold; }
+            Rectangle {
+                height: 5px;
+                border-radius: 2.5px;
+                background: LTKPalette.border-base;
+                clip: true;
+                Rectangle {
+                    width: parent.width * root.brightness;
+                    height: 5px;
+                    border-radius: 2.5px;
+                    background: @linear-gradient(90deg, LTKPalette.accent 0%, #FBBF24 100%);
+                    animate width { duration: 30ms; }
+                }
+                TouchArea {
+                    pointer-event(e) => {
+                        if e.kind == PointerEventKind.move || e.kind == PointerEventKind.down {
+                            root.brightness = clamp(e.position.x / parent.width, 0.0, 1.0);
+                            root.changed(root.brightness);
+                        }
+                    }
+                }
+            }
+            Text { text: round(root.brightness * 100) + "%"; color: LTKPalette.text-tertiary; font-family: LTKType.font-mono; font-size: 9px; }
+        }
+    }
+}
+
+// ── Main Control Center panel ─────────────────────────────────────────
+export component LTKControlCenter inherits Rectangle {
+    // ── State ─────────────────────────────────────────────────────────
+    in property <bool>   open:            false;
+    in-out property <bool> wifi-on:       true;
+    in-out property <bool> bluetooth-on:  false;
+    in-out property <float> volume:       0.70;
+    in-out property <float> brightness:   0.80;
+    in-out property <bool> night-light:   false;
+    in-out property <bool> dark-mode:     true;
+    in-out property <bool> focus-on:      false;
+    in-out property <bool> vpn-on:        false;
+    in-out property <bool> screen-record: false;
+
+    in property <string>  wifi-name:      "LionOS Wi-Fi";
+    in property <string>  battery-pct:    "87%";
+    in property <bool>    charging:       true;
+    in property <string>  audio-device:   "MacBook Speakers";
+    in property <string>  ai-model:       "LionAI";
+
+    // ── Callbacks (each module) ───────────────────────────────────────
+    callback wifi-toggled(on: bool);
+    callback bluetooth-toggled(on: bool);
+    callback volume-changed(v: float);
+    callback brightness-changed(v: float);
+    callback night-light-toggled(on: bool);
+    callback dark-mode-toggled(on: bool);
+    callback focus-toggled(on: bool);
+    callback screenshot-clicked();
+    callback screen-record-toggled(on: bool);
+    callback accessibility-clicked();
+    callback power-clicked();
+    callback vpn-toggled(on: bool);
+    callback audio-output-clicked();
+    callback ai-clicked();
+    callback dismissed();
+
+    background: transparent;
+    z: 900;
+
+    // Click-away dismiss
+    if root.open : TouchArea {
+        width: parent.width; height: parent.height;
+        clicked => { root.dismissed(); }
+        z: -1;
+    }
+
+    // ── Panel (Primary radius = 24px, glass-thick material) ───────────
+    if root.open : Rectangle {
+        // Anchored: top-right, below menu bar
+        x: parent.width - 380px;
+        y: LeonuxSpace.headerbar + LeonuxSpace.xs;
+        width: 372px;
+        border-radius: LeonuxRadius.r1;  // Primary = 24px
+        background: LTKPalette.glass-thick;
+        border-width: 1px;
+        border-color: LTKPalette.border-base;
+        drop-shadow-blur: 48px;
+        drop-shadow-offset-y: 12px;
+        drop-shadow-color: LTKPalette.shadow-xl;
+        clip: true;
+        z: 901;
+
+        animate y { duration: LTKMotion.medium; easing: LTKMotion.ease-spring; }
+        animate opacity { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+
+        VerticalLayout {
+            padding: LeonuxSpace.sm;    // 12px — nest-1 padding (window→card)
+            spacing: LeonuxSpace.xs;   // 8px — between tile rows
+
+            // ── Row 1: Wi-Fi · Bluetooth (wide) + Night Light · Dark Mode ──
+            HorizontalLayout {
+                spacing: LeonuxSpace.xs;
+
+                // Wi-Fi (wide tile: 2 cols)
+                CCTile {
+                    icon: LTKIcons.wifi;
+                    label: "Wi-Fi";
+                    value: root.wifi-on ? root.wifi-name : "Off";
+                    active: root.wifi-on;
+                    wide: true;
+                    clicked => { root.wifi-on = !root.wifi-on; root.wifi-toggled(root.wifi-on); }
+                }
+
+                VerticalLayout {
+                    spacing: LeonuxSpace.xs;
+                    // Night Light
+                    CCTile {
+                        icon: LTKIcons.moon;
+                        label: "Night Light";
+                        value: root.night-light ? "On" : "Off";
+                        active: root.night-light;
+                        accent: LTKPalette.orange;
+                        clicked => { root.night-light = !root.night-light; root.night-light-toggled(root.night-light); }
+                    }
+                    // Dark Mode
+                    CCTile {
+                        icon: LTKIcons.moon;
+                        label: "Dark Mode";
+                        value: root.dark-mode ? "On" : "Light";
+                        active: root.dark-mode;
+                        clicked => { root.dark-mode = !root.dark-mode; root.dark-mode-toggled(root.dark-mode); }
+                    }
+                }
+            }
+
+            // ── Row 2: Bluetooth (wide) + Focus · Battery ──────────────
+            HorizontalLayout {
+                spacing: LeonuxSpace.xs;
+
+                CCTile {
+                    icon: LTKIcons.bluetooth;
+                    label: "Bluetooth";
+                    value: root.bluetooth-on ? "On" : "Off";
+                    active: root.bluetooth-on;
+                    accent: LTKPalette.blue;
+                    wide: true;
+                    clicked => { root.bluetooth-on = !root.bluetooth-on; root.bluetooth-toggled(root.bluetooth-on); }
+                }
+
+                VerticalLayout {
+                    spacing: LeonuxSpace.xs;
+                    // Focus / DnD
+                    CCTile {
+                        icon: LTKIcons.bell-off;
+                        label: "Focus";
+                        value: root.focus-on ? "On" : "Off";
+                        active: root.focus-on;
+                        accent: LTKPalette.purple;
+                        clicked => { root.focus-on = !root.focus-on; root.focus-toggled(root.focus-on); }
+                    }
+                    // Battery
+                    CCTile {
+                        icon: LTKIcons.battery;
+                        label: root.charging ? "Charging" : "Battery";
+                        value: root.battery-pct;
+                        active: root.charging;
+                        accent: LTKPalette.green;
+                    }
+                }
+            }
+
+            // ── Row 3: Volume slider + Brightness slider ────────────────
+            HorizontalLayout {
+                spacing: LeonuxSpace.xs;
+                CCVolumeSlider {
+                    volume <=> root.volume;
+                    changed(v) => { root.volume-changed(v); }
+                }
+                CCBrightnessSlider {
+                    brightness <=> root.brightness;
+                    changed(v) => { root.brightness-changed(v); }
+                }
+            }
+
+            // ── Row 4: Screenshot · Screen Recording · Accessibility · Power ──
+            HorizontalLayout {
+                spacing: LeonuxSpace.xs;
+                CCTile {
+                    icon: LTKIcons.camera;
+                    label: "Screenshot";
+                    value: "";
+                    accent: LTKPalette.graphite;
+                    clicked => { root.screenshot-clicked(); }
+                }
+                CCTile {
+                    icon: LTKIcons.video;
+                    label: "Record";
+                    value: root.screen-record ? "●" : "";
+                    active: root.screen-record;
+                    accent: LTKPalette.red;
+                    clicked => { root.screen-record = !root.screen-record; root.screen-record-toggled(root.screen-record); }
+                }
+                CCTile {
+                    icon: LTKIcons.eye;
+                    label: "Access.";
+                    value: "";
+                    accent: LTKPalette.blue;
+                    clicked => { root.accessibility-clicked(); }
+                }
+                CCTile {
+                    icon: LTKIcons.moon;
+                    label: "Power";
+                    value: "";
+                    accent: LTKPalette.red;
+                    clicked => { root.power-clicked(); }
+                }
+            }
+
+            // ── Row 5: VPN · Audio Output · AI Assistant ────────────────
+            HorizontalLayout {
+                spacing: LeonuxSpace.xs;
+
+                CCTile {
+                    icon: LTKIcons.lock;
+                    label: "VPN";
+                    value: root.vpn-on ? "Connected" : "Off";
+                    active: root.vpn-on;
+                    accent: LTKPalette.green;
+                    wide: false;
+                    clicked => { root.vpn-on = !root.vpn-on; root.vpn-toggled(root.vpn-on); }
+                }
+
+                // Audio Output (wide)
+                CCTile {
+                    icon: LTKIcons.volume;
+                    label: "Audio";
+                    value: root.audio-device;
+                    active: false;
+                    wide: true;
+                    clicked => { root.audio-output-clicked(); }
+                }
+
+                // AI Assistant
+                CCTile {
+                    icon: LTKIcons.cpu;
+                    label: root.ai-model;
+                    value: "Ask";
+                    active: false;
+                    accent: LTKPalette.purple;
+                    clicked => { root.ai-clicked(); }
+                }
+            }
+
+            // ── Footer: user info + time ────────────────────────────────
+            Rectangle {
+                height: 1px;
+                background: LTKPalette.border-subtle;
+            }
+
+            HorizontalLayout {
+                padding-left: LeonuxSpace.xs;
+                padding-right: LeonuxSpace.xs;
+                padding-top: LeonuxSpace.xs;
+                padding-bottom: LeonuxSpace.xs;
+                spacing: LeonuxSpace.sm;
+                alignment: center;
+
+                Rectangle {
+                    width: 28px; height: 28px;
+                    border-radius: 14px;
+                    background: LTKPalette.accent.with-alpha(0.15);
+                    Text {
+                        text: "L";
+                        color: LTKPalette.accent;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-sm;
+                        font-weight: LTKType.weight-bold;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: "Lion";
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: LTKType.weight-medium;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: "LionOS";
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

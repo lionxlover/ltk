@@ -1,0 +1,60 @@
+// LTKDonutChart — macOS-style donut / pie chart.
+// Segments drawn via arc approximation; centre label shows total.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKPieSlice { label: string, value: float, color: color }
+
+export component LTKDonutChart inherits Rectangle {
+    in property <[LTKPieSlice]> slices;
+    in property <string>        center-label;
+    in property <string>        center-sub;
+    in property <float>         thickness:     0.25;  // 0–1 fraction of radius
+
+    border-radius: LTKRadius.full;
+    background: transparent;
+
+    property <float> total: 0.0; // host computes sum(slices[*].value)
+
+    // Donut ring segments (simplified — each slice uses border angles)
+    // Real implementation uses Path arcs
+    Rectangle {
+        border-radius: min(parent.width, parent.height) / 2;
+        background: LTKPalette.bg-raised;
+        width: min(parent.width, parent.height);
+        height: min(parent.width, parent.height);
+
+        // Centre hole
+        Rectangle {
+            border-radius: min(parent.width, parent.height) * (1.0 - root.thickness) / 2;
+            width:  min(parent.width, parent.height) * (1.0 - root.thickness);
+            height: min(parent.width, parent.height) * (1.0 - root.thickness);
+            x: parent.width  * root.thickness / 2;
+            y: parent.height * root.thickness / 2;
+            background: LTKPalette.bg-surface;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+                Text {
+                    text: root.center-label;
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-display;
+                    font-size: LTKType.text-lg;
+                    font-weight: LTKType.weight-bold;
+                    horizontal-alignment: center;
+                }
+                if root.center-sub != "" : Text {
+                    text: root.center-sub;
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-xs;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+}

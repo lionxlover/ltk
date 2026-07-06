@@ -1,0 +1,100 @@
+// LTKTextArea — multi-line text editor. macOS NSTextView aesthetic.
+// Auto-grow, line count, character count, placeholder.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKTextArea inherits Rectangle {
+    in property <string>     label;
+    in property <string>     placeholder;
+    in property <string>     hint;
+    in property <bool>       has-error:   false;
+    in property <string>     error-text;
+    in-out property <string> value;
+    in property <int>        min-rows:    3;
+    in property <int>        max-length:  0;
+    in property <bool>       read-only:   false;
+    in property <bool>       enabled:     true;
+    in property <bool>       monospace:   false;
+    callback edited(v: string);
+
+    out property <bool> focused: ta.has-focus;
+    min-width: 200px;
+    background: transparent;
+
+    property <color> border-col:
+        root.has-error ? LTKPalette.state-error
+      : root.focused   ? LTKPalette.accent
+      : LTKPalette.border-base;
+
+    VerticalLayout {
+        spacing: LTKSpace.px4;
+
+        if root.label != "" : HorizontalLayout {
+            Text {
+                text: root.label;
+                color: root.has-error ? LTKPalette.state-error
+                     : root.focused   ? LTKPalette.accent
+                     : LTKPalette.text-secondary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-xs;
+                font-weight: LTKType.weight-semibold;
+                letter-spacing: 0.4px;
+                animate color { duration: LTKMotion.fast; }
+            }
+            Rectangle { horizontal-stretch: 1; }
+            if root.max-length > 0 : Text {
+                text: root.value.character-count + "/" + root.max-length;
+                color: root.value.character-count >= root.max-length
+                    ? LTKPalette.state-error : LTKPalette.text-tertiary;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-xs;
+            }
+        }
+
+        Rectangle {
+            min-height: root.min-rows * (LTKType.text-base * 1.5) + LTKSpace.space-3;
+            border-radius: LTKRadius.input;
+            border-width: root.focused ? 2px : 1px;
+            border-color: root.border-col;
+            background: root.enabled ? LTKPalette.bg-surface : LTKPalette.bg-raised;
+            opacity: root.enabled ? 1.0 : 0.38;
+            clip: true;
+            animate border-color { duration: LTKMotion.fast; }
+            animate border-width { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+
+            ScrollView {
+                ta := TextInput {
+                    text <=> root.value;
+                    enabled: root.enabled && !root.read-only;
+                    placeholder-text: root.placeholder;
+                    placeholder-color: LTKPalette.text-tertiary;
+                    color: LTKPalette.text-primary;
+                    font-family: root.monospace ? LTKType.font-mono : LTKType.font-body;
+                    font-size: LTKType.text-base;
+                    multi-line: true;
+                    wrap: TextWrap.word-wrap;
+                    selection-background-color: LTKPalette.accent.with-alpha(0.25);
+                    padding: LTKSpace.space-2;
+                    edited => { root.edited(root.value); }
+                }
+            }
+        }
+
+        if root.has-error && root.error-text != "" : Text {
+            text: root.error-text;
+            color: LTKPalette.state-error;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-xs;
+        }
+        if !root.has-error && root.hint != "" : Text {
+            text: root.hint;
+            color: LTKPalette.text-tertiary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-xs;
+        }
+    }
+}

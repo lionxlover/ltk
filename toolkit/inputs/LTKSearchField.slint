@@ -1,0 +1,97 @@
+// LTKSearchField — macOS NSSearchField / GNOME SearchEntry.
+// Pill shape, ⌘K shortcut badge, clear button, leading search icon.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export component LTKSearchField inherits Rectangle {
+    in property <string>  placeholder:    "Search…";
+    in-out property <string> value;
+    in property <string>  kbd-shortcut;
+    in property <bool>    inline-results: false;
+
+    callback edited(v: string);
+    callback accepted(v: string);
+    callback cleared();
+
+    out property <bool> focused: si.has-focus;
+
+    height: LTKSpace.input-md;
+    border-radius: LTKRadius.full;
+    border-width: root.focused ? 2px : 1px;
+    border-color: root.focused ? LTKPalette.accent : LTKPalette.border-base;
+    background: LTKPalette.bg-surface;
+    clip: true;
+
+    animate border-width  { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+    animate border-color  { duration: LTKMotion.fast; }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 10px;
+        spacing: 8px;
+        alignment: center;
+
+        Image {
+            source: LTKIcons.search;
+            width: 15px; height: 15px;
+            colorize: root.focused ? LTKPalette.accent : LTKPalette.text-tertiary;
+            animate colorize { duration: LTKMotion.fast; }
+        }
+
+        si := TextInput {
+            text <=> root.value;
+            placeholder-text: root.placeholder;
+            placeholder-color: LTKPalette.text-tertiary;
+            color: LTKPalette.text-primary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-base;
+            selection-background-color: LTKPalette.accent.with-alpha(0.25);
+            vertical-alignment: center;
+            edited   => { root.edited(root.value); }
+            accepted => { root.accepted(root.value); }
+        }
+
+        // Clear button
+        if root.value != "" : TouchArea {
+            width: 18px; height: 18px;
+            mouse-cursor: pointer;
+            clicked => { root.value = ""; root.cleared(); }
+            Rectangle {
+                border-radius: 9px;
+                background: LTKPalette.text-tertiary.with-alpha(0.35);
+                width: 16px; height: 16px;
+                Text {
+                    text: "×";
+                    color: LTKPalette.bg-surface;
+                    font-size: 11px;
+                    font-weight: 700;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // ⌘K badge (visible when empty + not focused)
+        if root.kbd-shortcut != "" && root.value == "" && !root.focused : Rectangle {
+            border-radius: 4px;
+            border-width: 1px;
+            border-color: LTKPalette.border-base;
+            background: LTKPalette.bg-raised;
+            height: 18px;
+            width: sc.preferred-width + 8px;
+            sc := Text {
+                text: root.kbd-shortcut;
+                color: LTKPalette.text-tertiary;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-xs;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

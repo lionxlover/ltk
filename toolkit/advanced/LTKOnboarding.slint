@@ -1,0 +1,144 @@
+// LTKOnboarding — macOS Setup Assistant / GNOME Initial Setup style.
+// Full-screen step-through with hero image, title, body, nav buttons.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export struct LTKOnboardingStep {
+    title:    string,
+    body:     string,
+    icon:     image,
+    has-hero: bool,
+}
+
+export component LTKOnboarding inherits Rectangle {
+    in property <[LTKOnboardingStep]> steps;
+    in-out property <int>             current: 0;
+    in property <string>              continue-label: "Continue";
+    in property <string>              back-label:     "Back";
+    in property <string>              finish-label:   "Get Started";
+
+    callback step-changed(index: int);
+    callback finished();
+
+    background: LTKPalette.bg-base;
+    clip: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 0px;
+
+        // Hero / icon area
+        Rectangle {
+            height: parent.height * 0.45;
+            background: LTKPalette.accent.with-alpha(0.06);
+
+            VerticalLayout {
+                alignment: center;
+                Image {
+                    source: root.steps[root.current].icon;
+                    width: 96px; height: 96px;
+                    colorize: LTKPalette.accent;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+
+        // Content
+        VerticalLayout {
+            padding: LTKSpace.space-8;
+            spacing: LTKSpace.space-3;
+            alignment: center;
+            vertical-stretch: 1;
+
+            Text {
+                text: root.steps[root.current].title;
+                color: LTKPalette.text-primary;
+                font-family: LTKType.font-display;
+                font-size: LTKType.large-title;
+                font-weight: LTKType.weight-bold;
+                horizontal-alignment: center;
+                wrap: word-wrap;
+                animate text { duration: LTKMotion.base; }
+            }
+
+            Text {
+                text: root.steps[root.current].body;
+                color: LTKPalette.text-secondary;
+                font-family: LTKType.font-body;
+                font-size: LTKType.body;
+                horizontal-alignment: center;
+                wrap: word-wrap;
+            }
+
+            // Step dots (macOS page indicator style)
+            HorizontalLayout {
+                spacing: 6px;
+                alignment: center;
+                for s[i] in root.steps : Rectangle {
+                    width:  i == root.current ? 20px : 7px;
+                    height: 7px;
+                    border-radius: 3.5px;
+                    background: i == root.current ? LTKPalette.accent : LTKPalette.border-strong;
+                    animate width      { duration: LTKMotion.spring; easing: LTKMotion.ease-spring; }
+                    animate background { duration: LTKMotion.fast; }
+                }
+            }
+
+            // Navigation buttons
+            HorizontalLayout {
+                spacing: LTKSpace.space-1;
+                alignment: center;
+
+                if root.current > 0 : Rectangle {
+                    width: 100px; height: 40px; border-radius: 9999px;
+                    background: LTKPalette.glass-regular;
+                    border-width: 1px; border-color: LTKPalette.border-strong;
+                    Text {
+                        text: root.back-label;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-ui; font-size: LTKType.text-sm;
+                        font-weight: LTKType.weight-semibold;
+                        horizontal-alignment: center; vertical-alignment: center;
+                    }
+                    TouchArea {
+                        mouse-cursor: pointer;
+                        clicked => {
+                            root.current = max(0, root.current - 1);
+                            root.step-changed(root.current);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 160px; height: 44px; border-radius: 9999px;
+                    background: LTKPalette.accent;
+                    drop-shadow-blur: 20px; drop-shadow-color: LTKPalette.accent-glow;
+                    y: continue-t.pressed ? 1px : 0px;
+                    animate y { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+                    Text {
+                        text: root.current == root.steps.length - 1 ? root.finish-label : root.continue-label;
+                        color: #FFFFFF;
+                        font-family: LTKType.font-ui; font-size: LTKType.text-base;
+                        font-weight: LTKType.weight-bold;
+                        horizontal-alignment: center; vertical-alignment: center;
+                    }
+                    continue-t := TouchArea {
+                        mouse-cursor: pointer;
+                        clicked => {
+                            if root.current == root.steps.length - 1 { root.finished(); }
+                            else {
+                                root.current = min(root.steps.length - 1, root.current + 1);
+                                root.step-changed(root.current);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

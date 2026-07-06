@@ -1,0 +1,141 @@
+// LTKMenuRow — macOS contextual menu row / GNOME PopoverMenu row.
+// Icon + label + optional trailing shortcut or chevron.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKMenuRow inherits Rectangle {
+    in property <image>  icon;
+    in property <bool>   has-icon:   false;
+    in property <string> label;
+    in property <string> shortcut;
+    in property <string> badge;
+    in property <bool>   danger:     false;
+    in property <bool>   checked:    false;
+    in property <bool>   has-submenu:false;
+    in property <bool>   enabled:    true;
+    in property <bool>   separator-below: false;
+
+    callback clicked();
+
+    height: 30px;
+    border-radius: LTKRadius.sm;
+    opacity: root.enabled ? 1.0 : 0.38;
+    background: mr-touch.has-hover && root.enabled ? LTKPalette.accent : transparent;
+    animate background { duration: LTKMotion.fast; }
+
+    HorizontalLayout {
+        padding-left:  8px;
+        padding-right: 10px;
+        spacing: 8px;
+        alignment: center;
+        vertical-alignment: center;
+
+        // Checkmark column
+        Rectangle {
+            width: 16px;
+            if root.checked : Text {
+                text: "✓";
+                color: mr-touch.has-hover ? #FFFFFF : LTKPalette.accent;
+                font-size: 12px;
+                vertical-alignment: center;
+            }
+        }
+
+        if root.has-icon : Image {
+            source: root.icon;
+            width: 14px; height: 14px;
+            colorize: root.danger
+                ? (mr-touch.has-hover ? #FFFFFF : LTKPalette.state-error)
+                : (mr-touch.has-hover ? #FFFFFF : LTKPalette.text-secondary);
+            animate colorize { duration: LTKMotion.fast; }
+        }
+
+        Text {
+            text: root.label;
+            color: root.danger
+                ? (mr-touch.has-hover ? #FFFFFF : LTKPalette.state-error)
+                : (mr-touch.has-hover ? #FFFFFF : LTKPalette.text-primary);
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+            animate color { duration: LTKMotion.fast; }
+        }
+
+        if root.shortcut != "" : Text {
+            text: root.shortcut;
+            color: mr-touch.has-hover ? #FFFFFF88 : LTKPalette.text-tertiary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            vertical-alignment: center;
+            animate color { duration: LTKMotion.fast; }
+        }
+
+        if root.badge != "" : Rectangle {
+            border-radius: 9999px;
+            background: mr-touch.has-hover ? #FFFFFF33 : LTKPalette.state-error;
+            height: 16px; width: mb-t.preferred-width + 7px;
+            mb-t := Text {
+                text: root.badge;
+                color: #FFFFFF;
+                font-size: LTKType.text-xs;
+                font-weight: LTKType.weight-bold;
+                horizontal-alignment: center; vertical-alignment: center;
+            }
+        }
+
+        if root.has-submenu : Text {
+            text: "›";
+            color: mr-touch.has-hover ? #FFFFFF88 : LTKPalette.text-tertiary;
+            font-size: 14px; vertical-alignment: center;
+        }
+    }
+
+    mr-touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component LTKMenuSeparator inherits Rectangle {
+    height: 8px;
+    background: transparent;
+    Rectangle {
+        y: 3px; height: 1px; width: parent.width - 8px; x: 4px;
+        background: LTKPalette.border-subtle;
+    }
+}
+
+export component LTKContextMenu inherits Rectangle {
+    in property <bool>    open: false;
+    in property <length>  menu-width: 220px;
+    callback dismissed();
+
+    visible: root.open;
+    width: root.menu-width;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: LTKPalette.border-base;
+    background: LTKPalette.glass-thick;
+    drop-shadow-blur: 28px;
+    drop-shadow-offset-y: 8px;
+    drop-shadow-color: LTKPalette.shadow-lg;
+    clip: true;
+    z: 1000;
+
+    VerticalLayout {
+        padding: 4px;
+        @children
+    }
+
+    if root.open : TouchArea {
+        x: -2000px; y: -2000px; width: 6000px; height: 6000px;
+        z: -1;
+        clicked => { root.dismissed(); }
+    }
+}

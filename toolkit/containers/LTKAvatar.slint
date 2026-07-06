@@ -1,0 +1,58 @@
+// LTKAvatar — user avatar with image, initials, or icon fallback.
+// macOS: circular; GNOME: squircle (rounded square).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export enum LTKAvatarShape { Circle, Squircle, Square }
+
+export component LTKAvatar inherits Rectangle {
+    in property <image>           photo;
+    in property <bool>            has-photo:   false;
+    in property <string>          initials;
+    in property <color>           bg:          LTKPalette.accent;
+    in property <LTKAvatarShape>  shape:       LTKAvatarShape.Circle;
+    in property <length>          avatar-size: LTKSpace.avatar-md;
+    in property <bool>            show-ring:   false;   // online presence ring
+    in property <color>           ring-color:  LTKPalette.state-success;
+
+    width:  root.avatar-size;
+    height: root.avatar-size;
+    clip:   true;
+
+    border-radius:
+        root.shape == LTKAvatarShape.Circle   ? root.avatar-size / 2
+      : root.shape == LTKAvatarShape.Squircle ? root.avatar-size * 0.27
+      : LTKRadius.sm;
+
+    background: root.has-photo ? transparent : root.bg;
+
+    border-width: root.show-ring ? 2.5px : 0px;
+    border-color: root.ring-color;
+
+    if root.has-photo : Image {
+        source: root.photo;
+        width: parent.width; height: parent.height;
+        image-fit: cover;
+    }
+
+    if !root.has-photo && root.initials != "" : Text {
+        text: root.initials;
+        color: #FFFFFF;
+        font-family: LTKType.font-ui;
+        font-size: root.avatar-size * 0.35;
+        font-weight: LTKType.weight-semibold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    if !root.has-photo && root.initials == "" : Image {
+        source: LTKIcons.user;
+        width: root.avatar-size * 0.5;
+        height: root.avatar-size * 0.5;
+        colorize: #FFFFFF88;
+    }
+}

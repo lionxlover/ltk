@@ -1,0 +1,11 @@
+// Filled accent — main call-to-action. One per view (macOS HIG rule).
+import { LTKButton }   from "LTKButton.slint";
+import { LTKPalette }  from "../theme/palette.slint";
+
+export component LTKPrimaryButton inherits LTKButton {
+    bg:        LTKPalette.accent;
+    bg-hover:  LTKPalette.accent-dim;
+    fg:        LTKPalette.on-accent;
+    border-col:transparent;
+    bw:        0px;
+}

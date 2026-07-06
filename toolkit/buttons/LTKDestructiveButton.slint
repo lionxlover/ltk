@@ -1,0 +1,13 @@
+// Red destructive action (macOS HIG: always last in button groups).
+import { LTKButton }  from "LTKButton.slint";
+import { LTKPalette } from "../theme/palette.slint";
+
+export component LTKDestructiveButton inherits LTKButton {
+    bg:         LTKPalette.state-error;
+    bg-hover:   LTKPalette.state-error;
+    fg:         #FFFFFF;
+    border-col: transparent;
+    bw:         0px;
+    destructive:true;
+    drop-shadow-color: LTKPalette.state-error.with-alpha(0.35);
+}

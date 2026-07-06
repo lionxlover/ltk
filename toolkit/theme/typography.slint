@@ -1,0 +1,55 @@
+// LTK Typography — macOS SF Pro scale mapped to libre fonts.
+// Inter for body/UI, Space Grotesk for display, JetBrains Mono for code.
+
+export global LTKType {
+    // ── Font families ──────────────────────────────────────────────────
+    out property <string> font-ui:      "Inter";
+    out property <string> font-display: "Space Grotesk";
+    out property <string> font-mono:    "JetBrains Mono";
+    out property <string> font-body:    "Inter";
+
+    // ── macOS-inspired type scale (base 17px = macOS body) ─────────────
+    out property <length> large-title:    34px;  // SF Large Title
+    out property <length> title-1:        28px;  // SF Title 1
+    out property <length> title-2:        22px;  // SF Title 2
+    out property <length> title-3:        20px;  // SF Title 3
+    out property <length> headline:       17px;  // SF Headline
+    out property <length> body:           17px;  // SF Body
+    out property <length> callout:        16px;  // SF Callout
+    out property <length> subheadline:    15px;  // SF Subheadline
+    out property <length> footnote:       13px;  // SF Footnote
+    out property <length> caption-1:      12px;  // SF Caption 1
+    out property <length> caption-2:      11px;  // SF Caption 2
+
+    // ── UI-specific sizes (GNOME HIG) ──────────────────────────────────
+    out property <length> text-xs:     11px;
+    out property <length> text-sm:     13px;
+    out property <length> text-base:   15px;
+    out property <length> text-md:     17px;
+    out property <length> text-lg:     20px;
+    out property <length> text-xl:     24px;
+    out property <length> text-2xl:    28px;
+    out property <length> text-3xl:    34px;
+    out property <length> text-code:   13px;
+    out property <length> text-label:  11px;
+
+    // ── Font weights ───────────────────────────────────────────────────
+    out property <int> weight-regular:   400;
+    out property <int> weight-medium:    500;
+    out property <int> weight-semibold:  600;
+    out property <int> weight-bold:      700;
+
+    // ── Tracking (letter-spacing approximations) ───────────────────────
+    // Slint uses letter-spacing as pixel offset
+    out property <length> tracking-tight:   -0.5px;
+    out property <length> tracking-normal:   0px;
+    out property <length> tracking-wide:     0.3px;
+    out property <length> tracking-wider:    0.6px;
+    out property <length> tracking-widest:   1.2px;
+
+    // ── Line heights (as multipliers, applied via row height) ──────────
+    out property <float>  line-tight:    1.1;
+    out property <float>  line-snug:     1.25;
+    out property <float>  line-normal:   1.45;
+    out property <float>  line-relaxed:  1.6;
+}

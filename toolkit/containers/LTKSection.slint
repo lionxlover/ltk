@@ -1,0 +1,116 @@
+// LTKSection — GNOME Preferences page section row (AdwPreferencesRow style).
+// Used in Settings pages: label on left, control on right.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKSectionGroup inherits VerticalLayout {
+    in property <string>  label;    // "GENERAL" / "APPEARANCE" / etc.
+    in property <bool>    bordered: true;
+    spacing: 0px;
+
+    // Section label (GNOME uppercase monospaced style)
+    if root.label != "" : Text {
+        text: root.label;
+        color: LTKPalette.text-tertiary;
+        font-family: LTKType.font-mono;
+        font-size: LTKType.text-xs;
+        letter-spacing: 0.8px;
+        padding-left:   LTKSpace.space-3;
+        padding-bottom: LTKSpace.space-1;
+        padding-top:    LTKSpace.space-4;
+    }
+
+    Rectangle {
+        border-radius: LTKRadius.lg;
+        border-width: root.bordered ? 1px : 0px;
+        border-color: LTKPalette.border-subtle;
+        background: LTKPalette.bg-surface;
+        clip: true;
+        @children
+    }
+}
+
+export component LTKSectionRow inherits Rectangle {
+    in property <string>  title;
+    in property <string>  subtitle;
+    in property <image>   icon;
+    in property <bool>    has-icon:     false;
+    in property <bool>    show-chevron: false;    // navigation row
+    in property <bool>    interactive:  false;
+    in property <bool>    separator:    true;
+    callback clicked();
+
+    min-height: root.subtitle != "" ? 56px : 44px;
+    background: row-touch.has-hover && root.interactive ? LTKPalette.border-subtle : transparent;
+    animate background { duration: LTKMotion.fast; }
+
+    VerticalLayout {
+        spacing: 0px;
+        Rectangle {
+            vertical-stretch: 1;
+            HorizontalLayout {
+                padding-left:  LTKSpace.space-4;
+                padding-right: LTKSpace.space-3;
+                spacing: LTKSpace.space-3;
+                alignment: center;
+                vertical-alignment: center;
+
+                if root.has-icon : Rectangle {
+                    width: 30px; height: 30px;
+                    border-radius: 7px;
+                    background: LTKPalette.accent.with-alpha(0.12);
+                    Image {
+                        source: root.icon;
+                        width: 16px; height: 16px;
+                        colorize: LTKPalette.accent;
+                    }
+                }
+
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    alignment: center;
+                    spacing: 2px;
+                    Text {
+                        text: root.title;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-base;
+                    }
+                    if root.subtitle != "" : Text {
+                        text: root.subtitle;
+                        color: LTKPalette.text-tertiary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-sm;
+                    }
+                }
+
+                // Control slot (switch, button, value text)
+                @children
+
+                if root.show-chevron : Text {
+                    text: "›";
+                    color: LTKPalette.text-tertiary;
+                    font-size: 18px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+        if root.separator : Rectangle {
+            height: 1px;
+            background: LTKPalette.border-subtle;
+            // macOS: inset separator (aligned with text, not full-width)
+            x: root.has-icon ? LTKSpace.space-4 + 30px + LTKSpace.space-3 : LTKSpace.space-4;
+            width: parent.width - x;
+        }
+    }
+
+    row-touch := TouchArea {
+        enabled: root.interactive;
+        mouse-cursor: root.interactive ? pointer : default;
+        clicked => { if root.interactive { root.clicked(); } }
+    }
+}

@@ -1,0 +1,84 @@
+// LTKCheckBox — macOS checkbox: square with rounded corners, spring check-draw.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKCheckBox inherits Rectangle {
+    in property <string>  label;
+    in property <string>  description;
+    in-out property <bool> checked:       false;
+    in property <bool>    indeterminate:  false;
+    in property <bool>    enabled:        true;
+    callback toggled(v: bool);
+
+    height: root.description != "" ? 46px : 30px;
+    background: transparent;
+    opacity: root.enabled ? 1.0 : 0.38;
+
+    HorizontalLayout {
+        spacing: LTKSpace.space-1;
+        alignment: center;
+
+        // Box
+        box := Rectangle {
+            width: 18px; height: 18px;
+            border-radius: LTKRadius.xs;
+            background: root.checked || root.indeterminate ? LTKPalette.accent : transparent;
+            border-width: root.checked || root.indeterminate ? 0px : 1.5px;
+            border-color: box-touch.has-hover ? LTKPalette.accent : LTKPalette.border-strong;
+
+            // Spring scale pop on check
+            y: box-touch.pressed ? 1px : 0px;
+            animate background   { duration: LTKMotion.base; easing: LTKMotion.ease-spring; }
+            animate border-color { duration: LTKMotion.fast; }
+            animate y            { duration: 80ms; easing: LTKMotion.ease-spring; }
+
+            // Check mark
+            if root.checked && !root.indeterminate : Path {
+                commands: "M 3 9 L 7 13 L 15 5";
+                stroke: #FFFFFF;
+                stroke-width: 2px;
+                fill: transparent;
+            }
+            // Indeterminate dash
+            if root.indeterminate : Rectangle {
+                width: 10px; height: 2px;
+                border-radius: 1px;
+                background: #FFFFFF;
+            }
+
+            box-touch := TouchArea { }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            spacing: 2px;
+            if root.label != "" : Text {
+                text: root.label;
+                color: LTKPalette.text-primary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-base;
+                vertical-alignment: center;
+            }
+            if root.description != "" : Text {
+                text: root.description;
+                color: LTKPalette.text-tertiary;
+                font-family: LTKType.font-ui;
+                font-size: LTKType.text-sm;
+            }
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => {
+            if root.indeterminate { root.indeterminate = false; root.checked = true; }
+            else { root.checked = !root.checked; }
+            root.toggled(root.checked);
+        }
+    }
+}

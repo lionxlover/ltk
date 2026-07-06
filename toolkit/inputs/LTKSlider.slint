@@ -1,0 +1,99 @@
+// LTKSlider — macOS NSSlider aesthetic.
+// Thumb: white pill with accent border; track: accent fill.
+// Hover: thumb scales up (spring); press: track brightens.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKSlider inherits Rectangle {
+    in property <float>  min-value:   0;
+    in property <float>  max-value: 100;
+    in-out property <float> value:   50;
+    in property <bool>   show-value: false;
+    in property <string> suffix;
+    in property <color>  track-color: LTKPalette.accent;
+    in property <bool>   enabled:     true;
+
+    callback value-changed(v: float);
+
+    height: 44px;
+    background: transparent;
+    opacity: root.enabled ? 1.0 : 0.38;
+
+    property <float> pct: (root.value - root.min-value) / (root.max-value - root.min-value);
+    property <length> thumb-x: root.pct * (root.width - 22px);
+
+    // Track background
+    Rectangle {
+        y: (parent.height - 4px) / 2;
+        height: 4px;
+        width: parent.width;
+        border-radius: 2px;
+        background: LTKPalette.border-base;
+        // Filled portion
+        Rectangle {
+            x: 0px;
+            width: root.thumb-x + 11px;
+            height: 4px;
+            border-radius: 2px;
+            background: root.track-color;
+            animate width { duration: 30ms; }
+        }
+    }
+
+    // Thumb
+    Rectangle {
+        width:  thumb-touch.has-hover ? 24px : 20px;
+        height: thumb-touch.has-hover ? 24px : 20px;
+        border-radius: thumb-touch.has-hover ? 12px : 10px;
+        x: root.thumb-x - (self.width - 20px) / 2;
+        y: (parent.height - self.height) / 2;
+        background: #FFFFFF;
+        border-width: 2.5px;
+        border-color: root.track-color;
+        drop-shadow-blur:    6px;
+        drop-shadow-offset-y: 2px;
+        drop-shadow-color:   LTKPalette.shadow-sm;
+
+        animate width         { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+        animate height        { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+        animate border-radius { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+        animate x             { duration: 30ms; }
+
+        thumb-touch := TouchArea { mouse-cursor: ew-resize; }
+    }
+
+    // Value tooltip
+    if root.show-value : Rectangle {
+        x: clamp(root.thumb-x - 18px, 0px, parent.width - 40px);
+        y: 0px;
+        height: 18px;
+        border-radius: 4px;
+        background: LTKPalette.bg-overlay;
+        width: val-t.preferred-width + 8px;
+        val-t := Text {
+            text: round(root.value) + root.suffix;
+            color: LTKPalette.text-primary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: ew-resize;
+        pointer-event(e) => {
+            if e.kind == PointerEventKind.down || e.kind == PointerEventKind.move {
+                root.value = clamp(
+                    root.min-value + (e.position.x / root.width) * (root.max-value - root.min-value),
+                    root.min-value, root.max-value
+                );
+                root.value-changed(root.value);
+            }
+        }
+    }
+}

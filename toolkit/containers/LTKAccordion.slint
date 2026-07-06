@@ -1,0 +1,90 @@
+// LTKAccordion — macOS disclosure group / GNOME expander.
+// Spring-expand: height animates open/close, chevron rotates.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LTKIcons }   from "../theme/icons.slint";
+
+export component LTKAccordionItem inherits Rectangle {
+    in property <string>  title;
+    in property <string>  subtitle;
+    in-out property <bool> expanded: false;
+    in property <bool>    bordered:  true;
+    callback toggled(v: bool);
+
+    border-radius: LTKRadius.md;
+    border-width: root.bordered ? 1px : 0px;
+    border-color: LTKPalette.border-subtle;
+    background: LTKPalette.bg-surface;
+    clip: true;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // Header row
+        header := Rectangle {
+            height: 44px;
+            background: hdr-touch.has-hover ? LTKPalette.border-subtle : transparent;
+            animate background { duration: LTKMotion.fast; }
+
+            HorizontalLayout {
+                padding-left:  LTKSpace.space-3;
+                padding-right: LTKSpace.space-2;
+                spacing: LTKSpace.space-1;
+                alignment: center;
+                vertical-alignment: center;
+
+                // Rotating chevron (macOS disclosure arrow style)
+                Image {
+                    source: LTKIcons.forward;
+                    width: 14px; height: 14px;
+                    colorize: LTKPalette.text-tertiary;
+                    rotation-angle: root.expanded ? 90deg : 0deg;
+                    animate rotation-angle { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+                }
+
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 1px;
+                    alignment: center;
+                    Text {
+                        text: root.title;
+                        color: LTKPalette.text-primary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-base;
+                        font-weight: LTKType.weight-medium;
+                    }
+                    if root.subtitle != "" : Text {
+                        text: root.subtitle;
+                        color: LTKPalette.text-tertiary;
+                        font-family: LTKType.font-ui;
+                        font-size: LTKType.text-sm;
+                    }
+                }
+            }
+
+            hdr-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    root.expanded = !root.expanded;
+                    root.toggled(root.expanded);
+                }
+            }
+        }
+
+        // Separator
+        if root.expanded : Rectangle {
+            height: 1px;
+            background: LTKPalette.border-subtle;
+        }
+
+        // Body
+        if root.expanded : VerticalLayout {
+            padding: LTKSpace.space-3;
+            @children
+        }
+    }
+}

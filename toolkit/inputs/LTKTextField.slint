@@ -1,0 +1,139 @@
+// LTKTextField — GNOME AdwEntryRow aesthetic, macOS focus ring.
+// Focus ring: accent-coloured glow, 2px border (macOS style).
+// Always-visible label above (GNOME Material Design influence).
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+
+export component LTKTextField inherits Rectangle {
+    in property <string>  label;
+    in property <string>  placeholder;
+    in property <string>  hint;
+    in property <string>  error-text;
+    in-out property <string> value;
+    in property <image>   leading-icon;
+    in property <bool>    has-leading-icon: false;
+    in property <image>   trailing-icon;
+    in property <bool>    has-trailing-icon: false;
+    in property <bool>    enabled:   true;
+    in property <bool>    read-only: false;
+    in property <bool>    has-error: false;
+    in property <int>     max-length: 0;
+
+    callback accepted(v: string);
+    callback edited(v: string);
+    callback trailing-clicked();
+
+    out property <bool> focused: field.has-focus;
+    out property <bool> valid:   !root.has-error;
+
+    property <color> border-color:
+        root.has-error  ? LTKPalette.state-error
+      : root.focused    ? LTKPalette.accent
+      : LTKPalette.border-base;
+    property <length> border-w:
+        root.focused    ? 2px
+      : 1px;
+
+    min-width: 160px;
+    background: transparent;
+
+    VerticalLayout {
+        spacing: LTKSpace.px4;
+
+        // ── Label ─────────────────────────────────────────────────────
+        if root.label != "" : Text {
+            text: root.label;
+            color: root.has-error ? LTKPalette.state-error
+                 : root.focused   ? LTKPalette.accent
+                 : LTKPalette.text-secondary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-xs;
+            font-weight: LTKType.weight-semibold;
+            letter-spacing: 0.4px;
+            animate color { duration: LTKMotion.fast; }
+        }
+
+        // ── Input row ─────────────────────────────────────────────────
+        field-rect := Rectangle {
+            height: LTKSpace.input-md;
+            border-radius: LTKRadius.input;
+            border-width: root.border-w;
+            border-color: root.border-color;
+            background: root.enabled ? LTKPalette.bg-surface : LTKPalette.bg-raised;
+            clip: true;
+
+            // macOS focus glow
+            drop-shadow-blur:   root.focused ? 0px : 0px;
+            drop-shadow-color:  LTKPalette.accent.with-alpha(0.25);
+
+            animate border-color { duration: LTKMotion.fast; easing: LTKMotion.ease-decelerate; }
+            animate border-width { duration: LTKMotion.fast; easing: LTKMotion.ease-spring; }
+
+            HorizontalLayout {
+                padding-left:  root.has-leading-icon ? 10px : 12px;
+                padding-right: root.has-trailing-icon ? 6px : 12px;
+                spacing: LTKSpace.space-1;
+                alignment: center;
+
+                if root.has-leading-icon : Image {
+                    source: root.leading-icon;
+                    width: 16px; height: 16px;
+                    colorize: root.focused ? LTKPalette.accent : LTKPalette.text-tertiary;
+                    animate colorize { duration: LTKMotion.fast; }
+                }
+
+                field := TextInput {
+                    text <=> root.value;
+                    enabled: root.enabled && !root.read-only;
+                    placeholder-text: root.placeholder;
+                    placeholder-color: LTKPalette.text-tertiary;
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-body;
+                    font-size: LTKType.text-base;
+                    selection-background-color: LTKPalette.accent.with-alpha(0.25);
+                    selection-foreground-color: LTKPalette.text-primary;
+                    vertical-alignment: center;
+                    accepted => { root.accepted(root.value); }
+                    edited   => { root.edited(root.value); }
+                }
+
+                if root.has-trailing-icon : TouchArea {
+                    width: 30px; height: 30px;
+                    mouse-cursor: pointer;
+                    clicked => { root.trailing-clicked(); }
+                    Image {
+                        source: root.trailing-icon;
+                        width: 16px; height: 16px;
+                        colorize: LTKPalette.text-tertiary;
+                    }
+                }
+            }
+        }
+
+        // ── Helper text ───────────────────────────────────────────────
+        if root.has-error && root.error-text != "" : Text {
+            text: root.error-text;
+            color: LTKPalette.state-error;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-xs;
+        }
+        if !root.has-error && root.hint != "" : Text {
+            text: root.hint;
+            color: LTKPalette.text-tertiary;
+            font-family: LTKType.font-ui;
+            font-size: LTKType.text-xs;
+        }
+        if root.max-length > 0 && !root.has-error : Text {
+            text: root.value.character-count + " / " + root.max-length;
+            color: root.value.character-count >= root.max-length
+                ? LTKPalette.state-error : LTKPalette.text-tertiary;
+            font-family: LTKType.font-mono;
+            font-size: LTKType.text-xs;
+            horizontal-alignment: right;
+        }
+    }
+}

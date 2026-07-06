@@ -1,0 +1,272 @@
+// LTKTaskManager — GNOME System Monitor × macOS Activity Monitor.
+// CPU, memory, disk, network live bars. Process list with sort.
+
+import { LTKPalette } from "../theme/palette.slint";
+import { LTKType }    from "../theme/typography.slint";
+import { LTKSpace }   from "../theme/spacing.slint";
+import { LTKRadius }  from "../theme/radius.slint";
+import { LTKMotion }  from "../theme/motion.slint";
+import { LeonuxRadius, LeonuxSpace } from "../theme/leonux_tokens.slint";
+
+export struct LTKProcess {
+    pid:     string,
+    name:    string,
+    cpu:     float,   // 0.0–100.0 %
+    memory:  string,  // "128 MB"
+    status:  string,  // "running" | "sleeping" | "zombie"
+}
+
+component ResourceBar inherits Rectangle {
+    in property <string> label;
+    in property <float>  value: 0.0;      // 0.0–1.0
+    in property <color>  color: LTKPalette.accent;
+    in property <string> sub-label;
+
+    height: 56px;
+    border-radius: LeonuxRadius.r2;
+    background: LTKPalette.bg-surface;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+
+    VerticalLayout {
+        padding: LeonuxSpace.sm;
+        spacing: LeonuxSpace.micro;
+
+        HorizontalLayout {
+            Text {
+                text: root.label;
+                color: LTKPalette.text-secondary;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-xs;
+                font-weight: LTKType.weight-semibold;
+                letter-spacing: 0.6px;
+                horizontal-stretch: 1;
+            }
+            Text {
+                text: root.sub-label;
+                color: root.value > 0.8 ? LTKPalette.state-warning : LTKPalette.text-tertiary;
+                font-family: LTKType.font-mono;
+                font-size: LTKType.text-xs;
+                animate color { duration: LTKMotion.base; }
+            }
+        }
+
+        Rectangle {
+            height: 6px;
+            border-radius: 3px;
+            background: LTKPalette.border-base;
+            clip: true;
+            Rectangle {
+                width: parent.width * clamp(root.value, 0.0, 1.0);
+                height: 6px;
+                border-radius: 3px;
+                background: root.value > 0.85 ? LTKPalette.state-error
+                          : root.value > 0.65 ? LTKPalette.state-warning
+                          : root.color;
+                animate width     { duration: LTKMotion.base; easing: LTKMotion.ease-soft; }
+                animate background{ duration: LTKMotion.base; }
+            }
+        }
+    }
+}
+
+export component LTKTaskManager inherits Rectangle {
+    in property <float>  cpu-pct:     42.0;
+    in property <float>  mem-pct:     61.0;
+    in property <float>  disk-pct:    28.0;
+    in property <float>  net-up:      0.12;   // MB/s
+    in property <float>  net-down:    2.40;
+    in property <string> cpu-label:   "42%";
+    in property <string> mem-label:   "8.1 / 16 GB";
+    in property <string> disk-label:  "128 / 512 GB";
+    in property <[LTKProcess]> processes;
+    in-out property <int>      selected: -1;
+
+    callback process-killed(pid: string);
+    callback sort-changed(col: string);
+
+    border-radius: LeonuxRadius.r1;
+    background: LTKPalette.bg-base;
+    border-width: 1px;
+    border-color: LTKPalette.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // Header
+        Rectangle {
+            height: 44px;
+            background: LTKPalette.bg-headerbar;
+            border-bottom-width: 1px;
+            border-color: LTKPalette.border-subtle;
+            HorizontalLayout {
+                padding-left: LeonuxSpace.lg;
+                padding-right: LeonuxSpace.md;
+                alignment: center;
+                Text {
+                    text: "Task Manager";
+                    color: LTKPalette.text-primary;
+                    font-family: LTKType.font-ui;
+                    font-size: LTKType.text-sm;
+                    font-weight: LTKType.weight-semibold;
+                    horizontal-stretch: 1;
+                }
+                Text {
+                    text: root.processes.length + " processes";
+                    color: LTKPalette.text-tertiary;
+                    font-family: LTKType.font-mono;
+                    font-size: LTKType.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Resource bars (4-column grid)
+        HorizontalLayout {
+            padding: LeonuxSpace.md;
+            spacing: LeonuxSpace.sm;
+            ResourceBar { label: "CPU"; value: root.cpu-pct / 100.0;  sub-label: root.cpu-label;  color: LTKPalette.accent;         horizontal-stretch: 1; }
+            ResourceBar { label: "MEM"; value: root.mem-pct / 100.0;  sub-label: root.mem-label;  color: LTKPalette.purple;         horizontal-stretch: 1; }
+            ResourceBar { label: "DISK"; value: root.disk-pct / 100.0; sub-label: root.disk-label; color: LTKPalette.state-warning;  horizontal-stretch: 1; }
+            ResourceBar { label: "NET↓"; value: clamp(root.net-down / 10.0, 0.0, 1.0); sub-label: root.net-down + " MB/s"; color: LTKPalette.green; horizontal-stretch: 1; }
+        }
+
+        // Process list column headers
+        Rectangle {
+            height: 30px;
+            background: LTKPalette.bg-headerbar;
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            border-color: LTKPalette.border-subtle;
+            HorizontalLayout {
+                padding-left: LeonuxSpace.md;
+                padding-right: LeonuxSpace.md;
+                spacing: 0px;
+                alignment: center;
+                for col in [
+                    { label: "PROCESS", w: 200px },
+                    { label: "PID",     w:  60px },
+                    { label: "CPU %",   w:  70px },
+                    { label: "MEMORY",  w:  90px },
+                    { label: "STATUS",  w:  80px },
+                ] : Rectangle {
+                    width: col.w;
+                    TouchArea {
+                        mouse-cursor: pointer;
+                        clicked => { root.sort-changed(col.label); }
+                    }
+                    Text {
+                        text: col.label;
+                        color: LTKPalette.text-tertiary;
+                        font-family: LTKType.font-mono;
+                        font-size: LTKType.text-xs;
+                        font-weight: LTKType.weight-semibold;
+                        letter-spacing: 0.6px;
+                        vertical-alignment: center;
+                    }
+                }
+                Rectangle { horizontal-stretch: 1; }
+            }
+        }
+
+        // Process rows
+        ScrollView {
+            VerticalLayout {
+                spacing: 0px;
+                for proc[i] in root.processes : Rectangle {
+                    height: 36px;
+                    background:
+                        i == root.selected      ? LTKPalette.accent
+                      : pr-t.has-hover          ? LTKPalette.border-subtle
+                      : mod(i, 2) == 1          ? LTKPalette.border-subtle.with-alpha(0.4)
+                      : transparent;
+                    animate background { duration: LTKMotion.fast; }
+
+                    HorizontalLayout {
+                        padding-left: LeonuxSpace.md;
+                        padding-right: LeonuxSpace.md;
+                        spacing: 0px;
+                        alignment: center;
+
+                        Rectangle {
+                            width: 200px;
+                            Text {
+                                text: proc.name;
+                                color: i == root.selected ? #FFFFFF : LTKPalette.text-primary;
+                                font-family: LTKType.font-ui;
+                                font-size: LTKType.text-sm;
+                                overflow: elide;
+                                vertical-alignment: center;
+                            }
+                        }
+                        Rectangle {
+                            width: 60px;
+                            Text { text: proc.pid; color: i == root.selected ? #FFFFFF88 : LTKPalette.text-tertiary; font-family: LTKType.font-mono; font-size: LTKType.text-xs; vertical-alignment: center; }
+                        }
+                        Rectangle {
+                            width: 70px;
+                            Text {
+                                text: proc.cpu + "%";
+                                color: proc.cpu > 80.0 ? LTKPalette.state-error
+                                     : i == root.selected ? #FFFFFF
+                                     : LTKPalette.text-primary;
+                                font-family: LTKType.font-mono; font-size: LTKType.text-xs;
+                                vertical-alignment: center;
+                            }
+                        }
+                        Rectangle {
+                            width: 90px;
+                            Text { text: proc.memory; color: i == root.selected ? #FFFFFF88 : LTKPalette.text-secondary; font-family: LTKType.font-mono; font-size: LTKType.text-xs; vertical-alignment: center; }
+                        }
+                        Rectangle {
+                            width: 80px;
+                            Rectangle {
+                                border-radius: 9999px;
+                                background: proc.status == "running" ? LTKPalette.state-success.with-alpha(0.15)
+                                          : proc.status == "zombie"  ? LTKPalette.state-error.with-alpha(0.15)
+                                          : LTKPalette.border-base;
+                                height: 18px;
+                                width: st.preferred-width + 10px;
+                                st := Text {
+                                    text: proc.status;
+                                    color: proc.status == "running" ? LTKPalette.state-success
+                                         : proc.status == "zombie"  ? LTKPalette.state-error
+                                         : LTKPalette.text-tertiary;
+                                    font-family: LTKType.font-mono; font-size: 10px;
+                                    horizontal-alignment: center; vertical-alignment: center;
+                                }
+                            }
+                        }
+                        Rectangle { horizontal-stretch: 1; }
+
+                        // Kill button (on hover + selected)
+                        if i == root.selected : TouchArea {
+                            width: 60px; height: 24px;
+                            mouse-cursor: pointer;
+                            clicked => { root.process-killed(proc.pid); }
+                            Rectangle {
+                                border-radius: 9999px;
+                                background: LTKPalette.state-error;
+                                Text {
+                                    text: "Kill";
+                                    color: #FFFFFF;
+                                    font-family: LTKType.font-ui; font-size: 10px;
+                                    font-weight: LTKType.weight-semibold;
+                                    horizontal-alignment: center; vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle { y: parent.height - 1px; height: 1px; width: parent.width; background: LTKPalette.border-subtle.with-alpha(0.5); }
+
+                    pr-t := TouchArea {
+                        mouse-cursor: pointer;
+                        clicked => { root.selected = i; }
+                    }
+                }
+            }
+        }
+    }
+}
