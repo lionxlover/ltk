@@ -1,0 +1,16 @@
+[package]
+name        = "ltk-wayland"
+description = "LTK Wayland protocol implementations: XDG shell, decoration, DnD, etc."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+ltk-core     = { path = "../ltk-core" }
+ltk-platform = { path = "../ltk-platform" }
+wayland-client    = { workspace = true, optional = true }
+wayland-protocols = { workspace = true, optional = true }
+log = { workspace = true }
+
+[features]
+default = []
+live-wayland = ["dep:wayland-client", "dep:wayland-protocols"]

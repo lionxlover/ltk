@@ -1,0 +1,10 @@
+[package]
+name        = "ltk-platform"
+description = "LTK platform glue: Linux/LionOS, D-Bus, XDG portals, filesystem"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+ltk-core = { path = "../ltk-core" }
+log      = { workspace = true }
+serde    = { workspace = true, features = ["derive"] }

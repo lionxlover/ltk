@@ -1,0 +1,15 @@
+[package]
+name        = "ltk-gl"
+description = "LTK OpenGL 4.6 / ES 3.2 rendering backend"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+ltk-core   = { path = "../ltk-core" }
+ltk-render = { path = "../ltk-render" }
+glutin     = { workspace = true, optional = true }
+log        = { workspace = true }
+
+[features]
+default = []
+live-gl = ["dep:glutin"]

@@ -1,0 +1,19 @@
+[package]
+name        = "ltk-design"
+description = "LTK design tokens: color, typography, spacing, elevation, icons, motion, theme engine"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+ltk-core    = { path = "../ltk-core" }
+serde       = { workspace = true, features = ["derive"] }
+serde_json  = { workspace = true }
+toml        = { workspace = true }
+fontdb      = { workspace = true }
+resvg       = { workspace = true }
+parking_lot = { workspace = true }
+once_cell   = { workspace = true }
+indexmap    = { workspace = true }
+log         = { workspace = true }
+thiserror   = { workspace = true }

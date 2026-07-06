@@ -1,0 +1,11 @@
+[package]
+name        = "ltk-testing"
+description = "LTK testing harness: UI testing, snapshot testing, a11y testing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+ltk-core  = { path = "../ltk-core" }
+ltk-input = { path = "../ltk-input" }
+ltk-a11y  = { path = "../ltk-a11y" }
+image     = { workspace = true }

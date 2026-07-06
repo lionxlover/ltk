@@ -1,0 +1,13 @@
+[package]
+name        = "ltk-devtools"
+description = "LTK developer tools: logger, crash handler, hot-reload, inspector"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+ltk-core   = { path = "../ltk-core" }
+ltk-render = { path = "../ltk-render" }
+ltk-layout = { path = "../ltk-layout" }
+ltk-state  = { path = "../ltk-state" }
+log        = { workspace = true }
+tracing    = { workspace = true }
