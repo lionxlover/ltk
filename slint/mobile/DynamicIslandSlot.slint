@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DynamicIslandSlot inherits Rectangle {
+    background: Theme.text-primary;
+    border-radius: Theme.radius-full;
+
+    in property <bool> expanded: false;
+    in property <string> content: "";
+
+    width: expanded ? 280px : 120px;
+    height: expanded ? 80px : 36px;
+
+    if expanded && content != "": Text {
+        text: content;
+        font-size: Theme.text-sm;
+        color: Theme.bg-base;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}

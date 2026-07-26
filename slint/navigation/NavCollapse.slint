@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NavCollapse inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> expanded: false;
+
+    callback toggled();
+
+    height: expanded ? header-row.height + content.preferred-height : header-row.height;
+    background: #00000000;
+
+    header-row := Rectangle {
+        height: 36px;
+        background: ta.pressed ? Theme.surface-pressed
+            : ta.has-hover ? Theme.surface-hover
+            : #00000000;
+        border-radius: Theme.radius-sm;
+
+        animate background { duration: Theme.dur-fast; }
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+            spacing: Theme.sp-2;
+
+            Text {
+                text: root.label;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Text {
+                text: "\u{25B6}";
+                color: Theme.text-tertiary;
+                font-size: 10px;
+                vertical-alignment: center;
+
+                rotate-angle: root.expanded ? 90deg : 0deg;
+                animate rotate-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            }
+        }
+
+        ta := TouchArea {
+            clicked => { root.toggled(); }
+        }
+    }
+
+    if expanded: content := VerticalLayout {
+        padding-left: Theme.sp-4;
+        padding-top: Theme.sp-1;
+        padding-bottom: Theme.sp-1;
+        spacing: Theme.sp-1;
+    }
+}

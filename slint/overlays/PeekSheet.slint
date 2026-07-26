@@ -1,0 +1,91 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PeekSheet inherits Rectangle {
+    in-out property <bool> sheet-visible: false;
+    in property <length> peek-height: 300px;
+
+    callback expand();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.sheet-visible ? 1 : 0;
+        visible: root.sheet-visible;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+    }
+
+    Rectangle {
+        x: 0;
+        y: root.sheet-visible ? parent.height - root.peek-height : parent.height;
+        width: parent.width;
+        height: root.peek-height;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-xl;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        drop-shadow-offset-y: -4px;
+        drop-shadow-blur: 20px;
+        drop-shadow-color: Theme.border-default;
+
+        animate y { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-4;
+            spacing: Theme.sp-3;
+
+            // Handle indicator
+            Rectangle {
+                width: 36px;
+                height: 4px;
+                border-radius: 2px;
+                background: Theme.border-strong;
+                horizontal-stretch: 0;
+                vertical-stretch: 0;
+                x: (parent.width - self.width) / 2;
+            }
+
+            // Content slot
+            Rectangle {
+                vertical-stretch: 1;
+            }
+
+            // Expand indicator
+            Rectangle {
+                height: 28px;
+                vertical-stretch: 0;
+
+                expand-bg := Rectangle {
+                    border-radius: Theme.radius-sm;
+                    background: expand-ta.pressed ? Theme.surface-pressed
+                        : expand-ta.has-hover ? Theme.surface-hover
+                        : #00000000;
+                    x: (parent.width - self.width) / 2;
+                    width: 120px;
+                }
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "Expand";
+                    color: Theme.accent;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+
+                expand-ta := TouchArea {
+                    clicked => { root.expand(); }
+                }
+            }
+        }
+
+        TouchArea { }
+    }
+}

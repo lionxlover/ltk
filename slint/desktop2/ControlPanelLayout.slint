@@ -1,0 +1,57 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ControlPanelLayout inherits Rectangle {
+    background: Theme.bg-base;
+
+    in property <length> sidebar-width: 220px;
+    in property <string> title: "Control Panel";
+
+    VerticalLayout {
+        Rectangle {
+            height: 48px;
+            background: Theme.bg-headerbar;
+
+            Rectangle {
+                y: parent.height - 1px;
+                height: 1px;
+                background: Theme.border-default;
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: title;
+                    font-size: Theme.text-lg;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            vertical-stretch: 1;
+
+            Rectangle {
+                width: sidebar-width;
+                background: Theme.bg-surface;
+
+                Rectangle {
+                    x: parent.width - 1px;
+                    width: 1px;
+                    background: Theme.border-default;
+                }
+            }
+
+            Rectangle {
+                vertical-stretch: 1;
+                background: Theme.bg-base;
+                HorizontalLayout {
+                    padding: Theme.sp-4;
+                }
+            }
+        }
+    }
+}

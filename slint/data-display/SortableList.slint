@@ -1,0 +1,61 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SortableList inherits Rectangle {
+    in property <[string]> items: [];
+
+    callback reorder-request(int, int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for item[idx] in root.items: Rectangle {
+            height: 44px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+                alignment: stretch;
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    horizontal-stretch: 0;
+
+                    handle-ta := TouchArea {
+                        clicked => { root.reorder-request(idx, idx + 1); }
+                    }
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "⠿";
+                        color: Theme.text-tertiary;
+                        font-size: Theme.text-lg;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: root.items[idx];
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+
+            row-ta := TouchArea {
+                clicked => { root.reorder-request(idx, idx); }
+            }
+        }
+    }
+}

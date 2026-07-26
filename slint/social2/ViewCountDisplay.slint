@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ViewCountDisplay inherits Rectangle {
+    background: transparent;
+
+    in property <int> views: 1542;
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "👁";
+            font-size: Theme.text-sm;
+            y: 1px;
+        }
+
+        Text {
+            text: views >= 1000 ? Math.round(views / 100) / 10 + "k" : views;
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            y: 1px;
+        }
+    }
+}

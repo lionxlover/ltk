@@ -1,0 +1,10 @@
+import { Theme } from "Theme.slint";
+
+export component FaIcon inherits Image {
+    in property <length> fa-size: 16px;
+    in property <color> fa-color: Theme.text-primary;
+
+    width: fa-size;
+    height: fa-size;
+    colorize: fa-color;
+}

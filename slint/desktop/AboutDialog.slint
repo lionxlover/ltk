@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component AboutDialog inherits Rectangle {
+    in property <string> app-name: "FishUI";
+    in property <string> version: "1.0.0";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-dialog;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    width: 360px;
+
+    drop-shadow-color: Theme.border-default;
+    drop-shadow-blur: 20px;
+    drop-shadow-offset-y: 10px;
+
+    VerticalLayout {
+        alignment: center;
+        padding: Theme.sp-8;
+        spacing: Theme.sp-4;
+
+        // App icon
+        Rectangle {
+            width: 72px;
+            height: 72px;
+            background: Theme.accent-subtle;
+            border-radius: 18px;
+            x: (parent.width - self.width) / 2;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fish.svg");
+                fa-size: 32px;
+                fa-color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        // App name
+        Text {
+            text: root.app-name;
+            color: Theme.text-primary;
+            font-size: Theme.text-2xl;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+        }
+
+        // Version
+        Text {
+            text: "Version " + root.version;
+            color: Theme.text-tertiary;
+            font-size: Theme.text-sm;
+            horizontal-alignment: center;
+        }
+
+        // Description
+        Text {
+            text: "A modern desktop UI framework built with Slint and Rust.";
+            color: Theme.text-secondary;
+            font-size: Theme.text-base;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

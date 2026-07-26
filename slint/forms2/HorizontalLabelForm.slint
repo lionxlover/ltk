@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HorizontalLabelForm inherits Rectangle {
+    background: transparent;
+
+    in property <length> label-width: 160px;
+    in property <length> gap: 16px;
+    in property <length> row-gap: 12px;
+
+    VerticalLayout {
+        spacing: row-gap;
+    }
+}

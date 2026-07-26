@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScrimOverlay inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <float> scrim-opacity: 0.6;
+
+    callback clicked();
+
+    width: 100%;
+    height: 100%;
+    background: Theme.backdrop;
+    opacity: active ? scrim-opacity : 0;
+    visible: active;
+
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

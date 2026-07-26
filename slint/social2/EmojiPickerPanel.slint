@@ -1,0 +1,85 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EmojiPickerPanel inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+
+    in property <[string]> categories: ["Recent", "Smileys", "People", "Nature", "Food", "Activities", "Travel", "Objects"];
+    in property <[string]> emojis: ["😀", "😂", "❤️", "👍", "🎉", "🔥", "💯", "✨", "👀", "🙏", "😭", "🥰"];
+
+    VerticalLayout {
+        spacing: 0;
+
+        HorizontalLayout {
+            height: 36px;
+            padding-left: Theme.sp-2;
+
+            for cat[idx] in categories: Rectangle {
+                height: 36px;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: cat;
+                    font-size: Theme.text-xs;
+                    color: idx == 1 ? Theme.accent : Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        Rectangle {
+            height: 32px;
+
+            VerticalLayout {
+                padding: Theme.sp-2;
+
+                Rectangle {
+                    height: 32px;
+                    border-radius: Theme.radius-md;
+                    background: Theme.bg-surface;
+                    border-width: 1px;
+                    border-color: Theme.border-default;
+
+                    Text {
+                        text: "Search emoji...";
+                        font-size: Theme.text-xs;
+                        color: Theme.text-placeholder;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        Flickable {
+            vertical-stretch: 1;
+
+            Rectangle {
+                VerticalLayout {
+                    padding: Theme.sp-2;
+
+                    HorizontalLayout {
+                        spacing: Theme.sp-1;
+
+                        for emoji[e] in emojis: Rectangle {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: Theme.radius-sm;
+
+                            Text {
+                                text: emoji;
+                                font-size: 20px;
+                                x: (parent.width - self.width) / 2;
+                                y: (parent.height - self.height) / 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

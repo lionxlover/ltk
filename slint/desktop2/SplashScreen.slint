@@ -1,0 +1,55 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SplashScreen inherits Rectangle {
+    background: Theme.bg-surface;
+    clip: true;
+
+    in property <string> app-name: "LTK";
+    in property <string> version: "1.0.0";
+    in property <int> progress: 80;
+    in property <bool> show-progress: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-4;
+
+        Text {
+            text: "🦞";
+            font-size: 48px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: app-name;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: "v" + version;
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        if show-progress: HorizontalLayout {
+            alignment: center;
+
+            Rectangle {
+                width: 200px;
+                height: 4px;
+                border-radius: 2px;
+                background: Theme.bg-overlay;
+
+                Rectangle {
+                    width: parent.width * progress / 100;
+                    height: 4px;
+                    border-radius: 2px;
+                    background: Theme.accent;
+                }
+            }
+        }
+    }
+}

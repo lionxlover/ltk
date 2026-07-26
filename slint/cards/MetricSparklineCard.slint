@@ -1,0 +1,104 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MetricSparklineCard inherits Rectangle {
+    in-out property <string> label: "Revenue";
+    in-out property <string> value: "$12,340";
+    in-out property <string> change: "+12.5%";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 8px;
+
+        Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            font-weight: Theme.weight-semibold;
+        }
+
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+
+            Text {
+                text: root.value;
+                color: Theme.text-primary;
+                font-family: Theme.font-display;
+                font-size: 24px;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: bottom;
+            }
+
+            Text {
+                text: root.change;
+                color: Theme.state-success;
+                font-size: 12px;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: bottom;
+            }
+        }
+
+        Rectangle {
+            height: 32px;
+            background: transparent;
+
+            Rectangle {
+                y: parent.height - 8px;
+                height: 2px;
+                width: parent.width;
+                background: Theme.accent-subtle;
+            }
+
+            Rectangle {
+                x: parent.width * 0.1;
+                y: parent.height * 0.3;
+                width: 3px;
+                height: 3px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+
+            Rectangle {
+                x: parent.width * 0.3;
+                y: parent.height * 0.5;
+                width: 3px;
+                height: 3px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+
+            Rectangle {
+                x: parent.width * 0.5;
+                y: parent.height * 0.2;
+                width: 3px;
+                height: 3px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+
+            Rectangle {
+                x: parent.width * 0.7;
+                y: parent.height * 0.4;
+                width: 3px;
+                height: 3px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+
+            Rectangle {
+                x: parent.width * 0.9;
+                y: parent.height * 0.1;
+                width: 3px;
+                height: 3px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+        }
+    }
+}

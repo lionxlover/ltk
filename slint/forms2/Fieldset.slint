@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Fieldset inherits Rectangle {
+    background: transparent;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+
+    in property <string> legend: "";
+
+    if legend != "": Rectangle {
+        height: 24px;
+        y: -12px;
+        background: Theme.bg-base;
+
+        Text {
+            text: legend;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+    }
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+    }
+}

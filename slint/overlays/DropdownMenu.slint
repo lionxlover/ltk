@@ -1,0 +1,80 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DropdownMenuItem inherits Rectangle {
+    in property <string> label: "";
+    in property <string> icon-text: "";
+    in property <bool> destructive: false;
+    in property <bool> disabled: false;
+
+    callback activated();
+
+    height: 32px;
+    background: item-ta.has-hover ? Theme.surface-hover : #00000000;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        if root.icon-text != "": Text {
+            text: root.icon-text;
+            color: root.destructive ? Theme.state-error : Theme.text-tertiary;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Text {
+            text: root.label;
+            color: root.disabled ? Theme.text-disabled : (root.destructive ? Theme.state-error : Theme.text-primary);
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    item-ta := TouchArea {
+        enabled: !root.disabled;
+        clicked => { root.activated(); }
+    }
+}
+
+export component DropdownMenu inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <[string]> items: [];
+    in property <[string]> icons: [];
+
+    callback item-clicked(int);
+
+    width: 200px;
+    min-height: 40px;
+    visible: active;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: active ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    VerticalLayout {
+        padding: Theme.sp-1;
+        spacing: 0px;
+
+        for item[index] in root.items: DropdownMenuItem {
+            label: item;
+            icon-text: index < root.icons.length ? root.icons[index] : "";
+            activated => { root.item-clicked(index); }
+        }
+    }
+
+    ta := TouchArea { }
+}

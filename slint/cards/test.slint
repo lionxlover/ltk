@@ -1,0 +1,190 @@
+import { Theme } from "../core/Theme.slint";
+import { BasicCard } from "BasicCard.slint";
+import { ElevatedCard } from "ElevatedCard.slint";
+import { OutlinedCard } from "OutlinedCard.slint";
+import { InteractiveCard } from "InteractiveCard.slint";
+import { MediaCard } from "MediaCard.slint";
+import { HorizontalCard } from "HorizontalCard.slint";
+import { FeatureCard } from "FeatureCard.slint";
+import { ProfileCard } from "ProfileCard.slint";
+import { PricingCard } from "PricingCard.slint";
+import { ProductCard } from "ProductCard.slint";
+import { BlogPostCard } from "BlogPostCard.slint";
+import { WeatherCard } from "WeatherCard.slint";
+import { FileCard } from "FileCard.slint";
+import { FlipCard } from "FlipCard.slint";
+import { ExpandableCard } from "ExpandableCard.slint";
+import { EmptyCard } from "EmptyCard.slint";
+import { GlassCard } from "GlassCard.slint";
+import { ContactCard } from "ContactCard.slint";
+import { StatTileCard } from "StatTileCard.slint";
+import { MetricSparklineCard } from "MetricSparklineCard.slint";
+import { NotificationCard } from "NotificationCard.slint";
+import { AlertCard } from "AlertCard.slint";
+import { ArticlePreviewCard } from "ArticlePreviewCard.slint";
+import { ProductComparisonCard } from "ProductComparisonCard.slint";
+import { TestimonialCard } from "TestimonialCard.slint";
+import { ReviewCard } from "ReviewCard.slint";
+import { EventCard } from "EventCard.slint";
+import { LocationCard } from "LocationCard.slint";
+import { MapEmbedCard } from "MapEmbedCard.slint";
+import { MusicTrackCard } from "MusicTrackCard.slint";
+import { PodcastEpisodeCard } from "PodcastEpisodeCard.slint";
+import { VideoThumbnailCard } from "VideoThumbnailCard.slint";
+import { LinkPreviewCard } from "LinkPreviewCard.slint";
+import { AppListingCard } from "AppListingCard.slint";
+import { TeamMemberCard } from "TeamMemberCard.slint";
+import { JobListingCard } from "JobListingCard.slint";
+import { CourseCard } from "CourseCard.slint";
+import { AchievementCard } from "AchievementCard.slint";
+import { SwipeableCard } from "SwipeableCard.slint";
+
+export component CardsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: 24px;
+            spacing: 20px;
+
+            Text { text: "Cards — Test"; color: Theme.text-primary; font-size: 20px; font-weight: Theme.weight-bold; }
+
+        // --- BASIC ---
+        Text { text: "Basic / Elevated / Outlined"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            BasicCard { width: 160px; height: 80px; }
+            ElevatedCard { width: 160px; height: 80px; }
+            OutlinedCard { width: 160px; height: 80px; }
+        }
+
+        // --- GLASS ---
+        Text { text: "Glass Effect"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        GlassCard { height: 60px; }
+
+        // --- INTERACTIVE ---
+        Text { text: "Interactive"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        InteractiveCard { title: "Interactive"; subtitle: "Click me"; }
+
+        // --- MEDIA / HORIZONTAL ---
+        Text { text: "Media / Horizontal"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        MediaCard { title: "Media Card"; }
+        HorizontalCard { title: "Horizontal"; description: "Side image layout"; }
+
+        // --- FEATURE ---
+        Text { text: "Feature"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        FeatureCard { title: "Features"; description: "Rich feature cards"; }
+
+        // --- PROFILE / TEAM ---
+        Text { text: "Profile / Team / Contact"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            ProfileCard { name: "Jane Smith"; role: "Designer"; }
+            TeamMemberCard { name: "John Doe"; role: "Engineer"; email: "john@co.com"; }
+            ContactCard { name: "Alice Brown"; phone: "+1 555-1234"; email: "alice@co.com"; }
+        }
+
+        // --- PRICING / COMPARISON ---
+        Text { text: "Pricing / Comparison"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            PricingCard { tier: "Free"; price: "$0"; width: 200px; }
+            PricingCard { tier: "Pro"; price: "$19/mo"; featured: true; width: 200px; }
+            ProductComparisonCard { plan-name: "Team"; price: "$49"; period: "/mo"; featured: true; features: ["Unlimited users", "Priority support", "Custom branding"]; width: 200px; }
+        }
+
+        // --- PRODUCT ---
+        Text { text: "Product"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            ProductCard { name: "Widget"; price: "$29.99"; }
+            ProductCard { name: "Gadget"; price: "$49.99"; }
+        }
+
+        // --- STATS / METRICS ---
+        Text { text: "Stats / Metrics"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            StatTileCard { label: "USERS"; value: "12,345"; }
+            MetricSparklineCard { label: "Revenue"; value: "$12,340"; change: "+12.5%"; }
+        }
+
+        // --- NOTIFICATION / ALERT ---
+        Text { text: "Notification / Alert"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        NotificationCard { title: "New message"; message: "You have a new message from Alice."; time: "2m ago"; }
+        AlertCard { title: "Heads up"; message: "Your trial expires in 3 days."; kind: "warning"; }
+
+        // --- BLOG / ARTICLE ---
+        Text { text: "Blog / Article"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            BlogPostCard { title: "Getting Started"; excerpt: "A quick guide"; }
+            ArticlePreviewCard { title: "Deep Dive"; excerpt: "Exploring advanced patterns"; author: "Jane"; date: "Jul 23"; }
+        }
+
+        // --- WEATHER ---
+        Text { text: "Weather"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        WeatherCard { city: "Tokyo"; temp: 68; condition: "Cloudy"; }
+
+        // --- FILE ---
+        Text { text: "File"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        FileCard { filename: "design.fig"; size: "12.8 MB"; }
+
+        // --- MEDIA CARDS ---
+        Text { text: "Music / Podcast / Video"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            MusicTrackCard { title: "Starlight"; artist: "Muse"; duration: "3:42"; }
+            PodcastEpisodeCard { title: "The Future of AI"; podcast: "Tech Talk"; duration: "45 min"; }
+            VideoThumbnailCard { title: "Building UIs"; channel: "Code Channel"; duration: "12:34"; views: "1.2K views"; }
+        }
+
+        // --- LINK / APP ---
+        Text { text: "Link Preview / App Listing"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            LinkPreviewCard { title: "Slint UI Framework"; description: "Build native UIs"; domain: "slint.dev"; }
+            AppListingCard { name: "LTK"; developer: "Lion Team"; category: "Developer Tools"; rating: "4.9"; }
+        }
+
+        // --- EVENT / LOCATION ---
+        Text { text: "Event / Location"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            EventCard { title: "LTK Conf 2026"; date: "Jul 25"; time: "6:00 PM"; location: "San Francisco"; }
+            LocationCard { name: "Central Park"; address: "New York, NY"; category: "Park"; }
+        }
+
+        // --- MAP ---
+        Text { text: "Map Embed"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        MapEmbedCard { label: "Office Location"; sublabel: "123 Main Street"; }
+
+        // --- JOB / COURSE ---
+        Text { text: "Job / Course"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            JobListingCard { title: "UI Engineer"; company: "LTK"; location: "Remote"; salary: "$120K – $160K"; }
+            CourseCard { title: "Slint Fundamentals"; instructor: "LTK Team"; lessons: "24 lessons"; duration: "8h 30m"; }
+        }
+
+        // --- TESTIMONIAL / REVIEW ---
+        Text { text: "Testimonial / Review"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            TestimonialCard { quote: "LTK changed how we build desktop apps."; author: "Jane CTO"; role: "CTO, Acme"; }
+            ReviewCard { reviewer: "Bob"; stars: 5; text: "Excellent component library!"; }
+        }
+
+        // --- ACHIEVEMENT ---
+        Text { text: "Achievement"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        AchievementCard { title: "100 Components!"; description: "Built 100 components"; date: "Jul 23, 2026"; }
+
+        // --- FLIP / EXPANDABLE / SWIPEABLE ---
+        Text { text: "Flip / Expandable / Swipeable"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: 16px;
+            FlipCard { front-title: "Front"; back-title: "Back"; }
+            ExpandableCard { title: "Details"; content: "Hidden content here"; }
+        }
+        SwipeableCard { title: "Swipeable"; description: "Swipe to dismiss"; }
+
+        // --- EMPTY ---
+        Text { text: "Empty / Placeholder"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
+        EmptyCard { label: "No items"; }
+        }
+    }
+}

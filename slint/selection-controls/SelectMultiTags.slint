@@ -1,0 +1,75 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SelectMultiTags inherits Rectangle {
+    in-out property <string> text: "Select...";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        padding-left: 8px;
+        spacing: 4px;
+
+        Rectangle {
+            height: 26px;
+            border-radius: 13px;
+            background: Theme.accent-subtle;
+            vertical-stretch: 0;
+
+            HorizontalLayout {
+                padding-left: 10px;
+                padding-right: 6px;
+                spacing: 2px;
+                alignment: center;
+
+                Text {
+                    text: "React";
+                    color: Theme.accent;
+                    font-size: 11px;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 26px;
+            border-radius: 13px;
+            background: Theme.accent-subtle;
+            vertical-stretch: 0;
+
+            HorizontalLayout {
+                padding-left: 10px;
+                padding-right: 6px;
+                spacing: 2px;
+                alignment: center;
+
+                Text {
+                    text: "Slint";
+                    color: Theme.accent;
+                    font-size: 11px;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    Text {
+        x: parent.width - 24px;
+        y: (parent.height - self.height) / 2;
+        text: "\u{25BE}";
+        color: Theme.text-tertiary;
+        font-size: 12px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = !root.has-focus; }
+    }
+}

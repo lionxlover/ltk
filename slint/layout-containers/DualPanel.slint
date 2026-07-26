@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DualPanel extends Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <int> sash-position: 50;
+    in property <bool> vertical: false;
+
+    Rectangle {
+        background: Theme.bg-surface;
+    }
+
+    Rectangle {
+        width: vertical ? parent.width : 4px;
+        height: vertical ? 4px : parent.height;
+        background: Theme.border-default;
+    }
+
+    Rectangle {
+        background: Theme.bg-base;
+    }
+}

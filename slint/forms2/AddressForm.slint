@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AddressForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 400px;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        Text { text: "Address"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Street Address"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "123 Main St"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Apt / Suite"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Apt 4B"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "City"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "New York"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "State"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "NY"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "ZIP Code"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "10001"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "Country"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "United States ▾"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3; alignment: end;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Cancel"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+                Text { text: "Save"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+        }
+    }
+}

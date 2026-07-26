@@ -1,0 +1,88 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FrozenColumnTable inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> row-count: 0;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        if columns.length > 0: Rectangle {
+            height: 40px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: i == 0 ? 0 : 1;
+                    width: i == 0 ? 120px : 0px;
+
+                    if i > 0: Rectangle {
+                        width: 1px;
+                        height: 24px;
+                        y: (parent.height - self.height) / 2;
+                        background: Theme.border-subtle;
+                        horizontal-stretch: 0;
+                    }
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: col;
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: i == 0 ? 0 : 1;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        VerticalLayout {
+            for row[rowidx] in root.row-count: Rectangle {
+                height: 40px;
+                background: row-ta.pressed ? Theme.surface-pressed
+                    : row-ta.has-hover ? Theme.surface-hover
+                    : transparent;
+
+                animate background { duration: Theme.dur-fast; }
+
+                HorizontalLayout {
+                    for col[i] in root.columns: Rectangle {
+                        horizontal-stretch: i == 0 ? 0 : 1;
+                        width: i == 0 ? 120px : 0px;
+
+                        if i > 0: Rectangle {
+                            width: 1px;
+                            height: 24px;
+                            y: (parent.height - self.height) / 2;
+                            background: Theme.border-subtle;
+                            horizontal-stretch: 0;
+                        }
+
+                        Text {
+                            x: Theme.sp-3;
+                            y: (parent.height - self.height) / 2;
+                            text: "Row \{rowidx + 1} — \{col}";
+                            color: i == 0 ? Theme.text-primary : Theme.text-secondary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            font-weight: i == 0 ? Theme.weight-semibold : Theme.weight-medium;
+                            vertical-alignment: center;
+                            horizontal-stretch: i == 0 ? 0 : 1;
+                        }
+                    }
+                }
+
+                row-ta := TouchArea {}
+            }
+        }
+    }
+}

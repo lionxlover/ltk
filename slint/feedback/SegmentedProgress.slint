@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SegmentedProgress inherits Rectangle {
+    in property <int> steps: 5;
+    in property <int> current: 0;
+
+    in property <color> completed-color: Theme.accent;
+    in property <color> upcoming-color: Theme.bg-overlay;
+
+    height: 8px;
+    background: #00000000;
+
+    HorizontalLayout {
+        spacing: 3px;
+        alignment: stretch;
+
+        for idx in steps: Rectangle {
+            border-radius: Theme.radius-xs;
+            background: idx < current ? completed-color : upcoming-color;
+            horizontal-stretch: 1;
+        }
+    }
+}

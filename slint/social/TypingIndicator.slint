@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TypingIndicator inherits Rectangle {
+    width: self.preferred-width;
+    height: 36px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-lg;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 4px;
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+
+        Rectangle {
+            width: 7px;
+            height: 7px;
+            background: Theme.text-tertiary;
+            border-radius: Theme.radius-full;
+            y: (parent.height - self.height) / 2;
+            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        }
+
+        Rectangle {
+            width: 7px;
+            height: 7px;
+            background: Theme.text-tertiary;
+            border-radius: Theme.radius-full;
+            y: (parent.height - self.height) / 2;
+            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        }
+
+        Rectangle {
+            width: 7px;
+            height: 7px;
+            background: Theme.text-tertiary;
+            border-radius: Theme.radius-full;
+            y: (parent.height - self.height) / 2;
+            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        }
+    }
+}

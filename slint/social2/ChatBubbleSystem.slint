@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ChatBubbleSystem inherits Rectangle {
+    background: transparent;
+    height: 28px;
+
+    in property <string> text: "";
+
+    Rectangle {
+        height: 24px;
+        border-radius: 12px;
+        background: Theme.bg-overlay;
+        x: (parent.width - self.width) / 2;
+
+        Text {
+            text: root.text;
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

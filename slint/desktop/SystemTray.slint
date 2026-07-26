@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SystemTray inherits Rectangle {
+    background: Theme.bg-headerbar;
+    width: 32px;
+    height: 24px;
+    border-radius: Theme.radius-xs;
+
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fish.svg");
+        fa-size: 14px;
+        fa-color: Theme.text-secondary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}

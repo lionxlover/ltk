@@ -1,0 +1,36 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DropCap inherits Rectangle {
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+    height: self.preferred-height;
+
+    HorizontalLayout {
+        spacing: 8px;
+        alignment: start;
+
+        Text {
+            text: "T";
+            color: Theme.accent;
+            font-family: Theme.font-display;
+            font-size: 52px;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: top;
+            horizontal-stretch: 0;
+        }
+
+        VerticalLayout {
+            spacing: 0px;
+            padding-top: 6px;
+
+            Text {
+                text: "he quick brown fox jumps over the lazy dog. This paragraph demonstrates a drop cap, a large initial letter that spans multiple lines of body text.";
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: 14px;
+                font-weight: Theme.weight-regular;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Footnote inherits Text {
+    text: "1. Terms and conditions apply. See documentation for full details.";
+    color: Theme.text-tertiary;
+    font-family: Theme.font-ui;
+    font-size: 11px;
+    font-weight: Theme.weight-regular;
+    wrap: word-wrap;
+}

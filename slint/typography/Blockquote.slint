@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Blockquote inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: 3px;
+        height: parent.height;
+        background: Theme.accent;
+        border-radius: 3px;
+    }
+
+    VerticalLayout {
+        padding-left: 20px;
+        padding-right: 16px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        spacing: 8px;
+
+        Text {
+            text: "Design is not just what it looks like and feels like. Design is how it works.";
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: 15px;
+            font-weight: Theme.weight-regular;
+            font-italic: true;
+            wrap: word-wrap;
+        }
+        Text {
+            text: "— Steve Jobs";
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: 12px;
+            font-weight: Theme.weight-medium;
+        }
+    }
+}

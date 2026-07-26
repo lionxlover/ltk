@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CssGridContainer inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <int> columns: 3;
+    in property <int> rows: 3;
+    in property <int> column-gap: 16;
+    in property <int> row-gap: 16;
+}

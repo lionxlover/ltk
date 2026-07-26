@@ -1,0 +1,19 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VerifiedBadge inherits Rectangle {
+    width: 18px;
+    height: 18px;
+    background: Theme.accent;
+    border-radius: 9px;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: "✓";
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: Theme.weight-bold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+}

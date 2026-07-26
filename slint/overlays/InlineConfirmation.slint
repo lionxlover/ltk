@@ -1,0 +1,101 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InlineConfirmation inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <string> message: "Are you sure?";
+
+    callback confirmed();
+    callback cancelled();
+
+    min-width: 200px;
+    height: 44px;
+    visible: active;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: active ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-1-y;
+    drop-shadow-blur: Theme.elevation-1-blur;
+    drop-shadow-color: Theme.elevation-1-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-2;
+        spacing: Theme.sp-2;
+        alignment: stretch;
+
+        Text {
+            text: root.message;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        // No button
+        Rectangle {
+            width: 52px;
+            height: 28px;
+            horizontal-stretch: 0;
+
+            no-bg := Rectangle {
+                border-radius: Theme.radius-sm;
+                border-width: 1px;
+                border-color: Theme.border-base;
+                background: no-ta.pressed ? Theme.surface-pressed
+                    : no-ta.has-hover ? Theme.surface-hover
+                    : #00000000;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "No";
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            no-ta := TouchArea {
+                clicked => { root.cancelled(); }
+            }
+        }
+
+        // Yes button
+        Rectangle {
+            width: 52px;
+            height: 28px;
+            horizontal-stretch: 0;
+
+            yes-bg := Rectangle {
+                border-radius: Theme.radius-sm;
+                background: yes-ta.pressed ? Theme.btn-primary-bg-pressed
+                    : yes-ta.has-hover ? Theme.btn-primary-bg-hover
+                    : Theme.btn-primary-bg;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Yes";
+                color: Theme.on-accent;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            yes-ta := TouchArea {
+                clicked => { root.confirmed(); }
+            }
+        }
+    }
+}

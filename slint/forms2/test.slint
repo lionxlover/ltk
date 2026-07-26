@@ -1,0 +1,116 @@
+import { Theme } from "../core/Theme.slint";
+import { FormRoot } from "./FormRoot.slint";
+import { FormSection } from "./FormSection.slint";
+import { FormGroup } from "./FormGroup.slint";
+import { FieldLabel } from "./FieldLabel.slint";
+import { FieldHelperText } from "./FieldHelperText.slint";
+import { FieldErrorMessage } from "./FieldErrorMessage.slint";
+import { FieldSuccessMessage } from "./FieldSuccessMessage.slint";
+import { CharacterCounter } from "./CharacterCounter.slint";
+import { Fieldset } from "./Fieldset.slint";
+import { FormDivider } from "./FormDivider.slint";
+import { FormHeader } from "./FormHeader.slint";
+import { FormFooter } from "./FormFooter.slint";
+import { MultiStepForm } from "./MultiStepForm.slint";
+import { DynamicFieldArray } from "./DynamicFieldArray.slint";
+import { LoginForm } from "./LoginForm.slint";
+import { RegistrationForm } from "./RegistrationForm.slint";
+import { PasswordResetForm } from "./PasswordResetForm.slint";
+import { PaymentForm } from "./PaymentForm.slint";
+import { AddressForm } from "./AddressForm.slint";
+import { ContactForm } from "./ContactForm.slint";
+import { SurveyForm } from "./SurveyForm.slint";
+
+export component FormsTest2 inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 3200px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Forms — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Form Anatomy: Section, Group, Label, Helper/Error/Success, Counter"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            FormRoot { width: 500px;
+                FormSection { title: "Personal Information"; description: "Tell us about yourself";
+                    VerticalLayout { spacing: Theme.sp-4;
+                        FormGroup { label: "Full Name"; required: true;
+                            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                                Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                            }
+                            FieldHelperText { text: "Enter your legal name"; }
+                        }
+                        FormGroup { label: "Email"; required: true;
+                            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                                Text { text: "john@example.com"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                            }
+                            FieldErrorMessage { text: "Email is already taken"; }
+                        }
+                        FormGroup { label: "Username";
+                            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.success;
+                                Text { text: "johndoe"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                            }
+                            FieldSuccessMessage { text: "Username is available"; }
+                        }
+                        FormGroup { label: "Bio";
+                            Rectangle { height: 80px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                                Text { text: "Developer..."; font-size: Theme.text-sm; color: Theme.text-primary; }
+                            }
+                            CharacterCounter { current: 42; max: 200; }
+                        }
+                    }
+                }
+            }
+
+            Text { text: "Fieldset / Legend / Dividers"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Fieldset { legend: "Contact Details"; width: 500px; height: 120px;
+                VerticalLayout { spacing: Theme.sp-3; padding-top: Theme.sp-2;
+                    FormGroup { label: "Phone"; Rectangle { height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; } }
+                    FormGroup { label: "Address"; Rectangle { height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; } }
+                }
+            }
+
+            Text { text: "Form Header / Footer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { width: 500px; height: 120px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                VerticalLayout {
+                    VerticalLayout { padding: Theme.sp-4;
+                        FormHeader { title: "Account Settings"; description: "Manage your account"; badge: "Pro"; }
+                    }
+                    FormDivider { }
+                }
+            }
+
+            Text { text: "Multi-step Form"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            MultiStepForm { width: 500px; height: 120px; total-steps: 4; step-titles: ["Info", "Review", "Confirm", "Done"]; show-next: true; show-back: true; }
+
+            Text { text: "Dynamic Field Array"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            DynamicFieldArray { width: 300px; min-items: 1; max-items: 5; add-label: "Add phone"; }
+
+            Text { text: "Templates: Login, Register, Reset"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                LoginForm { width: 280px; }
+                RegistrationForm { width: 320px; }
+            }
+
+            Text { text: "Templates: Password Reset, Contact"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                PasswordResetForm { width: 280px; }
+                ContactForm { width: 320px; }
+            }
+
+            Text { text: "Templates: Payment, Address"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                PaymentForm { width: 320px; }
+                AddressForm { width: 320px; }
+            }
+
+            Text { text: "Template: Survey"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            SurveyForm { width: 500px; }
+        }
+    }
+}

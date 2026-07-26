@@ -1,0 +1,170 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+component ActionButton inherits Rectangle {
+    in property <string> icon-source: "";
+    in property <string> label: "";
+    in property <int> action-index: 0;
+
+    callback clicked(int);
+
+    width: 64px;
+    height: 72px;
+    background: btn-ta.pressed ? Theme.surface-pressed
+        : btn-ta.has-hover ? Theme.surface-hover
+        : #00000000;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-1;
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-overlay;
+
+            FaIcon {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                fa-size: 18px;
+                fa-color: Theme.text-primary;
+                source: root.icon-source;
+            }
+        }
+
+        Text {
+            text: root.label;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+        }
+    }
+
+    btn-ta := TouchArea {
+        clicked => { root.clicked(root.action-index); }
+    }
+}
+
+export component FloatingActionPanel inherits Rectangle {
+    visible: false;
+
+    callback action-clicked(int);
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.visible ? 1 : 0;
+        visible: root.visible;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.visible = false; }
+        }
+    }
+
+    // Floating panel
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 280px;
+        height: 180px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-xl;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+        visible: root.visible;
+        opacity: root.visible ? 1 : 0;
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: Theme.elevation-2-y;
+        drop-shadow-blur: Theme.elevation-2-blur;
+        drop-shadow-color: Theme.elevation-2-color;
+
+        animate opacity { duration: Theme.dur-medium; easing: Theme.ease-soft; }
+
+        Rectangle {
+            padding: Theme.sp-4;
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+
+                Text {
+                    text: "Actions";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-md;
+                    font-weight: Theme.weight-semibold;
+                    vertical-stretch: 0;
+                }
+
+                // Action grid row 1
+                HorizontalLayout {
+                    spacing: Theme.sp-4;
+                    alignment: space-around;
+                    vertical-stretch: 0;
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/star.svg");
+                        label: "Favorite";
+                        action-index: 0;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/eye.svg");
+                        label: "Preview";
+                        action-index: 1;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/expand.svg");
+                        label: "Expand";
+                        action-index: 2;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+                }
+
+                // Action grid row 2
+                HorizontalLayout {
+                    spacing: Theme.sp-4;
+                    alignment: space-around;
+                    vertical-stretch: 0;
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-info.svg");
+                        label: "Info";
+                        action-index: 3;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-question.svg");
+                        label: "Help";
+                        action-index: 4;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+
+                    ActionButton {
+                        icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/lightbulb.svg");
+                        label: "Tips";
+                        action-index: 5;
+                        clicked(idx) => { root.action-clicked(idx); }
+                    }
+                }
+            }
+        }
+
+        TouchArea { }
+    }
+}

@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NavGroupHeader inherits Rectangle {
+    in property <string> label: "";
+
+    height: 28px;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        alignment: start;
+
+        Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            letter-spacing: Theme.tracking-wide;
+            vertical-alignment: center;
+        }
+    }
+}

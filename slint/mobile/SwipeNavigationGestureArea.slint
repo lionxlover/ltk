@@ -1,0 +1,19 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SwipeNavigationGestureArea inherits Rectangle {
+    background: transparent;
+
+    in property <bool> enabled: true;
+    in property <length> gesture-height: 20px;
+
+    height: gesture-height;
+
+    Rectangle {
+        height: 4px;
+        width: 134px;
+        border-radius: 2px;
+        background: Theme.text-primary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}

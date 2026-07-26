@@ -1,0 +1,56 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DocumentFilePicker inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> file-types: ["Documents", "Images", "Videos", "Audio"];
+
+    VerticalLayout {
+        spacing: 0;
+
+        Rectangle {
+            height: 48px;
+
+            Text {
+                text: "Select File";
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                padding-left: Theme.sp-4;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        for type[idx] in file-types: Rectangle {
+            height: 48px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: type;
+                    font-size: Theme.text-base;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                Text {
+                    text: "›";
+                    font-size: Theme.text-lg;
+                    color: Theme.text-tertiary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }
+        }
+    }
+}

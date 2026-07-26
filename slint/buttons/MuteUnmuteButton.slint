@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MuteUnmuteButton inherits Rectangle {
+    in-out property <bool> muted: false;
+
+    width: 40px;
+    height: 40px;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        width: 16px;
+        height: 16px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-high.svg");
+            width: 16px;
+            height: 16px;
+            visible: !root.muted;
+            colorize: Theme.text-primary;
+        }
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-xmark.svg");
+            width: 16px;
+            height: 16px;
+            visible: root.muted;
+            colorize: Theme.text-primary;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.muted = !root.muted; }
+    }
+}

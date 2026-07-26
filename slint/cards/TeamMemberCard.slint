@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TeamMemberCard inherits Rectangle {
+    in-out property <string> name: "Name";
+    in-out property <string> role: "Role";
+    in-out property <string> email: "email@example.com";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 8px;
+        alignment: center;
+
+        Rectangle {
+            width: 64px;
+            height: 64px;
+            border-radius: Theme.radius-full;
+            background: Theme.accent-subtle;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "?";
+                color: Theme.accent;
+                font-size: 24px;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+            }
+        }
+
+        Text {
+            text: root.name;
+            color: Theme.text-primary;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.role;
+            color: Theme.text-secondary;
+            font-size: 12px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.email;
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            horizontal-alignment: center;
+        }
+    }
+}

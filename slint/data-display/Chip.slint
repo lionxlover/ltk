@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Chip inherits Rectangle {
+    in property <string> text: "";
+    in property <bool> checked: false;
+    in property <bool> enabled: true;
+    in property <color> chip-accent: Theme.accent;
+
+    callback clicked();
+
+    min-width: max(label.preferred-width + Theme.sp-4 * 2, 48px);
+    height: 28px;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    bg := Rectangle {
+        border-radius: Theme.radius-full;
+        border-width: 1px;
+        border-color: !enabled ? Theme.border-subtle : (checked ? chip-accent : Theme.border-base);
+        background: !enabled ? Theme.btn-disabled-bg : (checked ? chip-accent.with-alpha(0.15) : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised)));
+        animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+
+    label := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.text;
+        color: !enabled ? Theme.text-disabled : (checked ? chip-accent : Theme.text-secondary);
+        font-family: Theme.font-ui;
+        font-size: Theme.text-sm;
+        font-weight: Theme.weight-medium;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

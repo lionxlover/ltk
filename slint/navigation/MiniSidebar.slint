@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MiniSidebar inherits Rectangle {
+    in-out property <int> active: 0;
+
+    width: 56px;
+    background: Theme.bg-elevated;
+
+    VerticalLayout {
+        padding-top: 8px;
+        spacing: 4px;
+        alignment: start;
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            x: 8px;
+            background: root.active == 0 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-md;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/house.svg");
+                width: 18px;
+                height: 18px;
+                colorize: root.active == 0 ? Theme.accent : Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { clicked => { root.active = 0; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            x: 8px;
+            background: root.active == 1 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-md;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/folder.svg");
+                width: 18px;
+                height: 18px;
+                colorize: root.active == 1 ? Theme.accent : Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { clicked => { root.active = 1; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            x: 8px;
+            background: root.active == 2 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-md;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg");
+                width: 18px;
+                height: 18px;
+                colorize: root.active == 2 ? Theme.accent : Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { clicked => { root.active = 2; } }
+        }
+    }
+}

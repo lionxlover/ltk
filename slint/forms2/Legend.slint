@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Legend inherits Rectangle {
+    background: transparent;
+
+    in property <string> text: "";
+    in property <bool> required: false;
+
+    height: 24px;
+
+    HorizontalLayout {
+        spacing: 4px;
+
+        Text {
+            text: root.text;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+            y: 2px;
+        }
+
+        if required: Text {
+            text: "*";
+            font-size: Theme.text-sm;
+            color: Theme.error;
+            y: 2px;
+        }
+    }
+}

@@ -1,0 +1,93 @@
+import { Theme } from "../core/Theme.slint";
+import { ThemeToggle } from "ThemeToggle.slint";
+import { BrandKitSwitcher } from "BrandKitSwitcher.slint";
+import { FontLoader } from "FontLoader.slint";
+import { AnimationPresetSelector } from "AnimationPresetSelector.slint";
+import { ColorPaletteEditor } from "ColorPaletteEditor.slint";
+import { TokenExporter } from "TokenExporter.slint";
+
+export component ThemingTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 900px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Theming — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // ThemeToggle
+        Text { text: "ThemeToggle"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            ThemeToggle {
+                x: Theme.sp-4;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        // BrandKitSwitcher
+        Text { text: "BrandKitSwitcher"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            BrandKitSwitcher {
+                x: Theme.sp-4;
+                y: (parent.height - self.height) / 2;
+                width: parent.width - Theme.sp-8;
+            }
+        }
+
+        // FontLoader
+        Text { text: "FontLoader"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        FontLoader {
+            width: 100%;
+            min-height: 200px;
+        }
+
+        // AnimationPresetSelector
+        Text { text: "AnimationPresetSelector"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        AnimationPresetSelector {
+            width: 100%;
+        }
+
+        // ColorPaletteEditor
+        Text { text: "ColorPaletteEditor"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            ColorPaletteEditor {
+                x: Theme.sp-4;
+                y: (parent.height - self.height) / 2;
+                width: parent.width - Theme.sp-8;
+            }
+        }
+
+        // TokenExporter
+        Text { text: "TokenExporter"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        TokenExporter {
+            width: 100%;
+            min-height: 200px;
+        }
+        }
+    }
+}

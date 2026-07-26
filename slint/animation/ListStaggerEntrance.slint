@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ListStaggerEntrance inherits Rectangle {
+    background: transparent;
+
+    in property <int> item-count: 5;
+    in property <bool> animate-in: true;
+    in property <int> stagger-delay: 80;
+
+    VerticalLayout {
+        spacing: Theme.sp-2;
+
+        for item[i] in item-count: Rectangle {
+            height: 48px;
+
+            Rectangle {
+                border-radius: Theme.radius-md;
+                background: Theme.bg-surface;
+                opacity: animate-in ? 1 : 0;
+                y: animate-in ? 0px : 20px;
+                animate opacity, y { duration: Theme.dur-slow; easing: Theme.ease-spring; delay: i * stagger-delay * 1ms; }
+            }
+        }
+    }
+}

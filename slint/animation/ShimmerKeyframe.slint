@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ShimmerKeyframe inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> active: true;
+
+    Rectangle {
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-md;
+    }
+
+    if active: Rectangle {
+        width: 200px;
+        background: Theme.glass-thin;
+        x: -200px;
+        opacity: 0.5;
+
+        animate x { duration: 1500ms; easing: Theme.ease-standard; }
+    }
+}

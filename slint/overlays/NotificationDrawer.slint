@@ -1,0 +1,175 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component NotificationItem inherits Rectangle {
+    in property <string> title: "";
+    in property <string> body: "";
+
+    callback activated();
+
+    height: 64px;
+    background: item-ta.has-hover ? Theme.surface-hover : #00000000;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            horizontal-stretch: 0;
+
+            Rectangle {
+                border-radius: Theme.radius-sm;
+                background: Theme.accent-subtle;
+            }
+
+            FaIcon {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                fa-size: 14px;
+                fa-color: Theme.accent;
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/bell.svg");
+            }
+        }
+
+        VerticalLayout {
+            spacing: Theme.sp-0-5;
+            horizontal-stretch: 1;
+
+            if root.title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                wrap: no-wrap;
+                overflow: elide;
+            }
+
+            if root.body != "": Text {
+                text: root.body;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                wrap: no-wrap;
+                overflow: elide;
+            }
+        }
+    }
+
+    Rectangle {
+        y: parent.height - 1px;
+        width: parent.width;
+        height: 1px;
+        background: Theme.divider;
+    }
+
+    item-ta := TouchArea {
+        clicked => { root.activated(); }
+    }
+}
+
+export component NotificationDrawer inherits Rectangle {
+    in-out property <bool> drawer-visible: false;
+
+    callback close();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.drawer-visible ? 1 : 0;
+        visible: root.drawer-visible;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.close(); }
+        }
+    }
+
+    // Panel
+    Rectangle {
+        x: root.drawer-visible ? parent.width - self.width : parent.width;
+        y: 0;
+        width: 340px;
+        height: parent.height;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        drop-shadow-offset-x: -4px;
+        drop-shadow-blur: 16px;
+        drop-shadow-color: Theme.border-default;
+
+        animate x { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-4;
+            spacing: Theme.sp-3;
+
+            // Header
+            HorizontalLayout {
+                spacing: Theme.sp-3;
+                alignment: space-between;
+                vertical-stretch: 0;
+
+                Text {
+                    text: "Notifications";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xl;
+                    font-weight: Theme.weight-bold;
+                    horizontal-stretch: 1;
+                    vertical-alignment: center;
+                }
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    horizontal-stretch: 0;
+
+                    close-bg := Rectangle {
+                        border-radius: Theme.radius-xs;
+                        background: close-ta.pressed ? Theme.surface-pressed
+                            : close-ta.has-hover ? Theme.surface-hover
+                            : #00000000;
+                    }
+
+                    FaIcon {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        fa-size: 12px;
+                        fa-color: Theme.text-tertiary;
+                        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+                    }
+
+                    close-ta := TouchArea {
+                        clicked => { root.close(); }
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Theme.divider;
+                vertical-stretch: 0;
+            }
+
+            // Notification list slot
+            Rectangle {
+                vertical-stretch: 1;
+            }
+        }
+
+        TouchArea { }
+    }
+}

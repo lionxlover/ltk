@@ -1,0 +1,72 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VerticalStepper inherits Rectangle {
+    in property <[string]> steps: [];
+    in property <int> current: 0;
+
+    background: #00000000;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 0;
+
+        for step[idx] in root.steps: VerticalLayout {
+            spacing: 0;
+            horizontal-stretch: 1;
+
+            HorizontalLayout {
+                spacing: Theme.sp-3;
+
+                // Circle column
+                VerticalLayout {
+                    horizontal-stretch: 0;
+                    spacing: 0;
+
+                    Rectangle {
+                        width: 28px;
+                        height: 28px;
+                        horizontal-stretch: 0;
+                        border-radius: Theme.radius-full;
+                        background: idx < root.current ? Theme.accent
+                            : idx == root.current ? Theme.accent
+                            : Theme.bg-overlay;
+                        border-width: idx <= root.current ? 0px : 2px;
+                        border-color: Theme.border-base;
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: idx < root.current ? "✓" : (idx + 1);
+                            color: idx <= root.current ? Theme.on-accent : Theme.text-tertiary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-semibold;
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                        }
+                    }
+
+                    // Connector line below circle
+                    if idx < root.steps.length - 1: Rectangle {
+                        width: 2px;
+                        height: 28px;
+                        horizontal-stretch: 0;
+                        x: 13px;
+                        background: idx < root.current ? Theme.accent : Theme.border-subtle;
+                    }
+                }
+
+                // Label column
+                Text {
+                    text: step;
+                    color: idx <= root.current ? Theme.text-primary : Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: idx == root.current ? Theme.weight-semibold : Theme.weight-regular;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+        }
+    }
+}

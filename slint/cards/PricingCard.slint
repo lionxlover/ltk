@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component PricingCard inherits Rectangle {
+    in-out property <string> tier: "Pro";
+    in-out property <string> price: "$19/mo";
+    in-out property <bool> featured: false;
+
+    background: root.featured ? Theme.accent : Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: root.featured ? Theme.accent : Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 24px;
+        spacing: 12px;
+
+        Text {
+            text: root.tier;
+            color: root.featured ? #ffffff : Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.price;
+            color: root.featured ? #ffffff : Theme.accent;
+            font-size: 32px;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+        }
+
+        Rectangle {
+            height: 1px;
+            horizontal-stretch: 1;
+            background: root.featured ? rgba(255,255,255,0.2) : Theme.border-base;
+        }
+
+        Text {
+            text: "All features included";
+            color: root.featured ? rgba(255,255,255,0.8) : Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HorizontalTimeline inherits Rectangle {
+    in property <[string]> items: [];
+    in property <int> active-index: 0;
+
+    height: 80px;
+    background: transparent;
+
+    Rectangle {
+        y: 19px;
+        height: 2px;
+        x: 24px;
+        width: parent.width - 48px;
+        background: Theme.border-subtle;
+    }
+
+    for item[idx] in root.items: Rectangle {
+        x: 24px + idx * ((parent.width - 48px) / (root.items.length > 1 ? root.items.length - 1 : 1)) - 10px;
+        width: 20px;
+
+        Rectangle {
+            width: 20px;
+            height: 20px;
+            border-radius: Theme.radius-full;
+            background: idx <= root.active_index ? Theme.accent : Theme.bg-surface;
+            border-width: 2px;
+            border-color: idx <= root.active_index ? Theme.accent : Theme.border-base;
+        }
+
+        Text {
+            y: 28px;
+            width: 80px;
+            x: -30px;
+            text: item;
+            color: idx <= root.active_index ? Theme.text-primary : Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+        }
+    }
+}

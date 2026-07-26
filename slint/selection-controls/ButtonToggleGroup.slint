@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ButtonToggleGroup inherits Rectangle {
+    in-out property <[string]> items: ["Bold", "Italic", "Underline"];
+    in-out property <[bool]> active: [false, false, false];
+
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: 4px;
+
+        for itm[idx] in root.items: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: root.active[idx] ? Theme.accent-subtle : Theme.bg-surface;
+            border-width: 1px;
+            border-color: root.active[idx] ? Theme.accent : Theme.border-base;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: itm;
+                color: root.active[idx] ? Theme.accent : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.active[idx] = !root.active[idx];
+                }
+            }
+        }
+    }
+}

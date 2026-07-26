@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FeatureGrid inherits Rectangle {
+    background: transparent;
+
+    in property <int> columns: 3;
+    in property <length> gap: 24px;
+    in property <length> item-min-height: 200px;
+
+    Flickable {
+        VerticalLayout {
+            spacing: gap;
+            HorizontalLayout { spacing: gap; }
+            HorizontalLayout { spacing: gap; }
+        }
+    }
+}

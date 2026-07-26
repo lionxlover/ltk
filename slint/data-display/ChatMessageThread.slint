@@ -1,0 +1,102 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ChatMessageThread inherits Rectangle {
+    in property <[bool]> is-own: [false, true, false, true];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    in property <[string]> demo-senders: ["Alice", "You", "Bob", "You"];
+    in property <[string]> demo-messages: ["Hey, have you seen the new designs?", "Yes, they look great!", "Can we schedule a review?", "Sure, let's do it tomorrow."];
+    in property <[string]> demo-times: ["10:30 AM", "10:32 AM", "10:35 AM", "10:36 AM"];
+    in property <[color]> demo-avatar-colors: [Theme.accent, Theme.green-500, #CD7F32, Theme.green-500];
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        for msg[idx] in root.is-own: Rectangle {
+            height: 64px;
+
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+                alignment: root.is-own[idx] ? end : start;
+
+                if !root.is-own[idx]: Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    horizontal-stretch: 0;
+
+                    Rectangle {
+                        width: 28px;
+                        height: 28px;
+                        border-radius: Theme.radius-full;
+                        background: idx < root.demo_avatar_colors.length ? root.demo_avatar_colors[idx] : Theme.accent;
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: idx < root.demo_senders.length ? root.demo_senders[idx] : "";
+                            color: #ffffff;
+                            font-family: Theme.font-ui;
+                            font-size: 9px;
+                            font-weight: Theme.weight-bold;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 200px;
+                    horizontal-stretch: 0;
+
+                    if !root.is-own[idx]: Text {
+                        text: idx < root.demo_senders.length ? root.demo_senders[idx] : "";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                    }
+
+                    Rectangle {
+                        y: root.is-own[idx] ? 0px : 16px;
+                        height: 40px;
+                        border-radius: Theme.radius-md;
+                        background: root.is-own[idx] ? Theme.accent : Theme.bg-overlay;
+
+                        Text {
+                            x: Theme.sp-3;
+                            y: (parent.height - self.height) / 2;
+                            text: idx < root.demo_messages.length ? root.demo_messages[idx] : "";
+                            color: root.is-own[idx] ? #ffffff : Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            wrap: word-wrap;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    if root.is-own[idx]: Text {
+                        y: 42px;
+                        text: idx < root.demo_times.length ? root.demo_times[idx] : "";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        horizontal-alignment: right;
+                    }
+
+                    if !root.is-own[idx]: Text {
+                        y: 42px;
+                        text: idx < root.demo_times.length ? root.demo_times[idx] : "";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                    }
+                }
+            }
+        }
+    }
+}

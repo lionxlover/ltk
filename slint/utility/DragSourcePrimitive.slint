@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DragSourcePrimitive inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> drag-id: "";
+    in property <bool> dragging: false;
+    in property <string> drag-label: "Drag me";
+
+    height: 40px;
+
+    Rectangle {
+        background: dragging ? Theme.accent-subtle : transparent;
+        border-radius: Theme.radius-md;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            Text {
+                text: "⠿";
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                y: (parent.height - self.height) / 2;
+            }
+
+            Text {
+                text: drag-label;
+                font-size: Theme.text-sm;
+                color: dragging ? Theme.accent : Theme.text-primary;
+                y: (parent.height - self.height) / 2;
+                vertical-stretch: 1;
+            }
+        }
+    }
+}

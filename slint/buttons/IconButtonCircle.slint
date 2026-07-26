@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IconButtonCircle inherits Rectangle {
+    in-out property <bool> enabled: true;
+
+    width: 40px;
+    height: 40px;
+    background: Theme.bg-raised;
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 0;
+
+    Image {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
+        width: 16px;
+        height: 16px;
+        colorize: Theme.text-primary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

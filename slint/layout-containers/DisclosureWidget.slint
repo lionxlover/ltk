@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DisclosureWidget inherits Rectangle {
+    background: transparent;
+
+    in property <string> label: "";
+    in-out property <bool> open: false;
+
+    VerticalLayout {
+        spacing: 4px;
+
+        HorizontalLayout {
+            spacing: Theme.sp-2;
+
+            Text {
+                text: open ? "▾" : "▸";
+                font-size: 12px;
+                color: Theme.text-tertiary;
+                y: 2px;
+            }
+
+            Text {
+                text: label;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: Theme.text-primary;
+                y: 2px;
+            }
+        }
+
+        if open: Rectangle {
+            height: 80px;
+            background: transparent;
+            padding-left: 20px;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.open = !root.open; }
+    }
+}

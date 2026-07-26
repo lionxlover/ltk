@@ -1,0 +1,17 @@
+// Semantic — Warning / Caution
+export global SemanticWarning {
+    in-out property <bool> dark: true;
+
+    out property <color> warning-50: dark ? #fffbeb : #fffbeb;
+    out property <color> warning-100: dark ? #fef3c7 : #fef3c7;
+    out property <color> warning-200: dark ? #fde68a : #fde68a;
+    out property <color> warning-300: dark ? #fcd34d : #fcd34d;
+    out property <color> warning-400: dark ? #FBBF24 : #f59e0b;
+    out property <color> warning-500: dark ? #FBBF24 : #d97706;
+    out property <color> warning-600: dark ? #d97706 : #b45309;
+    out property <color> warning-700: dark ? #b45309 : #92400e;
+
+    out property <color> warning-surface: warning-500.with-alpha(0.12);
+    out property <color> warning-on-surface: warning-500;
+    out property <color> warning-border: warning-500.with-alpha(0.25);
+}

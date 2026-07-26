@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GradientBuilderInput inherits Rectangle {
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    // Gradient preview bar
+    Rectangle {
+        x: 8px;
+        y: (parent.height - 24px) / 2;
+        width: 80px;
+        height: 24px;
+        border-radius: Theme.radius-sm;
+        background: @linear-gradient(90deg, #5B9DFA, #a855f7, #ec4899);
+    }
+
+    Text {
+        x: 96px;
+        y: (parent.height - self.height) / 2;
+        text: "linear-gradient(90deg, #5B9DFA, #a855f7, #ec4899)";
+        color: Theme.text-secondary;
+        font-family: Theme.font-mono;
+        font-size: 12px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

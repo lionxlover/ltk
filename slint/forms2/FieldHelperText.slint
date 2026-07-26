@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FieldHelperText inherits Rectangle {
+    background: transparent;
+
+    in property <string> text: "";
+    in property <string> variant: "default";
+
+    height: 16px;
+
+    Text {
+        text: root.text;
+        font-size: Theme.text-xs;
+        color: variant == "error" ? Theme.error : variant == "success" ? Theme.success : Theme.text-tertiary;
+        overflow: elide;
+    }
+}

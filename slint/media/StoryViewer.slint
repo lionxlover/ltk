@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StoryViewer inherits Rectangle {
+    in property <string> username: "user";
+    in property <int> current: 0;
+    in property <int> total: 5;
+
+    background: #000000;
+    border-radius: Theme.radius-lg;
+    clip: true;
+
+    VerticalLayout {
+        HorizontalLayout {
+            height: 4px;
+            spacing: 2px;
+
+            for seg[i] in 5: Rectangle {
+                height: 4px;
+                horizontal-stretch: 1;
+                background: i < root.current ? #ffffff : (i == root.current ? #ffffff : #ffffff40);
+                border-radius: 2px;
+            }
+        }
+
+        HorizontalLayout {
+            height: 32px;
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            Text {
+                text: root.username;
+                color: #ffffff;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Story \{root.current + 1} of \{root.total}";
+                color: #ffffff80;
+                font-size: Theme.text-sm;
+            }
+        }
+    }
+}

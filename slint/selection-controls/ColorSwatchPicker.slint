@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColorSwatchPicker inherits Rectangle {
+    in-out property <[color]> colors: [#5B9DFA, #a855f7, #ec4899, #22c55e, #f59e0b, #ef4444];
+    in-out property <int> selected-index: 0;
+
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: 8px;
+
+        for clr[idx] in root.colors: Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: clr;
+            border-width: idx == root.selected-index ? 3px : 0px;
+            border-color: idx == root.selected-index ? Theme.text-primary : transparent;
+
+            TouchArea {
+                clicked => { root.selected-index = idx; }
+            }
+        }
+    }
+}

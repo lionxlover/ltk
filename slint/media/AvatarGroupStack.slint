@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarGroupStack inherits Rectangle {
+    in property <int> count: 3;
+
+    in property <int> display-count: Math.min(root.count, 4);
+    in property <length> avatar-size: 36px;
+    in property <length> overlap: 10px;
+
+    width: display-count * (avatar-size - overlap) + overlap;
+    height: avatar-size;
+    background: #00000000;
+
+    for idx in display-count: Rectangle {
+        x: idx * (avatar-size - overlap);
+        y: (parent.height - self.height) / 2;
+        width: avatar-size;
+        height: avatar-size;
+        background: Theme.bg-overlay;
+        border-radius: Theme.radius-full;
+        border-width: 2px;
+        border-color: Theme.bg-surface;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "+" + (root.count - display-count);
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: 11px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            visible: idx == display-count - 1 && root.count > display-count;
+        }
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: (idx + 1);
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: 13px;
+            font-weight: Theme.weight-medium;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            visible: idx < display-count - 1 || root.count <= display-count;
+        }
+    }
+}

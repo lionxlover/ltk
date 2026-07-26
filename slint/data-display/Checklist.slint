@@ -1,0 +1,89 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Checklist inherits Rectangle {
+    in property <[string]> items: [];
+    in property <[bool]> checked: [];
+
+    callback check-toggle(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for item_text[idx] in root.items: Rectangle {
+            height: 44px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+                alignment: stretch;
+
+                Rectangle {
+                    width: 18px;
+                    height: 18px;
+                    horizontal-stretch: 0;
+                    vertical-stretch: 0;
+
+                    y: (parent.height - self.height) / 2;
+
+                    Rectangle {
+                        width: 18px;
+                        height: 18px;
+                        border-radius: Theme.radius-xs;
+                        background: idx < root.checked.length && root.checked[idx]
+                            ? Theme.accent
+                            : #00000000;
+                        border-width: 2px;
+                        border-color: idx < root.checked.length && root.checked[idx]
+                            ? Theme.accent
+                            : Theme.border-base;
+
+                        if idx < root.checked.length && root.checked[idx]: Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: "✓";
+                            color: #ffffff;
+                            font-size: 10px;
+                            font-weight: Theme.weight-bold;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    vertical-stretch: 0;
+
+                    Text {
+                        y: (parent.height - self.height) / 2;
+                        text: root.items[idx];
+                        color: idx < root.checked.length && root.checked[idx]
+                            ? Theme.text-tertiary
+                            : Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+
+                    if idx < root.checked.length && root.checked[idx]: Rectangle {
+                        y: (parent.height - 1px) / 2;
+                        height: 1px;
+                        width: parent.width;
+                        background: Theme.text-tertiary;
+                    }
+                }
+            }
+
+            row-ta := TouchArea {
+                clicked => { root.check-toggle(idx); }
+            }
+        }
+    }
+}

@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ThreadReplyPreview inherits Rectangle {
+    background: Theme.bg-surface;
+    border-color: Theme.accent;
+    border-radius: Theme.radius-sm;
+    in property <string> reply-to: "Alice";
+    in property <string> preview-text: "That sounds great!";
+
+    VerticalLayout {
+        padding: Theme.sp-2;
+        spacing: 2px;
+
+        Text {
+            text: "Replying to " + reply-to;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            color: Theme.accent;
+        }
+
+        Text {
+            text: preview-text;
+            font-size: Theme.text-sm;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+    }
+}

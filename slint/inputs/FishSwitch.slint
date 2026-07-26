@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FishSwitch inherits Rectangle {
+    in-out property <bool> checked: false;
+    in property <string> text: "";
+    in property <bool> enabled: true;
+
+    callback toggled(bool);
+
+    width: Theme.toggle-width + (text != "" ? Theme.sp-3 + label.preferred-width : 0px);
+    height: Theme.toggle-height + Theme.sp-2;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    track := Rectangle {
+        x: 0;
+        y: (parent.height - self.height) / 2;
+        width: Theme.toggle-width;
+        height: Theme.toggle-height;
+        border-radius: self.height / 2;
+        background: enabled
+            ? (checked ? Theme.accent : Theme.toggle-track-off)
+            : Theme.toggle-track-disabled;
+
+        animate background { duration: Theme.dur-medium; easing: Theme.ease-standard; }
+    }
+
+    handle := Rectangle {
+        x: max(Theme.sp-0-5, min(
+            track.width - self.width,
+            (checked ? track.width - self.width - Theme.sp-0-5 : Theme.sp-0-5)
+        ));
+        y: (parent.height - self.height) / 2;
+        width: Theme.toggle-thumb;
+        height: Theme.toggle-thumb;
+        border-radius: self.height / 2;
+        background: enabled ? (Theme.dark-mode ? #E8EAED : #FFFFFF) : Theme.text-tertiary;
+        opacity: ta.pressed ? Theme.opacity-pressed : 1.0;
+
+        animate opacity { duration: Theme.dur-faster; easing: Theme.ease-standard; }
+        animate x { duration: Theme.dur-medium; easing: Theme.ease-soft; }
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: 1px;
+        drop-shadow-blur: 3px;
+        drop-shadow-color: Theme.border-default;
+    }
+
+    label := Text {
+        x: Theme.toggle-width + Theme.sp-3;
+        y: (parent.height - self.height) / 2;
+        text: root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        vertical-alignment: center;
+        overflow: elide;
+        visible: text != "";
+    }
+
+    ta := TouchArea {
+        clicked => {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+}

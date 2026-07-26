@@ -1,0 +1,18 @@
+// Motion Easing — standard curves
+export global MotionEasingBasic {
+    out property <easing> ease: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    out property <easing> ease-in: cubic-bezier(0.42, 0.0, 1.0, 1.0);
+    out property <easing> ease-out: cubic-bezier(0.0, 0.0, 0.58, 1.0);
+    out property <easing> ease-in-out: cubic-bezier(0.42, 0.0, 0.58, 1.0);
+    out property <easing> linear: cubic-bezier(0.0, 0.0, 1.0, 1.0);
+
+    // Material Design
+    out property <easing> standard: cubic-bezier(0.4, 0.0, 0.2, 1.0);
+    out property <easing> standard-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+    out property <easing> standard-accelerate: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+
+    // Named
+    out property <easing> ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1.0);
+    out property <easing> ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+    out property <easing> ease-accelerate: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+}

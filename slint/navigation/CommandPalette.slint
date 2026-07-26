@@ -1,0 +1,128 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CommandPalette inherits Rectangle {
+    visible: false;
+    in property <string> query: "";
+    in property <[string]> results: [];
+
+    callback closed();
+    callback result-selected(int);
+
+    x: 0;
+    y: 0;
+    width: parent.width;
+    height: parent.height;
+    background: Theme.backdrop;
+    visible: root.visible;
+
+    animate opacity { duration: Theme.dur-fast; }
+    opacity: visible ? 1 : 0;
+
+    Rectangle {
+        width: 560px;
+        height: palette-content.preferred-height + Theme.sp-4;
+        y: 80px;
+        x: (parent.width - self.width) / 2;
+        background: Theme.bg-elevated;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+    }
+
+    palette-content := VerticalLayout {
+        width: 560px;
+        y: 80px;
+        x: (parent.width - self.width) / 2;
+        spacing: 0;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-4;
+            padding-right: Theme.sp-4;
+            height: Theme.input-height-lg;
+            spacing: Theme.sp-2;
+
+            Text {
+                text: ">";
+                color: Theme.accent;
+                font-family: Theme.font-mono;
+                font-size: Theme.text-lg;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+
+            TextInput {
+                text: root.query;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-md;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+                placeholder-text: "Type a command...";
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        VerticalLayout {
+            padding: Theme.sp-2;
+            spacing: Theme.sp-1;
+
+            if root.results.length == 0: Rectangle {
+                height: 60px;
+
+                HorizontalLayout {
+                    alignment: center;
+
+                    Text {
+                        text: "No results found";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            for res[idx] in root.results: Rectangle {
+                height: 36px;
+                background: res-ta.pressed ? Theme.surface-pressed
+                    : res-ta.has-hover ? Theme.surface-hover
+                    : #00000000;
+                border-radius: Theme.radius-sm;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-3;
+                    padding-right: Theme.sp-3;
+
+                    Text {
+                        text: res;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+
+                    Text {
+                        text: "Enter";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-xs;
+                        vertical-alignment: center;
+                    }
+                }
+
+                res-ta := TouchArea {
+                    clicked => { root.result-selected(idx); }
+                }
+            }
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.closed(); }
+    }
+}

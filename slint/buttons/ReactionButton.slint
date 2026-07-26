@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ReactionButton inherits Rectangle {
+    in-out property <int> count: 12;
+    in-out property <bool> active: false;
+
+    height: 32px;
+    background: root.active ? Theme.accent-subtle : Theme.bg-surface;
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: root.active ? Theme.accent : Theme.border-base;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        spacing: 6px;
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg");
+            width: 14px;
+            height: 14px;
+            colorize: root.active ? Theme.accent : Theme.text-secondary;
+        }
+
+        Text {
+            text: root.count;
+            color: root.active ? Theme.accent : Theme.text-secondary;
+            font-size: 12px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.active = !root.active; }
+    }
+}

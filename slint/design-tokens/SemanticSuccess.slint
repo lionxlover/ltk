@@ -1,0 +1,17 @@
+// Semantic — Success / Positive
+export global SemanticSuccess {
+    in-out property <bool> dark: true;
+
+    out property <color> success-50: dark ? #f0fdf4 : #f0fdf4;
+    out property <color> success-100: dark ? #dcfce7 : #dcfce7;
+    out property <color> success-200: dark ? #bbf7d0 : #bbf7d0;
+    out property <color> success-300: dark ? #86efac : #86efac;
+    out property <color> success-400: dark ? #5EE29A : #4ade80;
+    out property <color> success-500: dark ? #5EE29A : #16a34a;
+    out property <color> success-600: dark ? #16a34a : #15803d;
+    out property <color> success-700: dark ? #15803d : #166534;
+
+    out property <color> success-surface: success-500.with-alpha(0.12);
+    out property <color> success-on-surface: success-500;
+    out property <color> success-border: success-500.with-alpha(0.25);
+}

@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DateRangePicker inherits Rectangle {
+    in-out property <string> start-date;
+    in-out property <string> end-date;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        text: "📅";
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: 36px;
+        y: (parent.height - self.height) / 2;
+        text: root.start-date == "" ? "Start date" : root.start-date;
+        color: root.start-date == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    // Arrow
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: "→";
+        color: Theme.text-tertiary;
+        font-size: 14px;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    Text {
+        x: parent.width - 130px;
+        y: (parent.height - self.height) / 2;
+        text: root.end-date == "" ? "End date" : root.end-date;
+        color: root.end-date == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

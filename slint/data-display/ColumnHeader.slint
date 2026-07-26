@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColumnHeader inherits Rectangle {
+    in property <string> label: "";
+    in property <int> sort-state: 0;
+    in property <length> col-width: 120px;
+
+    callback clicked();
+
+    width: col-width;
+    height: 40px;
+    background: ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-overlay;
+
+    animate background { duration: Theme.dur-fast; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        spacing: Theme.sp-1;
+
+        Text {
+            text: root.label;
+            color: root.sort-state != 0 ? Theme.accent : Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+
+        if root.sort-state == 1: Text {
+            text: "▲";
+            color: Theme.accent;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            vertical-alignment: center;
+        }
+
+        if root.sort-state == 2: Text {
+            text: "▼";
+            color: Theme.accent;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            vertical-alignment: center;
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

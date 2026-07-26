@@ -1,0 +1,19 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ResponsiveImage inherits Rectangle {
+    in property <string> alt: "";
+
+    width: 100%;
+    height: 160px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.alt != "" ? root.alt : "Responsive Image";
+        color: Theme.text-tertiary;
+        font-size: Theme.text-sm;
+    }
+}

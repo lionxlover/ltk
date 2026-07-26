@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ContextTooltip inherits Rectangle {
+    visible: false;
+    in property <string> text: "";
+
+    min-width: 60px;
+    min-height: 28px;
+    visible: root.visible;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-tooltip;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: root.visible ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-1-y;
+    drop-shadow-blur: Theme.elevation-1-blur;
+    drop-shadow-color: Theme.elevation-1-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding: Theme.sp-2;
+        spacing: Theme.sp-1-5;
+        alignment: center;
+
+        FaIcon {
+            fa-size: 12px;
+            fa-color: Theme.text-tertiary;
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-info.svg");
+        }
+
+        if root.text != "": Text {
+            text: root.text;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+}

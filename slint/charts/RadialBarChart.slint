@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RadialBarChart inherits Rectangle {
+    in property <[float]> data: [0.8, 0.6, 0.4];
+    in property <[brush]> colors: [Theme.accent, Theme.state-success, Theme.state-warning];
+    in property <string> label: "Radial Bar Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            for bar[i] in root.data: Rectangle {
+                x: (parent.width - 120px) / 2; y: (parent.height - 120px) / 2 + i * 12px;
+                width: 120px - i * 24px; height: 120px - i * 24px;
+                border-radius: Theme.radius-full;
+                border-width: 10px;
+                border-color: i < root.colors.length ? root.colors[i] : Theme.accent;
+                background: transparent;
+            }
+        }
+    }
+}

@@ -1,0 +1,72 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AppClipMiniCard inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> icon: "🔗";
+    in property <string> title: "App Clip";
+    in property <string> subtitle: "Open in app";
+
+    width: 260px;
+    height: 80px;
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-overlay;
+            y: 4px;
+
+            Text {
+                text: icon;
+                font-size: 22px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        VerticalLayout {
+            vertical-stretch: 1;
+            spacing: 2px;
+            y: 12px;
+
+            Text {
+                text: title;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+            }
+
+            Text {
+                text: subtitle;
+                font-size: Theme.text-xs;
+                color: Theme.text-tertiary;
+            }
+        }
+
+        Rectangle {
+            width: 60px;
+            height: 32px;
+            border-radius: Theme.radius-full;
+            background: Theme.accent;
+            y: 24px;
+
+            Text {
+                text: "Open";
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

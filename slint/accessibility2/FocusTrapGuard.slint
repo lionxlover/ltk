@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusTrapGuard inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+
+    Rectangle {
+        border-width: active ? 2px : 0px;
+        border-color: Theme.focus-ring;
+        border-radius: Theme.radius-md;
+    }
+}

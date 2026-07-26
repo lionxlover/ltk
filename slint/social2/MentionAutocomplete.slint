@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MentionAutocomplete inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> users: ["Alice", "Bob", "Charlie", "Diana"];
+
+    VerticalLayout {
+        for user[u] in users: Rectangle {
+            height: 40px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 14px;
+                    background: Theme.accent-subtle;
+                    y: 6px;
+
+                    Text {
+                        text: user;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.accent;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+
+                Text {
+                    text: user;
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+            }
+
+            Rectangle { height: 1px; x: Theme.sp-3; background: Theme.border-subtle; }
+        }
+    }
+}

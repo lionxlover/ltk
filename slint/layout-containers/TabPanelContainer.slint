@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TabPanelContainer inherits Rectangle {
+    background: transparent;
+
+    in property <[string]> tabs: ["Tab 1", "Tab 2", "Tab 3"];
+    in-out property <int> active-tab: 0;
+    in property <bool> show-icons: false;
+
+    VerticalLayout {
+        spacing: 0;
+
+        HorizontalLayout {
+            height: 40px;
+            spacing: 0;
+
+            for tab[idx] in tabs: Rectangle {
+                height: 40px;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: tab;
+                    font-size: Theme.text-sm;
+                    font-weight: active-tab == idx ? Theme.weight-medium : Theme.weight-regular;
+                    color: active-tab == idx ? Theme.accent : Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                if active-tab == idx: Rectangle {
+                    y: parent.height - 2px;
+                    height: 2px;
+                    background: Theme.accent;
+                }
+
+                TouchArea {
+                    clicked => { root.active-tab = idx; }
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+        }
+    }
+}

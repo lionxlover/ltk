@@ -1,0 +1,62 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AccordionItem inherits Rectangle {
+    in property <string> title: "";
+    in property <bool> expanded: false;
+
+    callback toggle();
+
+    background: transparent;
+
+    VerticalLayout {
+        // Header
+        Rectangle {
+            height: 44px;
+            background: header-ta.pressed ? Theme.surface-pressed
+                : header-ta.has-hover ? Theme.surface-hover
+                : transparent;
+            border-radius: Theme.radius-sm;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+                alignment: stretch;
+
+                Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: root.expanded ? "▾" : "›";
+                    color: Theme.text-tertiary;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 0;
+                }
+            }
+
+            header-ta := TouchArea {
+                clicked => { root.toggle(); }
+            }
+        }
+
+        // Content
+        if expanded: VerticalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+            padding-bottom: Theme.sp-3;
+            spacing: Theme.sp-2;
+
+            content-layout := VerticalLayout { }
+        }
+    }
+}

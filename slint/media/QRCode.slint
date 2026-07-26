@@ -1,0 +1,49 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component QRCode inherits Rectangle {
+    in property <string> data: "";
+
+    width: 160px;
+    height: 160px;
+    background: #ffffff;
+    border-radius: Theme.radius-md;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: #ffffff;
+
+        Rectangle {
+            x: Theme.sp-4;
+            y: Theme.sp-4;
+            width: parent.width - Theme.sp-8;
+            height: parent.height - Theme.sp-8;
+            background: Theme.bg-overlay;
+            border-radius: Theme.radius-sm;
+            clip: true;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/qrcode.svg");
+                    fa-size: 36px;
+                    fa-color: Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                }
+
+                Text {
+                    text: root.data != "" ? root.data : "QR Code";
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-xs;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                    max-width: parent.width - Theme.sp-4;
+                }
+            }
+        }
+    }
+}

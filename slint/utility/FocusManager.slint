@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusManager inherits Rectangle {
+    background: transparent;
+
+    in property <string> focused-id: "";
+    in property <[string]> focusable-ids: [];
+    in property <bool> trap-focus: false;
+    in property <bool> auto-focus-first: false;
+
+    Rectangle {
+        height: 32px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: focused-id != "" ? Theme.accent : Theme.border-default;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            spacing: Theme.sp-1;
+
+            for fid[i] in focusable-ids: Rectangle {
+                height: 22px;
+                border-radius: 4px;
+                background: focused-id == fid ? Theme.accent : transparent;
+
+                Text {
+                    text: fid;
+                    font-size: Theme.text-xs;
+                    font-family: Theme.font-mono;
+                    color: focused-id == fid ? #ffffff : Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

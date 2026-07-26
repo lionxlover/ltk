@@ -1,0 +1,172 @@
+import { Theme } from "../core/Theme.slint";
+import { LineChart } from "LineChart.slint";
+import { MultiLineChart } from "MultiLineChart.slint";
+import { AreaChart } from "AreaChart.slint";
+import { StackedAreaChart } from "StackedAreaChart.slint";
+import { BarChartVertical } from "BarChartVertical.slint";
+import { BarChartHorizontal } from "BarChartHorizontal.slint";
+import { GroupedBarChart } from "GroupedBarChart.slint";
+import { StackedBarChart } from "StackedBarChart.slint";
+import { HundredPercentBar } from "HundredPercentBar.slint";
+import { PieChart } from "PieChart.slint";
+import { DonutChart } from "DonutChart.slint";
+import { MultiRingDonut } from "MultiRingDonut.slint";
+import { ScatterPlot } from "ScatterPlot.slint";
+import { BubbleChart } from "BubbleChart.slint";
+import { Heatmap } from "Heatmap.slint";
+import { Treemap } from "Treemap.slint";
+import { SunburstChart } from "SunburstChart.slint";
+import { FunnelChart } from "FunnelChart.slint";
+import { WaterfallChart } from "WaterfallChart.slint";
+import { GaugeChart } from "GaugeChart.slint";
+import { RadialBarChart } from "RadialBarChart.slint";
+import { RadarChart } from "RadarChart.slint";
+import { CandlestickChart } from "CandlestickChart.slint";
+import { VolumeChart } from "VolumeChart.slint";
+import { Histogram } from "Histogram.slint";
+import { BoxPlot } from "BoxPlot.slint";
+import { ViolinPlot } from "ViolinPlot.slint";
+import { SankeyDiagram } from "SankeyDiagram.slint";
+import { ChordDiagram } from "ChordDiagram.slint";
+import { NetworkGraphViz } from "NetworkGraphViz.slint";
+import { FlowchartDiagram } from "FlowchartDiagram.slint";
+import { GanttResourceChart } from "GanttResourceChart.slint";
+import { ChoroplethMap } from "ChoroplethMap.slint";
+import { GeoHeatmap } from "GeoHeatmap.slint";
+import { DotDensityMap } from "DotDensityMap.slint";
+import { SparklineLine } from "SparklineLine.slint";
+import { SparklineBar } from "SparklineBar.slint";
+import { MicroAreaChart } from "MicroAreaChart.slint";
+import { ProgressRingChart } from "ProgressRingChart.slint";
+import { CorrelationMatrix } from "CorrelationMatrix.slint";
+import { WordCloud } from "WordCloud.slint";
+import { SlopeChart } from "SlopeChart.slint";
+import { BumpChart } from "BumpChart.slint";
+
+export component ChartsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 2400px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Charts & Data Viz — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Line / Multi-line"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                LineChart { width: 280px; height: 140px; data: [0.2, 0.5, 0.3, 0.8, 0.6, 0.9, 0.7]; }
+                MultiLineChart { width: 280px; height: 140px; }
+            }
+
+            Text { text: "Area / Stacked Area"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AreaChart { width: 280px; height: 140px; }
+                StackedAreaChart { width: 280px; height: 140px; }
+            }
+
+            Text { text: "Bar Charts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                BarChartVertical { width: 180px; height: 140px; data: [0.6, 0.8, 0.4, 0.9, 0.5]; }
+                BarChartHorizontal { width: 180px; height: 140px; data: [0.6, 0.8, 0.4]; labels: ["A", "B", "C"]; }
+                GroupedBarChart { width: 180px; height: 140px; }
+            }
+
+            Text { text: "Stacked / 100% Bar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                StackedBarChart { width: 280px; height: 140px; }
+                HundredPercentBar { width: 280px; height: 140px; series-a: [0.6, 0.7, 0.5]; }
+            }
+
+            Text { text: "Pie / Donut / Multi-ring"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                PieChart { width: 180px; height: 180px; }
+                DonutChart { width: 180px; height: 180px; }
+                MultiRingDonut { width: 180px; height: 180px; }
+            }
+
+            Text { text: "Scatter / Bubble"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ScatterPlot { width: 280px; height: 180px; }
+                BubbleChart { width: 280px; height: 180px; }
+            }
+
+            Text { text: "Heatmap / Treemap / Sunburst"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Heatmap { width: 240px; height: 140px; }
+                Treemap { width: 240px; height: 140px; }
+                SunburstChart { width: 180px; height: 180px; }
+            }
+
+            Text { text: "Funnel / Waterfall / Gauge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FunnelChart { width: 180px; height: 160px; data: [1.0, 0.7, 0.45, 0.25]; }
+                WaterfallChart { width: 200px; height: 160px; }
+                GaugeChart { width: 180px; height: 160px; value: 72; }
+            }
+
+            Text { text: "Radial / Radar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                RadialBarChart { width: 180px; height: 180px; }
+                RadarChart { width: 180px; height: 180px; }
+            }
+
+            Text { text: "Candlestick / Volume / Histogram"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                CandlestickChart { width: 180px; height: 140px; }
+                VolumeChart { width: 180px; height: 140px; }
+                Histogram { width: 180px; height: 140px; bins: [3, 7, 12, 9, 5, 2]; }
+            }
+
+            Text { text: "Box Plot / Violin Plot"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                BoxPlot { width: 280px; height: 140px; }
+                ViolinPlot { width: 280px; height: 140px; }
+            }
+
+            Text { text: "Sankey / Chord / Network"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SankeyDiagram { width: 240px; height: 160px; }
+                ChordDiagram { width: 180px; height: 180px; }
+                NetworkGraphViz { width: 180px; height: 160px; }
+            }
+
+            Text { text: "Flowchart / Gantt"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FlowchartDiagram { width: 200px; height: 200px; }
+                GanttResourceChart { width: 280px; height: 140px; }
+            }
+
+            Text { text: "Geo / Map"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ChoroplethMap { width: 240px; height: 160px; }
+                GeoHeatmap { width: 240px; height: 160px; }
+                DotDensityMap { width: 200px; height: 160px; }
+            }
+
+            Text { text: "Sparklines / Micro"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SparklineLine { width: 200px; height: 32px; data: [0.3, 0.5, 0.4, 0.7, 0.6, 0.8, 0.5]; }
+                SparklineBar { width: 200px; height: 32px; data: [0.4, 0.7, 0.5, 0.8, 0.3]; }
+                MicroAreaChart { width: 200px; height: 32px; data: [0.2, 0.5, 0.3, 0.8, 0.6, 0.9]; }
+            }
+
+            Text { text: "Progress Ring / Correlation Matrix"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ProgressRingChart { width: 140px; height: 140px; progress: 72; }
+                CorrelationMatrix { width: 200px; height: 180px; }
+            }
+
+            Text { text: "Word Cloud / Slope / Bump"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                WordCloud { width: 240px; height: 120px; }
+                SlopeChart { width: 200px; height: 140px; }
+                BumpChart { width: 200px; height: 140px; }
+            }
+        }
+    }
+}

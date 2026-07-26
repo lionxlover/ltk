@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component KPITile inherits Rectangle {
+    in property <string> label: "";
+    in property <string> value: "";
+    in property <string> change: "";
+    in-out property <int> trend: 0;
+
+    min-width: 140px;
+    min-height: 80px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.card-padding;
+        spacing: Theme.sp-1;
+
+        Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            letter-spacing: Theme.tracking-wide;
+        }
+
+        Text {
+            text: root.value;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-2xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        if root.change != "": HorizontalLayout {
+            spacing: Theme.sp-1;
+
+            Text {
+                text: root.trend == 1 ? "▲" : (root.trend == 2 ? "▼" : "");
+                color: root.trend == 1 ? Theme.green-700 : (root.trend == 2 ? Theme.red-600 : Theme.text-tertiary);
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            Text {
+                text: root.change;
+                color: root.trend == 1 ? Theme.green-700 : (root.trend == 2 ? Theme.red-600 : Theme.text-tertiary);
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

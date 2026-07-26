@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PortalTeleport inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <string> target-id: "";
+
+    // Renders children in a separate visual layer
+    // (Simulated via overlay positioning in Slint)
+}

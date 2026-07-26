@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+component EmojiReaction inherits Rectangle {
+    in property <string> emoji: "";
+    in property <int> count: 0;
+
+    width: self.preferred-width;
+    height: 30px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-full;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-1;
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+
+        Text {
+            text: root.emoji;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+        }
+
+        Text {
+            text: root.count;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component EmojiReactionBar inherits Rectangle {
+    width: 100%;
+    height: self.preferred-height;
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        EmojiReaction {
+            emoji: "❤";
+            count: 12;
+        }
+
+        EmojiReaction {
+            emoji: "😂";
+            count: 5;
+        }
+
+        EmojiReaction {
+            emoji: "👍";
+            count: 8;
+        }
+
+        EmojiReaction {
+            emoji: "🔥";
+            count: 3;
+        }
+    }
+}

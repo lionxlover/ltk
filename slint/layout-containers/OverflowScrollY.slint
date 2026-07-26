@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OverflowScrollY inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    Flickable {
+        viewport-height: 2000px;
+        vertical-stretch: 1;
+
+        VerticalLayout {
+            spacing: Theme.sp-4;
+        }
+    }
+}

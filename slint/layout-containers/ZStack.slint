@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ZStack inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <string> alignment: "center";
+
+    // Children are stacked on top of each other
+    // Each child should set x/y for absolute positioning
+}

@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InfiniteLoaderEngine inherits Rectangle {
+    background: transparent;
+
+    in property <bool> loading: false;
+    in property <bool> has-more: true;
+    in property <int> loaded-count: 0;
+    in property <string> load-more-text: "Load more";
+
+    Rectangle {
+        height: 40px;
+
+        if has-more && !loading: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-default;
+
+            Text {
+                text: load-more-text;
+                font-size: Theme.text-sm;
+                color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        if loading: Text {
+            text: "Loading...";
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+
+        if !has-more && loaded_count > 0: Text {
+            text: "End of list (" + loaded_count + " items)";
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

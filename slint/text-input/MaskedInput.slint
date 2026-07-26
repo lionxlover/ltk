@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MaskedInput inherits Rectangle {
+    in-out property <string> text;
+    in-out property <string> mask: "(###) ###-####";
+    in-out property <string> placeholder;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        text: root.text == "" ? root.mask : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

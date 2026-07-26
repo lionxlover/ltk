@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusRing inherits Rectangle {
+    in property <bool> focused: false;
+    in property <int> style: 0;
+
+    background: #00000000;
+
+    border-width: focused ? Theme.focus-ring-width : 0px;
+    border-color: style == 1 ? Theme.accent : Theme.border-focus;
+    border-radius: Theme.radius-sm;
+}

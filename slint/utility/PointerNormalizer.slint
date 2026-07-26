@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PointerNormalizer inherits Rectangle {
+    background: transparent;
+
+    in property <length> pointer-x: 0px;
+    in property <length> pointer-y: 0px;
+    in property <bool> is-touch: false;
+    in property <bool> is-primary: true;
+    in property <float> pressure: 0.0;
+    in property <int> pointer-count: 1;
+}

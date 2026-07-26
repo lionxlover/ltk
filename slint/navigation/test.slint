@@ -1,0 +1,81 @@
+import { Theme } from "../core/Theme.slint";
+import { Breadcrumb } from "Breadcrumb.slint";
+import { SidebarItem } from "SidebarItem.slint";
+import { Steps } from "Steps.slint";
+import { Pagination } from "Pagination.slint";
+import { Dock } from "Dock.slint";
+import { Taskbar } from "Taskbar.slint";
+import { WorkspaceSwitcher } from "WorkspaceSwitcher.slint";
+import { FlyoutMenuItem } from "FlyoutMenu.slint";
+import { EllipsisBreadcrumb } from "EllipsisBreadcrumb.slint";
+
+export component NavigationTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Navigation — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "Breadcrumb"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            Breadcrumb { items: ["Home", "Components", "Navigation"]; active-index: -1; }
+        }
+
+        Text { text: "Sidebar Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 180px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            VerticalLayout { padding: Theme.sp-2;
+                SidebarItem { text: "Dashboard"; icon: "◉"; active: true; }
+                SidebarItem { text: "Components"; icon: "◇"; }
+                SidebarItem { text: "Settings"; icon: "⚙"; }
+            }
+        }
+
+        Text { text: "Steps"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Steps { width: 500px; current-step: 2; steps: ["Account", "Profile", "Settings", "Confirm"]; }
+
+        Text { text: "Pagination"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Pagination { current-page: 3; total-pages: 8; }
+
+        Text { text: "Dock"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Dock { width: 340px; icons: ["🏠", "📁", "🌐", "✉️", "🎵"]; labels: ["Home", "Files", "Web", "Mail", "Music"]; }
+
+        Text { text: "Taskbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Taskbar { width: 500px; }
+
+        Text { text: "Workspace Switcher"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        WorkspaceSwitcher { width: 200px; }
+
+        Text { text: "Flyout Menu Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 140px; width: 220px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            VerticalLayout { padding: Theme.sp-1; spacing: 0px;
+                FlyoutMenuItem { icon: "📋"; label: "Copy"; shortcut: "Ctrl+C"; }
+                FlyoutMenuItem { icon: "📄"; label: "Paste"; shortcut: "Ctrl+V"; }
+                FlyoutMenuItem { show-separator: true; }
+                FlyoutMenuItem { icon: "🗑️"; label: "Delete"; danger: true; }
+            }
+        }
+
+        Text { text: "Ellipsis Breadcrumb"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            VerticalLayout { padding: Theme.sp-2;
+                EllipsisBreadcrumb { items: ["Home", "Documents", "Projects", "LTK", "src"]; active-index: 4; max-visible: 3; }
+            }
+        }
+        }
+    }
+}

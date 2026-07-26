@@ -1,0 +1,150 @@
+import { PortalTeleport2 } from "PortalTeleport.slint";
+import { ContentSlot } from "ContentSlot.slint";
+import { ErrorBoundaryFallback } from "ErrorBoundary.slint";
+import { SuspenseBoundary } from "SuspenseBoundary.slint";
+import { IntersectionObserverHook } from "IntersectionObserverHook.slint";
+import { ResizeObserverHook } from "ResizeObserverHook.slint";
+import { ScrollPositionHook } from "ScrollPositionHook.slint";
+import { MutationObserverHook } from "MutationObserverHook.slint";
+import { KeyboardShortcutListener } from "KeyboardShortcutListener.slint";
+import { IdleDetector } from "IdleDetector.slint";
+import { NetworkDetector } from "NetworkDetector.slint";
+import { ClipboardManager } from "ClipboardManager.slint";
+import { DragSourcePrimitive } from "DragSourcePrimitive.slint";
+import { DropTargetPrimitive } from "DropTargetPrimitive.slint";
+import { VirtualListEngine } from "VirtualListEngine.slint";
+import { VirtualGridEngine } from "VirtualGridEngine.slint";
+import { InfiniteLoaderEngine } from "InfiniteLoaderEngine.slint";
+import { StateMachineProvider } from "StateMachineProvider.slint";
+import { DebounceHook } from "DebounceHook.slint";
+import { ThrottleHook } from "ThrottleHook.slint";
+import { MediaQueryHook } from "MediaQueryHook.slint";
+import { PointerNormalizer } from "PointerNormalizer.slint";
+import { FocusManager } from "FocusManager.slint";
+import { Theme } from "../core/Theme.slint";
+
+export component UtilityTest inherits Rectangle {
+    background: Theme.bg-base;
+    vertical-stretch: 1;
+    clip: true;
+
+    Flickable {
+        HorizontalLayout {
+            alignment: start;
+            padding: Theme.sp-4;
+            spacing: Theme.sp-4;
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 300px;
+
+                ErrorBoundaryFallback {
+                    height: 240px;
+                    error-message: "Component failed to render";
+                    error-code: "ERR_RENDER_001";
+                }
+
+                SuspenseBoundary {
+                    height: 160px;
+                    loading: true;
+                    loading-text: "Fetching data...";
+                    progress: 65;
+                }
+
+                KeyboardShortcutListener {
+                    height: 32px;
+                    shortcuts: ["Ctrl+Z", "Ctrl+Y", "Ctrl+S"];
+                    last-triggered: "Ctrl+S";
+                }
+
+                StateMachineProvider {
+                    height: 32px;
+                    state: "loading";
+                    states: ["idle", "loading", "success", "error"];
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 280px;
+
+                NetworkDetector {
+                    online: true;
+                }
+
+                IdleDetector {
+                    idle: true;
+                    idle-seconds: 120;
+                    threshold: 300;
+                }
+
+                ClipboardManager {
+                    height: 40px;
+                    clipboard-text: "Hello, LTK!";
+                    copied: false;
+                }
+
+                FocusManager {
+                    height: 32px;
+                    focused-id: "input-1";
+                    focusable-ids: ["input-1", "input-2", "btn"];
+                }
+
+                DragSourcePrimitive {
+                    height: 40px;
+                    drag-id: "item-1";
+                    drag-label: "Drag me somewhere";
+                }
+
+                DropTargetPrimitive {
+                    height: 80px;
+                    drop-id: "zone-1";
+                    hover-over: true;
+                    accept-drop: true;
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 280px;
+
+                IntersectionObserverHook {
+                    height: 60px;
+                    in-viewport: true;
+                    intersection-ratio: 0.85;
+                }
+
+                ResizeObserverHook {
+                    observed-width: 400px;
+                    observed-height: 300px;
+                }
+
+                ScrollPositionHook {
+                    height: 40px;
+                    scroll-y: 1200px;
+                    scroll-height: 5000px;
+                    scroll-progress: 0.24;
+                }
+
+                MutationObserverHook {
+                    height: 40px;
+                    mutation-count: 12;
+                }
+
+                InfiniteLoaderEngine {
+                    height: 40px;
+                    loading: false;
+                    has-more: true;
+                    loaded-count: 47;
+                }
+
+                MediaQueryHook {
+                    height: 40px;
+                    query: "(min-width: 768px)";
+                    matches: true;
+                    matched-viewport: "desktop";
+                }
+            }
+        }
+    }
+}

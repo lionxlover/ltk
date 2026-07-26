@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PullToRefresh inherits Rectangle {
+    background: transparent;
+
+    in property <bool> refreshing: false;
+    in property <int> pull-distance: 60;
+    in property <string> label: "Pull to refresh";
+
+    height: 60px;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        if !refreshing: Text {
+            text: "↓ " + label;
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        if refreshing: Path {
+            width: 24px;
+            height: 24px;
+            stroke: Theme.accent;
+            stroke-width: 2px;
+            commands: "M 12 2 A 10 10 0 1 1 2 12";
+        }
+    }
+}

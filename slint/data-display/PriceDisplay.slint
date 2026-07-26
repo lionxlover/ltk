@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PriceDisplay inherits Rectangle {
+    in property <string> amount: "";
+    in property <string> currency: "$";
+    in property <string> period: "";
+
+    background: transparent;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 0px;
+
+        Text {
+            text: root.currency;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: top;
+        }
+
+        Text {
+            text: root.amount;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: bottom;
+        }
+
+        if root.period != "": Text {
+            text: root.period;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: bottom;
+        }
+    }
+}

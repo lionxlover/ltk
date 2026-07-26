@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LockScreenWidgetSmall inherits Rectangle {
+    background: Theme.glass-thin;
+    border-radius: Theme.radius-xl;
+    width: 170px;
+    height: 170px;
+
+    in property <string> icon: "🌤";
+    in property <string> value: "72°";
+    in property <string> label: "Weather";
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Text { text: icon; font-size: 32px; horizontal-alignment: center; }
+        Text { text: value; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
+        Text { text: label; font-size: Theme.text-xs; color: Theme.text-secondary; horizontal-alignment: center; }
+    }
+}

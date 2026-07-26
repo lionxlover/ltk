@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SharedElementTransition inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <length> from-x: 0px;
+    in property <length> from-y: 0px;
+    in property <length> from-w: 100px;
+    in property <length> from-h: 100px;
+    in property <length> to-x: 0px;
+    in property <length> to-y: 0px;
+    in property <length> to-w: 200px;
+    in property <length> to-h: 200px;
+
+    content := Rectangle {
+    opacity: active ? 1 : 0;
+    animate opacity { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+        background: transparent;
+    }
+}

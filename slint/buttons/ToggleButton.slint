@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ToggleButton inherits Rectangle {
+    in-out property <string> text: "Toggle";
+    in-out property <bool> active: false;
+    in-out property <bool> enabled: true;
+
+    background: root.active ? Theme.accent : Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: root.active ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/power-off.svg");
+            fa-size: 14px;
+            fa-color: root.active ? #ffffff : Theme.text-primary;
+        }
+
+        Text {
+            text: root.text;
+            color: root.active ? #ffffff : Theme.text-primary;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => {
+            if (root.enabled) {
+                root.active = !root.active;
+            }
+        }
+    }
+}

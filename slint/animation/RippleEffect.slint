@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RippleEffect inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> active: false;
+    in property <length> ripple-x: 0px;
+    in property <length> ripple-y: 0px;
+
+    if active: Rectangle {
+        x: ripple-x - 50px;
+        y: ripple-y - 50px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        background: Theme.accent-glow;
+        opacity: active ? 0 : 0.4;
+        animate opacity { duration: Theme.dur-slow; easing: Theme.ease-standard; }
+    }
+}

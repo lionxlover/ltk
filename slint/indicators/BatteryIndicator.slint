@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BatteryIndicator inherits Rectangle {
+    in property <int> level: 80;
+
+    width: 28px;
+    height: 14px;
+    background: #00000000;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        x: 0;
+        y: 2px;
+        width: 24px;
+        height: 10px;
+        background: Theme.bg-overlay;
+        border-radius: 2px;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        fill := Rectangle {
+            x: 1px;
+            y: 1px;
+            width: (parent.width - 2px) * Math.min(level, 100) / 100;
+            height: parent.height - 2px;
+            border-radius: 1px;
+            background: level <= 10 ? Theme.state-error : (level <= 30 ? Theme.state-warning : Theme.state-success);
+        }
+    }
+
+    Rectangle {
+        x: 24px;
+        y: 5px;
+        width: 3px;
+        height: 4px;
+        background: Theme.border-subtle;
+        border-radius: 1px;
+    }
+}

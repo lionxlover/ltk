@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonCard inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+
+    VerticalLayout {
+        Rectangle {
+            height: 120px;
+            background: Theme.bg-overlay;
+            border-radius: Theme.radius-lg;
+        }
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 8px;
+
+            SkeletonHeading { skeleton-width: parent.width * 0.6; }
+
+            SkeletonText { skeleton-width: parent.width; }
+            SkeletonText { skeleton-width: parent.width * 0.8; }
+        }
+    }
+}

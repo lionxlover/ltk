@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VerticalStack inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 8px;
+    in property <string> alignment: "stretch";
+    in property <length> padding: 0px;
+
+    VerticalLayout {
+        spacing: gap;
+        padding: padding;
+    }
+}

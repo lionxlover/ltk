@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VoiceSpeechInput inherits Rectangle {
+    in-out property <bool> recording: false;
+    in-out property <string> text;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: recording ? Theme.error : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    // Mic button
+    Rectangle {
+        x: 4px;
+        y: (parent.height - 32px) / 2;
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        background: recording ? Theme.error : Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "🎤";
+            font-size: 14px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        TouchArea {
+            clicked => { root.recording = !root.recording; }
+        }
+    }
+
+    Text {
+        x: 44px;
+        y: (parent.height - self.height) / 2;
+        text: root.recording ? "Listening..." : (root.text == "" ? "Tap mic to start speaking" : root.text);
+        color: root.recording ? Theme.error : (root.text == "" ? Theme.text-placeholder : Theme.text-primary);
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

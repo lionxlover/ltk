@@ -1,0 +1,87 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NumberStepper inherits Rectangle {
+    in-out property <int> value: 0;
+    in-out property <int> min: 0;
+    in-out property <int> max: 999;
+    in-out property <int> step: 1;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: 40px;
+        height: parent.height;
+        border-radius: Theme.radius-md;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "\u{2212}";
+            color: Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        TouchArea {
+            clicked => {
+                if (root.value - root.step >= root.min) {
+                    root.value = root.value - root.step;
+                }
+            }
+        }
+    }
+
+    Rectangle { x: 40px; y: 8px; width: 1px; height: 24px; background: Theme.border-base; }
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.value;
+        color: Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 14px;
+        font-weight: Theme.weight-medium;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    Rectangle { x: parent.width - 41px; y: 8px; width: 1px; height: 24px; background: Theme.border-base; }
+
+    Rectangle {
+        x: parent.width - 40px;
+        y: 0px;
+        width: 40px;
+        height: parent.height;
+        border-radius: Theme.radius-md;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "+";
+            color: Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        TouchArea {
+            clicked => {
+                if (root.value + root.step <= root.max) {
+                    root.value = root.value + root.step;
+                }
+            }
+        }
+    }
+}

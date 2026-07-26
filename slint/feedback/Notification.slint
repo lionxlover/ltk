@@ -1,0 +1,93 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Notification inherits Rectangle {
+    in property <string> title: "";
+    in property <string> text: "";
+    in property <string> kind: "info"; // info, success, warning, error
+    in property <bool> show-icon: true;
+
+    callback close();
+
+    min-height: 48px;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    drop-shadow-offset-y: 4px;
+    drop-shadow-blur: 12px;
+    drop-shadow-color: Theme.border-default;
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        // Left accent bar
+        Rectangle {
+            width: 3px;
+            horizontal-stretch: 0;
+            border-radius: 2px;
+            background: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
+        }
+
+        // Icon
+        if show-icon: Text {
+            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "ℹ"));
+            color: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
+            font-size: Theme.text-lg;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        // Content
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: Theme.sp-0-5;
+
+            if title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            if text != "": Text {
+                text: root.text;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                wrap: word-wrap;
+            }
+        }
+
+        // Close
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            horizontal-stretch: 0;
+
+            close-bg := Rectangle {
+                border-radius: Theme.radius-xs;
+                background: close-ta.pressed ? Theme.surface-pressed
+                    : close-ta.has-hover ? Theme.surface-hover
+                    : transparent;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            close-ta := TouchArea {
+                clicked => { root.close(); }
+            }
+        }
+    }
+}

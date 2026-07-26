@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VirtualizedScroll inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <int> total-items: 100;
+    in property <length> item-height: 40px;
+    in property <length> visible-height: 400px;
+
+    Flickable {
+        viewport-height: total-items * item-height;
+    }
+}

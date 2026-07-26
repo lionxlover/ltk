@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DeprecatedBadge inherits Rectangle {
+    min-width: 64px;
+    height: 20px;
+    background: Theme.bg-overlay;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: Theme.text-tertiary;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: "Deprecated";
+        color: Theme.text-tertiary;
+        font-size: 10px;
+        font-weight: Theme.weight-medium;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+}

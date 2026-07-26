@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BentoGrid inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 12px;
+    in property <int> columns: 4;
+    in property <int> rows: 3;
+
+    Flickable {
+        VerticalLayout {
+            spacing: gap;
+            HorizontalLayout { spacing: gap; }
+            HorizontalLayout { spacing: gap; }
+            HorizontalLayout { spacing: gap; }
+        }
+    }
+}

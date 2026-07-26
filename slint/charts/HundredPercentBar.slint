@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HundredPercentBar inherits Rectangle {
+    in property <[float]> series-a: [0.6, 0.7, 0.5];
+    in property <string> label: "100% Stacked Bar";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        for bar[i] in root.series-a: Rectangle { height: 24px;
+            HorizontalLayout { spacing: Theme.sp-2;
+                Rectangle { vertical-stretch: 1; clip: true;
+                    HorizontalLayout { alignment: start;
+                        Rectangle { horizontal-stretch: bar; background: Theme.accent; }
+                        Rectangle { horizontal-stretch: (1 - bar); background: Theme.state-success; }
+                    }
+                }
+                Text { text: "\{round(bar * 100)}%"; color: Theme.text-tertiary; font-size: Theme.text-xs; width: 36px; vertical-alignment: center; }
+            }
+        }
+    }
+}

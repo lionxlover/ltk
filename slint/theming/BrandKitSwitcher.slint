@@ -1,0 +1,106 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BrandKitSwitcher inherits Rectangle {
+    in-out property <int> selected: 0;
+
+    callback selected-changed(int);
+
+    width: 100%;
+    height: 44px;
+    background: #00000000;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+        alignment: start;
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: #5B9DFA;
+            border-width: root.selected == 0 ? 2px : 0px;
+            border-color: root.selected == 0 ? Theme.text-primary : #00000000;
+            y: (parent.height - self.height) / 2;
+
+            animate border-width { duration: Theme.dur-fast; }
+            TouchArea {
+                clicked => {
+                    root.selected = 0;
+                    root.selected-changed(0);
+                }
+            }
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: #A78BFA;
+            border-width: root.selected == 1 ? 2px : 0px;
+            border-color: root.selected == 1 ? Theme.text-primary : #00000000;
+            y: (parent.height - self.height) / 2;
+
+            animate border-width { duration: Theme.dur-fast; }
+            TouchArea {
+                clicked => {
+                    root.selected = 1;
+                    root.selected-changed(1);
+                }
+            }
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: #F472B6;
+            border-width: root.selected == 2 ? 2px : 0px;
+            border-color: root.selected == 2 ? Theme.text-primary : #00000000;
+            y: (parent.height - self.height) / 2;
+
+            animate border-width { duration: Theme.dur-fast; }
+            TouchArea {
+                clicked => {
+                    root.selected = 2;
+                    root.selected-changed(2);
+                }
+            }
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: #34D399;
+            border-width: root.selected == 3 ? 2px : 0px;
+            border-color: root.selected == 3 ? Theme.text-primary : #00000000;
+            y: (parent.height - self.height) / 2;
+
+            animate border-width { duration: Theme.dur-fast; }
+            TouchArea {
+                clicked => {
+                    root.selected = 3;
+                    root.selected-changed(3);
+                }
+            }
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: Theme.swatch-orange;
+            border-width: root.selected == 4 ? 2px : 0px;
+            border-color: root.selected == 4 ? Theme.text-primary : #00000000;
+            y: (parent.height - self.height) / 2;
+
+            animate border-width { duration: Theme.dur-fast; }
+            TouchArea {
+                clicked => {
+                    root.selected = 4;
+                    root.selected-changed(4);
+                }
+            }
+        }
+    }
+}

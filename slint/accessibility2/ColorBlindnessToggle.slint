@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColorBlindnessToggle inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> modes: ["Normal", "Protanopia", "Deuteranopia", "Tritanopia", "Achromatopsia"];
+    in-out property <int> active-mode: 0;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "Color Blindness Simulation";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        for mode[idx] in modes: Rectangle {
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            background: active-mode == idx ? Theme.accent-subtle : transparent;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                Rectangle {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 8px;
+                    border-width: 2px;
+                    border-color: active-mode == idx ? Theme.accent : Theme.border-default;
+                    y: 8px;
+
+                    if active-mode == idx: Rectangle {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 4px;
+                        background: Theme.accent;
+                        x: 2px;
+                        y: 2px;
+                    }
+                }
+
+                Text {
+                    text: mode;
+                    font-size: Theme.text-sm;
+                    color: active-mode == idx ? Theme.accent : Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.active-mode = idx; }
+            }
+        }
+    }
+}

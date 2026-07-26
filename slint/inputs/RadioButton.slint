@@ -1,0 +1,52 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RadioButton inherits Rectangle {
+    in property <string> text: "";
+    in property <bool> checked: false;
+    in property <bool> enabled: true;
+
+    callback clicked();
+
+    height: Theme.button-height-md;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+        alignment: start;
+
+        // Radio circle
+        Rectangle {
+            width: 18px;
+            height: 18px;
+            border-radius: Theme.radius-full;
+            border-width: 2px;
+            border-color: !enabled ? Theme.text-disabled : (checked ? Theme.accent : (ta.has-hover ? Theme.border-strong : Theme.border-base));
+            background: (checked && enabled) ? Theme.accent-subtle : #00000000;
+            horizontal-stretch: 0;
+
+            if checked: Rectangle {
+                width: 8px;
+                height: 8px;
+                border-radius: Theme.radius-full;
+                background: enabled ? Theme.accent : Theme.text-disabled;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        // Label
+        if text != "": Text {
+            text: root.text;
+            color: enabled ? Theme.text-primary : Theme.text-disabled;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-base;
+            font-weight: Theme.weight-regular;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

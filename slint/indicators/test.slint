@@ -1,0 +1,112 @@
+import { Theme } from "../core/Theme.slint";
+import { NumericBadge } from "NumericBadge.slint";
+import { DotBadge } from "DotBadge.slint";
+import { StatusBadge } from "StatusBadge.slint";
+import { TextBadge } from "TextBadge.slint";
+import { StatusDot } from "StatusDot.slint";
+import { TagLabel } from "TagLabel.slint";
+import { EnvironmentBadge } from "EnvironmentBadge.slint";
+import { SignalBars } from "SignalBars.slint";
+import { BatteryIndicator } from "BatteryIndicator.slint";
+import { VersionBadge } from "VersionBadge.slint";
+
+export component IndicatorsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Indicators — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "NumericBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            NumericBadge { count: 3; }
+            NumericBadge { count: 42; }
+            NumericBadge { count: 150; }
+        }
+
+        Text { text: "DotBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            DotBadge { visible: true; }
+            DotBadge { visible: false; }
+        }
+
+        Text { text: "StatusBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            StatusBadge { label: "Online"; variant: 0; }
+            StatusBadge { label: "Offline"; variant: 1; }
+            StatusBadge { label: "Away"; variant: 2; }
+            StatusBadge { label: "Busy"; variant: 3; }
+        }
+
+        Text { text: "TextBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            TextBadge { label: "Default"; variant: 0; }
+            TextBadge { label: "Accent"; variant: 1; }
+            TextBadge { label: "Success"; variant: 2; }
+            TextBadge { label: "Warning"; variant: 3; }
+            TextBadge { label: "Error"; variant: 4; }
+        }
+
+        Text { text: "StatusDot"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            StatusDot { status: 0; }
+            StatusDot { status: 1; }
+            StatusDot { status: 2; }
+            StatusDot { status: 3; }
+        }
+
+        Text { text: "TagLabel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            TagLabel { label: "Bug"; tag-color: Theme.state-error; }
+            TagLabel { label: "Feature"; tag-color: Theme.state-info; }
+            TagLabel { label: "Docs"; tag-color: Theme.state-success; }
+            TagLabel { label: "Design"; tag-color: Theme.accent; }
+        }
+
+        Text { text: "EnvironmentBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            EnvironmentBadge { env: 0; }
+            EnvironmentBadge { env: 1; }
+            EnvironmentBadge { env: 2; }
+        }
+
+        Text { text: "SignalBars"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            SignalBars { bars: 1; }
+            SignalBars { bars: 2; }
+            SignalBars { bars: 3; }
+            SignalBars { bars: 4; }
+        }
+
+        Text { text: "BatteryIndicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            BatteryIndicator { level: 5; }
+            BatteryIndicator { level: 25; }
+            BatteryIndicator { level: 60; }
+            BatteryIndicator { level: 100; }
+        }
+
+        Text { text: "VersionBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            VersionBadge { version: "0.1.0"; }
+            VersionBadge { version: "1.0.0"; }
+            VersionBadge { version: "2.3.1-beta"; }
+        }
+        }
+    }
+}

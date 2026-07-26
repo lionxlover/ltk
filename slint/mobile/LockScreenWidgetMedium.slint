@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LockScreenWidgetMedium inherits Rectangle {
+    background: Theme.glass-thin;
+    border-radius: Theme.radius-xl;
+    width: 364px;
+    height: 170px;
+
+    in property <string> title: "Upcoming";
+    in property <[string]> items: ["Meeting at 2pm", "Call with Alex"];
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: title;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-secondary;
+        }
+
+        for item[i] in items: Text {
+            text: item;
+            font-size: Theme.text-base;
+            color: Theme.text-primary;
+            overflow: elide;
+        }
+    }
+}

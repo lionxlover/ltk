@@ -1,0 +1,49 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OverflowToolbar inherits Rectangle {
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    height: 40px;
+    clip: true;
+
+    in property <int> visible-items: 5;
+    in property <int> total-items: 10;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+        spacing: Theme.sp-1;
+
+        for item_idx[item] in visible-items: Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            y: 4px;
+
+            Text {
+                text: "⬜";
+                font-size: 14px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        if total-items > visible-items: Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            y: 4px;
+
+            Text {
+                text: "···";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-bold;
+                color: Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

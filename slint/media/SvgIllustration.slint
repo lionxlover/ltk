@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SvgIllustration inherits Rectangle {
+    in property <string> label: "Illustration";
+
+    width: 200px;
+    height: 160px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: "🎨";
+            font-size: 32px;
+            horizontal-alignment: center;
+        }
+
+        if root.label != "": Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+        }
+    }
+}

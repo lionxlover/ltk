@@ -1,0 +1,252 @@
+import { Theme } from "../core/Theme.slint";
+import { TextInput } from "TextInput.slint";
+import { PasswordInput } from "PasswordInput.slint";
+import { SearchInput } from "SearchInput.slint";
+import { EmailInput } from "EmailInput.slint";
+import { UrlInput } from "UrlInput.slint";
+import { TelInput } from "TelInput.slint";
+import { NumberInput } from "NumberInput.slint";
+import { NumberStepper } from "NumberStepper.slint";
+import { CurrencyInput } from "CurrencyInput.slint";
+import { PercentageInput } from "PercentageInput.slint";
+import { MeasurementInput } from "MeasurementInput.slint";
+import { TextareaFixed } from "TextareaFixed.slint";
+import { TextareaAutoResize } from "TextareaAutoResize.slint";
+import { RichTextEditor } from "RichTextEditor.slint";
+import { CodeEditor } from "CodeEditor.slint";
+import { MarkdownEditor } from "MarkdownEditor.slint";
+import { OtpInput } from "OtpInput.slint";
+import { CreditCardInput } from "CreditCardInput.slint";
+import { DatePickerInput } from "DatePickerInput.slint";
+import { TimePickerInput } from "TimePickerInput.slint";
+import { DateTimePicker } from "DateTimePicker.slint";
+import { DateRangePicker } from "DateRangePicker.slint";
+import { MonthYearPicker } from "MonthYearPicker.slint";
+import { WeekPicker } from "WeekPicker.slint";
+import { ColorPickerInput } from "ColorPickerInput.slint";
+import { GradientBuilderInput } from "GradientBuilderInput.slint";
+import { FileUploadDropZone } from "FileUploadDropZone.slint";
+import { ImageUploadPreview } from "ImageUploadPreview.slint";
+import { MultiFileUpload } from "MultiFileUpload.slint";
+import { CameraCaptureInput } from "CameraCaptureInput.slint";
+import { VoiceSpeechInput } from "VoiceSpeechInput.slint";
+import { QrBarcodeScanner } from "QrBarcodeScanner.slint";
+import { SignaturePad } from "SignaturePad.slint";
+import { EmojiPickerInput } from "EmojiPickerInput.slint";
+import { IconPickerInput } from "IconPickerInput.slint";
+import { FontPickerInput } from "FontPickerInput.slint";
+import { TagsChipsInput } from "TagsChipsInput.slint";
+import { MentionInput } from "MentionInput.slint";
+import { HashtagInput } from "HashtagInput.slint";
+import { AutocompleteInput } from "AutocompleteInput.slint";
+import { CommandSpotlightInput } from "CommandSpotlightInput.slint";
+import { AddressInput } from "AddressInput.slint";
+import { MaskedInput } from "MaskedInput.slint";
+import { GeolocationInput } from "GeolocationInput.slint";
+import { JsonYamlEditor } from "JsonYamlEditor.slint";
+
+component SectionHeader inherits Text {
+    color: Theme.text-secondary;
+    font-size: Theme.text-sm;
+    font-weight: Theme.weight-semibold;
+}
+
+export component TextInputTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 8000px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-4;
+
+            Text {
+                text: "Text & Input \u{2014} Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // ── Basic Text ──
+        SectionHeader { text: "1 — Text Input (single line)"; }
+        TextInput { placeholder: "Enter your name..."; }
+
+        SectionHeader { text: "2 — Password Input"; }
+        PasswordInput {}
+
+        SectionHeader { text: "3 — Search Input"; }
+        SearchInput {}
+
+        SectionHeader { text: "4 — Email Input"; }
+        EmailInput {}
+
+        SectionHeader { text: "5 — URL Input"; }
+        UrlInput {}
+
+        SectionHeader { text: "6 — Tel / Phone"; }
+        TelInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Numeric ──
+        SectionHeader { text: "7 — Number Input"; }
+        NumberInput {}
+
+        SectionHeader { text: "8 — Number Stepper"; }
+        NumberStepper { value: 5; }
+
+        SectionHeader { text: "9 — Currency Input"; }
+        CurrencyInput {}
+
+        SectionHeader { text: "10 — Percentage Input"; }
+        PercentageInput { text: "75"; }
+
+        SectionHeader { text: "11 — Measurement Input"; }
+        MeasurementInput { text: "375"; unit: "px"; }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Textareas ──
+        SectionHeader { text: "12 — Textarea (fixed)"; }
+        TextareaFixed {}
+
+        SectionHeader { text: "13 — Textarea (auto-resize)"; }
+        TextareaAutoResize {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Editors ──
+        SectionHeader { text: "14 — Rich Text / WYSIWYG"; }
+        RichTextEditor {}
+
+        SectionHeader { text: "15 — Code Editor"; }
+        CodeEditor {}
+
+        SectionHeader { text: "16 — Markdown Editor"; }
+        MarkdownEditor {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── OTP / PIN ──
+        SectionHeader { text: "17 — OTP / PIN Input"; }
+        OtpInput {}
+
+        SectionHeader { text: "18 — Credit Card Input"; }
+        CreditCardInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Date / Time ──
+        SectionHeader { text: "19 — Date Picker"; }
+        DatePickerInput {}
+
+        SectionHeader { text: "20 — Time Picker"; }
+        TimePickerInput {}
+
+        SectionHeader { text: "21 — Date-Time Picker"; }
+        DateTimePicker {}
+
+        SectionHeader { text: "22 — Date Range Picker"; }
+        DateRangePicker {}
+
+        SectionHeader { text: "23 — Month / Year Picker"; }
+        MonthYearPicker {}
+
+        SectionHeader { text: "24 — Week Picker"; }
+        WeekPicker {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Color ──
+        SectionHeader { text: "25 — Color Picker"; }
+        ColorPickerInput {}
+
+        SectionHeader { text: "26 — Gradient Builder"; }
+        GradientBuilderInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Upload ──
+        SectionHeader { text: "27 — File Upload (drag & drop)"; }
+        FileUploadDropZone {}
+
+        SectionHeader { text: "28 — Image Upload (preview + crop)"; }
+        ImageUploadPreview {}
+
+        SectionHeader { text: "29 — Multi-file Upload"; }
+        MultiFileUpload {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Capture ──
+        SectionHeader { text: "30 — Camera Capture"; }
+        CameraCaptureInput {}
+
+        SectionHeader { text: "31 — Voice / Speech Input"; }
+        VoiceSpeechInput {}
+
+        SectionHeader { text: "32 — QR / Barcode Scanner"; }
+        QrBarcodeScanner {}
+
+        SectionHeader { text: "33 — Signature Pad"; }
+        SignaturePad {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Pickers ──
+        SectionHeader { text: "34 — Emoji Picker"; }
+        EmojiPickerInput {}
+
+        SectionHeader { text: "35 — Icon Picker"; }
+        IconPickerInput {}
+
+        SectionHeader { text: "36 — Font Picker"; }
+        FontPickerInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Tag Inputs ──
+        SectionHeader { text: "37 — Tags / Chips Input"; }
+        TagsChipsInput {}
+
+        SectionHeader { text: "38 — Mention Input (@user)"; }
+        MentionInput {}
+
+        SectionHeader { text: "39 — Hashtag Input (#tag)"; }
+        HashtagInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Autocomplete ──
+        SectionHeader { text: "40 — Autocomplete Input"; }
+        AutocompleteInput {}
+
+        SectionHeader { text: "41 — Command / Spotlight"; }
+        CommandSpotlightInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Structured ──
+        SectionHeader { text: "42 — Address Input"; }
+        AddressInput {}
+
+        SectionHeader { text: "43 — Masked / Regex Input"; }
+        MaskedInput {}
+
+        SectionHeader { text: "44 — Geolocation Input"; }
+        GeolocationInput {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Code ──
+        SectionHeader { text: "45 — JSON / YAML Editor"; }
+        JsonYamlEditor {}
+        }
+    }
+}

@@ -1,0 +1,76 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TypographyConfigurator inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> families: ["Inter", "Space Grotesk", "JetBrains Mono"];
+    in property <[string]> sizes: ["xs (11)", "sm (12)", "base (14)", "lg (16)", "xl (18)", "2xl (20)"];
+    in-out property <int> selected-family: 0;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "Typography Scale";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        for family[f] in families: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: selected-family == f ? Theme.accent-subtle : transparent;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                Rectangle {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 8px;
+                    border-width: 2px;
+                    border-color: selected-family == f ? Theme.accent : Theme.border-default;
+                    y: 10px;
+
+                    if selected-family == f: Rectangle {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 4px;
+                        background: Theme.accent;
+                        x: 2px;
+                        y: 2px;
+                    }
+                }
+
+                Text {
+                    text: family;
+                    font-size: Theme.text-sm;
+                    color: selected-family == f ? Theme.accent : Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.selected-family = f; }
+            }
+        }
+
+        for size[s] in sizes: Rectangle {
+            height: 28px;
+
+            Text {
+                text: size;
+                font-size: Theme.text-xs;
+                color: Theme.text-secondary;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

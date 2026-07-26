@@ -1,0 +1,17 @@
+// Semantic — Error / Destructive
+export global SemanticError {
+    in-out property <bool> dark: true;
+
+    out property <color> error-50: dark ? #fef2f2 : #fef2f2;
+    out property <color> error-100: dark ? #fee2e2 : #fee2e2;
+    out property <color> error-200: dark ? #fecaca : #fecaca;
+    out property <color> error-300: dark ? #fca5a5 : #fca5a5;
+    out property <color> error-400: dark ? #F28B82 : #f87171;
+    out property <color> error-500: dark ? #F28B82 : #dc2626;
+    out property <color> error-600: dark ? #dc2626 : #b91c1c;
+    out property <color> error-700: dark ? #b91c1c : #991b1b;
+
+    out property <color> error-surface: error-500.with-alpha(0.12);
+    out property <color> error-on-surface: error-500;
+    out property <color> error-border: error-500.with-alpha(0.25);
+}

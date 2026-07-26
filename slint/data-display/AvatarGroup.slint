@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+import { Avatar } from "Avatar.slint";
+
+export component AvatarGroup inherits Rectangle {
+    in property <length> avatar-size: 36px;
+    in property <int> max-visible: 4;
+
+    in property <image> img-1: @image-url("");
+    in property <string> fb-1: "";
+    in property <image> img-2: @image-url("");
+    in property <string> fb-2: "";
+    in property <image> img-3: @image-url("");
+    in property <string> fb-3: "";
+    in property <image> img-4: @image-url("");
+    in property <string> fb-4: "";
+    in property <image> img-5: @image-url("");
+    in property <string> fb-5: "";
+    in property <int> overflow-count: 0;
+
+    width: avatar-size * 3 + Theme.sp-1 * 2;
+    height: avatar-size;
+    background: transparent;
+
+    if max-visible >= 1: Avatar {
+        x: 0;
+        y: (parent.height - self.height) / 2;
+        source: root.img-1;
+        fallback: root.fb-1;
+        avatar-size: root.avatar-size;
+    }
+
+    if max-visible >= 2: Avatar {
+        x: avatar-size - 8px;
+        y: (parent.height - self.height) / 2;
+        source: root.img-2;
+        fallback: root.fb-2;
+        avatar-size: root.avatar-size;
+    }
+
+    if max-visible >= 3: Avatar {
+        x: (avatar-size - 8px) * 2;
+        y: (parent.height - self.height) / 2;
+        source: root.img-3;
+        fallback: root.fb-3;
+        avatar-size: root.avatar-size;
+    }
+
+    if overflow-count > 0: Rectangle {
+        x: (avatar-size - 8px) * max-visible;
+        y: (parent.height - self.height) / 2;
+        width: avatar-size;
+        height: avatar-size;
+        border-radius: Theme.radius-full;
+        background: Theme.bg-overlay;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "+" + overflow-count;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: avatar-size * 0.35;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}

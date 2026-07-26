@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DenseList inherits Rectangle {
+    in property <int> item-count: 0;
+    in property <[string]> items: [];
+
+    callback clicked(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for idx in root.item-count: Rectangle {
+            height: 32px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                alignment: start;
+
+                Text {
+                    text: idx < root.items.length ? root.items[idx] : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+
+            row-ta := TouchArea {
+                clicked => { root.clicked(idx); }
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StickyWrapper inherits Rectangle {
+    background: transparent;
+
+    in property <length> sticky-top: 0px;
+    in property <bool> stuck: false;
+
+    Rectangle {
+        y: stuck ? 0px : 0px;
+        background: stuck ? Theme.bg-raised : transparent;
+        z: 10;
+    }
+}

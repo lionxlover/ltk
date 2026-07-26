@@ -1,0 +1,19 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InfiniteScrollTrigger inherits Rectangle {
+    in property <bool> loading: false;
+
+    height: 60px;
+    background: #00000000;
+
+    if loading: Rectangle {
+        width: 24px;
+        height: 24px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        border-radius: Theme.radius-full;
+        border-width: 3px;
+        border-color: Theme.accent;
+        border-color: #00000000;
+    }
+}

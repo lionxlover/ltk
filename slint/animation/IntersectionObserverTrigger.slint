@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IntersectionObserverTrigger inherits Rectangle {
+    background: transparent;
+
+    in property <bool> in-viewport: false;
+    in property <int> threshold: 50;
+
+    opacity: in-viewport ? 1 : 0;
+    animate opacity { duration: Theme.dur-slow; easing: Theme.ease-standard; }
+}

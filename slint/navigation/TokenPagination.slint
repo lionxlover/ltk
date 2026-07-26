@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component TokenPagination inherits Rectangle {
+    in property <bool> has-more: false;
+
+    callback load-more();
+
+    height: 44px;
+    background: #00000000;
+
+    Rectangle {
+        width: 160px;
+        height: 36px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        border-radius: Theme.radius-sm;
+        border-width: 1px;
+        border-color: Theme.border-base;
+        background: btn-ta.pressed ? Theme.surface-pressed
+            : btn-ta.has-hover ? Theme.surface-hover
+            : #00000000;
+        visible: root.has-more;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.sp-2;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/angles-down.svg");
+                fa-size: 12px;
+                fa-color: Theme.text-secondary;
+            }
+
+            Text {
+                text: "Load more";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+        }
+
+        btn-ta := TouchArea {
+            clicked => {
+                root.load-more();
+            }
+        }
+    }
+}

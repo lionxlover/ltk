@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SwipeGestureHandler inherits Rectangle {
+    background: transparent;
+
+    in property <bool> swiped-left: false;
+    in property <bool> swiped-right: false;
+    in property <length> swipe-threshold: 80px;
+}

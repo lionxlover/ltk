@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PageTransitionFade inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> show: false;
+
+    opacity: show ? 1 : 0;
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+}

@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MaximizedWindow inherits Rectangle {
+    background: Theme.bg-surface;
+    clip: true;
+
+    in property <string> title: "Window";
+    in property <bool> maximized: true;
+    in property <bool> fullscreen: false;
+
+    Rectangle {
+        height: fullscreen ? 0px : 38px;
+        visible: !fullscreen;
+        background: Theme.bg-headerbar;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-close; y: 13px; }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-minimize; y: 13px; }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-zoom; y: 13px; }
+
+            Text {
+                text: title;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                vertical-stretch: 1;
+            }
+        }
+    }
+
+    Rectangle {
+        y: fullscreen ? 0px : 38px;
+        vertical-stretch: 1;
+        background: transparent;
+    }
+}

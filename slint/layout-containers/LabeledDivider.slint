@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LabeledDivider inherits Rectangle {
+    background: transparent;
+    height: 24px;
+
+    in property <string> label: "";
+
+    HorizontalLayout {
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            vertical-stretch: 1;
+            y: 11px;
+            background: Theme.border-default;
+        }
+
+        Text {
+            text: label;
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            y: 3px;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            y: 11px;
+            background: Theme.border-default;
+        }
+    }
+}

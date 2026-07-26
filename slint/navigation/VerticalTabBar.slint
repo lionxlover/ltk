@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VerticalTabBar inherits Rectangle {
+    in-out property <int> active: 0;
+
+    width: 160px;
+    background: Theme.bg-surface;
+
+    VerticalLayout {
+        padding: 8px;
+        spacing: 2px;
+
+        Rectangle {
+            height: 36px;
+            background: root.active == 0 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Overview";
+                color: root.active == 0 ? Theme.accent : Theme.text-primary;
+                font-size: 13px;
+                font-weight: root.active == 0 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 0; } }
+        }
+
+        Rectangle {
+            height: 36px;
+            background: root.active == 1 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Analytics";
+                color: root.active == 1 ? Theme.accent : Theme.text-primary;
+                font-size: 13px;
+                font-weight: root.active == 1 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 1; } }
+        }
+
+        Rectangle {
+            height: 36px;
+            background: root.active == 2 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Reports";
+                color: root.active == 2 ? Theme.accent : Theme.text-primary;
+                font-size: 13px;
+                font-weight: root.active == 2 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 2; } }
+        }
+    }
+}

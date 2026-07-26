@@ -1,0 +1,65 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DateTimePicker inherits Rectangle {
+    in-out property <string> date-text;
+    in-out property <string> time-text;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        text: "📅";
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: 36px;
+        y: (parent.height - self.height) / 2;
+        text: root.date-text == "" ? "dd/mm/yyyy" : root.date-text;
+        color: root.date-text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    // Divider
+    Rectangle {
+        x: parent.width / 2 - 1px;
+        y: 8px;
+        width: 1px;
+        height: 24px;
+        background: Theme.border-base;
+    }
+
+    Text {
+        x: parent.width / 2 + 12px;
+        y: (parent.height - self.height) / 2;
+        text: "◷";
+        color: Theme.text-tertiary;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: parent.width / 2 + 32px;
+        y: (parent.height - self.height) / 2;
+        text: root.time-text == "" ? "hh:mm" : root.time-text;
+        color: root.time-text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

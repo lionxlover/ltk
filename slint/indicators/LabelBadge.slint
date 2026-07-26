@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LabelBadge inherits Rectangle {
+    in property <string> text: "New";
+    in property <int> variant: 0;
+
+    min-width: 36px;
+    height: 20px;
+    background: variant == 0 ? Theme.accent : (variant == 1 ? Theme.warning : (variant == 2 ? Theme.error : Theme.success));
+    border-radius: 10px;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: root.text;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: Theme.weight-bold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+}

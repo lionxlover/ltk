@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component FollowButton inherits Rectangle {
+    in property <bool> following: false;
+    callback clicked();
+
+    width: self.preferred-width;
+    height: 36px;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: root.following ? Theme.bg-overlay : Theme.accent;
+        border-radius: Theme.radius-full;
+        border-width: root.following ? 1px : 0px;
+        border-color: root.following ? Theme.border-strong : #00000000;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.sp-1;
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            if !root.following: FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/user-plus.svg");
+                fa-size: 13px;
+                fa-color: Theme.on-accent;
+            }
+
+            Text {
+                text: root.following ? "Following" : "Follow";
+                color: root.following ? Theme.text-primary : Theme.on-accent;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        touch := TouchArea {
+            clicked => {
+                root.clicked();
+            }
+        }
+    }
+}

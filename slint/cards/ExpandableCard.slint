@@ -1,0 +1,75 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ExpandableCard inherits Rectangle {
+    in-out property <string> title: "Expandable Section";
+    in-out property <string> content: "Hidden content revealed on expand";
+    in-out property <bool> expanded: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 48px;
+            background: Theme.bg-raised;
+            border-radius: Theme.radius-lg;
+
+            HorizontalLayout {
+                padding-left: 16px;
+                padding-right: 16px;
+
+                Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-size: 14px;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                Rectangle {
+                    width: 14px;
+                    height: 14px;
+                    y: (parent.height - self.height) / 2;
+
+                    Image {
+                        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
+                        width: 14px;
+                        height: 14px;
+                        visible: !root.expanded;
+                        colorize: Theme.text-tertiary;
+                    }
+
+                    Image {
+                        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-up.svg");
+                        width: 14px;
+                        height: 14px;
+                        visible: root.expanded;
+                        colorize: Theme.text-tertiary;
+                    }
+                }
+            }
+
+            TouchArea { clicked => { root.expanded = !root.expanded; } }
+        }
+
+        if root.expanded: Rectangle {
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-lg;
+
+            VerticalLayout {
+                padding: 16px;
+                Text {
+                    text: root.content;
+                    color: Theme.text-secondary;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+        }
+    }
+}

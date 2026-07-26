@@ -1,0 +1,97 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NestedCommentSection inherits Rectangle {
+    in property <int> item-count: 3;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    in property <[string]> demo-users: ["Alice", "Bob", "Carol"];
+    in property <[string]> demo-texts: ["Great work on this feature!", "Thanks! I'll address the feedback.", "Looks good to me."];
+    in property <[string]> demo-times: ["2h ago", "1h ago", "30m ago"];
+    in property <[int]> demo-depths: [0, 1, 2];
+    in property <[color]> demo-colors: [Theme.accent, Theme.green-500, #CD7F32];
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        for cmt[idx] in root.item-count: Rectangle {
+            height: 64px;
+            x: idx < root.demo_depths.length ? root.demo_depths[idx] * 24px : 0px;
+
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    horizontal-stretch: 0;
+
+                    Rectangle {
+                        width: 28px;
+                        height: 28px;
+                        border-radius: Theme.radius-full;
+                        background: idx < root.demo_colors.length ? root.demo_colors[idx] : Theme.accent;
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: idx < root.demo_users.length ? root.demo_users[idx] : "";
+                            color: #ffffff;
+                            font-family: Theme.font-ui;
+                            font-size: 9px;
+                            font-weight: Theme.weight-bold;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: Theme.sp-0-5;
+
+                    HorizontalLayout {
+                        spacing: Theme.sp-2;
+
+                        Text {
+                            text: idx < root.demo_users.length ? root.demo_users[idx] : "";
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            font-weight: Theme.weight-semibold;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: idx < root.demo_times.length ? root.demo_times[idx] : "";
+                            color: Theme.text-tertiary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Text {
+                        text: idx < root.demo_texts.length ? root.demo_texts[idx] : "";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        wrap: word-wrap;
+                    }
+
+                    Text {
+                        text: "Reply";
+                        color: Theme.accent;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                    }
+                }
+            }
+        }
+    }
+}

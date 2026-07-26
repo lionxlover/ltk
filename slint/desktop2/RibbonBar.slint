@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RibbonBar inherits Rectangle {
+    background: Theme.bg-raised;
+    clip: true;
+
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.border-default;
+    }
+
+    in property <[string]> tabs: ["Home", "Insert", "Design", "View"];
+    in-out property <int> active-tab: 0;
+
+    VerticalLayout {
+        HorizontalLayout {
+            height: 28px;
+            padding-left: Theme.sp-2;
+
+            for tab[idx] in tabs: Rectangle {
+                height: 28px;
+                horizontal-stretch: 1;
+                border-radius: Theme.radius-sm;
+                background: active-tab == idx ? Theme.bg-surface : transparent;
+
+                Text {
+                    text: tab;
+                    font-size: Theme.text-xs;
+                    font-weight: active-tab == idx ? Theme.weight-semibold : Theme.weight-regular;
+                    color: active-tab == idx ? Theme.text-primary : Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { root.active-tab = idx; }
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-surface;
+            HorizontalLayout {
+                padding: Theme.sp-2;
+            }
+        }
+    }
+}

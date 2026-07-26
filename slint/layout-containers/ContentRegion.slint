@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ContentRegion inherits Rectangle {
+    background: transparent;
+
+    in property <length> max-width: 960px;
+    in property <length> padding: 24px;
+
+    HorizontalLayout {
+        alignment: center;
+
+        Rectangle {
+            width: max-width;
+            padding: padding;
+        }
+    }
+}

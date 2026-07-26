@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InertiaMomentumScroll inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> momentum: true;
+    in property <int> friction: 95;
+
+    Flickable {
+        viewport-height: 1000px;
+    }
+}

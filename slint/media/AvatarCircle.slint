@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarCircle inherits Rectangle {
+    in property <string> initials: "";
+    in property <length> size: 40px;
+
+    width: size;
+    height: size;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-full;
+    border-width: 2px;
+    border-color: Theme.border-subtle;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.initials;
+        color: Theme.text-secondary;
+        font-family: Theme.font-ui;
+        font-size: size * 0.38;
+        font-weight: Theme.weight-semibold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}

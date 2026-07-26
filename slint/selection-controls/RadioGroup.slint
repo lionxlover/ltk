@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+import { RadioButton } from "RadioButton.slint";
+
+export component RadioGroup inherits Rectangle {
+    in-out property <[string]> labels: ["Option A", "Option B", "Option C"];
+    in-out property <int> selected-index: 0;
+
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 4px;
+        for lbl[idx] in root.labels: RadioButton {
+            label: lbl;
+            selected: idx == root.selected-index;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

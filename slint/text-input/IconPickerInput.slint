@@ -1,0 +1,52 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IconPickerInput inherits Rectangle {
+    in-out property <string> selected-icon: "✓";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        text: root.selected-icon;
+        color: Theme.accent;
+        font-size: 16px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: 36px;
+        y: (parent.height - self.height) / 2;
+        text: "Select icon...";
+        color: Theme.text-placeholder;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    // Icon grid hint
+    HorizontalLayout {
+        x: parent.width - 160px;
+        spacing: 6px;
+        alignment: end;
+
+        for ic in ["✓", "✕", "⚙", "❤", "★", "🔔", "📁"]: Text {
+            text: ic;
+            color: Theme.text-tertiary;
+            font-size: 14px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

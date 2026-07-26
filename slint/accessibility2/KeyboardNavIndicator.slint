@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component KeyboardNavIndicator inherits Rectangle {
+    background: transparent;
+
+    in property <bool> keyboard-mode: false;
+
+    Rectangle {
+        x: parent.width - 200px;
+        width: 180px;
+        height: 32px;
+        border-radius: Theme.radius-full;
+        background: keyboard-mode ? Theme.accent-subtle : transparent;
+        border-width: keyboard-mode ? 1px : 0px;
+        border-color: Theme.accent;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+            spacing: Theme.sp-2;
+
+            Text {
+                text: "⌨️";
+                font-size: 14px;
+                y: (parent.height - self.height) / 2;
+            }
+
+            Text {
+                text: "Keyboard Navigation";
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                color: Theme.accent;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

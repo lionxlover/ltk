@@ -1,0 +1,92 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LogViewer inherits Rectangle {
+    in property <int> item-count: 6;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    in property <[string]> levels: ["INFO", "WARN", "ERROR", "INFO", "DEBUG", "ERROR"];
+    in property <[brush]> colors: [Theme.text-secondary, Theme.amber-600, Theme.red-600, Theme.text-secondary, Theme.text-tertiary, Theme.red-600];
+    in property <[string]> timestamps: ["10:23:01", "10:23:04", "10:23:07", "10:23:10", "10:23:12", "10:23:15"];
+    in property <[string]> messages: ["Application started successfully", "Cache miss for key: user_session", "Connection refused: db-primary:5432", "Retrying connection (attempt 2)", "WebSocket frame received: 128 bytes", "Unhandled exception in worker thread"];
+
+    VerticalLayout {
+        Rectangle {
+            background: Theme.bg-overlay;
+            height: 32px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: "Log Viewer";
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            clip: true;
+
+            VerticalLayout {
+                for entry[idx] in root.item-count: Rectangle {
+                    height: 30px;
+                    background: idx == root.item-count - 1 ? Theme.surface-hover : Theme.bg-surface;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-3;
+                        padding-right: Theme.sp-3;
+                        spacing: Theme.sp-3;
+
+                        Text {
+                            text: "\{idx + 1}";
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-tertiary;
+                            vertical-alignment: center;
+                            width: 24px;
+                            horizontal-alignment: right;
+                        }
+
+                        Text {
+                            text: idx < root.levels.length ? root.levels[idx] : "";
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-medium;
+                            color: idx < root.colors.length ? root.colors[idx] : Theme.text-primary;
+                            vertical-alignment: center;
+                            width: 48px;
+                        }
+
+                        Text {
+                            text: idx < root.timestamps.length ? root.timestamps[idx] : "";
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-tertiary;
+                            vertical-alignment: center;
+                            width: 60px;
+                        }
+
+                        Text {
+                            text: idx < root.messages.length ? root.messages[idx] : "";
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DesktopWidgetContainer inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> title: "Widget";
+    in property <length> widget-width: 200px;
+    in property <length> widget-height: 120px;
+
+    width: widget-width;
+    height: widget-height;
+
+    HorizontalLayout {
+        padding: Theme.sp-2;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: title;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-tertiary;
+            y: 2px;
+            vertical-stretch: 1;
+        }
+
+        Rectangle {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+
+            Text {
+                text: "⋯";
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+
+    Rectangle {
+        y: 32px;
+        vertical-stretch: 1;
+        background: transparent;
+    }
+}

@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ActivityIndicator inherits Rectangle {
+    in property <bool> active: true;
+
+    width: 10px;
+    height: 10px;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        width: 10px;
+        height: 10px;
+        background: root.active ? Theme.success : Theme.text-tertiary;
+        border-radius: 5px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        animate background { duration: 500ms; }
+    }
+}

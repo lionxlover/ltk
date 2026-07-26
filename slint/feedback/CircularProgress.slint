@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CircularProgress inherits Rectangle {
+    in property <float> value: 0;
+    in property <float> max: 100;
+    in property <length> size: 48px;
+
+    in property <color> progress-color: Theme.accent;
+    in property <color> track-color: Theme.bg-overlay;
+
+    width: size * 1px;
+    height: size * 1px;
+    background: #00000000;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        border-width: 4px;
+        border-color: track-color;
+        background: #00000000;
+    }
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        border-width: 4px;
+        border-color: progress-color;
+        background: #00000000;
+        visible: value > 0;
+    }
+
+    center-text := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: Math.round(value) + "%";
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-xs;
+        font-weight: Theme.weight-semibold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}

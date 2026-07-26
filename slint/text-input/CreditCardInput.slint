@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CreditCardInput inherits Rectangle {
+    in-out property <string> card-number;
+    in-out property <string> placeholder: "1234  5678  9012  3456";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 48px;
+    horizontal-stretch: 1;
+
+
+    // Card brand icon
+    Rectangle {
+        x: 12px;
+        y: (parent.height - 28px) / 2;
+        width: 40px;
+        height: 28px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "◈";
+            color: Theme.accent;
+            font-size: 16px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    Text {
+        x: 64px;
+        y: (parent.height - self.height) / 2;
+        text: root.card-number == "" ? root.placeholder : root.card-number;
+        color: root.card-number == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 16px;
+        letter-spacing: 2px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

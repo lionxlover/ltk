@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HomeScreenWidget4x4 inherits Rectangle {
+    background: Theme.glass-regular;
+    border-radius: Theme.radius-xl;
+    width: 364px;
+    height: 364px;
+
+    in property <string> title: "Photos";
+    in property <int> photo-count: 12;
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: title;
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-overlay;
+        }
+
+        Text {
+            text: photo_count + " items";
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+        }
+    }
+}

@@ -1,0 +1,83 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EditableInlineTable inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> row-count: 0;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        if columns.length > 0: Rectangle {
+            height: 40px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: col;
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        VerticalLayout {
+            for row[rowidx] in root.row-count: Rectangle {
+                height: 40px;
+                background: row-ta.pressed ? Theme.surface-pressed
+                    : row-ta.has-hover ? Theme.surface-hover
+                    : transparent;
+
+                animate background { duration: Theme.dur-fast; }
+
+                HorizontalLayout {
+                    for col[i] in root.columns: Rectangle {
+                        horizontal-stretch: 1;
+
+                        Rectangle {
+                            x: Theme.sp-2;
+                            y: 6px;
+                            width: parent.width - Theme.sp-4;
+                            height: 28px;
+                            border-radius: Theme.radius-sm;
+                            border-width: 1px;
+                            border-color: cell-ta.has-hover ? Theme.accent : transparent;
+
+                            animate border-color { duration: Theme.dur-fast; }
+
+                            Text {
+                                x: Theme.sp-2;
+                                y: (parent.height - self.height) / 2;
+                                text: "Row \{rowidx + 1} — \{col}";
+                                color: Theme.text-primary;
+                                font-family: Theme.font-ui;
+                                font-size: Theme.text-sm;
+                                vertical-alignment: center;
+                                horizontal-stretch: 1;
+                            }
+
+                            cell-ta := TouchArea {}
+                        }
+                    }
+                }
+
+                row-ta := TouchArea {}
+            }
+        }
+    }
+}

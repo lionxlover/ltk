@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NetworkGraphViz inherits Rectangle {
+    in property <string> label: "Network Graph";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            // Edges
+            Rectangle { x: 60px; y: 50px; width: 80px; height: 2px; background: Theme.border-subtle; }
+            Rectangle { x: 60px; y: 50px; width: 2px; height: 60px; background: Theme.border-subtle; }
+            Rectangle { x: 140px; y: 50px; width: 2px; height: 60px; background: Theme.border-subtle; }
+            Rectangle { x: 60px; y: 110px; width: 80px; height: 2px; background: Theme.border-subtle; }
+
+            // Nodes
+            Rectangle { x: 52px; y: 42px; width: 16px; height: 16px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: 132px; y: 42px; width: 16px; height: 16px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: 52px; y: 102px; width: 16px; height: 16px; border-radius: Theme.radius-full; background: Theme.state-warning; }
+            Rectangle { x: 132px; y: 102px; width: 16px; height: 16px; border-radius: Theme.radius-full; background: Theme.state-error; }
+        }
+    }
+}

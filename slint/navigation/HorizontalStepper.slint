@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HorizontalStepper inherits Rectangle {
+    in property <[string]> steps: [];
+    in property <int> current: 0;
+
+    height: 80px;
+    background: #00000000;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 0;
+
+        for step[idx] in root.steps: HorizontalLayout {
+            horizontal-stretch: 1;
+            spacing: 0;
+
+            // Step circle + label column
+            VerticalLayout {
+                horizontal-stretch: 0;
+                spacing: Theme.sp-2;
+                alignment: center;
+
+                Rectangle {
+                    width: 32px;
+                    height: 32px;
+                    horizontal-stretch: 0;
+                    border-radius: Theme.radius-full;
+                    background: idx < root.current ? Theme.accent
+                        : idx == root.current ? Theme.accent
+                        : Theme.bg-overlay;
+                    border-width: idx <= root.current ? 0px : 2px;
+                    border-color: Theme.border-base;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: idx < root.current ? "✓" : (idx + 1);
+                        color: idx <= root.current ? Theme.on-accent : Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: step;
+                    color: idx <= root.current ? Theme.text-primary : Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: idx == root.current ? Theme.weight-semibold : Theme.weight-regular;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+
+            // Connector
+            if idx < root.steps.length - 1: Rectangle {
+                height: 2px;
+                horizontal-stretch: 1;
+                y: 16px;
+                background: idx < root.current ? Theme.accent : Theme.border-subtle;
+            }
+        }
+    }
+}

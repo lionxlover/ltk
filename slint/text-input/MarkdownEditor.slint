@@ -1,0 +1,62 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MarkdownEditor inherits Rectangle {
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 300px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: 36px;
+        background: Theme.bg-raised;
+
+        HorizontalLayout {
+            padding-left: 4px;
+            spacing: 2px;
+            alignment: start;
+
+            for tabitem in ["Write", "Preview"]: Rectangle {
+                width: 80px;
+                height: 28px;
+                border-radius: Theme.radius-sm;
+                background: tabitem == "Write" ? Theme.bg-surface : transparent;
+                vertical-stretch: 0;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: tabitem;
+                    color: tabitem == "Write" ? Theme.text-primary : Theme.text-tertiary;
+                    font-size: 12px;
+                    font-weight: tabitem == "Write" ? 600 : 400;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+
+    Rectangle { x: 0px; y: 36px; width: parent.width; height: 1px; background: Theme.border-subtle; }
+
+    Text {
+        x: 16px;
+        y: 52px;
+        width: parent.width - 32px;
+        text: "# Hello World\n\nThis is a **markdown** editor with *live* preview.\n\n- Item one\n- Item two";
+        color: Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 13px;
+        wrap: word-wrap;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

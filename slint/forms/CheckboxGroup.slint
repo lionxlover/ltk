@@ -1,0 +1,62 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CheckboxGroup inherits Rectangle {
+    in property <[string]> options: [];
+    in-out property <[bool]> checked-items: [];
+
+    callback changed(int, bool);
+
+    background: transparent;
+
+    VerticalLayout {
+        spacing: Theme.sp-2;
+
+        for opt[i] in root.options: Rectangle {
+            height: 28px;
+            background: transparent;
+
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+                alignment: start;
+
+                Rectangle {
+                    width: 16px;
+                    height: 16px;
+                    horizontal-stretch: 0;
+                    border-radius: Theme.radius-xs;
+                    border-width: 1.5px;
+                    border-color: i < root.checked-items.length && root.checked-items[i]
+                        ? Theme.accent : Theme.border-strong;
+                    background: i < root.checked-items.length && root.checked-items[i]
+                        ? Theme.accent : transparent;
+
+                    if i < root.checked-items.length && root.checked-items[i]: Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "✓";
+                        color: Theme.on-accent;
+                        font-size: Theme.text-xs;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: opt;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    if i < root.checked-items.length {
+                        root.checked-items[i] = !root.checked-items[i];
+                        root.changed(i, root.checked-items[i]);
+                    }
+                }
+            }
+        }
+    }
+}

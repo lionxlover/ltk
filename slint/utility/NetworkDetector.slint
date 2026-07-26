@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NetworkDetector inherits Rectangle {
+    background: transparent;
+
+    in property <bool> online: true;
+    in property <string> connection-type: "wifi";
+
+    Rectangle {
+        height: 28px;
+        border-radius: Theme.radius-sm;
+        background: online ? Theme.success : Theme.error;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            spacing: Theme.sp-1;
+
+            Rectangle {
+                width: 8px;
+                height: 8px;
+                border-radius: 4px;
+                background: online ? Theme.success : Theme.error;
+                y: 10px;
+            }
+
+            Text {
+                text: online ? "Online" : "Offline";
+                font-size: Theme.text-xs;
+                color: online ? Theme.success : Theme.error;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TreeView inherits Rectangle {
+    in property <int> item-count: 4;
+
+    callback clicked(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    in property <[string]> demo-names: ["src/", "  main.rs", "  lib.rs", "Cargo.toml"];
+    in property <[bool]> demo-is-folder: [true, false, false, false];
+    in property <[string]> demo-icons: ["📁", "📄", "📄", "📄"];
+
+    VerticalLayout {
+        for item[idx] in root.item-count: Rectangle {
+            height: 36px;
+            background: item-ta.pressed ? Theme.surface-pressed
+                : item-ta.has-hover ? Theme.surface-hover
+                : transparent;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                Rectangle {
+                    width: 16px;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: idx < root.demo_is_folder.length && root.demo_is_folder[idx] ? "▼" : " ";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: idx < root.demo_names.length ? root.demo_names[idx] : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: idx < root.demo_icons.length ? root.demo_icons[idx] : "";
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 0;
+                }
+            }
+
+            item-ta := TouchArea {
+                clicked => { root.clicked(idx); }
+            }
+        }
+    }
+}

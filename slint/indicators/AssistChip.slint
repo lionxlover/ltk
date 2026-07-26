@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AssistChip inherits Rectangle {
+    in property <string> text: "Suggestion";
+
+    callback clicked();
+
+    min-width: max(chip-text.preferred-width + 20px, 48px);
+    height: 28px;
+    background: Theme.bg-surface;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: root.text;
+        color: Theme.text-primary;
+        font-size: 12px;
+        font-weight: Theme.weight-medium;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    TouchArea { clicked => { root.clicked(); } }
+
+    chip-text := Text { visible: false; text: root.text; }
+}

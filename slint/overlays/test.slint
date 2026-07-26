@@ -1,0 +1,422 @@
+import { Theme } from "../core/Theme.slint";
+import { ScrimOverlay } from "ScrimOverlay.slint";
+import { ModalDialog } from "ModalDialog.slint";
+import { BottomSheet } from "BottomSheet.slint";
+import { SideSheet } from "SideSheet.slint";
+import { Popover } from "Popover.slint";
+import { RichTooltip } from "RichTooltip.slint";
+import { DropdownMenu, DropdownMenuItem } from "DropdownMenu.slint";
+import { ActionSheet, ActionSheetItem } from "ActionSheet.slint";
+import { FloatingToolbar, FloatingToolbarButton } from "FloatingToolbar.slint";
+import { InlineConfirmation } from "InlineConfirmation.slint";
+
+export component OverlaysTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 900px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Overlays — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // ScrimOverlay
+        Text { text: "ScrimOverlay"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            ScrimOverlay {
+                active: true;
+                scrim-opacity: 0.4;
+            }
+        }
+
+        // ModalDialog
+        Text { text: "ModalDialog"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        ModalDialog {
+            active: true;
+            title: "Delete Item?";
+            body: "This action cannot be undone. The item will be permanently removed.";
+            cancel-text: "Cancel";
+            confirm-text: "Delete";
+            destructive: true;
+            width: 100%;
+            height: 200px;
+        }
+
+        // BottomSheet (static preview)
+        Text { text: "BottomSheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 120px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+            clip: true;
+
+            Rectangle {
+                x: 0;
+                y: 40px;
+                width: parent.width;
+                height: 80px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-lg;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                VerticalLayout {
+                    padding: Theme.sp-3;
+                    spacing: Theme.sp-2;
+
+                    Rectangle {
+                        width: 36px;
+                        height: 4px;
+                        border-radius: 2px;
+                        background: Theme.border-strong;
+                        horizontal-stretch: 0;
+                        vertical-stretch: 0;
+                        x: (parent.width - self.width) / 2;
+                    }
+
+                    Text {
+                        text: "Bottom sheet content area";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        // SideSheet (static preview)
+        Text { text: "SideSheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 140px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+            clip: true;
+
+            Rectangle {
+                x: parent.width - 160px;
+                y: 0;
+                width: 160px;
+                height: parent.height;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-lg;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                VerticalLayout {
+                    padding: Theme.sp-3;
+                    spacing: Theme.sp-2;
+
+                    Text {
+                        text: "Side Panel";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-semibold;
+                    }
+
+                    Rectangle {
+                        height: 1px;
+                        background: Theme.divider;
+                    }
+
+                    Text {
+                        text: "Panel content goes here";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+
+        // Popover (static preview)
+        Text { text: "Popover"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 100px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 100px;
+                y: 12px;
+                width: 180px;
+                height: 60px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                drop-shadow-offset-y: Theme.elevation-2-y;
+                drop-shadow-blur: Theme.elevation-2-blur;
+                drop-shadow-color: Theme.elevation-2-color;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "Popover content";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+
+            // Triangle
+            Rectangle {
+                x: 172px;
+                y: 4px;
+                width: 16px;
+                height: 8px;
+                background: Theme.bg-surface;
+                border-radius: 2px;
+            }
+        }
+
+        // RichTooltip (static preview)
+        Text { text: "RichTooltip"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 80px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 20px;
+                y: 8px;
+                width: 240px;
+                min-height: 60px;
+                background: Theme.bg-elevated;
+                border-radius: Theme.radius-tooltip;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                drop-shadow-offset-y: Theme.elevation-1-y;
+                drop-shadow-blur: Theme.elevation-1-blur;
+                drop-shadow-color: Theme.elevation-1-color;
+
+                VerticalLayout {
+                    padding: Theme.sp-3;
+                    spacing: Theme.sp-2;
+
+                    Text {
+                        text: "Keyboard Shortcuts";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                    }
+
+                    Text {
+                        text: "Press Ctrl+K to open the command palette.";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+
+        // DropdownMenu
+        Text { text: "DropdownMenu"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 140px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 20px;
+                y: 8px;
+                width: 180px;
+                min-height: 120px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                drop-shadow-offset-y: Theme.elevation-2-y;
+                drop-shadow-blur: Theme.elevation-2-blur;
+                drop-shadow-color: Theme.elevation-2-color;
+
+                VerticalLayout {
+                    padding: Theme.sp-1;
+                    spacing: 0px;
+
+                    DropdownMenuItem { label: "Copy"; icon-text: "📋"; }
+                    DropdownMenuItem { label: "Paste"; icon-text: "📄"; }
+                    DropdownMenuItem { label: "Cut"; icon-text: "✂"; }
+                    Rectangle { height: 1px; background: Theme.divider; x: Theme.sp-4; width: parent.width - Theme.sp-4 * 2; }
+                    DropdownMenuItem { label: "Delete"; destructive: true; }
+                }
+            }
+        }
+
+        // ActionSheet (static preview)
+        Text { text: "ActionSheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 180px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 0;
+                y: 0;
+                width: parent.width;
+                min-height: 160px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-xl;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                VerticalLayout {
+                    padding: Theme.sp-2;
+                    spacing: Theme.sp-2;
+
+                    ActionSheetItem { label: "Share"; }
+                    ActionSheetItem { label: "Save to Library"; }
+                    ActionSheetItem { label: "Add to Favorites"; }
+                    Rectangle { height: 1px; background: Theme.divider; x: Theme.sp-4; width: parent.width - Theme.sp-4 * 2; }
+                    ActionSheetItem { label: "Report"; destructive: true; }
+                    ActionSheetItem { label: "Cancel"; cancel: true; }
+                }
+            }
+        }
+
+        // FloatingToolbar
+        Text { text: "FloatingToolbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 20px;
+                y: 10px;
+                min-width: 180px;
+                height: 40px;
+                background: Theme.bg-raised;
+                border-radius: Theme.radius-lg;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                drop-shadow-offset-y: Theme.elevation-2-y;
+                drop-shadow-blur: Theme.elevation-2-blur;
+                drop-shadow-color: Theme.elevation-2-color;
+
+                HorizontalLayout {
+                    padding: Theme.sp-2;
+                    spacing: Theme.sp-1;
+
+                    FloatingToolbarButton { icon: "bold"; }
+                    FloatingToolbarButton { icon: "italic"; }
+                    FloatingToolbarButton { icon: "underline"; }
+                    Rectangle { width: 1px; background: Theme.divider; }
+                    FloatingToolbarButton { icon: "link"; }
+                }
+            }
+        }
+
+        // InlineConfirmation
+        Text { text: "InlineConfirmation"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-raised;
+
+            Rectangle {
+                x: 20px;
+                y: 8px;
+                min-width: 260px;
+                height: 44px;
+                background: Theme.bg-elevated;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                drop-shadow-offset-y: Theme.elevation-1-y;
+                drop-shadow-blur: Theme.elevation-1-blur;
+                drop-shadow-color: Theme.elevation-1-color;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-3;
+                    padding-right: Theme.sp-2;
+                    spacing: Theme.sp-2;
+                    alignment: stretch;
+
+                    Text {
+                        text: "Remove this item?";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+
+                    Rectangle {
+                        width: 52px;
+                        height: 28px;
+                        horizontal-stretch: 0;
+
+                        Rectangle {
+                            border-radius: Theme.radius-sm;
+                            border-width: 1px;
+                            border-color: Theme.border-base;
+                            background: Theme.bg-raised;
+                        }
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: "No";
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-medium;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Rectangle {
+                        width: 52px;
+                        height: 28px;
+                        horizontal-stretch: 0;
+
+                        Rectangle {
+                            border-radius: Theme.radius-sm;
+                            background: Theme.btn-primary-bg;
+                        }
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: "Yes";
+                            color: Theme.on-accent;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-semibold;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+        }
+    }
+}

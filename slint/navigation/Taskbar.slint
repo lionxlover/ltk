@@ -1,0 +1,73 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Taskbar inherits Rectangle {
+    background: Theme.bg-base;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    height: 40px;
+    horizontal-stretch: 0;
+
+    in property <string> clock-text: "12:00 PM";
+    in-out property <int> active-app-index: -1;
+    in property <[string]> pinned-apps: ["🌐", "📁", "✉️", "🎵", "⚙️"];
+    in property <string> system-tray-icons: "🔊 📶 🔋";
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            y: 4px;
+
+            Text {
+                text: "🦞";
+                font-size: 16px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        HorizontalLayout {
+            width: parent.width - 64px - 120px;
+            spacing: Theme.sp-1;
+            alignment: center;
+
+            for app[idx] in root.pinned-apps: Rectangle {
+                width: 36px;
+                height: 32px;
+                border-radius: 8px;
+                background: active-app-index == idx ? Theme.bg-surface : transparent;
+
+                Text {
+                    text: app;
+                    font-size: 16px;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { root.active-app-index = idx; }
+                }
+            }
+        }
+
+        Rectangle {
+            width: 120px;
+            height: 32px;
+            y: 4px;
+            border-radius: 8px;
+            background: Theme.bg-surface;
+
+            Text {
+                text: root.clock-text;
+                font-size: 12px;
+                font-weight: Theme.weight-medium;
+                color: Theme.text-primary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

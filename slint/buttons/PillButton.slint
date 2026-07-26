@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PillButton inherits Rectangle {
+    in-out property <string> text: "Pill";
+
+    background: Theme.accent;
+    border-radius: 20px;
+    height: 36px;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.text;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: Theme.weight-semibold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

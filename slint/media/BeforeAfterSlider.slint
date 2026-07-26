@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BeforeAfterSlider inherits Rectangle {
+    in property <int> split: 50;
+
+    width: 300px;
+    height: 200px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    Rectangle {
+        width: parent.width * root.split / 100;
+        height: parent.height;
+        background: Theme.dark-mode ? #334155 : #CBD5E1;
+        clip: true;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "Before";
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+    }
+
+    Rectangle {
+        x: parent.width * root.split / 100;
+        width: parent.width * (100 - root.split) / 100;
+        height: parent.height;
+        background: Theme.dark-mode ? #1E293B : #F1F5F9;
+        clip: true;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "After";
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+    }
+
+    Rectangle {
+        x: parent.width * root.split / 100 - 1px;
+        width: 2px;
+        height: parent.height;
+        background: #ffffff;
+    }
+}

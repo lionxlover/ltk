@@ -1,0 +1,54 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FishCheckBox inherits Rectangle {
+    in-out property <bool> checked: false;
+    in property <string> text: "";
+    in property <bool> enabled: true;
+
+    callback toggled(bool);
+
+    width: indicator.width + Theme.sp-3 + label.preferred-width;
+    height: max(indicator.height, label.preferred-height);
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    indicator := Rectangle {
+        x: 0;
+        y: (parent.height - self.height) / 2;
+        width: Theme.checkbox-size-md;
+        height: Theme.checkbox-size-md;
+        border-radius: Theme.radius-xs;
+        border-width: 2px;
+        border-color: checked ? Theme.accent : Theme.text-tertiary;
+        background: checked ? Theme.accent : transparent;
+
+        animate background { duration: Theme.dur-faster; easing: Theme.ease-spring; }
+        animate border-color { duration: Theme.dur-faster; easing: Theme.ease-spring; }
+
+        if checked: Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "✓";
+            color: Theme.on-accent;
+            font-size: 12px;
+            font-weight: Theme.weight-bold;
+        }
+    }
+
+    label := Text {
+        x: indicator.x + indicator.width + Theme.sp-3;
+        y: (parent.height - self.height) / 2;
+        text: root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    ta := TouchArea {
+        clicked => {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+}

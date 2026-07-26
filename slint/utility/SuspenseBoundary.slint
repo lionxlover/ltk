@@ -1,0 +1,63 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SuspenseBoundary inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> loading: false;
+    in property <string> loading-text: "Loading...";
+    in property <int> progress: -1;
+
+    if loading: Rectangle {
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-md;
+
+        VerticalLayout {
+            spacing: Theme.sp-3;
+            alignment: center;
+
+            Rectangle {
+                width: 32px;
+                height: 32px;
+                border-radius: 16px;
+                border-width: 3px;
+                border-color: Theme.accent;
+            }
+
+            Text {
+                text: loading-text;
+                font-size: Theme.text-sm;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+            }
+
+            if progress >= 0: Rectangle {
+                width: 120px;
+                height: 4px;
+                border-radius: 2px;
+                background: Theme.border-default;
+
+                Rectangle {
+                    width: parent.width * (progress / 100);
+                    height: 100%;
+                    border-radius: 2px;
+                    background: Theme.accent;
+                    animate width { duration: 200ms; }
+                }
+            }
+        }
+    }
+
+    if !loading: Rectangle {
+        background: Theme.bg-base;
+        border-radius: Theme.radius-md;
+
+        Text {
+            text: "Content loaded";
+            font-size: Theme.text-sm;
+            color: Theme.text-secondary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

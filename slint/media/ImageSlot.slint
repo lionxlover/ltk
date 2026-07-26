@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ImageSlot inherits Rectangle {
+    in property <string> alt: "";
+
+    width: 120px;
+    height: 120px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            background: Theme.bg-raised;
+            border-radius: Theme.radius-full;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/image.svg");
+                fa-size: 22px;
+                fa-color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: root.alt;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
+    }
+}

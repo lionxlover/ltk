@@ -1,0 +1,111 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NestedTabs inherits Rectangle {
+    in-out property <int> active-primary: 0;
+    in-out property <int> active-secondary: 0;
+
+    VerticalLayout {
+        Rectangle {
+            height: 40px;
+            background: Theme.bg-surface;
+
+            HorizontalLayout {
+                padding: 4px;
+                spacing: 4px;
+
+                Rectangle {
+                    height: 32px;
+                    background: root.active-primary == 0 ? Theme.accent-subtle : #00000000;
+                    border-radius: Theme.radius-sm;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: 12px;
+                        text: "General";
+                        color: root.active-primary == 0 ? Theme.accent : Theme.text-secondary;
+                        font-size: 13px;
+                        font-weight: root.active-primary == 0 ? Theme.weight-semibold : Theme.weight-regular;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea { clicked => { root.active-primary = 0; } }
+                }
+
+                Rectangle {
+                    height: 32px;
+                    background: root.active-primary == 1 ? Theme.accent-subtle : #00000000;
+                    border-radius: Theme.radius-sm;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: 12px;
+                        text: "Advanced";
+                        color: root.active-primary == 1 ? Theme.accent : Theme.text-secondary;
+                        font-size: 13px;
+                        font-weight: root.active-primary == 1 ? Theme.weight-semibold : Theme.weight-regular;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea { clicked => { root.active-primary = 1; } }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 36px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                padding: 4px;
+                spacing: 4px;
+
+                Rectangle {
+                    height: 28px;
+                    background: root.active-secondary == 0 ? Theme.bg-surface : #00000000;
+                    border-radius: Theme.radius-sm;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: 10px;
+                        text: "Sub A";
+                        color: Theme.text-secondary;
+                        font-size: 12px;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea { clicked => { root.active-secondary = 0; } }
+                }
+
+                Rectangle {
+                    height: 28px;
+                    background: root.active-secondary == 1 ? Theme.bg-surface : #00000000;
+                    border-radius: Theme.radius-sm;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: 10px;
+                        text: "Sub B";
+                        color: Theme.text-secondary;
+                        font-size: 12px;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea { clicked => { root.active-secondary = 1; } }
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+
+            Text {
+                x: 16px;
+                y: 16px;
+                text: "Content area";
+                color: Theme.text-tertiary;
+                font-size: 14px;
+            }
+        }
+    }
+}

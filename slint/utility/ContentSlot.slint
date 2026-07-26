@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ContentSlot inherits Rectangle {
+    background: transparent;
+
+    in property <string> slot-name: "default";
+    in property <bool> filled: false;
+    in property <string> content: "";
+
+    if filled: Text {
+        text: content;
+        font-size: Theme.text-sm;
+        color: Theme.text-primary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    if !filled: Rectangle {
+        border-radius: Theme.radius-sm;
+        border-width: 1px;
+        border-color: Theme.border-default;
+
+        Text {
+            text: "Empty slot: " + slot-name;
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

@@ -1,0 +1,97 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VirtualizedList inherits Rectangle {
+    in property <int> total-items: 0;
+    in property <int> visible-start: 0;
+    in property <int> visible-count: 20;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    in property <int> visible-end: Math.min(visible-start + visible-count, total-items);
+    in property <bool> has-scroll-up: visible-start > 0;
+    in property <bool> has-scroll-down: visible-end < total-items;
+
+    VerticalLayout {
+        Rectangle {
+            height: 36px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                alignment: start;
+
+                Text {
+                    text: "Showing " + (root.visible-start + 1) + "–" + root.visible-end + " of " + root.total-items;
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        if root.has-scroll-up: Rectangle {
+            height: 24px;
+            background: Theme.bg-overlay;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "▲ Scroll up";
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+        }
+
+        for item[idx] in root.visible-end - root.visible-start: Rectangle {
+            height: 40px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                alignment: start;
+
+                Text {
+                    text: "Item " + (root.visible-start + idx + 1);
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+
+            row-ta := TouchArea { }
+        }
+
+        if root.has-scroll-down: Rectangle {
+            height: 24px;
+            background: Theme.bg-overlay;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "▼ Scroll down";
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

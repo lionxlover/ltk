@@ -1,0 +1,103 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WcagContrastChecker inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <color> fg-color: #F1F2F5;
+    in property <color> bg-color: #0B0D0F;
+    in property <float> contrast-ratio: 15.4;
+    in property <bool> passes-aa: true;
+    in property <bool> passes-aaa: true;
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "WCAG Contrast Checker";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        Rectangle {
+            height: 60px;
+            border-radius: Theme.radius-md;
+            background: bg-color;
+
+            Text {
+                text: "Sample Text Aa";
+                font-size: Theme.text-lg;
+                font-weight: Theme.weight-semibold;
+                color: fg-color;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        HorizontalLayout {
+            spacing: Theme.sp-4;
+
+            VerticalLayout {
+                spacing: Theme.sp-1;
+
+                Text {
+                    text: "Contrast Ratio";
+                    font-size: Theme.text-xs;
+                    color: Theme.text-tertiary;
+                }
+
+                Text {
+                    text: contrast-ratio + ":1";
+                    font-size: Theme.text-xl;
+                    font-weight: Theme.weight-bold;
+                    color: passes-aa ? Theme.success : Theme.error;
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+
+                    Rectangle {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 4px;
+                        background: passes-aa ? Theme.success : Theme.error;
+                    }
+
+                    Text {
+                        text: "AA: " + (passes-aa ? "Pass" : "Fail");
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        y: 2px;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+
+                    Rectangle {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 4px;
+                        background: passes-aaa ? Theme.success : Theme.error;
+                    }
+
+                    Text {
+                        text: "AAA: " + (passes-aaa ? "Pass" : "Fail");
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        y: 2px;
+                    }
+                }
+            }
+        }
+    }
+}

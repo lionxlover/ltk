@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Spacer inherits Rectangle {
+    in property <bool> horizontal: false;
+    in property <length> spacer-size: Theme.sp-4;
+
+    background: transparent;
+
+    width: horizontal ? spacer-size : 0px;
+    height: horizontal ? 0px : spacer-size;
+    horizontal-stretch: horizontal ? 0 : 1;
+    vertical-stretch: horizontal ? 1 : 0;
+}

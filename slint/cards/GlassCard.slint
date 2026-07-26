@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GlassCard inherits Rectangle {
+    background: Theme.dark-mode ? #20ffffff : #40ffffff;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: #20ffffff;
+    horizontal-stretch: 1;
+}

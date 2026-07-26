@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SafeAreaWrapper inherits Rectangle {
+    background: transparent;
+
+    in property <length> safe-top: 0px;
+    in property <length> safe-bottom: 0px;
+    in property <length> safe-left: 0px;
+    in property <length> safe-right: 0px;
+
+    Rectangle {
+        x: safe-left;
+        y: safe-top;
+        width: parent.width - safe-left - safe-right;
+        height: parent.height - safe-top - safe-bottom;
+    }
+}

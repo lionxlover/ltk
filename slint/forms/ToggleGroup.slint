@@ -1,0 +1,53 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ToggleGroup inherits Rectangle {
+    in property <[string]> options: [];
+    in-out property <int> current-index: 0;
+
+    callback changed(int);
+
+    height: 32px;
+
+    bg := Rectangle {
+        border-radius: Theme.radius-button;
+        background: Theme.bg-overlay;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+    }
+
+    HorizontalLayout {
+        padding: 2px;
+        spacing: 2px;
+
+        for opt[i] in root.options: TouchArea {
+            horizontal-stretch: 1;
+            clicked => {
+                root.current-index = i;
+                root.changed(i);
+            }
+
+            Rectangle {
+                border-radius: Theme.radius-sm;
+                background: root.current-index == i ? Theme.accent
+                    : ta2.pressed ? Theme.surface-pressed
+                    : ta2.has-hover ? Theme.surface-hover
+                    : transparent;
+                animate background { duration: Theme.dur-fast; }
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: opt;
+                    color: root.current-index == i ? Theme.on-accent : Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: root.current-index == i ? Theme.weight-semibold : Theme.weight-regular;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+            }
+
+            ta2 := TouchArea { }
+        }
+    }
+}

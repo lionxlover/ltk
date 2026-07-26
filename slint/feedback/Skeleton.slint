@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Skeleton inherits Rectangle {
+    in property <length> skeleton-height: 16px;
+    in property <bool> circle: false;
+
+    horizontal-stretch: 1;
+    height: skeleton-height;
+    background: Theme.bg-overlay;
+    border-radius: circle ? Theme.radius-full : Theme.radius-sm;
+    clip: true;
+}

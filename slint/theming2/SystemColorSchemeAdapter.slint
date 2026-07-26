@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SystemColorSchemeAdapter inherits Rectangle {
+    background: transparent;
+
+    in property <bool> system-dark: true;
+    in-out property <bool> follow-system: true;
+    in-out property <bool> manual-dark: true;
+
+    out property <bool> effective-dark: follow-system ? system-dark : manual-dark;
+}

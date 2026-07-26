@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ReactionEmojiBar inherits Rectangle {
+    background: transparent;
+    height: 36px;
+
+    in property <[string]> emojis: ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        for emoji[e] in emojis: Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: Theme.bg-overlay;
+
+            Text {
+                text: emoji;
+                font-size: 16px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { }
+        }
+    }
+}

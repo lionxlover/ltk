@@ -1,0 +1,17 @@
+// Semantic — Info / Informational
+export global SemanticInfo {
+    in-out property <bool> dark: true;
+
+    out property <color> info-50: dark ? #eff6ff : #eff6ff;
+    out property <color> info-100: dark ? #dbeafe : #dbeafe;
+    out property <color> info-200: dark ? #bfdbfe : #bfdbfe;
+    out property <color> info-300: dark ? #93c5fd : #93c5fd;
+    out property <color> info-400: dark ? #5B9DFA : #60a5fa;
+    out property <color> info-500: dark ? #5B9DFA : #2563eb;
+    out property <color> info-600: dark ? #2563eb : #1d4ed8;
+    out property <color> info-700: dark ? #1d4ed8 : #1e40af;
+
+    out property <color> info-surface: info-500.with-alpha(0.12);
+    out property <color> info-on-surface: info-500;
+    out property <color> info-border: info-500.with-alpha(0.25);
+}

@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+import { Checkbox } from "Checkbox.slint";
+
+export component CheckboxGroup inherits Rectangle {
+    in-out property <[string]> labels: ["Option A", "Option B", "Option C"];
+    in-out property <[bool]> checked: [true, false, false];
+
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 4px;
+        for lbl[idx] in root.labels: Checkbox {
+            label: lbl;
+            checked: root.checked[idx];
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

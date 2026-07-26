@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RubberBandOverscroll inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> overscrolling: false;
+    in property <float> rubber-band-factor: 0.3;
+
+    y: overscrolling ? 30px : 0px;
+    animate y { duration: Theme.dur-slow; easing: Theme.ease-spring; }
+}

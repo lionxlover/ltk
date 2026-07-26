@@ -1,0 +1,110 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OrgChart inherits Rectangle {
+    in property <int> item-count: 3;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+
+    in property <[string]> demo-titles: ["CEO", "VP Eng", "VP Design"];
+    in property <[int]> demo-levels: [0, 1, 1];
+    in property <[color]> demo-colors: [Theme.accent, Theme.green-500, #CD7F32];
+
+    // CEO Node
+    Rectangle {
+        x: (parent.width - 100px) / 2;
+        y: 20px;
+        width: 100px;
+        height: 40px;
+        border-radius: Theme.radius-md;
+        background: Theme.accent;
+        border-width: 1px;
+        border-color: Theme.accent;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "CEO";
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+
+    // Vertical line from CEO
+    Rectangle {
+        x: (parent.width) / 2 - 1px;
+        y: 60px;
+        width: 2px;
+        height: 20px;
+        background: Theme.border-subtle;
+    }
+
+    // Horizontal connector line
+    Rectangle {
+        x: (parent.width - 140px) / 2;
+        y: 78px;
+        width: 140px;
+        height: 2px;
+        background: Theme.border-subtle;
+    }
+
+    // VP Eng Node
+    Rectangle {
+        x: (parent.width - 140px) / 2;
+        y: 80px;
+        width: 100px;
+        height: 40px;
+        border-radius: Theme.radius-md;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: Theme.green-500;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "VP Eng";
+            color: Theme.green-500;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    // Vertical line from connector to VP Eng
+    Rectangle {
+        x: (parent.width - 140px) / 2 + 50px - 1px;
+        y: 80px;
+        width: 2px;
+        height: 0px;
+        background: Theme.border-subtle;
+    }
+
+    // VP Design Node
+    Rectangle {
+        x: (parent.width + 40px) / 2;
+        y: 80px;
+        width: 100px;
+        height: 40px;
+        border-radius: Theme.radius-md;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: #CD7F32;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "VP Design";
+            color: #CD7F32;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+}

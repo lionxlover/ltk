@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TopAppBar inherits Rectangle {
+    in property <string> title: "";
+    in property <bool> has-back: false;
+
+    height: 48px;
+    background: Theme.bg-elevated;
+
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 16px;
+
+        if root.has-back: Rectangle {
+            width: 40px;
+            height: 40px;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-left.svg");
+                width: 16px;
+                height: 16px;
+                colorize: Theme.text-primary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { clicked => { } }
+        }
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+}

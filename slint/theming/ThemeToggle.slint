@@ -1,0 +1,54 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ThemeToggle inherits Rectangle {
+    in-out property <bool> dark-mode: Theme.dark-mode;
+    callback toggled(bool);
+
+    width: 48px;
+    height: 28px;
+    border-radius: 14px;
+    background: root.dark-mode ? Theme.surface-base : Theme.surface-base;
+    border-width: 1px;
+    border-color: Theme.border-base;
+
+    // Track
+    Rectangle {
+        x: root.dark-mode ? parent.width - self.width - 2px : 2px;
+        y: 2px;
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: root.dark-mode ? Theme.btn-primary-bg : Theme.amber-400;
+
+        animate x { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+        animate background { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        // Sun icon (light mode)
+        if !root.dark-mode: Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "☀";
+            font-size: 14px;
+            color: #ffffff;
+            vertical-alignment: center;
+        }
+
+        // Moon icon (dark mode)
+        if root.dark-mode: Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "☾";
+            font-size: 14px;
+            color: #ffffff;
+            vertical-alignment: center;
+        }
+    }
+
+    toggle-ta := TouchArea {
+        clicked => {
+            root.dark-mode = !root.dark-mode;
+            Theme.dark-mode = root.dark-mode;
+            root.toggled(root.dark-mode);
+        }
+    }
+}

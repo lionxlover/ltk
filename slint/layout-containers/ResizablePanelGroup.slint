@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ResizablePanelGroup inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> horizontal: true;
+    in property <int> panel-count: 2;
+
+    HorizontalLayout {
+        visible: horizontal;
+        spacing: 0;
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-surface;
+        }
+
+        Rectangle {
+            width: horizontal ? 4px : parent.width;
+            height: horizontal ? parent.height : 4px;
+            background: Theme.border-default;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+        }
+    }
+}

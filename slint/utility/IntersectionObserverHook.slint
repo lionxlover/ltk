@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IntersectionObserverHook inherits Rectangle {
+    background: transparent;
+
+    in property <bool> in-viewport: false;
+    in property <float> intersection-ratio: 0.0;
+    in property <length> root-margin-top: 0px;
+    in property <length> root-margin-bottom: 0px;
+}

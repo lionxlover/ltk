@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TagLabel inherits Rectangle {
+    in property <string> label: "";
+    in property <brush> tag-color: Theme.accent;
+
+    min-width: 24px;
+    height: 22px;
+    background: tag-color;
+    border-radius: Theme.radius-sm;
+    horizontal-stretch: 0;
+
+    label-text := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.label;
+        color: #ffffff;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-xs;
+        font-weight: Theme.weight-semibold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+}

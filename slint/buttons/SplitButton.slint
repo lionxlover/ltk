@@ -1,0 +1,63 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SplitButton inherits Rectangle {
+    in-out property <string> text: "Save";
+    in-out property <bool> enabled: true;
+
+    height: 40px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width - 36px;
+        height: parent.height;
+        background: Theme.accent;
+        border-radius: Theme.radius-md;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: 8px;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/floppy-disk.svg");
+                fa-size: 14px;
+                fa-color: #ffffff;
+            }
+
+            Text {
+                text: root.text;
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        TouchArea {
+            clicked => { }
+        }
+    }
+
+    Rectangle {
+        x: parent.width - 36px;
+        y: 0px;
+        width: 36px;
+        height: parent.height;
+        background: Theme.accent;
+        border-radius: Theme.radius-md;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
+            fa-size: 12px;
+            fa-color: #ffffff;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+
+        TouchArea {
+            clicked => { }
+        }
+    }
+}

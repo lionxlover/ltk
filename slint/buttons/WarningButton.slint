@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component WarningButton inherits Rectangle {
+    in-out property <string> text: "Warning";
+    in-out property <bool> enabled: true;
+
+    background: Theme.warning;
+    border-radius: Theme.radius-md;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/triangle-exclamation.svg");
+            fa-size: 14px;
+            fa-color: #000000;
+        }
+
+        Text {
+            text: root.text;
+            color: #000000;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

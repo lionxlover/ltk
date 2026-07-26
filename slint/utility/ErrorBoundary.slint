@@ -1,0 +1,74 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ErrorBoundaryFallback inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.error;
+    clip: true;
+
+    in property <string> error-message: "Something went wrong";
+    in property <string> error-code: "";
+    in property <bool> show-retry: true;
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-3;
+        alignment: center;
+
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: Theme.radius-full;
+            background: Theme.error;
+
+            Text {
+                text: "!";
+                font-size: 24px;
+                font-weight: Theme.weight-bold;
+                color: Theme.error;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: "Error";
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: error-message;
+            font-size: Theme.text-sm;
+            color: Theme.text-secondary;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+
+        if error-code != "": Text {
+            text: error-code;
+            font-size: Theme.text-xs;
+            font-family: Theme.font-mono;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        if show-retry: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: Theme.accent;
+
+            Text {
+                text: "Try Again";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

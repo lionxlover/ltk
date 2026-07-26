@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Steps inherits Rectangle {
+    in property <int> current-step: 0;
+    in property <[string]> steps: [];
+
+    background: transparent;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        for step[i] in root.steps: HorizontalLayout {
+            horizontal-stretch: 1;
+            spacing: Theme.sp-2;
+
+            // Dot
+            Rectangle {
+                width: 24px;
+                height: 24px;
+                horizontal-stretch: 0;
+
+                dot := Rectangle {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: Theme.radius-full;
+                    background: i <= root.current-step ? Theme.accent : Theme.bg-overlay;
+                    border-width: 1px;
+                    border-color: i <= root.current-step ? Theme.accent : Theme.border-base;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: i < root.current-step ? "✓" : (i + 1);
+                        color: i <= root.current-step ? Theme.on-accent : Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+
+            // Label
+            Text {
+                text: step;
+                color: i <= root.current-step ? Theme.text-primary : Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: i == root.current-step ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            // Connector line
+            if i < root.steps.length - 1: Rectangle {
+                width: 20px;
+                height: 2px;
+                horizontal-stretch: 0;
+                y: 11px;
+                background: i < root.current-step ? Theme.accent : Theme.border-subtle;
+            }
+        }
+    }
+}

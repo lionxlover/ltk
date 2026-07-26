@@ -1,0 +1,103 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EmojiRating inherits Rectangle {
+    in-out property <int> rating: 0;
+
+    height: 48px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            background: root.rating == 1 ? Theme.error : Theme.bg-raised;
+            border-radius: Theme.radius-md;
+            border-width: root.rating == 1 ? 2px : 0px;
+            border-color: Theme.error;
+
+            Text {
+                text: "😠";
+                font-size: 22px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.rating = 1; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            background: root.rating == 2 ? Theme.warning : Theme.bg-raised;
+            border-radius: Theme.radius-md;
+            border-width: root.rating == 2 ? 2px : 0px;
+            border-color: Theme.warning;
+
+            Text {
+                text: "😟";
+                font-size: 22px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.rating = 2; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            background: root.rating == 3 ? Theme.bg-overlay : Theme.bg-raised;
+            border-radius: Theme.radius-md;
+            border-width: root.rating == 3 ? 2px : 0px;
+            border-color: Theme.border-base;
+
+            Text {
+                text: "😐";
+                font-size: 22px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.rating = 3; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            background: root.rating == 4 ? Theme.success : Theme.bg-raised;
+            border-radius: Theme.radius-md;
+            border-width: root.rating == 4 ? 2px : 0px;
+            border-color: Theme.success;
+
+            Text {
+                text: "😊";
+                font-size: 22px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.rating = 4; } }
+        }
+
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            background: root.rating == 5 ? Theme.success : Theme.bg-raised;
+            border-radius: Theme.radius-md;
+            border-width: root.rating == 5 ? 2px : 0px;
+            border-color: Theme.success;
+
+            Text {
+                text: "😍";
+                font-size: 22px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.rating = 5; } }
+        }
+    }
+}

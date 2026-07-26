@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PageTransitionScale inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> scale_visible: false;
+
+    opacity: scale_visible ? 1 : 0;
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-spring; }
+}

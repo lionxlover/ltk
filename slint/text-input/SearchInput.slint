@@ -1,0 +1,62 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SearchInput inherits Rectangle {
+    in-out property <string> text;
+    in-out property <string> placeholder: "Search...";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        text: "⌕";
+        color: Theme.text-tertiary;
+        font-size: 16px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: 34px;
+        y: (parent.height - self.height) / 2;
+        text: root.text == "" ? root.placeholder : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    // Clear button
+    if root.text != "": Rectangle {
+        x: parent.width - 36px;
+        y: (parent.height - 24px) / 2;
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "✕";
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        TouchArea {
+            clicked => { root.text = ""; }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

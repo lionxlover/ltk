@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusVisibleIndicator inherits Rectangle {
+    background: transparent;
+
+    in property <bool> keyboard-focused: false;
+    in property <bool> pointer-focused: false;
+
+    Rectangle {
+        border-width: keyboard-focused ? 2px : 0px;
+        border-color: Theme.accent;
+        border-radius: Theme.radius-sm;
+    }
+
+    Rectangle {
+        border-width: pointer-focused ? 2px : 0px;
+        border-color: Theme.text-tertiary;
+        border-radius: Theme.radius-sm;
+    }
+}

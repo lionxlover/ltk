@@ -1,0 +1,103 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AudioPlayer inherits Rectangle {
+    in property <string> title: "Unknown Track";
+    in property <string> duration: "0:00";
+    in-out property <bool> playing: false;
+    in-out property <float> progress: 0.0;
+
+    width: 320px;
+    height: 72px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            background: Theme.accent;
+            border-radius: Theme.radius-md;
+            vertical-stretch: 0;
+
+            Rectangle {
+                width: 18px;
+                height: 18px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+                    width: 18px;
+                    height: 18px;
+                    visible: !root.playing;
+                    colorize: #ffffff;
+                }
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg");
+                    width: 18px;
+                    height: 18px;
+                    visible: root.playing;
+                    colorize: #ffffff;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.playing = !root.playing; }
+            }
+        }
+
+        VerticalLayout {
+            spacing: Theme.sp-1;
+            alignment: center;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                overflow: elide;
+            }
+
+            Rectangle {
+                height: 4px;
+                background: Theme.bg-overlay;
+                border-radius: 2px;
+
+                Rectangle {
+                    x: 0;
+                    y: 0;
+                    width: parent.width * root.progress;
+                    height: parent.height;
+                    background: Theme.accent;
+                    border-radius: 2px;
+                }
+            }
+
+            HorizontalLayout {
+                alignment: space-between;
+
+                Text {
+                    text: "0:00";
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-xs;
+                }
+
+                Text {
+                    text: root.duration;
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-xs;
+                }
+            }
+        }
+    }
+}

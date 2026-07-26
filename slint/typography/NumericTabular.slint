@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NumericTabular inherits Rectangle {
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    VerticalLayout {
+        spacing: 8px;
+
+        HorizontalLayout {
+            spacing: 24px;
+
+            VerticalLayout {
+                spacing: 2px;
+                Text { text: "PRICE"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
+                Text { text: "$1,234.56"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+            }
+
+            VerticalLayout {
+                spacing: 2px;
+                Text { text: "QTY"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
+                Text { text: "12,450"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+            }
+
+            VerticalLayout {
+                spacing: 2px;
+                Text { text: "TOTAL"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
+                Text { text: "$99,876.00"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+            }
+        }
+    }
+}

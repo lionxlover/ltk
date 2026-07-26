@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ChipFilterButton inherits Rectangle {
+    in-out property <string> text: "Filter";
+    in-out property <bool> active: false;
+
+    background: root.active ? Theme.accent-subtle : Theme.bg-surface;
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: root.active ? Theme.accent : Theme.border-base;
+    height: 32px;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 6px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+            fa-size: 10px;
+            fa-color: root.active ? Theme.accent : transparent;
+        }
+
+        Text {
+            text: root.text;
+            color: root.active ? Theme.accent : Theme.text-secondary;
+            font-size: 13px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.active = !root.active; }
+    }
+}

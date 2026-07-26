@@ -1,0 +1,60 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component LivestreamPill inherits Rectangle {
+    in property <int> viewer-count: 0;
+
+    width: self.preferred-width;
+    height: 28px;
+    background: #00000099;
+    border-radius: Theme.radius-full;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-1;
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-3;
+
+        Rectangle {
+            width: 8px;
+            height: 8px;
+            background: Theme.red_500;
+            border-radius: Theme.radius-full;
+            vertical-stretch: 0;
+        }
+
+        Text {
+            text: "LIVE";
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+            letter-spacing: Theme.tracking-wide;
+        }
+
+        if root.viewer-count > 0: Rectangle {
+            width: 1px;
+            height: 14px;
+            background: #ffffff44;
+            vertical-stretch: 0;
+            y: (parent.height - self.height) / 2;
+        }
+
+        if root.viewer-count > 0: FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/user.svg");
+            fa-size: 11px;
+            fa-color: #ffffffcc;
+            vertical-stretch: 0;
+        }
+
+        if root.viewer-count > 0: Text {
+            text: root.viewer-count;
+            color: #ffffffcc;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+}

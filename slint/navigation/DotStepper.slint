@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DotStepper inherits Rectangle {
+    in property <[int]> total: [0];
+    in property <int> current: 0;
+
+    height: 24px;
+    background: #00000000;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        for dot[idx] in root.total: Rectangle {
+            width: 8px;
+            height: 8px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-full;
+            background: idx == root.current ? Theme.accent
+                : idx < root.current ? Theme.accent-dim
+                : Theme.bg-overlay;
+            opacity: idx == root.current ? 1.0
+                : idx < root.current ? 0.6
+                : 0.4;
+        }
+    }
+}

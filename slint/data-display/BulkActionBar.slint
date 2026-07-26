@@ -1,0 +1,53 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BulkActionBar inherits Rectangle {
+    in property <int> selected-count: 0;
+    in property <bool> show-bar: false;
+
+    callback deselect-all();
+
+    height: show-bar ? 48px : 0px;
+    background: Theme.accent;
+    visible: show-bar;
+
+    animate height { duration: Theme.dur-normal; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-4;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "\{root.selected_count} selected";
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+
+        Rectangle { horizontal-stretch: 1; }
+
+        Rectangle {
+            width: 80px;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: #ffffff80;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Deselect";
+                color: #ffffff;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            deselect-ta := TouchArea {
+                clicked => { root.deselect-all(); }
+            }
+        }
+    }
+}

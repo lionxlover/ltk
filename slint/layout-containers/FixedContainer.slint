@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FixedContainer inherits Rectangle {
+    background: transparent;
+
+    in property <string> position: "top-right";
+    in property <length> offset-x: 16px;
+    in property <length> offset-y: 16px;
+    in property <int> z-index: 100;
+}

@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component NoResultsState inherits Rectangle {
+    in property <string> query: "";
+
+    background: Theme.bg-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        Rectangle {
+            width: 64px;
+            height: 64px;
+            background: Theme.bg-overlay;
+            border-radius: 32px;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+                fa-size: 28px;
+                fa-color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: "No results found";
+            color: Theme.text-primary;
+            font-size: 16px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.query != "" ? "No results for \"{root.query}\"" : "Try a different search term";
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AppIconBadge inherits Rectangle {
+    background: transparent;
+
+    in property <string> icon: "📱";
+    in property <int> badge-count: 0;
+    in property <length> icon-size: 60px;
+
+    width: icon-size + 16px;
+    height: icon-size + 16px;
+
+    Rectangle {
+        width: icon-size;
+        height: icon-size;
+        border-radius: icon-size * 0.22;
+        background: Theme.bg-overlay;
+        x: 8px;
+        y: 8px;
+
+        Text {
+            text: icon;
+            font-size: icon-size * 0.5;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    if badge-count > 0: Rectangle {
+        x: parent.width - 20px;
+        y: 2px;
+        height: 20px;
+        border-radius: 10px;
+        background: Theme.error;
+
+        Text {
+            text: badge_count > 99 ? "99+" : "\{Math.mod(badge_count, 100)}";
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-bold;
+            color: #ffffff;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

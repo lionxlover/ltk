@@ -1,0 +1,138 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NestedMenuItem inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> has-submenu: false;
+    in property <bool> submenu-open: false;
+
+    callback activated();
+    callback submenu-hover();
+
+    height: 32px;
+    background: item-ta.has-hover ? Theme.surface-hover : #00000000;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding: Theme.sp-1;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: root.label;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        if root.has-submenu: Text {
+            text: "›";
+            color: Theme.text-tertiary;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+    }
+
+    item-ta := TouchArea {
+        clicked => {
+            if (root.has-submenu) {
+                root.submenu-hover();
+            } else {
+                root.activated();
+            }
+        }
+        entered => {
+            if (root.has-submenu) {
+                root.submenu-hover();
+            }
+        }
+    }
+}
+
+export component NestedDropdownMenu inherits Rectangle {
+    visible: false;
+    in property <[string]> items: [];
+    in property <[string]> submenu-items: [];
+    in-out property <bool> submenu-open: false;
+
+    callback item-clicked(int);
+    callback submenu-item-clicked(int);
+
+    width: 220px;
+    min-height: 40px;
+    visible: root.visible;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: root.visible ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    VerticalLayout {
+        padding: Theme.sp-1;
+        spacing: 0px;
+
+        for itementry in root.items: NestedMenuItem {
+            label: itementry;
+            has-submenu: index == root.items.length - 1 && root.submenu-items.length > 0;
+            submenu-open: root.submenu-open;
+            activated => { root.item-clicked(index); }
+            submenu-hover => { root.submenu-open = true; }
+        }
+    }
+
+    // Sub-menu panel
+    if root.submenu-open && root.submenu-items.length > 0: Rectangle {
+        x: parent.width + 4px;
+        y: 0;
+        width: 180px;
+        min-height: 40px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: Theme.elevation-2-y;
+        drop-shadow-blur: Theme.elevation-2-blur;
+        drop-shadow-color: Theme.elevation-2-color;
+
+        VerticalLayout {
+            padding: Theme.sp-1;
+            spacing: 0px;
+
+            for subentry in root.submenu-items: Rectangle {
+                height: 32px;
+                background: sub-ta.has-hover ? Theme.surface-hover : #00000000;
+
+                animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                Text {
+                    x: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                    text: subentry;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+
+                sub-ta := TouchArea {
+                    clicked => { root.submenu-item-clicked(index); }
+                }
+            }
+        }
+
+        TouchArea { }
+    }
+
+    ta := TouchArea { }
+}

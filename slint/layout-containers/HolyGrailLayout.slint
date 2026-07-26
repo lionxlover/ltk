@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HolyGrailLayout inherits Rectangle {
+    background: transparent;
+
+    in property <length> header-height: 56px;
+    in property <length> footer-height: 36px;
+    in property <length> left-sidebar-width: 220px;
+    in property <length> right-sidebar-width: 280px;
+
+    VerticalLayout {
+        Rectangle {
+            height: header-height;
+            background: Theme.bg-raised;
+            Rectangle { height: 1px; width: parent.width; y: parent.height - 1px; background: Theme.border-default; }
+        }
+
+        HorizontalLayout {
+            vertical-stretch: 1;
+
+            Rectangle {
+                width: left-sidebar-width;
+                background: Theme.bg-surface;
+                Rectangle { width: 1px; height: parent.height; x: parent.width - 1px; background: Theme.border-default; }
+            }
+
+            Rectangle {
+                vertical-stretch: 1;
+                background: Theme.bg-base;
+            }
+
+            Rectangle {
+                width: right-sidebar-width;
+                background: Theme.bg-surface;
+                Rectangle { width: 1px; height: parent.height; background: Theme.border-default; }
+            }
+        }
+
+        Rectangle {
+            height: footer-height;
+            background: Theme.bg-raised;
+            Rectangle { height: 1px; width: parent.width; background: Theme.border-default; }
+        }
+    }
+}

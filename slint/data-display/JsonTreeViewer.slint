@@ -1,0 +1,210 @@
+import { Theme } from "../core/Theme.slint";
+
+export component JsonTreeViewer inherits Rectangle {
+    in property <int> item-count: 4;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        padding: 0;
+
+        // Header
+        Rectangle {
+            background: Theme.bg-overlay;
+            height: 32px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                alignment: start;
+
+                Text {
+                    text: "JSON Tree";
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Tree content
+        Rectangle {
+            clip: true;
+
+            VerticalLayout {
+                padding: Theme.sp-3;
+                spacing: 0;
+
+                // Root opening brace
+                HorizontalLayout {
+                    spacing: 0;
+
+                    Text {
+                        text: "▼ ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-tertiary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "{";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // "name" key — string value
+                HorizontalLayout {
+                    padding-left: Theme.sp-5;
+                    spacing: 0;
+
+                    Text {
+                        text: "\"name\"";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: ": ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "\"LTK\"";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.green-600;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // "version" key — number value
+                HorizontalLayout {
+                    padding-left: Theme.sp-5;
+                    spacing: 0;
+
+                    Text {
+                        text: "\"version\"";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: ": ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "1.0";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.amber-600;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // "debug" key — boolean value
+                HorizontalLayout {
+                    padding-left: Theme.sp-5;
+                    spacing: 0;
+
+                    Text {
+                        text: "\"debug\"";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: ": ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "false";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.red-600;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // "tags" key — array (collapsed indicator)
+                HorizontalLayout {
+                    padding-left: Theme.sp-5;
+                    spacing: 0;
+
+                    Text {
+                        text: "▶ ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-tertiary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "\"tags\"";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: ": ";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: "[…]";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-tertiary;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // Root closing brace
+                HorizontalLayout {
+                    spacing: 0;
+
+                    Text {
+                        text: "}";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

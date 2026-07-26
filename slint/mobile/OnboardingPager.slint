@@ -1,0 +1,68 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OnboardingPager inherits Rectangle {
+    background: Theme.bg-surface;
+
+    in property <int> total-pages: 3;
+    in-out property <int> current-page: 0;
+    in property <[string]> titles: ["Welcome", "Explore", "Get Started"];
+    in property <[string]> descriptions: ["First page", "Second page", "Let's go!"];
+    in property <[string]> icons: ["👋", "🔍", "🚀"];
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-6;
+
+        if current-page < icons.length: Text {
+            text: icons[current-page];
+            font-size: 64px;
+            horizontal-alignment: center;
+        }
+
+        if current-page < titles.length: Text {
+            text: titles[current-page];
+            font-size: Theme.text-2xl;
+            font-weight: Theme.weight-bold;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+
+        if current-page < descriptions.length: Text {
+            text: descriptions[current-page];
+            font-size: Theme.text-base;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.sp-2;
+
+            for dot[idx] in total-pages: Rectangle {
+                width: idx == current-page ? 24px : 8px;
+                height: 8px;
+                border-radius: 4px;
+                background: idx == current-page ? Theme.accent : Theme.border-default;
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            Rectangle {
+                width: 200px;
+                height: 48px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+
+                Text {
+                    text: current-page == total-pages - 1 ? "Get Started" : "Next";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: #ffffff;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

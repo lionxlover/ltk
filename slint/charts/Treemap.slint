@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Treemap inherits Rectangle {
+    in property <string> label: "Treemap";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            Rectangle { x: 0; y: 0; width: parent.width * 0.5; height: parent.height * 0.6; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.bg-surface;
+                Text { text: "A"; color: Theme.accent; font-size: Theme.text-sm; font-weight: Theme.weight-bold; x: 8px; y: 8px; }
+            }
+            Rectangle { x: parent.width * 0.5; y: 0; width: parent.width * 0.5; height: parent.height * 0.4; background: Theme.green_100; border-width: 1px; border-color: Theme.bg-surface;
+                Text { text: "B"; color: Theme.state-success; font-size: Theme.text-sm; font-weight: Theme.weight-bold; x: 8px; y: 8px; }
+            }
+            Rectangle { x: parent.width * 0.5; y: parent.height * 0.4; width: parent.width * 0.3; height: parent.height * 0.6; background: Theme.amber_100; border-width: 1px; border-color: Theme.bg-surface;
+                Text { text: "C"; color: Theme.state-warning; font-size: Theme.text-sm; font-weight: Theme.weight-bold; x: 8px; y: 8px; }
+            }
+            Rectangle { x: parent.width * 0.8; y: parent.height * 0.4; width: parent.width * 0.2; height: parent.height * 0.6; background: Theme.red_100; border-width: 1px; border-color: Theme.bg-surface;
+                Text { text: "D"; color: Theme.state-error; font-size: Theme.text-xs; font-weight: Theme.weight-bold; x: 4px; y: 4px; }
+            }
+        }
+    }
+}

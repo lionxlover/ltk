@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonText inherits Rectangle {
+    in property <length> skeleton-width: 200px;
+
+    width: skeleton-width;
+    height: 14px;
+    background: Theme.bg-overlay;
+    border-radius: 4px;
+}

@@ -1,0 +1,93 @@
+import { Theme } from "../core/Theme.slint";
+import { ProgressSpinner } from "ProgressSpinner.slint";
+
+export component ProgressTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 400px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Progress Components — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text {
+            text: "Progress Spinner (small)";
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle {
+            height: 50px;
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            ProgressSpinner {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                spinner-size: 20px;
+            }
+        }
+
+        Text {
+            text: "Progress Spinner (large)";
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle {
+            height: 80px;
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            ProgressSpinner {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                spinner-size: 48px;
+                stroke-width: 4px;
+            }
+        }
+
+        Text {
+            text: "Progress Spinner (custom color)";
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle {
+            height: 80px;
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            ProgressSpinner {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                spinner-size: 48px;
+                spinner-color: Theme.state-success;
+                stroke-width: 4px;
+            }
+        }
+        }
+    }
+}

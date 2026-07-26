@@ -1,0 +1,140 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ModalDialog inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <string> title: "";
+    in property <string> body: "";
+    in property <string> cancel-text: "Cancel";
+    in property <string> confirm-text: "Confirm";
+    in property <bool> destructive: false;
+
+    callback cancelled();
+    callback confirmed();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.active ? 1 : 0;
+        visible: root.active;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+
+    // Dialog card
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 420px;
+        min-height: 180px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-dialog;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+        visible: root.active;
+        opacity: root.active ? 1 : 0;
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: Theme.elevation-3-y;
+        drop-shadow-blur: Theme.elevation-3-blur;
+        drop-shadow-color: Theme.elevation-3-color;
+
+        animate opacity { duration: Theme.dur-medium; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-4;
+
+            if root.title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-bold;
+                wrap: word-wrap;
+            }
+
+            if root.body != "": Text {
+                text: root.body;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-base;
+                wrap: word-wrap;
+                vertical-stretch: 1;
+            }
+
+            Rectangle { vertical-stretch: 1; }
+
+            HorizontalLayout {
+                spacing: Theme.sp-3;
+                alignment: end;
+                height: Theme.button-height-md;
+                vertical-stretch: 0;
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    min-width: 90px;
+                    height: Theme.button-height-md;
+                    border-radius: Theme.radius-button;
+                    border-width: 1px;
+                    border-color: Theme.border-base;
+                    background: cancel-ta.has-hover ? Theme.surface-hover : #00000000;
+
+                    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                    cancel-ta := TouchArea {
+                        clicked => { root.cancelled(); }
+                    }
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: root.cancel-text;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    min-width: 90px;
+                    height: Theme.button-height-md;
+                    border-radius: Theme.radius-button;
+                    background: confirm-ta.has-hover
+                        ? (root.destructive ? Theme.state-error.darker(0.1) : Theme.btn-primary-bg-hover)
+                        : (root.destructive ? Theme.state-error : Theme.btn-primary-bg);
+
+                    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                    confirm-ta := TouchArea {
+                        clicked => { root.confirmed(); }
+                    }
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: root.confirm-text;
+                        color: Theme.on-accent;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        TouchArea { }
+    }
+}

@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Divider inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> vertical: false;
+
+    background: transparent;
+    horizontal-stretch: 1;
+
+    if vertical: Rectangle {
+        width: 1px;
+        height: parent.height;
+        x: (parent.width - self.width) / 2;
+        background: Theme.divider;
+    }
+
+    if !vertical && label == "": Rectangle {
+        height: 1px;
+        width: parent.width;
+        y: (parent.height - self.height) / 2;
+        background: Theme.divider;
+    }
+
+    if !vertical && label != "": HorizontalLayout {
+        height: parent.height;
+        alignment: center;
+        spacing: Theme.sp-3;
+
+        Rectangle { vertical-stretch: 1; height: 1px; y: (parent.height - self.height) / 2; background: Theme.divider; }
+
+        if label != "": Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle { vertical-stretch: 1; height: 1px; y: (parent.height - self.height) / 2; background: Theme.divider; }
+    }
+}

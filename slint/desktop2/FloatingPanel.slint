@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FloatingPanel inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> title: "";
+    in property <bool> show-close: true;
+    in property <length> panel-width: 300px;
+    in property <length> panel-height: 400px;
+
+    width: panel-width;
+    height: panel-height;
+
+    if title != "": Rectangle {
+        height: 36px;
+        background: Theme.bg-headerbar;
+        border-radius: Theme.radius-lg;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            Text {
+                text: title;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: Theme.text-primary;
+                vertical-stretch: 1;
+                y: (parent.height - self.height) / 2;
+            }
+
+            if show-close: Rectangle {
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background: Theme.traffic-close;
+                y: 8px;
+            }
+        }
+    }
+
+    Rectangle {
+        y: title != "" ? 36px : 0px;
+        vertical-stretch: 1;
+        background: transparent;
+    }
+}

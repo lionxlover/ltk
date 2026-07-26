@@ -1,0 +1,59 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ResizableDraggableWindow inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-window;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in-out property <length> win-width: 600px;
+    in-out property <length> win-height: 400px;
+    in-out property <length> win-x: 100px;
+    in-out property <length> win-y: 80px;
+    in property <string> title: "Window";
+    in property <bool> resizable: true;
+    in property <bool> draggable: true;
+
+    width: win-width;
+    height: win-height;
+    x: win-x;
+    y: win-y;
+
+    Rectangle {
+        height: 38px;
+        background: Theme.bg-headerbar;
+        border-radius: Theme.radius-window;
+
+        Rectangle {
+            y: parent.height - 1px;
+            height: 1px;
+            background: Theme.border-default;
+        }
+
+        HorizontalLayout {
+            padding-left: Theme.sp-3;
+            padding-right: Theme.sp-3;
+
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-close; y: 13px; }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-minimize; y: 13px; }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: Theme.traffic-zoom; y: 13px; }
+
+            Text {
+                text: title;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                vertical-stretch: 1;
+            }
+        }
+    }
+
+    Rectangle {
+        y: 38px;
+        vertical-stretch: 1;
+        background: transparent;
+    }
+}

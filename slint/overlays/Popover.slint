@@ -1,0 +1,73 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Popover inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <length> anchor-x: 0px;
+    in property <length> anchor-y: 0px;
+    in property <string> placement: "bottom";
+
+    callback dismissed();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Triangle arrow
+    Rectangle {
+        x: root.placement == "bottom" ? root.anchor-x - 8px
+            : root.placement == "top" ? root.anchor-x - 8px
+            : root.placement == "left" ? root.anchor-x - 8px
+            : root.anchor-x - 8px;
+        y: root.placement == "bottom" ? root.anchor_y - 18px
+            : root.placement == "top" ? root.anchor_y + 8px
+            : root.anchor_y - 8px;
+        width: 16px;
+        height: 8px;
+        visible: root.active;
+        background: Theme.bg-surface;
+        border-radius: 2px;
+        opacity: root.active ? 1 : 0;
+
+        animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+
+    // Panel
+    Rectangle {
+        x: root.placement == "bottom" ? root.anchor_x - self.width / 2
+            : root.placement == "top" ? root.anchor_x - self.width / 2
+            : root.placement == "left" ? root.anchor_x - self.width - 12px
+            : root.anchor_x + 12px;
+        y: root.placement == "bottom" ? root.anchor_y + 12px
+            : root.placement == "top" ? root.anchor_y - self.height - 12px
+            : root.anchor_y - self.height / 2;
+        min-width: 160px;
+        min-height: 40px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+        visible: root.active;
+        opacity: root.active ? 1 : 0;
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: Theme.elevation-2-y;
+        drop-shadow-blur: Theme.elevation-2-blur;
+        drop-shadow-color: Theme.elevation-2-color;
+
+        animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+        // Content slot
+        Rectangle {
+            vertical-stretch: 1;
+        }
+
+        TouchArea { }
+    }
+
+    // Dismiss catcher
+    if root.active: TouchArea {
+        width: 100%;
+        height: 100%;
+        clicked => { root.dismissed(); }
+    }
+}

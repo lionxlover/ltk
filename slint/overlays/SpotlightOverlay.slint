@@ -1,0 +1,150 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SpotlightOverlay inherits Rectangle {
+    visible: false;
+    in property <string> title: "";
+    in property <string> description: "";
+
+    callback dismiss();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Dark overlay with spotlight cut-out
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.visible ? 1 : 0;
+        visible: root.visible;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.dismiss(); }
+        }
+    }
+
+    // Spotlight highlight border
+    Rectangle {
+        x: (parent.width - 320px) / 2;
+        y: (parent.height - 320px) / 2;
+        width: 320px;
+        height: 320px;
+        border-radius: Theme.radius-xl;
+        border-width: 2px;
+        border-color: Theme.accent;
+        background: #00000000;
+        visible: root.visible;
+        opacity: root.visible ? 1 : 0;
+
+        animate opacity { duration: Theme.dur-medium; easing: Theme.ease-soft; }
+
+        // Glow ring
+        Rectangle {
+            x: -4px;
+            y: -4px;
+            width: parent.width + 8px;
+            height: parent.height + 8px;
+            border-radius: 20px;
+            border-width: 1px;
+            border-color: Theme.accent-glow;
+            background: #00000000;
+        }
+
+        // Center icon
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: Theme.accent-subtle;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    // Description card
+    Rectangle {
+        x: (parent.width - 360px) / 2;
+        y: (parent.height + 320px) / 2 + Theme.sp-4;
+        width: 360px;
+        min-height: 120px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+        visible: root.visible;
+        opacity: root.visible ? 1 : 0;
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: Theme.elevation-2-y;
+        drop-shadow-blur: Theme.elevation-2-blur;
+        drop-shadow-color: Theme.elevation-2-color;
+
+        animate opacity { duration: Theme.dur-medium; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-3;
+
+            if root.title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-lg;
+                font-weight: Theme.weight-bold;
+                wrap: word-wrap;
+                vertical-stretch: 0;
+            }
+
+            if root.description != "": Text {
+                text: root.description;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-base;
+                wrap: word-wrap;
+                vertical-stretch: 1;
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Theme.divider;
+                vertical-stretch: 0;
+            }
+
+            Rectangle {
+                height: Theme.button-height-md;
+                vertical-stretch: 0;
+
+                Rectangle {
+                    width: 100px;
+                    height: Theme.button-height-md;
+                    border-radius: Theme.radius-button;
+                    background: dismiss-ta.pressed ? Theme.btn-primary-bg-pressed
+                        : dismiss-ta.has-hover ? Theme.btn-primary-bg-hover
+                        : Theme.btn-primary-bg;
+                    x: parent.width - self.width;
+
+                    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                    dismiss-ta := TouchArea {
+                        clicked => { root.dismiss(); }
+                    }
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "Got it";
+                        color: Theme.on-accent;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        TouchArea { }
+    }
+}

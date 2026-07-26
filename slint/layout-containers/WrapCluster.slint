@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WrapCluster inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> gap: 8px;
+    in property <string> alignment: "start";
+
+    Flickable {
+        VerticalLayout {
+            spacing: gap;
+        }
+    }
+}

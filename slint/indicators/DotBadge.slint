@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DotBadge inherits Rectangle {
+    in property <bool> show: true;
+
+    width: 8px;
+    height: 8px;
+    background: Theme.state-error;
+    border-radius: Theme.radius-full;
+    horizontal-stretch: 0;
+    visible: root.show;
+}

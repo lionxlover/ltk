@@ -1,0 +1,82 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FeatureComparisonMatrix inherits Rectangle {
+    in property <[string]> features: [];
+    in property <[string]> plans: [];
+    in property <[bool]> matrix: [];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        Rectangle {
+            height: 40px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                Rectangle { width: 160px; horizontal-stretch: 0; }
+
+                for plan[i] in root.plans: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: plan;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        for feat[fi] in root.features: Rectangle {
+            height: 40px;
+            background: mod(fi, 2) == 1 ? Theme.bg-overlay : transparent;
+
+            HorizontalLayout {
+                Rectangle {
+                    width: 160px;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: feat;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+
+                for plan[pi] in root.plans: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: (fi * root.plans.length + pi) < root.matrix.length && root.matrix[fi * root.plans.length + pi] ? "✓" : "✗";
+                        color: (fi * root.plans.length + pi) < root.matrix.length && root.matrix[fi * root.plans.length + pi] ? Theme.state-success : Theme.text-tertiary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-bold;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+    }
+}

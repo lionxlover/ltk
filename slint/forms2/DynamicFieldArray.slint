@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DynamicFieldArray inherits Rectangle {
+    background: transparent;
+
+    in property <int> min-items: 1;
+    in property <int> max-items: 10;
+    in-out property <int> item-count: 1;
+    in property <string> add-label: "Add item";
+
+    VerticalLayout {
+        spacing: Theme.sp-3;
+
+        for item_idx[item] in item-count: Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-default;
+            background: Theme.bg-surface;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: "Item " + Math.mod(item + 1, 10);
+                    font-size: Theme.text-sm;
+                    color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                if item-count > min-items: Rectangle {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 4px;
+                    y: 8px;
+
+                    Text {
+                        text: "×";
+                        font-size: 14px;
+                        color: Theme.text-tertiary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+
+        if item-count < max-items: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-default;
+
+            Text {
+                text: "+" + add-label;
+                font-size: Theme.text-sm;
+                color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea {
+                clicked => { if item-count < max-items { item-count += 1; } }
+            }
+        }
+    }
+}

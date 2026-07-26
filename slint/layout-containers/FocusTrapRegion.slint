@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusTrapRegion inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <string> restore-focus-id: "";
+
+    Rectangle {
+        border-width: active ? 2px : 0px;
+        border-color: Theme.accent;
+        border-radius: Theme.radius-md;
+    }
+}

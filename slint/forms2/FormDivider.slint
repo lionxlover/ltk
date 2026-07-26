@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormDivider inherits Rectangle {
+    background: transparent;
+    height: 1px + (Theme.sp-4 * 2);
+
+    VerticalLayout {
+        padding-top: Theme.sp-4;
+        padding-bottom: Theme.sp-4;
+        Rectangle {
+            height: 1px;
+            background: Theme.border-default;
+        }
+    }
+}

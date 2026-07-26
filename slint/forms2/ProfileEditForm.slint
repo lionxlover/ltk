@@ -1,0 +1,65 @@
+import { Theme } from "../core/Theme.slint";
+import { FormDivider } from "FormDivider.slint";
+
+export component ProfileEditForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    padding: Theme.sp-6;
+    width: 480px;
+
+    VerticalLayout {
+        spacing: Theme.sp-4;
+
+        Text { text: "Edit Profile"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+
+        HorizontalLayout { spacing: Theme.sp-4; alignment: center;
+            Rectangle { width: 72px; height: 72px; border-radius: 36px; background: Theme.bg-surface; }
+            VerticalLayout { spacing: Theme.sp-1; y: 12px;
+                Text { text: "Change Photo"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+                Text { text: "JPG, PNG. Max 2MB"; font-size: Theme.text-xs; color: Theme.text-tertiary; }
+            }
+        }
+
+        FormDivider { }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "First Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "John"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "Last Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "Doe"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "john@example.com"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Bio"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 80px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Tell us about yourself..."; font-size: Theme.text-sm; color: Theme.text-tertiary; padding-left: Theme.sp-3; padding-top: Theme.sp-3; }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3; alignment: end;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Cancel"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+                Text { text: "Save"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+        }
+    }
+}

@@ -1,0 +1,132 @@
+import { Theme } from "../core/Theme.slint";
+import { ChatBubbleSystem } from "ChatBubbleSystem.slint";
+import { MessageReactionsStrip } from "MessageReactionsStrip.slint";
+import { EmojiPickerPanel } from "EmojiPickerPanel.slint";
+import { GifPickerPanel } from "GifPickerPanel.slint";
+import { AttachmentPreview } from "AttachmentPreview.slint";
+import { VoiceMessagePlayer } from "VoiceMessagePlayer.slint";
+import { MentionAutocomplete } from "MentionAutocomplete.slint";
+import { HashtagAutocomplete } from "HashtagAutocomplete.slint";
+import { ThreadReplyPreview } from "ThreadReplyPreview.slint";
+import { GroupChatHeader } from "GroupChatHeader.slint";
+import { DirectMessageHeader } from "DirectMessageHeader.slint";
+import { UserPresenceIndicator } from "UserPresenceIndicator.slint";
+import { NotificationBellDropdown } from "NotificationBellDropdown.slint";
+import { MuteToggle } from "MuteToggle.slint";
+import { InChatPollWidget } from "InChatPollWidget.slint";
+import { CommentBox } from "CommentBox.slint";
+import { NestedCommentThread } from "NestedCommentThread.slint";
+import { LikeDislikeButtons } from "LikeDislikeButtons.slint";
+import { ReactionEmojiBar } from "ReactionEmojiBar.slint";
+import { ShareCountDisplay } from "ShareCountDisplay.slint";
+import { ViewCountDisplay } from "ViewCountDisplay.slint";
+import { SocialShareButtonsRow } from "SocialShareButtonsRow.slint";
+import { FollowUnfollowButton } from "FollowUnfollowButton.slint";
+import { FriendRequestButton } from "FriendRequestButton.slint";
+import { LeaderboardRow } from "LeaderboardRow.slint";
+import { BlockReportSheet } from "BlockReportSheet.slint";
+
+export component SocialTest2 inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 3200px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Social & Communication — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Chat Bubbles & System Messages"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            VerticalLayout { spacing: Theme.sp-2;
+                ChatBubbleSystem { width: 400px; text: "Alice joined the chat"; }
+                MessageReactionsStrip { width: 400px; reactions: ["👍 5", "❤️ 2", "😂 1"]; }
+            }
+
+            Text { text: "Typing Indicator & Read Receipts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Rectangle { width: 200px; height: 48px; background: Theme.bg-surface; border-radius: Theme.radius-lg;
+                    Text { text: "Typing..."; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+                }
+                Rectangle { width: 120px; height: 48px; background: Theme.bg-surface; border-radius: Theme.radius-lg;
+                    Text { text: "✓✓ Read"; font-size: Theme.text-sm; color: Theme.accent; y: (parent.height - self.height) / 2; }
+                }
+            }
+
+            Text { text: "Headers: Group Chat & Direct Message"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            GroupChatHeader { width: 400px; group-name: "Design Team"; member-count: 12; }
+            DirectMessageHeader { width: 400px; user-name: "Alice"; status: "online"; }
+
+            Text { text: "Presence & Notification Bell"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                UserPresenceIndicator { status: "online"; dot-size: 12px; }
+                UserPresenceIndicator { status: "away"; dot-size: 12px; }
+                UserPresenceIndicator { status: "busy"; dot-size: 12px; }
+                UserPresenceIndicator { status: "offline"; dot-size: 12px; }
+                NotificationBellDropdown { width: 260px; notification-count: 3; }
+            }
+
+            Text { text: "Thread / Reply / Attachment / Voice"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            VerticalLayout { spacing: Theme.sp-2;
+                ThreadReplyPreview { width: 300px; reply-to: "Bob"; preview-text: "Sounds good, let's do it!"; }
+                AttachmentPreview { file-name: "design-v2.pdf"; file-type: "pdf"; file-size: "3.2 MB"; }
+                VoiceMessagePlayer { width: 240px; duration-seconds: 34; progress: 12; }
+            }
+
+            Text { text: "Emoji / GIF Picker Panels"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                EmojiPickerPanel { width: 300px; height: 220px; }
+                GifPickerPanel { width: 260px; height: 220px; }
+            }
+
+            Text { text: "Mention & Hashtag Autocomplete"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                MentionAutocomplete { width: 200px; }
+                HashtagAutocomplete { width: 200px; }
+            }
+
+            Text { text: "Poll Widget"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            InChatPollWidget { width: 400px; }
+
+            Text { text: "Comments & Threads"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            VerticalLayout { spacing: Theme.sp-2;
+                CommentBox { width: 400px; }
+                NestedCommentThread { author: "Alice"; text: "Great work on this!"; depth: 0; }
+                NestedCommentThread { author: "Bob"; text: "Thanks!"; depth: 1; }
+                NestedCommentThread { author: "Charlie"; text: "Looks amazing"; depth: 2; }
+            }
+
+            Text { text: "Reactions & Engagement"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            LikeDislikeButtons { like-count: 42; dislike-count: 3; }
+            ReactionEmojiBar { }
+
+            Text { text: "Counts & Shares"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-4;
+                ShareCountDisplay { shares: 128; }
+                ViewCountDisplay { views: 1542; }
+                SocialShareButtonsRow { }
+            }
+
+            Text { text: "Follow / Friend / Leaderboard"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FollowUnfollowButton { }
+                FriendRequestButton { state: "none"; }
+                FriendRequestButton { state: "pending"; }
+                FriendRequestButton { state: "accept"; }
+            }
+            VerticalLayout { spacing: 0;
+                LeaderboardRow { rank: 1; user-name: "Alice"; score: 1500; avatar: "A"; }
+                LeaderboardRow { rank: 2; user-name: "Bob"; score: 1200; avatar: "B"; }
+                LeaderboardRow { rank: 3; user-name: "Charlie"; score: 980; avatar: "C"; }
+            }
+
+            Text { text: "Block / Report Sheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 260px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                BlockReportSheet { user-name: "SpamBot"; }
+            }
+        }
+    }
+}

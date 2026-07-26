@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BiometricAuthPrompt inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <string> auth-type: "face-id";
+    in property <string> title: "Authenticate";
+    in property <string> subtitle: "Use Face ID to continue";
+
+    Rectangle {
+        width: 300px;
+        height: 240px;
+        background: Theme.bg-elevated;
+        border-radius: Theme.radius-xl;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Theme.sp-4;
+
+            Text {
+                text: auth-type == "face-id" ? "😊" : "👆";
+                font-size: 48px;
+                horizontal-alignment: center;
+            }
+
+            Text {
+                text: title;
+                font-size: Theme.text-lg;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+            }
+
+            Text {
+                text: subtitle;
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                horizontal-alignment: center;
+            }
+
+            HorizontalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 120px;
+                    height: 36px;
+                    border-radius: Theme.radius-full;
+                    border-width: 1px;
+                    border-color: Theme.border-default;
+
+                    Text {
+                        text: "Cancel";
+                        font-size: Theme.text-sm;
+                        color: Theme.text-primary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+    }
+}

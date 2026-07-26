@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FieldLabel inherits Rectangle {
+    background: transparent;
+
+    in property <string> text: "";
+    in property <bool> required: false;
+    in property <bool> disabled: false;
+
+    height: 20px;
+
+    HorizontalLayout {
+        spacing: 2px;
+
+        Text {
+            text: root.text;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: disabled ? Theme.text-disabled : Theme.text-primary;
+            y: 1px;
+        }
+
+        if required: Text {
+            text: "*";
+            font-size: Theme.text-sm;
+            color: Theme.error;
+            y: 1px;
+        }
+    }
+}

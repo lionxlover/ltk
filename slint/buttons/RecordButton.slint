@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component RecordButton inherits Rectangle {
+    in-out property <bool> recording: false;
+
+    width: 48px;
+    height: 48px;
+    background: root.recording ? Theme.error : Theme.bg-raised;
+    border-radius: 24px;
+    border-width: 2px;
+    border-color: root.recording ? Theme.error : Theme.border-base;
+    horizontal-stretch: 0;
+
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle.svg");
+        fa-size: 16px;
+        fa-color: #ffffff;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { root.recording = !root.recording; }
+    }
+}

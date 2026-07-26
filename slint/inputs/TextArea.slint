@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TextArea inherits Rectangle {
+    in property <string> placeholder: "";
+    in property <bool> enabled: true;
+    in property <int> max-height-lines: 8;
+
+    in-out property <string> text <=> input.text;
+
+    callback accepted(string);
+    callback edited(string);
+
+    height: Theme.input-height-md * 3;
+    background: transparent;
+
+    bg := Rectangle {
+        border-radius: Theme.radius-input;
+        border-width: 1px;
+        border-color: !enabled ? Theme.border-subtle : (input.has-focus ? Theme.border-focus : Theme.border-base);
+        background: !enabled ? Theme.btn-disabled-bg : Theme.bg-raised;
+        animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+
+    placeholder-text := Text {
+        x: Theme.input-padding-x;
+        y: Theme.sp-3;
+        text: root.placeholder;
+        color: Theme.text-tertiary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        visible: input.text == "";
+    }
+
+    input := TextInput {
+        x: Theme.input-padding-x;
+        y: Theme.sp-3;
+        width: parent.width - Theme.input-padding-x * 2;
+        height: parent.height - Theme.sp-3 * 2;
+        color: enabled ? Theme.text-primary : Theme.text-disabled;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        wrap: word-wrap;
+        single-line: false;
+        enabled: root.enabled;
+        accepted => { root.accepted(self.text); }
+        edited => { root.edited(self.text); }
+    }
+}

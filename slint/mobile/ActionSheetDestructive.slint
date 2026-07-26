@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ActionSheetDestructive inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <string> title: "Are you sure?";
+    in property <[string]> actions: ["Delete", "Move to Trash"];
+    in property <int> destructive-index: 0;
+
+    VerticalLayout {
+        alignment: end;
+
+        Rectangle {
+            background: Theme.bg-elevated;
+            border-radius: Theme.radius-xl;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+
+            VerticalLayout {
+                padding: Theme.sp-2;
+
+                if title != "": Rectangle {
+                    height: 40px;
+                    border-radius: Theme.radius-md;
+
+                    Text {
+                        text: title;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.text-tertiary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+
+                for action[idx] in actions: Rectangle {
+                    height: 50px;
+                    border-radius: Theme.radius-md;
+
+                    Text {
+                        text: action;
+                        font-size: Theme.text-base;
+                        font-weight: idx == destructive-index ? Theme.weight-semibold : Theme.weight-regular;
+                        color: idx == destructive-index ? Theme.error : Theme.text-primary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+
+                Rectangle { height: 8px; }
+
+                Rectangle {
+                    height: 50px;
+                    border-radius: Theme.radius-md;
+                    background: Theme.bg-surface;
+
+                    Text {
+                        text: "Cancel";
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.accent;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HomeScreenWidget2x4 inherits Rectangle {
+    background: Theme.glass-regular;
+    border-radius: Theme.radius-xl;
+    width: 364px;
+    height: 170px;
+
+    in property <string> title: "Music";
+    in property <string> track: "Song Name";
+    in property <string> artist: "Artist";
+
+    HorizontalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 80px;
+            height: 80px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-overlay;
+        }
+
+        VerticalLayout {
+            vertical-stretch: 1;
+            spacing: Theme.sp-1;
+            y: 16px;
+
+            Text { text: title; font-size: Theme.text-xs; color: Theme.text-secondary; }
+            Text { text: track; font-size: Theme.text-base; font-weight: Theme.weight-semibold; color: Theme.text-primary; overflow: elide; }
+            Text { text: artist; font-size: Theme.text-sm; color: Theme.text-tertiary; overflow: elide; }
+        }
+    }
+}

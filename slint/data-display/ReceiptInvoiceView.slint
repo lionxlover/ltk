@@ -1,0 +1,78 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ReceiptInvoiceView inherits Rectangle {
+    in property <string> title: "Invoice #1234";
+    in property <[string]> item-labels: [];
+    in property <[string]> item-amounts: [];
+    in property <string> total-label: "Total";
+    in property <string> total-amount: "";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        padding: Theme.sp-5;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        for item[idx] in root.item-labels: HorizontalLayout {
+            height: 32px;
+
+            Text {
+                text: item;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Text {
+                text: idx < root.item_amounts.length ? root.item_amounts[idx] : "";
+                color: Theme.text-primary;
+                font-family: Theme.font-mono;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-base; }
+
+        HorizontalLayout {
+            height: 36px;
+
+            Text {
+                text: root.total_label;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Text {
+                text: root.total_amount;
+                color: Theme.accent;
+                font-family: Theme.font-mono;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+        }
+    }
+}

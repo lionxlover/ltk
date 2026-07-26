@@ -1,0 +1,184 @@
+import { Theme } from "../core/Theme.slint";
+import { ChatBubbleSent } from "ChatBubbleSent.slint";
+import { ChatBubbleReceived } from "ChatBubbleReceived.slint";
+import { TypingIndicator } from "TypingIndicator.slint";
+import { ChatInputBar } from "ChatInputBar.slint";
+import { ReadReceipt } from "ReadReceipt.slint";
+import { EmojiReactionBar } from "EmojiReactionBar.slint";
+import { FollowButton } from "FollowButton.slint";
+import { UpvoteDownvote } from "UpvoteDownvote.slint";
+
+export component SocialTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 1200px;
+
+    Flickable {
+        viewport-height: 1100px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Social Components — Test";
+                color: Theme.text-primary;
+                font-family: Theme.font-display;
+                font-size: Theme.text-3xl;
+                font-weight: Theme.weight-bold;
+            }
+
+            // ChatBubbleSent
+            Text { text: "ChatBubbleSent"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 120px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                ChatBubbleSent {
+                    x: 40px;
+                    y: 20px;
+                    width: parent.width - 80px;
+                    message: "Hey, are you free for a call later today?";
+                    time: "10:42 AM";
+                }
+            }
+
+            // ChatBubbleReceived
+            Text { text: "ChatBubbleReceived"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 120px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                ChatBubbleReceived {
+                    x: 40px;
+                    y: 20px;
+                    width: parent.width - 80px;
+                    message: "Yeah sure! How about 3pm?";
+                    time: "10:43 AM";
+                    sender: "Alice";
+                }
+            }
+
+            // TypingIndicator
+            Text { text: "TypingIndicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 60px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                TypingIndicator {
+                    x: 40px;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            // ChatInputBar
+            Text { text: "ChatInputBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 60px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                ChatInputBar {
+                    x: 40px;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - 80px;
+                    placeholder: "Type a message...";
+                }
+            }
+
+            // ReadReceipt
+            Text { text: "ReadReceipt"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 40px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: Theme.sp-6;
+
+                    ReadReceipt {
+                        read: false;
+                        y: (parent.height - self.height) / 2;
+                    }
+
+                    ReadReceipt {
+                        read: true;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+
+            // EmojiReactionBar
+            Text { text: "EmojiReactionBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 40px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                EmojiReactionBar {
+                    x: 40px;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - 80px;
+                }
+            }
+
+            // FollowButton
+            Text { text: "FollowButton"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 60px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: Theme.sp-6;
+
+                    FollowButton {
+                        following: false;
+                        y: (parent.height - self.height) / 2;
+                    }
+
+                    FollowButton {
+                        following: true;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+
+            // UpvoteDownvote
+            Text { text: "UpvoteDownvote"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle {
+                height: 60px;
+                background: Theme.bg-surface;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                UpvoteDownvote {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    upvotes: 42;
+                    downvotes: 7;
+                }
+            }
+        }
+    }
+}

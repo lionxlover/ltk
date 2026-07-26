@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Badge inherits Rectangle {
+    in property <string> text: "";
+    in property <int> count: -1;
+    in property <bool> dot: false;
+    in property <color> badge-color: Theme.accent;
+    in property <bool> error: false;
+
+    visible: dot || text != "" || count >= 0;
+    background: transparent;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    // Dot badge
+    if dot: Rectangle {
+        width: 8px;
+        height: 8px;
+        border-radius: Theme.radius-full;
+        background: error ? Theme.state-error : badge-color;
+    }
+
+    // Text/count badge
+    if !dot && (text != "" || count >= 0): Rectangle {
+        min-width: max(label.preferred-width + Theme.sp-2 * 2, 20px);
+        height: 18px;
+        border-radius: Theme.radius-full;
+        background: error ? Theme.state-error : badge-color;
+        horizontal-stretch: 0;
+
+        label := Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.count >= 0 ? (root.count > 99 ? "99+" : root.count) : root.text;
+            color: Theme.text-on-accent;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}

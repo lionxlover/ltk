@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SocialAuthGoogle inherits Rectangle {
+    in-out property <string> text: "Continue with Google";
+
+    background: #ffffff;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: #dadce0;
+    height: 44px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/google.svg");
+            fa-size: 18px;
+            fa-color: #4285F4;
+        }
+
+        Text {
+            text: root.text;
+            color: #3c4043;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

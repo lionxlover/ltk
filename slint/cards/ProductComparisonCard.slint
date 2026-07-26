@@ -1,0 +1,90 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ProductComparisonCard inherits Rectangle {
+    in-out property <string> plan-name: "Pro";
+    in-out property <string> price: "$29";
+    in-out property <string> period: "/mo";
+    in-out property <bool> featured: false;
+    in-out property <[string]> features: [];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 2px;
+    border-color: root.featured ? Theme.accent : Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 12px;
+
+        if root.featured: Rectangle {
+            height: 20px;
+            background: Theme.accent;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Most Popular";
+                color: #ffffff;
+                font-size: 10px;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+            }
+        }
+
+        Text {
+            text: root.plan-name;
+            color: Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+        }
+
+        HorizontalLayout {
+            alignment: center;
+
+            Text {
+                text: root.price;
+                color: Theme.text-primary;
+                font-family: Theme.font-display;
+                font-size: 32px;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: bottom;
+            }
+
+            Text {
+                text: root.period;
+                color: Theme.text-tertiary;
+                font-size: 13px;
+                vertical-alignment: bottom;
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        for feat[i] in root.features: HorizontalLayout {
+            height: 28px;
+            spacing: 8px;
+
+            Text {
+                text: "✓";
+                color: Theme.state-success;
+                font-size: 12px;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+
+            Text {
+                text: feat;
+                color: Theme.text-secondary;
+                font-size: 12px;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+        }
+    }
+}

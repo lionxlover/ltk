@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BarcodeDisplay inherits Rectangle {
+    in property <string> data: "1234567890";
+
+    width: 200px;
+    height: 80px;
+    background: #ffffff;
+    border-radius: Theme.radius-sm;
+
+    HorizontalLayout {
+        padding: Theme.sp-2;
+        spacing: 2px;
+        alignment: center;
+
+        for bar[i] in 30: Rectangle {
+            width: Math.mod(i, 3) == 0 ? 3px : (Math.mod(i, 5) == 0 ? 1px : 2px);
+            height: parent.height - Theme.sp-4;
+            background: Math.mod(i, 2) == 0 ? #000000 : transparent;
+            vertical-stretch: 0;
+        }
+    }
+
+    Text {
+        y: parent.height - 18px;
+        x: (parent.width - self.width) / 2;
+        text: root.data;
+        color: #000000;
+        font-family: Theme.font-mono;
+        font-size: Theme.text-xs;
+    }
+}

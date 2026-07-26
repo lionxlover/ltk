@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+import { FocusRingCustom } from "FocusRingCustom.slint";
+import { AriaLivePolite } from "AriaLivePolite.slint";
+import { AriaLiveAssertive } from "AriaLiveAssertive.slint";
+import { FocusTrapGuard } from "FocusTrapGuard.slint";
+import { RovingTabIndexGroup } from "RovingTabIndexGroup.slint";
+import { LineHeightAdjuster } from "LineHeightAdjuster.slint";
+import { DyslexiaFontToggle } from "DyslexiaFontToggle.slint";
+import { ColorBlindnessToggle } from "ColorBlindnessToggle.slint";
+import { KeyboardNavIndicator } from "KeyboardNavIndicator.slint";
+import { FocusVisibleIndicator } from "FocusVisibleIndicator.slint";
+import { AccessibleErrorSummary } from "AccessibleErrorSummary.slint";
+
+export component AccessibilityTest2 inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+
+    Flickable {
+        viewport-height: 2000px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Accessibility — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Custom Focus Ring"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FocusRingCustom { width: 120px; height: 40px; active: true; }
+                FocusRingCustom { width: 120px; height: 40px; active: false; }
+            }
+
+            Text { text: "ARIA Live Regions"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AriaLivePolite { width: 200px; height: 40px; message: "Updated: 3 items"; }
+                AriaLiveAssertive { width: 200px; height: 40px; message: "Error: Form invalid"; }
+            }
+
+            Text { text: "Focus Trap Guard"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            FocusTrapGuard { width: 300px; height: 80px; active: true; }
+
+            Text { text: "Line Height Adjuster"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            LineHeightAdjuster { width: 300px; line-height: 1.5; }
+
+            Text { text: "Dyslexia-Friendly Font Toggle"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            DyslexiaFontToggle { width: 300px; }
+
+            Text { text: "Color Blindness Simulation"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ColorBlindnessToggle { width: 240px; }
+
+            Text { text: "Keyboard Navigation Indicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { width: 400px; height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                KeyboardNavIndicator { keyboard-mode: true; }
+            }
+
+            Text { text: "Focus Visible Indicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FocusVisibleIndicator { width: 120px; height: 40px; keyboard-focused: true; }
+                FocusVisibleIndicator { width: 120px; height: 40px; pointer-focused: true; }
+            }
+
+            Text { text: "Accessible Error Summary"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            AccessibleErrorSummary { width: 400px; title: "2 errors found"; errors: ["Email is required", "Password must be 8+ characters"]; }
+        }
+    }
+}

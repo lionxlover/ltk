@@ -1,0 +1,122 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BottomNavBar inherits Rectangle {
+    in-out property <int> active: 0;
+
+    height: 64px;
+    background: Theme.bg-elevated;
+
+    HorizontalLayout {
+        Rectangle {
+            horizontal-stretch: 1;
+            background: root.active == 0 ? Theme.accent-subtle : #00000000;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/house.svg");
+                    width: 20px;
+                    height: 20px;
+                    colorize: root.active == 0 ? Theme.accent : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: "Home";
+                    color: root.active == 0 ? Theme.accent : Theme.text-tertiary;
+                    font-size: 10px;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                }
+            }
+
+            TouchArea { clicked => { root.active = 0; } }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            background: root.active == 1 ? Theme.accent-subtle : #00000000;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+                    width: 20px;
+                    height: 20px;
+                    colorize: root.active == 1 ? Theme.accent : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: "Search";
+                    color: root.active == 1 ? Theme.accent : Theme.text-tertiary;
+                    font-size: 10px;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                }
+            }
+
+            TouchArea { clicked => { root.active = 1; } }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            background: root.active == 2 ? Theme.accent-subtle : #00000000;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/bell.svg");
+                    width: 20px;
+                    height: 20px;
+                    colorize: root.active == 2 ? Theme.accent : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: "Alerts";
+                    color: root.active == 2 ? Theme.accent : Theme.text-tertiary;
+                    font-size: 10px;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                }
+            }
+
+            TouchArea { clicked => { root.active = 2; } }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            background: root.active == 3 ? Theme.accent-subtle : #00000000;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/user.svg");
+                    width: 20px;
+                    height: 20px;
+                    colorize: root.active == 3 ? Theme.accent : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: "Profile";
+                    color: root.active == 3 ? Theme.accent : Theme.text-tertiary;
+                    font-size: 10px;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                }
+            }
+
+            TouchArea { clicked => { root.active = 3; } }
+        }
+    }
+}

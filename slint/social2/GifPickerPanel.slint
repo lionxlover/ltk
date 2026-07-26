@@ -1,0 +1,65 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GifPickerPanel inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> categories: ["Trending", "Reactions", "Animals", "Pop Culture"];
+
+    VerticalLayout {
+        spacing: 0;
+
+        Rectangle {
+            height: 40px;
+
+            Rectangle {
+                height: 32px;
+                border-radius: Theme.radius-md;
+                background: Theme.bg-surface;
+                border-width: 1px;
+                border-color: Theme.border-default;
+                clip: true;
+
+                Text {
+                    text: "Search GIFs...";
+                    font-size: Theme.text-xs;
+                    color: Theme.text-placeholder;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            height: 28px;
+            padding-left: Theme.sp-3;
+
+            for cat[idx] in categories: Text {
+                text: cat;
+                font-size: Theme.text-xs;
+                color: idx == 0 ? Theme.accent : Theme.text-tertiary;
+                font-weight: idx == 0 ? Theme.weight-semibold : Theme.weight-regular;
+                y: 4px;
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-surface;
+
+            VerticalLayout {
+                padding: Theme.sp-2;
+
+                Text {
+                    text: "GIF Grid";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-tertiary;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

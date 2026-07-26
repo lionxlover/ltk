@@ -1,0 +1,89 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VirtualizedTable inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> total-rows: 100;
+    in property <int> visible-start: 0;
+    in property <int> visible-count: 20;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        Rectangle {
+            height: 32px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: "Showing \{root.visible_start + 1}–\{root.visible_start + root.visible_count} of \{root.total_rows} rows";
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        if columns.length > 0: Rectangle {
+            height: 36px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: col;
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        VerticalLayout {
+            for row[rowidx] in root.visible-count: Rectangle {
+                height: 36px;
+                background: row-ta.pressed ? Theme.surface-pressed
+                    : row-ta.has-hover ? Theme.surface-hover
+                    : transparent;
+
+                animate background { duration: Theme.dur-fast; }
+
+                HorizontalLayout {
+                    for col[i] in root.columns: Rectangle {
+                        horizontal-stretch: 1;
+
+                        Text {
+                            x: Theme.sp-3;
+                            y: (parent.height - self.height) / 2;
+                            text: "Row \{root.visible_start + rowidx + 1} — \{col}";
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+
+                row-ta := TouchArea {}
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+import { FishTextField } from "FishTextField.slint";
+import { FishCheckBox } from "FishCheckBox.slint";
+import { FishSwitch } from "FishSwitch.slint";
+import { FishSlider } from "FishSlider.slint";
+import { TextArea } from "TextArea.slint";
+import { SearchInput } from "SearchInput.slint";
+import { RadioButton } from "RadioButton.slint";
+import { SegmentedControl } from "SegmentedControl.slint";
+import { NumberInput } from "NumberInput.slint";
+import { PinInput } from "PinInput.slint";
+
+export component InputsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Inputs — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "TextField"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            FishTextField { placeholder: "Name..."; width: 240px; }
+            FishTextField { placeholder: "Email..."; text: "user@ltk.dev"; width: 240px; }
+            FishTextField { placeholder: "Disabled"; width: 240px; enabled: false; }
+        }
+
+        Text { text: "TextArea"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        TextArea { width: 400px; placeholder: "Multi-line input..."; }
+
+        Text { text: "SearchInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        SearchInput { width: 400px; placeholder: "Search..."; }
+
+        Text { text: "NumberInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        NumberInput { width: 240px; value: 42; min-value: 0; max-value: 100; step: 1; }
+
+        Text { text: "PinInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        PinInput { width: 240px; pin-length: 6; }
+
+        Text { text: "CheckBox / Switch / Radio"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            FishCheckBox { text: "Agree"; checked: true; }
+            FishSwitch { text: "Enable"; checked: true; }
+            RadioButton { text: "Option A"; checked: true; }
+            RadioButton { text: "Option B"; }
+        }
+
+        Text { text: "Slider"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        FishSlider { width: 400px; value: 60; }
+
+        Text { text: "SegmentedControl"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        SegmentedControl { width: 300px; segments: ["S", "M", "L", "XL"]; current-index: 1; }
+        }
+    }
+}

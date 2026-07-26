@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HeroMorphLayout inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> expanded: false;
+
+    width: expanded ? 400px : 200px;
+    height: expanded ? 300px : 100px;
+    border-radius: expanded ? Theme.radius-lg : Theme.radius-md;
+    animate width, height, border-radius { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+}

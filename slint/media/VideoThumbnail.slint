@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component VideoThumbnail inherits Rectangle {
+    in property <string> title: "";
+
+    width: 240px;
+    height: 160px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-lg;
+    clip: true;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: Theme.bg-raised;
+
+        VerticalLayout {
+            alignment: center;
+
+            Text {
+                text: "Video";
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                horizontal-alignment: center;
+            }
+        }
+    }
+
+    Rectangle {
+        x: (parent.width - 48px) / 2;
+        y: (parent.height - 48px) / 2;
+        width: 48px;
+        height: 48px;
+        background: Theme.accent;
+        border-radius: Theme.radius-full;
+        opacity: 0.9;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+            fa-size: 18px;
+            fa-color: #ffffff;
+            x: (parent.width - self.width) / 2 + 2px;
+            y: (parent.height - self.height) / 2;
+        }
+
+        TouchArea { }
+    }
+
+    if root.title != "": Rectangle {
+        x: 0;
+        y: parent.height - 36px;
+        width: parent.width;
+        height: 36px;
+        background: #00000099;
+
+        Text {
+            x: Theme.sp-3;
+            y: (parent.height - self.height) / 2;
+            text: root.title;
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            overflow: elide;
+            width: parent.width - Theme.sp-6;
+        }
+    }
+}

@@ -1,0 +1,61 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PersistentBanner inherits Rectangle {
+    in property <string> text: "";
+    in property <int> position: 0;
+    in property <int> kind: 0;
+
+    callback close();
+
+    height: 40px;
+    background: kind == 3 ? Theme.state-error.with-alpha(0.12) : (kind == 2 ? Theme.state-warning.with-alpha(0.12) : (kind == 1 ? Theme.state-success.with-alpha(0.12) : Theme.state-info.with-alpha(0.12)));
+
+    border-line := Rectangle {
+        x: 0;
+        y: position == 0 ? parent.height - 1px : 0px;
+        width: parent.width;
+        height: 1px;
+        background: kind == 3 ? Theme.state-error.with-alpha(0.25) : (kind == 2 ? Theme.state-warning.with-alpha(0.25) : (kind == 1 ? Theme.state-success.with-alpha(0.25) : Theme.state-info.with-alpha(0.25)));
+    }
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        Text {
+            text: root.text;
+            color: kind == 3 ? Theme.state-error : (kind == 2 ? Theme.state-warning : (kind == 1 ? Theme.state-success : Theme.state-info));
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+            wrap: word-wrap;
+        }
+
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            horizontal-stretch: 0;
+
+            close-bg := Rectangle {
+                border-radius: Theme.radius-xs;
+                background: close-ta.pressed ? Theme.surface-pressed : (close-ta.has-hover ? Theme.surface-hover : #00000000);
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            close-ta := TouchArea {
+                clicked => { root.close(); }
+            }
+        }
+    }
+}

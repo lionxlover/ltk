@@ -1,0 +1,53 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Dock inherits Rectangle {
+    background: Theme.bg-raised;
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    height: 64px;
+    horizontal-stretch: 0;
+    clip: true;
+
+    in property <bool> floating: true;
+    in-out property <int> active-index: -1;
+
+    in property <[string]> icons: ["🏠", "📁", "🌐", "✉️", "🎵"];
+    in property <[string]> labels: ["Home", "Files", "Web", "Mail", "Music"];
+
+    HorizontalLayout {
+        padding: Theme.sp-2;
+        spacing: Theme.sp-1;
+        alignment: center;
+
+        for item[idx] in root.icons: Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: active-index == idx ? Theme.accent-subtle : transparent;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 2px;
+
+                Text {
+                    text: item;
+                    font-size: 18px;
+                    horizontal-alignment: center;
+                }
+
+                if idx < 5 && idx < root.labels.length: Text {
+                    text: root.labels[idx];
+                    font-size: 9px;
+                    color: active-index == idx ? Theme.accent : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.active-index = idx; }
+            }
+        }
+    }
+}

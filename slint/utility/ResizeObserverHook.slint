@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ResizeObserverHook inherits Rectangle {
+    background: transparent;
+
+    in property <length> observed-width: 0px;
+    in property <length> observed-height: 0px;
+
+    width: observed-width;
+    height: observed-height;
+}

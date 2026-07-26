@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DragHandle inherits Rectangle {
+    width: 6px;
+    background: #00000000;
+
+    Rectangle {
+        width: 2px;
+        height: 24px;
+        background: Theme.border-strong;
+        border-radius: 1px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}

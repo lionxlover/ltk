@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ElevatedCard inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    horizontal-stretch: 1;
+
+    drop-shadow-color: Theme.dark-mode ? #40000000 : #20000000;
+    drop-shadow-blur: 12px;
+    drop-shadow-offset-y: 4px;
+}

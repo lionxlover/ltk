@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FieldWrapper inherits Rectangle {
+    background: transparent;
+
+    in property <bool> has-error: false;
+    in property <bool> has-success: false;
+    in property <bool> disabled: false;
+    in property <length> gap: 4px;
+
+    VerticalLayout {
+        spacing: gap;
+    }
+}

@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+import { BusyIndicator } from "BusyIndicator.slint";
+import { Alert } from "Alert.slint";
+import { Notification } from "Notification.slint";
+import { Snackbar } from "Snackbar.slint";
+import { ProgressBar } from "ProgressBar.slint";
+import { Skeleton } from "Skeleton.slint";
+
+export component FeedbackTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Feedback — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "BusyIndicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-6; alignment: start;
+            BusyIndicator { width: 20px; height: 20px; }
+            BusyIndicator { width: 32px; height: 32px; }
+            BusyIndicator { width: 48px; height: 48px; }
+        }
+
+        Text { text: "Alerts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            Alert { title: "Info"; text: "Informational message."; kind: "info"; }
+            Alert { title: "Success"; text: "Operation succeeded."; kind: "success"; }
+            Alert { title: "Warning"; text: "Proceed with caution."; kind: "warning"; }
+            Alert { title: "Error"; text: "Something failed."; kind: "error"; }
+        }
+
+        Text { text: "Notification"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Notification { title: "Update available"; text: "Version 2.0 is ready to install."; kind: "info"; width: 400px; }
+
+        Text { text: "Snackbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Snackbar { text: "File deleted"; action-text: "Undo"; width: 360px; }
+
+        Text { text: "ProgressBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            ProgressBar { value: 75; width: 300px; }
+            ProgressBar { value: 45; width: 300px; progress-color: Theme.state-success; }
+            ProgressBar { indeterminate: true; width: 300px; }
+        }
+
+        Text { text: "Skeleton"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2; width: 300px;
+            Skeleton { skeleton-height: 20px; }
+            Skeleton { skeleton-height: 14px; }
+            Skeleton { skeleton-height: 14px; }
+        }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+
+export component KeyboardShortcutListener inherits Rectangle {
+    background: transparent;
+
+    in property <[string]> shortcuts: [];
+    in property <string> last-triggered: "";
+
+    Rectangle {
+        height: 32px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: Theme.border-default;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            padding-right: Theme.sp-2;
+            spacing: Theme.sp-1;
+
+            for shortcut[s] in shortcuts: Rectangle {
+                height: 22px;
+                border-radius: 4px;
+                background: last-triggered == s ? Theme.accent-subtle : Theme.bg-base;
+                border-width: 1px;
+                border-color: last-triggered == s ? Theme.accent : Theme.border-default;
+
+                Text {
+                    text: s;
+                    font-size: Theme.text-xs;
+                    font-family: Theme.font-mono;
+                    color: last-triggered == s ? Theme.accent : Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

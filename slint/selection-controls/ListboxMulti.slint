@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ListboxMulti inherits Rectangle {
+    in-out property <[string]> items: ["Red", "Green", "Blue", "Yellow", "Purple"];
+    in-out property <[bool]> selected: [true, false, true, false, false];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+    height: self.preferred-height;
+
+    VerticalLayout {
+        padding: 4px;
+
+        for itm[idx] in root.items: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: root.selected[idx] ? Theme.accent-subtle : transparent;
+
+            HorizontalLayout {
+                padding-left: 12px;
+                padding-right: 12px;
+                spacing: 8px;
+
+                Rectangle {
+                    width: 18px;
+                    height: 18px;
+                    border-radius: Theme.radius-sm;
+                    background: root.selected[idx] ? Theme.accent : transparent;
+                    border-width: 2px;
+                    border-color: root.selected[idx] ? Theme.accent : Theme.border-base;
+                    vertical-stretch: 0;
+
+                    if root.selected[idx]: Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "\u{2713}";
+                        color: #ffffff;
+                        font-size: 10px;
+                        font-weight: Theme.weight-bold;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: itm;
+                    color: root.selected[idx] ? Theme.accent : Theme.text-primary;
+                    font-size: 14px;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected[idx] = !root.selected[idx];
+                }
+            }
+        }
+    }
+}

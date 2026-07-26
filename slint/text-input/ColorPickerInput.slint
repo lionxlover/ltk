@@ -1,0 +1,74 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColorPickerInput inherits Rectangle {
+    in-out property <color> current-color: Theme.accent;
+    in-out property <string> hex-text: "#5B9DFA";
+    in-out property <int> active-tab: 0;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    // Color swatch
+    Rectangle {
+        x: 8px;
+        y: (parent.height - 24px) / 2;
+        width: 24px;
+        height: 24px;
+        border-radius: Theme.radius-sm;
+        background: root.current-color;
+        border-width: 1px;
+        border-color: Theme.border-base;
+    }
+
+    Text {
+        x: 40px;
+        y: (parent.height - self.height) / 2;
+        text: root.hex-text;
+        color: Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 13px;
+        vertical-alignment: center;
+    }
+
+    // Format tabs
+    Rectangle {
+        x: parent.width - 160px;
+        y: (parent.height - 28px) / 2;
+        width: 152px;
+        height: 28px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-raised;
+
+        HorizontalLayout {
+            padding: 2px;
+            spacing: 2px;
+
+            for tabitem in ["HEX", "RGB", "HSL", "OKLCH"]: Rectangle {
+                horizontal-stretch: 1;
+                border-radius: 4px;
+                background: tabitem == "HEX" ? Theme.bg-surface : transparent;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: tabitem;
+                    color: tabitem == "HEX" ? Theme.text-primary : Theme.text-tertiary;
+                    font-size: 9px;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

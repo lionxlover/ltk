@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DragDropZone inherits Rectangle {
+    border-radius: Theme.radius-lg;
+    border-width: 2px;
+
+    in property <bool> drag-over: false;
+    in property <string> label: "Drop files here";
+    in property <string> sublabel: "or click to browse";
+
+    border-color: drag-over ? Theme.accent : Theme.border-default;
+    background: drag-over ? Theme.accent-subtle : Theme.bg-surface;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: "📁";
+            font-size: 32px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: label;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+
+        if sublabel != "": Text {
+            text: sublabel;
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+    }
+}

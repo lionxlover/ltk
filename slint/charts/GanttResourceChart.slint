@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GanttResourceChart inherits Rectangle {
+    in property <string> label: "Gantt / Resource Timeline";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        for task[i] in [0, 1, 2]: Rectangle { height: 28px;
+            HorizontalLayout { spacing: Theme.sp-2;
+                Text { text: i == 0 ? "Design" : (i == 1 ? "Develop" : "Test"); color: Theme.text-primary; font-size: Theme.text-xs; width: 60px; vertical-alignment: center; }
+                Rectangle { vertical-stretch: 1; clip: true;
+                    Rectangle { x: i * 40px; width: (3 - i) * 80px; height: 16px; y: (parent.height - self.height) / 2;
+                        background: i == 0 ? Theme.accent : (i == 1 ? Theme.state-success : Theme.state-warning);
+                        border-radius: Theme.radius-sm;
+                    }
+                }
+            }
+        }
+    }
+}

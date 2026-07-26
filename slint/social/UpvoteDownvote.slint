@@ -1,0 +1,76 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+component VoteButton inherits Rectangle {
+    in property <bool> active: false;
+    callback clicked();
+
+    width: 36px;
+    height: 36px;
+    background: root.active ? Theme.accent-subtle : #00000000;
+    border-radius: Theme.radius-full;
+
+    HorizontalLayout {
+        alignment: center;
+
+        @children
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component UpvoteDownvote inherits Rectangle {
+    in property <int> upvotes: 0;
+    in property <int> downvotes: 0;
+    callback upvoted();
+    callback downvoted();
+
+    width: self.preferred-width;
+    height: 40px;
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+        alignment: center;
+
+        VoteButton {
+            active: root.upvotes > 0;
+            clicked => {
+                root.upvoted();
+            }
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-up.svg");
+                fa-size: 14px;
+                fa-color: root.upvotes > 0 ? Theme.accent : Theme.text-secondary;
+            }
+        }
+
+        Text {
+            text: root.upvotes - root.downvotes;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+            width: 32px;
+            horizontal-alignment: center;
+        }
+
+        VoteButton {
+            active: root.downvotes > 0;
+            clicked => {
+                root.downvoted();
+            }
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
+                fa-size: 14px;
+                fa-color: root.downvotes > 0 ? Theme.error : Theme.text-secondary;
+            }
+        }
+    }
+}

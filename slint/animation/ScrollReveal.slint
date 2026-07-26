@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScrollReveal inherits Rectangle {
+    background: transparent;
+
+    in property <bool> revealed: false;
+    in property <string> direction: "up";
+
+    opacity: revealed ? 1 : 0;
+    y: direction == "up" ? (revealed ? 0px : 40px) : (revealed ? 0px : -40px);
+    animate opacity, y { duration: Theme.dur-slower; easing: Theme.ease-decelerate; }
+}

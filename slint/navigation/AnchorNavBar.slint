@@ -1,0 +1,55 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AnchorNavBar inherits Rectangle {
+    in property <int> active: 0;
+    in property <[string]> items: [];
+
+    callback anchor-clicked(int);
+
+    height: 40px;
+    background: #00000000;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-4;
+        spacing: Theme.sp-1;
+
+        for link[idx] in root.items: Rectangle {
+            height: 32px;
+            background: link-ta.pressed ? Theme.surface-pressed
+                : link-ta.has-hover ? Theme.surface-hover
+                : idx == root.active ? Theme.accent-subtle
+                : #00000000;
+            border-radius: Theme.radius-sm;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: link;
+                    color: idx == root.active ? Theme.accent : Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: idx == root.active ? Theme.weight-medium : Theme.weight-regular;
+                    vertical-alignment: center;
+                }
+            }
+
+            if idx == root.active: Rectangle {
+                height: 2px;
+                y: parent.height - 2px;
+                x: Theme.sp-3;
+                width: parent.width - Theme.sp-6;
+                background: Theme.accent;
+                border-radius: 1px;
+            }
+
+            link-ta := TouchArea {
+                clicked => { root.anchor-clicked(idx); }
+            }
+        }
+    }
+}

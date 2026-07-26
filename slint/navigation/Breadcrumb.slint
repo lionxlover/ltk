@@ -1,0 +1,60 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Breadcrumb inherits Rectangle {
+    in property <[string]> items: [];
+    in property <int> active-index: -1;
+
+    callback item-clicked(int);
+
+    height: 32px;
+    background: transparent;
+
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+        alignment: start;
+
+        for item[i] in root.items: HorizontalLayout {
+            spacing: Theme.sp-2;
+            horizontal-stretch: 0;
+
+            if i > 0: Text {
+                text: "›";
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-md;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+
+            TouchArea {
+                clicked => { root.item-clicked(i); }
+
+                bg := Rectangle {
+                    border-radius: Theme.radius-sm;
+                    background: ta.pressed ? Theme.surface-pressed
+                        : ta.has-hover ? Theme.surface-hover
+                        : transparent;
+
+                    animate background { duration: Theme.dur-fast; }
+
+                    label := Text {
+                        x: Theme.sp-2;
+                        y: Theme.sp-1;
+                        text: item;
+                        color: (root.active-index == i || (root.active-index == -1 && i == root.items.length - 1))
+                            ? Theme.text-primary : Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: (root.active-index == i || (root.active-index == -1 && i == root.items.length - 1))
+                            ? Theme.weight-semibold : Theme.weight-regular;
+                        vertical-alignment: center;
+                    }
+                }
+
+                ta := TouchArea { }
+            }
+        }
+    }
+}

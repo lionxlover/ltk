@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InlineCluster inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> gap: 8px;
+
+    HorizontalLayout {
+        spacing: gap;
+    }
+}

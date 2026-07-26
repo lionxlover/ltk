@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FollowUnfollowButton inherits Rectangle {
+
+    in-out property <bool> following: false;
+    in property <string> label-follow: "Follow";
+    in property <string> label-unfollowing: "Following";
+
+    width: 100px;
+    height: 36px;
+    border-radius: Theme.radius-full;
+    border-width: 1px;
+    border-color: following ? Theme.border-default : Theme.accent;
+    background: transparent;
+
+    Text {
+        text: following ? label-unfollowing : label-follow;
+        font-size: Theme.text-sm;
+        font-weight: Theme.weight-semibold;
+        color: following ? Theme.text-primary : #ffffff;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { root.following = !root.following; }
+    }
+}

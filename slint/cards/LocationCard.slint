@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LocationCard inherits Rectangle {
+    in-out property <string> name: "Place Name";
+    in-out property <string> address: "123 Main St, City";
+    in-out property <string> category: "Restaurant";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 100px;
+            background: Theme.bg-overlay;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "📍 Map";
+                color: Theme.text-tertiary;
+                font-size: 14px;
+            }
+        }
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 4px;
+
+            HorizontalLayout {
+                spacing: 8px;
+
+                Text {
+                    text: root.name;
+                    color: Theme.text-primary;
+                    font-size: 14px;
+                    font-weight: Theme.weight-semibold;
+                    horizontal-stretch: 1;
+                }
+
+                Rectangle {
+                    height: 20px;
+                    background: Theme.accent-subtle;
+                    border-radius: Theme.radius-sm;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: root.category;
+                        color: Theme.accent;
+                        font-size: 10px;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            Text {
+                text: root.address;
+                color: Theme.text-secondary;
+                font-size: 12px;
+            }
+        }
+    }
+}

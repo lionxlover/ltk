@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScatterPlot inherits Rectangle {
+    in property <[int]> point-count: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    in property <string> label: "Scatter Plot";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            for pt[i] in root.point-count: Rectangle {
+                x: Math.mod(i * 37 + 13, 100) * (parent.width - 12px) / 100;
+                y: Math.mod(i * 53 + 7, 100) * (parent.height - 12px) / 100;
+                width: 8px; height: 8px;
+                border-radius: Theme.radius-full;
+                background: Math.mod(i, 3) == 0 ? Theme.accent : (Math.mod(i, 3) == 1 ? Theme.state-success : Theme.state-warning);
+            }
+        }
+    }
+}

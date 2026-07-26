@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BlogPostCard inherits Rectangle {
+    in-out property <string> title: "Blog Post Title";
+    in-out property <string> excerpt: "A brief excerpt from the blog post content...";
+    in-out property <string> date: "Jan 1, 2026";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 120px;
+            background: Theme.bg-overlay;
+        }
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 8px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 16px;
+                font-weight: Theme.weight-semibold;
+            }
+
+            Text {
+                text: root.excerpt;
+                color: Theme.text-secondary;
+                font-size: 13px;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: root.date;
+                color: Theme.text-tertiary;
+                font-size: 12px;
+            }
+        }
+    }
+}

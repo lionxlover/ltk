@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CharacterCounter inherits Rectangle {
+    background: transparent;
+
+    in property <int> current: 0;
+    in property <int> max: 200;
+    in property <bool> show-warning: true;
+
+    height: 16px;
+
+    HorizontalLayout {
+        alignment: end;
+
+        Text {
+            text: current + " / " + max;
+            font-size: Theme.text-xs;
+            color: show-warning && current > max * 0.9 ? Theme.warning : Theme.text-tertiary;
+        }
+    }
+}

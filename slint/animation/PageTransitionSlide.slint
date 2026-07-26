@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PageTransitionSlide inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> slide_visible: false;
+    in property <string> direction: "right";
+
+    content := Rectangle {
+        x: direction == "left" ? (slide_visible ? 0px : -root.width) : (slide_visible ? 0px : root.width);
+        animate x { duration: Theme.dur-slow; easing: Theme.ease-standard; }
+        background: transparent;
+    }
+
+    opacity: slide_visible ? 1 : 0;
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+}

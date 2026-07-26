@@ -1,0 +1,111 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WizardWrapper inherits Rectangle {
+    background: transparent;
+
+    in property <int> total-steps: 4;
+    in-out property <int> current-step: 0;
+    in property <[string]> step-labels: [];
+
+    in property <bool> show-back: true;
+    in property <bool> show-next: true;
+    in property <bool> show-finish: false;
+
+    VerticalLayout {
+        spacing: Theme.sp-4;
+
+        // Progress
+        HorizontalLayout {
+            spacing: Theme.sp-2;
+            height: 4px;
+
+            for step_idx[idx] in total-steps: Rectangle {
+                horizontal-stretch: 1;
+                height: 4px;
+                border-radius: 2px;
+                background: idx <= current-step ? Theme.accent : Theme.border-default;
+            }
+        }
+
+        // Step labels
+        if step-labels.length > 0: HorizontalLayout {
+            spacing: Theme.sp-4;
+            height: 24px;
+
+            for label[idx] in step-labels: Text {
+                text: label;
+                font-size: Theme.text-xs;
+                color: idx == current-step ? Theme.accent : Theme.text-tertiary;
+                font-weight: idx == current-step ? Theme.weight-semibold : Theme.weight-regular;
+            }
+        }
+
+        // Content area
+        Rectangle {
+            vertical-stretch: 1;
+        }
+
+        // Navigation buttons
+        HorizontalLayout {
+            spacing: Theme.sp-3;
+            height: 40px;
+            alignment: end;
+
+            if show-back: Rectangle {
+                width: 80px;
+                height: 36px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+
+                Text {
+                    text: "Back";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { if current-step > 0 { current-step -= 1; } }
+                }
+            }
+
+            if show-next: Rectangle {
+                width: 80px;
+                height: 36px;
+                border-radius: Theme.radius-md;
+                background: Theme.accent;
+
+                Text {
+                    text: "Next";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: #ffffff;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { if current-step < total-steps - 1 { current-step += 1; } }
+                }
+            }
+
+            if show-finish: Rectangle {
+                width: 80px;
+                height: 36px;
+                border-radius: Theme.radius-md;
+                background: Theme.success;
+
+                Text {
+                    text: "Finish";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: #ffffff;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

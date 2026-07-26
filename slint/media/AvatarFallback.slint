@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarFallback inherits Rectangle {
+    in property <string> fallback: "?";
+    in property <length> avatar-size: 40px;
+    in property <brush> bg-color: Theme.accent-subtle;
+    in property <brush> text-color: Theme.accent;
+
+    width: avatar-size;
+    height: avatar-size;
+    background: root.bg-color;
+    border-radius: Theme.radius-full;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.fallback;
+        color: root.text_color;
+        font-size: avatar-size * 0.38;
+        font-weight: Theme.weight-bold;
+        vertical-alignment: center;
+    }
+}

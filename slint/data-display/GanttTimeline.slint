@@ -1,0 +1,90 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GanttTimeline inherits Rectangle {
+    in property <int> item-count: 4;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    in property <[string]> demo-tasks: ["Design", "Develop", "Test", "Deploy"];
+    in property <[int]> demo-starts: [0, 20, 60, 85];
+    in property <[int]> demo-ends: [30, 70, 90, 100];
+    in property <[color]> demo-colors: [Theme.accent, Theme.green-500, #D97706, Theme.red-500];
+
+    VerticalLayout {
+        Rectangle {
+            height: 32px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                Rectangle { width: 100px; horizontal-stretch: 0; }
+                Rectangle { horizontal-stretch: 1;
+                    HorizontalLayout {
+                        for g[i] in [0, 1, 2, 3, 4]: Rectangle {
+                            horizontal-stretch: 1;
+
+                            Text {
+                                x: (parent.width - self.width) / 2;
+                                y: (parent.height - self.height) / 2;
+                                text: "\{i * 25}%";
+                                color: Theme.text-tertiary;
+                                font-family: Theme.font-mono;
+                                font-size: Theme.text-xs;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        for row[rowidx] in root.item-count: Rectangle {
+            height: 40px;
+
+            HorizontalLayout {
+                Rectangle {
+                    width: 100px;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: rowidx < root.demo_tasks.length ? root.demo_tasks[rowidx] : "";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Rectangle {
+                    horizontal-stretch: 1;
+
+                    // Grid lines
+                    for g[gidx] in [0, 1, 2, 3, 4]: Rectangle {
+                        x: gidx * (parent.width / 4);
+                        width: 1px;
+                        height: parent.height;
+                        background: Theme.border-subtle;
+                    }
+
+                    // Task bar
+                    Rectangle {
+                        x: rowidx < root.demo_starts.length ? root.demo_starts[rowidx] * (parent.width - 0px) / 100 : 0px;
+                        width: rowidx < root.demo_ends.length && rowidx < root.demo_starts.length ? (root.demo_ends[rowidx] - root.demo_starts[rowidx]) * parent.width / 100 : 0px;
+                        height: 24px;
+                        y: (parent.height - self.height) / 2;
+                        border-radius: Theme.radius-sm;
+                        background: rowidx < root.demo_colors.length ? root.demo_colors[rowidx] : Theme.accent;
+                    }
+                }
+            }
+        }
+    }
+}

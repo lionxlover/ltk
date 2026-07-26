@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ComponentPlayground inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> component-name: "Button";
+
+    VerticalLayout {
+        Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-lg;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: component-name;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                Text {
+                    text: "📋 Copy";
+                    font-size: Theme.text-xs;
+                    color: Theme.accent;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+
+            VerticalLayout {
+                padding: Theme.sp-4;
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        Rectangle {
+            height: 60px;
+            background: Theme.bg-overlay;
+
+            VerticalLayout {
+                padding: Theme.sp-2;
+
+                Text {
+                    text: "Props panel";
+                    font-size: Theme.text-xs;
+                    color: Theme.text-tertiary;
+                }
+            }
+        }
+    }
+}

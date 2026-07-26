@@ -1,0 +1,108 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ShareSheet inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <[string]> apps: ["AirDrop", "Messages", "Mail", "Notes", "Reminders"];
+    in property <[string]> app-icons: ["📡", "💬", "✉️", "📝", "⏰"];
+    in property <[string]> actions: ["Copy Link", "Save to Files", "More Actions..."];
+
+    VerticalLayout {
+        alignment: end;
+
+        Rectangle {
+            background: Theme.bg-elevated;
+            border-radius: Theme.radius-xl;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+
+            VerticalLayout {
+                padding: Theme.sp-4;
+                spacing: Theme.sp-2;
+
+                HorizontalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 36px;
+                        height: 4px;
+                        border-radius: 2px;
+                        background: Theme.text-tertiary;
+                    }
+                }
+
+                HorizontalLayout {
+                    height: 80px;
+                    spacing: Theme.sp-4;
+                    padding-left: Theme.sp-3;
+
+                    for app[idx] in apps: VerticalLayout {
+                        spacing: Theme.sp-1;
+                        width: 64px;
+                        alignment: center;
+
+                        HorizontalLayout {
+                            alignment: center;
+                            Rectangle {
+                                width: 48px;
+                                height: 48px;
+                                border-radius: Theme.radius-md;
+                                background: Theme.bg-overlay;
+
+                                Text {
+                                    text: idx < root.app-icons.length ? root.app-icons[idx] : "📦";
+                                    font-size: 20px;
+                                    x: (parent.width - self.width) / 2;
+                                    y: (parent.height - self.height) / 2;
+                                }
+                            }
+                        }
+
+                        Text {
+                            text: app;
+                            font-size: Theme.text-xs;
+                            color: Theme.text-secondary;
+                            horizontal-alignment: center;
+                            overflow: elide;
+                        }
+                    }
+                }
+
+                Rectangle { height: 1px; background: Theme.border-default; }
+
+                for action[a] in actions: Rectangle {
+                    height: 48px;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-4;
+                        Text {
+                            text: action;
+                            font-size: Theme.text-base;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }
+                }
+
+                Rectangle { height: 8px; }
+
+                Rectangle {
+                    height: 50px;
+                    border-radius: Theme.radius-md;
+                    background: Theme.bg-surface;
+
+                    Text {
+                        text: "Cancel";
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.accent;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+    }
+}

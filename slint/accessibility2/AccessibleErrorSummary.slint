@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AccessibleErrorSummary inherits Rectangle {
+    background: Theme.error;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    in property <[string]> errors: [];
+    in property <string> title: "";
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-2;
+
+        if title != "": Text {
+            text: title;
+            font-size: Theme.text-base;
+            font-weight: Theme.weight-semibold;
+            color: #ffffff;
+        }
+
+        if errors.length == 0 && title == "": Text {
+            text: "No errors";
+            font-size: Theme.text-sm;
+            color: #ffffff;
+        }
+
+        for err[e] in errors: Text {
+            text: "• " + err;
+            font-size: Theme.text-sm;
+            color: #ffffff;
+            overflow: elide;
+        }
+    }
+}

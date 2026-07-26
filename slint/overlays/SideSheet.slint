@@ -1,0 +1,105 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SideSheet inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <string> title: "";
+
+    callback closed();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.active ? 1 : 0;
+        visible: root.active;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.closed(); }
+        }
+    }
+
+    // Panel
+    Rectangle {
+        x: root.active ? parent.width - self.width : parent.width;
+        y: 0;
+        width: 320px;
+        height: parent.height;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        drop-shadow-offset-x: -4px;
+        drop-shadow-blur: 16px;
+        drop-shadow-color: Theme.border-default;
+
+        animate x { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-4;
+            spacing: Theme.sp-4;
+
+            // Header
+            HorizontalLayout {
+                spacing: Theme.sp-3;
+                alignment: space-between;
+                vertical-stretch: 0;
+
+                if root.title != "": Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xl;
+                    font-weight: Theme.weight-bold;
+                    horizontal-stretch: 1;
+                    vertical-alignment: center;
+                }
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    horizontal-stretch: 0;
+
+                    close-bg := Rectangle {
+                        border-radius: Theme.radius-xs;
+                        background: close-ta.pressed ? Theme.surface-pressed
+                            : close-ta.has-hover ? Theme.surface-hover
+                            : #00000000;
+                    }
+
+                    FaIcon {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        fa-size: 12px;
+                        fa-color: Theme.text-tertiary;
+                        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+                    }
+
+                    close-ta := TouchArea {
+                        clicked => { root.closed(); }
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Theme.divider;
+                vertical-stretch: 0;
+            }
+
+            // Content slot
+            Rectangle {
+                vertical-stretch: 1;
+            }
+        }
+
+        TouchArea { }
+    }
+}

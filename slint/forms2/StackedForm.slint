@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StackedForm inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 20px;
+
+    VerticalLayout {
+        spacing: gap;
+    }
+}

@@ -1,0 +1,33 @@
+import { Theme } from "../core/Theme.slint";
+import { ToggleSwitch } from "ToggleSwitch.slint";
+
+export component ToggleGroup inherits Rectangle {
+    in-out property <[string]> labels: ["Wi-Fi", "Bluetooth", "Airplane"];
+    in-out property <[bool]> checked: [true, false, false];
+
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 8px;
+        for lbl[idx] in root.labels: HorizontalLayout {
+            spacing: 12px;
+            height: 32px;
+
+            Text {
+                text: lbl;
+                color: Theme.text-primary;
+                font-size: 14px;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            ToggleSwitch {
+                checked: root.checked[idx];
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

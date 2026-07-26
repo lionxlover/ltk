@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FilterChip inherits Rectangle {
+    in property <string> text: "Filter";
+    in-out property <bool> selected: false;
+
+    callback toggled();
+
+    min-width: max(chip-label.preferred-width + 20px, 48px);
+    height: 28px;
+    background: root.selected ? Theme.accent-subtle : Theme.bg-surface;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: root.selected ? Theme.accent : Theme.border-base;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: root.text;
+        color: root.selected ? Theme.accent : Theme.text-secondary;
+        font-size: 12px;
+        font-weight: Theme.weight-medium;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    TouchArea { clicked => { root.selected = !root.selected; root.toggled(); } }
+
+    chip-label := Text { visible: false; text: root.text; }
+}

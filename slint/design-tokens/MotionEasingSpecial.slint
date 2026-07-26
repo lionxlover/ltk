@@ -1,0 +1,12 @@
+// Motion Easing — spring / bounce / overshoot
+export global MotionEasingSpecial {
+    out property <easing> spring: cubic-bezier(0.34, 1.56, 0.64, 1.0);
+    out property <easing> soft: cubic-bezier(0.16, 1.0, 0.3, 1.0);
+    out property <easing> bounce: cubic-bezier(0.34, 1.8, 0.64, 1.0);
+    out property <easing> overshoot: cubic-bezier(0.18, 1.2, 0.5, 1.0);
+    out property <easing> elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    // Snappy variants
+    out property <easing> snap: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+    out property <easing> snap-back: cubic-bezier(0.5, -0.5, 0.1, 1.5);
+}

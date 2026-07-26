@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TagsChipsInput inherits Rectangle {
+    in-out property <[string]> tags: ["react", "slint", "rust"];
+    in-out property <string> text;
+    in-out property <string> placeholder: "Add tag...";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+
+    HorizontalLayout {
+        padding-left: 8px;
+        spacing: 6px;
+
+        for tag in root.tags: Rectangle {
+            height: 28px;
+            border-radius: 14px;
+            background: Theme.accent-subtle;
+            vertical-stretch: 0;
+
+            HorizontalLayout {
+                padding-left: 10px;
+                padding-right: 6px;
+                spacing: 4px;
+                alignment: center;
+
+                Text {
+                    text: tag;
+                    color: Theme.accent;
+                    font-size: 12px;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+
+                Rectangle {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 8px;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "✕";
+                        color: Theme.accent;
+                        font-size: 8px;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { }
+                    }
+                }
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

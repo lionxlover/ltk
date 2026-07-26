@@ -1,0 +1,55 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SurveyForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 480px;
+
+    in property <int> current-question: 0;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        Text { text: "Survey"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+
+        Text { text: "Question " + Math.mod(current-question + 1, 10) + " of 5"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+
+        Rectangle { height: 4px; border-radius: 2px; background: Theme.border-default;
+            Rectangle { height: 4px; width: parent.width * 0.2; border-radius: 2px; background: Theme.accent; }
+        }
+
+        VerticalLayout { spacing: Theme.sp-4; vertical-stretch: 1;
+            Text { text: "How satisfied are you with our service?"; font-size: Theme.text-lg; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+
+            HorizontalLayout { spacing: Theme.sp-3;
+                for option[opt] in ["Very Unsatisfied", "Unsatisfied", "Neutral", "Satisfied", "Very Satisfied"]: Rectangle {
+                    height: 40px;
+                    border-radius: Theme.radius-md;
+                    border-width: 1px;
+                    border-color: Theme.border-default;
+                    horizontal-stretch: 1;
+
+                    Text {
+                        text: option;
+                        font-size: Theme.text-sm;
+                        color: Theme.text-secondary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3; alignment: end;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Back"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { width: 100px; height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+                Text { text: "Next"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+        }
+    }
+}

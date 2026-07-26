@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BumpChart inherits Rectangle {
+    in property <string> label: "Bump / Ranking Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            // Rank lines
+            for r in 4: Rectangle { x: 20px; y: 20px + r * 30px; width: parent.width - 40px; height: 1px; background: Theme.border-subtle; }
+
+            // Team A path
+            Rectangle { x: 30px; y: 25px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: parent.width * 0.33; y: 35px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: parent.width * 0.66; y: 28px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: parent.width - 36px; y: 22px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent; }
+
+            // Team B path
+            Rectangle { x: 30px; y: 55px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: parent.width * 0.33; y: 48px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: parent.width * 0.66; y: 52px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: parent.width - 36px; y: 45px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-success; }
+
+            // Team C path
+            Rectangle { x: 30px; y: 85px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-warning; }
+            Rectangle { x: parent.width * 0.33; y: 78px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-warning; }
+            Rectangle { x: parent.width * 0.66; y: 82px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-warning; }
+            Rectangle { x: parent.width - 36px; y: 75px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.state-warning; }
+        }
+    }
+}

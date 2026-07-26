@@ -1,0 +1,89 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Table inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> row-count: 0;
+    in property <bool> striped: false;
+    in property <bool> bordered: false;
+    in property <bool> header-visible: true;
+
+    callback row-clicked(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        // Header
+        if header-visible && columns.length > 0: Rectangle {
+            height: 36px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: col;
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        // Divider
+        if header-visible && columns.length > 0: Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        // Rows
+        VerticalLayout {
+            for row[rowidx] in root.row-count: Rectangle {
+                height: 40px;
+                background: row-ta.pressed ? Theme.surface-pressed
+                    : row-ta.has-hover ? Theme.surface-hover
+                    : root.striped && mod(rowidx, 2) == 1 ? Theme.bg-overlay
+                    : transparent;
+
+                animate background { duration: Theme.dur-fast; }
+
+                HorizontalLayout {
+                    for col[i] in root.columns: Rectangle {
+                        horizontal-stretch: 1;
+
+                        Rectangle {
+                            height: 1px;
+                            y: parent.height - 1px;
+                            background: root.bordered ? Theme.border-subtle : transparent;
+                        }
+
+                        Text {
+                            x: Theme.sp-3;
+                            y: (parent.height - self.height) / 2;
+                            text: "Row \{rowidx + 1} — \{col}";
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(rowidx); }
+                }
+            }
+        }
+    }
+}

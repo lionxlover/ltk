@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component TextLinkButton inherits Rectangle {
+    in-out property <string> text: "Learn more";
+    in-out property <bool> enabled: true;
+
+    background: transparent;
+    height: 32px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 6px;
+
+        Text {
+            text: root.text;
+            color: Theme.text-link;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up-right-from-square.svg");
+            fa-size: 11px;
+            fa-color: Theme.text-link;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

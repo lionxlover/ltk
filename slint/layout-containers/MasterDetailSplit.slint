@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MasterDetailSplit inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> master-width: 320px;
+    in property <length> split-position: 4px;
+
+    HorizontalLayout {
+        Rectangle {
+            width: master-width;
+            background: Theme.bg-surface;
+        }
+
+        Rectangle {
+            width: split-position;
+            background: Theme.border-default;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+        }
+    }
+}

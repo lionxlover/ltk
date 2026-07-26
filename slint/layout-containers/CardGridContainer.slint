@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CardGridContainer inherits Rectangle {
+    background: transparent;
+
+    in property <int> columns: 3;
+    in property <length> gap: 16px;
+    in property <length> min-card-width: 280px;
+
+    Flickable {
+        VerticalLayout {
+            spacing: gap;
+        }
+    }
+}

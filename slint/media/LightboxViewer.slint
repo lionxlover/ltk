@@ -1,0 +1,55 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LightboxViewer inherits Rectangle {
+    in property <bool> active: false;
+    in property <string> alt: "";
+
+    callback close();
+
+    background: active ? #cc000000 : transparent;
+    visible: active;
+
+    Rectangle {
+        x: (parent.width - 400px) / 2;
+        y: (parent.height - 300px) / 2;
+        width: 400px;
+        height: 300px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-lg;
+        clip: true;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.alt != "" ? root.alt : "Image";
+            color: Theme.text-tertiary;
+            font-size: Theme.text-sm;
+        }
+
+        Rectangle {
+            x: parent.width - 32px;
+            y: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: Theme.radius-full;
+            background: Theme.bg-overlay;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "X";
+                color: Theme.text-primary;
+                font-size: 10px;
+                vertical-alignment: center;
+            }
+
+            close-ta := TouchArea {
+                clicked => { root.close(); }
+            }
+        }
+    }
+
+    bg-ta := TouchArea {
+        clicked => { root.close(); }
+    }
+}

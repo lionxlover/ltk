@@ -1,0 +1,69 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component FontSizeAdjuster inherits Rectangle {
+    in-out property <int> level: 0;
+
+    height: Theme.button-height-sm;
+    background: Theme.bg-surface;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    border-radius: Theme.radius-button;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Rectangle {
+            width: 28px;
+            height: 28px;
+            background: Theme.hover-overlay;
+            border-radius: Theme.radius-sm;
+
+            TouchArea {
+                clicked => {
+                    root.level = root.level - 1;
+                }
+            }
+
+            Text {
+                text: "A-";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+        }
+
+        Text {
+            text: "A";
+            color: Theme.text-primary;
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+
+        Rectangle {
+            width: 28px;
+            height: 28px;
+            background: Theme.hover-overlay;
+            border-radius: Theme.radius-sm;
+
+            TouchArea {
+                clicked => {
+                    root.level = root.level + 1;
+                }
+            }
+
+            Text {
+                text: "A+";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+        }
+    }
+}

@@ -1,0 +1,96 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ImageCarousel inherits Rectangle {
+    in property <int> total: 5;
+    in-out property <int> current: 0;
+
+    width: 400px;
+    height: 300px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-lg;
+    clip: true;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: (root.current + 1) + " / " + root.total;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-medium;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    Rectangle {
+        x: Theme.sp-2;
+        y: (parent.height - 36px) / 2;
+        width: 36px;
+        height: 36px;
+        background: Theme.glass-thick;
+        border-radius: Theme.radius-full;
+        border-width: 1px;
+        border-color: Theme.glass-border;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-left.svg");
+            fa-size: 14px;
+            fa-color: Theme.text-primary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+
+        TouchArea { }
+    }
+
+    Rectangle {
+        x: parent.width - Theme.sp-2 - 36px;
+        y: (parent.height - 36px) / 2;
+        width: 36px;
+        height: 36px;
+        background: Theme.glass-thick;
+        border-radius: Theme.radius-full;
+        border-width: 1px;
+        border-color: Theme.glass-border;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-right.svg");
+            fa-size: 14px;
+            fa-color: Theme.text-primary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+
+        TouchArea { }
+    }
+
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: parent.height - 28px;
+        width: self.preferred-width;
+        height: 16px;
+        background: Theme.glass-thick;
+        border-radius: 8px;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: 5px;
+            padding-left: 8px;
+            padding-right: 8px;
+
+            for idx in 5: Rectangle {
+                width: root.current == idx ? 16px : 6px;
+                height: 6px;
+                background: root.current == idx ? Theme.accent : Theme.text-placeholder;
+                border-radius: 3px;
+            }
+        }
+    }
+}

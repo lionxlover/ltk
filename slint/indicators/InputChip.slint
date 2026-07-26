@@ -1,0 +1,52 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InputChip inherits Rectangle {
+    in property <string> text: "Tag";
+
+    callback removed();
+
+    min-width: max(chip-text.preferred-width + 24px, 48px);
+    height: 28px;
+    background: Theme.bg-surface;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 6px;
+        padding-left: 10px;
+        padding-right: 6px;
+
+        Text {
+            text: root.text;
+            color: Theme.text-primary;
+            font-size: 12px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle {
+            width: 18px;
+            height: 18px;
+            background: Theme.bg-overlay;
+            border-radius: 9px;
+            horizontal-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "×";
+                color: Theme.text-secondary;
+                font-size: 12px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea { clicked => { root.removed(); } }
+        }
+    }
+
+    chip-text := Text { visible: false; text: root.text; }
+}

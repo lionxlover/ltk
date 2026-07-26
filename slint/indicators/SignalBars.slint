@@ -1,0 +1,46 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SignalBars inherits Rectangle {
+    in property <int> bars: 4;
+
+    width: 20px;
+    height: 16px;
+    background: #00000000;
+    horizontal-stretch: 0;
+
+    bar1 := Rectangle {
+        x: 0px;
+        y: 12px;
+        width: 3px;
+        height: 4px;
+        border-radius: 1px;
+        background: bars >= 1 ? Theme.state-success : Theme.bg-overlay;
+    }
+
+    bar2 := Rectangle {
+        x: 5px;
+        y: 8px;
+        width: 3px;
+        height: 8px;
+        border-radius: 1px;
+        background: bars >= 2 ? Theme.state-success : Theme.bg-overlay;
+    }
+
+    bar3 := Rectangle {
+        x: 10px;
+        y: 4px;
+        width: 3px;
+        height: 12px;
+        border-radius: 1px;
+        background: bars >= 3 ? Theme.state-success : Theme.bg-overlay;
+    }
+
+    bar4 := Rectangle {
+        x: 15px;
+        y: 0px;
+        width: 3px;
+        height: 16px;
+        border-radius: 1px;
+        background: bars >= 4 ? Theme.state-success : Theme.bg-overlay;
+    }
+}

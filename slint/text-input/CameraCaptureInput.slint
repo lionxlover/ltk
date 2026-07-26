@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CameraCaptureInput inherits Rectangle {
+    in-out property <bool> has-captured: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    height: 160px;
+    horizontal-stretch: 1;
+
+    if !root.has-captured: VerticalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Text {
+            text: "📷";
+            font-size: 32px;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: "Click to capture from camera";
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+    }
+
+    if root.has-captured: Rectangle {
+        background: Theme.bg-raised;
+        border-radius: Theme.radius-md;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "Captured Photo";
+            color: Theme.text-tertiary;
+            font-size: 13px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-captured = !root.has-captured; }
+    }
+}

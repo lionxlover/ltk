@@ -1,0 +1,80 @@
+import { Theme } from "../core/Theme.slint";
+import { AppShell } from "AppShell.slint";
+import { TwoColumn } from "TwoColumn.slint";
+import { ThreeColumn } from "ThreeColumn.slint";
+import { HolyGrailLayout } from "HolyGrailLayout.slint";
+import { FlexContainer } from "FlexContainer.slint";
+import { MasonryGrid } from "MasonryGrid.slint";
+import { TabPanelContainer } from "TabPanelContainer.slint";
+import { WizardWrapper } from "WizardWrapper.slint";
+import { DragDropZone } from "DragDropZone.slint";
+import { ResizablePanelGroup } from "ResizablePanelGroup.slint";
+import { SnapScrollContainer } from "SnapScrollContainer.slint";
+import { HorizontalDivider } from "HorizontalDivider.slint";
+import { LabeledDivider } from "LabeledDivider.slint";
+import { StickyWrapper } from "StickyWrapper.slint";
+import { FixedContainer } from "FixedContainer.slint";
+import { SafeAreaWrapper } from "SafeAreaWrapper.slint";
+import { AspectRatioBox } from "AspectRatioBox.slint";
+import { FullBleedBox } from "FullBleedBox.slint";
+import { FocusTrapRegion } from "FocusTrapRegion.slint";
+export component LayoutContainersTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+    clip: true;
+
+    Flickable {
+        viewport-height: 2400px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Layout & Containers — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "App Shell"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            AppShell { width: 400px; height: 200px; }
+
+            Text { text: "Holy Grail Layout"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HolyGrailLayout { width: 500px; height: 160px; }
+
+            Text { text: "Two / Three Column"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                TwoColumn { width: 240px; height: 120px; }
+                ThreeColumn { width: 360px; height: 120px; }
+            }
+
+            Text { text: "Tabs / Wizard / Accordion"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Rectangle { width: 200px; height: 160px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                    TabPanelContainer { tabs: ["One", "Two", "Three"]; }
+                }
+                WizardWrapper { width: 300px; height: 160px; total-steps: 4; step-labels: ["Info", "Review", "Confirm", "Done"]; show-next: true; show-back: true; }
+            }
+
+            Text { text: "Drag & Drop / Resizable / Snap"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                DragDropZone { width: 200px; height: 120px; }
+                ResizablePanelGroup { width: 200px; height: 120px; }
+                SnapScrollContainer { width: 200px; height: 120px; snap-count: 3; show-dots: true; }
+            }
+
+            Text { text: "Dividers / Sticky / Fixed / Safe Area"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            VerticalLayout { spacing: Theme.sp-2;
+                HorizontalDivider { }
+                LabeledDivider { label: "Section"; }
+                StickyWrapper { height: 40px; }
+                FixedContainer { height: 40px; }
+                SafeAreaWrapper { height: 40px; }
+            }
+
+            Text { text: "Aspect / Full-Bleed / Focus Trap"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AspectRatioBox { width: 160px; }
+                FullBleedBox { width: 200px; height: 60px; }
+                FocusTrapRegion { width: 160px; height: 60px; }
+            }
+        }
+    }
+}

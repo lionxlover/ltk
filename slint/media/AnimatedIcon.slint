@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AnimatedIcon inherits Rectangle {
+    in property <string> icon: "⟳";
+    in property <bool> spinning: false;
+    in property <length> icon-size: 24px;
+
+    width: icon-size;
+    height: icon-size;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.icon;
+            color: Theme.accent;
+            font-size: icon-size;
+            vertical-alignment: center;
+        }
+    }
+}

@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DefinitionList inherits Rectangle {
+    in property <[string]> keys: [];
+    in property <[string]> values: [];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for key[idx] in root.keys: Rectangle {
+            height: 44px;
+            background: Math.mod(idx, 2) == 0 ? Theme.bg-overlay : #00000000;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-6;
+                alignment: stretch;
+
+                Text {
+                    text: root.keys[idx];
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: root.values[idx];
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 2;
+                }
+            }
+        }
+    }
+}

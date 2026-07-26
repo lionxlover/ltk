@@ -1,0 +1,16 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SplashLaunchScreen inherits Rectangle {
+    background: Theme.bg-surface;
+
+    in property <string> icon: "🦞";
+    in property <string> app-name: "LTK";
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-4;
+
+        Text { text: icon; font-size: 64px; horizontal-alignment: center; }
+        Text { text: app-name; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
+    }
+}

@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ProfileCard inherits Rectangle {
+    in-out property <string> name: "John Doe";
+    in-out property <string> role: "Software Engineer";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        alignment: center;
+        padding: 24px;
+        spacing: 12px;
+
+        Rectangle {
+            width: 64px;
+            height: 64px;
+            background: Theme.accent-subtle;
+            border-radius: 32px;
+            x: (parent.width - self.width) / 2;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/user.svg");
+                fa-size: 28px;
+                fa-color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: root.name;
+            color: Theme.text-primary;
+            font-size: 16px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.role;
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+    }
+}

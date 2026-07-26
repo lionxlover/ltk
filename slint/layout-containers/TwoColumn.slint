@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TwoColumn inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> left-width: 240px;
+    in property <length> gap: 0px;
+
+    HorizontalLayout {
+        spacing: gap;
+
+        Rectangle {
+            width: left-width;
+            background: Theme.bg-surface;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+        }
+    }
+}

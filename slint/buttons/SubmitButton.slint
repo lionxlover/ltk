@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SubmitButton inherits Rectangle {
+    in-out property <string> text: "Submit";
+    in-out property <bool> loading: false;
+    in-out property <bool> enabled: true;
+
+    background: Theme.accent;
+    border-radius: Theme.radius-md;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Rectangle {
+            width: 14px;
+            height: 14px;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paper-plane.svg");
+                width: 14px;
+                height: 14px;
+                visible: !root.loading;
+                colorize: #ffffff;
+            }
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/spinner.svg");
+                width: 14px;
+                height: 14px;
+                visible: root.loading;
+                colorize: #ffffff;
+            }
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

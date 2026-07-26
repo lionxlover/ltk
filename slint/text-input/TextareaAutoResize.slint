@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TextareaAutoResize inherits Rectangle {
+    in-out property <string> text;
+    in-out property <string> placeholder: "Start typing...";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    min-height: 80px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: 12px;
+        width: parent.width - 24px;
+        text: root.text == "" ? root.placeholder : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        wrap: word-wrap;
+    }
+
+    // Resize grip
+    Rectangle {
+        x: parent.width - 16px;
+        y: parent.height - 16px;
+        width: 12px;
+        height: 12px;
+
+        Text {
+            text: "⋰";
+            color: Theme.text-disabled;
+            font-size: 10px;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

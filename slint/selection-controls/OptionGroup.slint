@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OptionGroup inherits Rectangle {
+    in-out property <[string]> options: ["Free", "Pro", "Enterprise"];
+    in-out property <[string]> descriptions: ["For individuals", "For teams", "For organizations"];
+    in-out property <int> selected-index: 0;
+
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 6px;
+
+        for opt[idx] in root.options: Rectangle {
+            height: 56px;
+            border-radius: Theme.radius-md;
+            border-width: 2px;
+            border-color: idx == root.selected-index ? Theme.accent : Theme.border-base;
+            background: idx == root.selected-index ? Theme.accent-subtle : Theme.bg-surface;
+
+            HorizontalLayout {
+                padding-left: 16px;
+                padding-right: 16px;
+                spacing: 12px;
+
+                Rectangle {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 10px;
+                    border-width: 2px;
+                    border-color: idx == root.selected-index ? Theme.accent : Theme.border-base;
+                    vertical-stretch: 0;
+
+                    if idx == root.selected-index: Rectangle {
+                        x: 4px;
+                        y: 4px;
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 6px;
+                        background: Theme.accent;
+                    }
+                }
+
+                VerticalLayout {
+                    spacing: 2px;
+                    padding-top: 8px;
+
+                    Text {
+                        text: opt;
+                        color: Theme.text-primary;
+                        font-size: 14px;
+                        font-weight: Theme.weight-medium;
+                    }
+                    Text {
+                        text: root.descriptions[idx];
+                        color: Theme.text-tertiary;
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            TouchArea {
+                clicked => { root.selected-index = idx; }
+            }
+        }
+    }
+}

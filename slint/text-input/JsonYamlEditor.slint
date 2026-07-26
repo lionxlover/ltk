@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component JsonYamlEditor inherits Rectangle {
+    in-out property <string> text;
+    in-out property <bool> valid: true;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-base;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : (root.valid ? Theme.border-base : Theme.error);
+    height: 200px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: 32px;
+        background: Theme.bg-raised;
+
+        HorizontalLayout {
+            padding-left: 8px;
+            spacing: 4px;
+            alignment: start;
+
+            for tabitem in ["JSON", "YAML"]: Rectangle {
+                width: 60px;
+                height: 24px;
+                border-radius: 4px;
+                background: tabitem == "JSON" ? Theme.bg-surface : transparent;
+                vertical-stretch: 0;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: tabitem;
+                    color: tabitem == "JSON" ? Theme.text-primary : Theme.text-tertiary;
+                    font-size: 11px;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            x: parent.width - 24px;
+            y: (parent.height - 12px) / 2;
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
+            background: root.valid ? Theme.success : Theme.error;
+        }
+    }
+
+    Text {
+        x: 12px;
+        y: 44px;
+        width: parent.width - 24px;
+        text: "{\n  \"name\": \"LTK\",\n  \"version\": \"1.0\"\n}";
+        color: Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 12px;
+        wrap: word-wrap;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

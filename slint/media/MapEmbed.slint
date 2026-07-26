@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MapEmbed inherits Rectangle {
+    in property <string> label: "Map";
+    in property <bool> interactive: false;
+
+    width: 300px;
+    height: 200px;
+    background: Theme.dark-mode ? #1a2332 : #e8f0fe;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: "🗺";
+            font-size: 32px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.label;
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            horizontal-alignment: center;
+        }
+
+        if root.interactive: Text {
+            text: "Interactive";
+            color: Theme.accent;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+        }
+    }
+}

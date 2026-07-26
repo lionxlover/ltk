@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component CtaHeroButton inherits Rectangle {
+    in-out property <string> text: "Get Started";
+
+    background: Theme.accent;
+    border-radius: Theme.radius-lg;
+    height: 56px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/rocket.svg");
+            fa-size: 20px;
+            fa-color: #ffffff;
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

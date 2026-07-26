@@ -1,0 +1,65 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CommentBox inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+
+    in property <string> placeholder: "Write a comment...";
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: Theme.accent-subtle;
+            y: 2px;
+
+            Text {
+                text: "Y";
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-overlay;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            Text {
+                text: placeholder;
+                font-size: Theme.text-sm;
+                color: Theme.text-placeholder;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: Theme.accent;
+            y: 2px;
+
+            Text {
+                text: "↑";
+                font-size: 14px;
+                font-weight: Theme.weight-bold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

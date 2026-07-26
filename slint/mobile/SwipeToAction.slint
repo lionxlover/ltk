@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SwipeToAction inherits Rectangle {
+    background: Theme.bg-surface;
+    clip: true;
+
+    in property <string> action-label: "More";
+    in property <string> action-color-name: "accent";
+    in property <string> content: "Item";
+
+    Rectangle {
+        background: Theme.accent;
+        x: parent.width - 80px;
+        width: 80px;
+        height: parent.height;
+
+        Text {
+            text: action-label;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: #ffffff;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    Rectangle {
+        background: Theme.bg-surface;
+        height: parent.height;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-4;
+            padding-right: Theme.sp-4;
+
+            Text {
+                text: content;
+                font-size: Theme.text-base;
+                color: Theme.text-primary;
+                y: (parent.height - self.height) / 2;
+                vertical-stretch: 1;
+            }
+        }
+    }
+}

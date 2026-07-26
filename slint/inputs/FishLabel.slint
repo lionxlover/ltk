@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FishLabel inherits Text {
+    in property <bool> enabled: true;
+    color: Theme.text-primary;
+    font-family: Theme.font-ui;
+    font-size: Theme.text-base;
+    opacity: self.enabled ? 1 : Theme.opacity-disabled;
+}

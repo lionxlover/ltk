@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MultiChipSelect inherits Rectangle {
+    in-out property <[string]> items: ["React", "Vue", "Svelte", "Angular", "Solid"];
+    in-out property <[bool]> selected: [true, false, true, false, false];
+
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: 6px;
+
+        for itm[idx] in root.items: Rectangle {
+            height: 32px;
+            border-radius: 16px;
+            background: root.selected[idx] ? Theme.accent : Theme.bg-surface;
+            border-width: 1px;
+            border-color: root.selected[idx] ? Theme.accent : Theme.border-base;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: itm;
+                color: root.selected[idx] ? #ffffff : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected[idx] = !root.selected[idx];
+                }
+            }
+        }
+    }
+}

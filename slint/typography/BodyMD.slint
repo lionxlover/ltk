@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BodyMD inherits Text {
+    text: "Body Medium — the default reading size for UI text and paragraphs.";
+    color: Theme.text-primary;
+    font-family: Theme.font-ui;
+    font-size: 14px;
+    font-weight: Theme.weight-regular;
+    wrap: word-wrap;
+}

@@ -1,0 +1,143 @@
+import { Theme } from "../core/Theme.slint";
+import { ImageSlot } from "ImageSlot.slint";
+import { VideoThumbnail } from "VideoThumbnail.slint";
+import { AudioPlayer } from "AudioPlayer.slint";
+import { ImageCarousel } from "ImageCarousel.slint";
+import { AvatarCircle } from "AvatarCircle.slint";
+import { AvatarGroupStack } from "AvatarGroupStack.slint";
+import { QRCode } from "QRCode.slint";
+import { LogoMark } from "LogoMark.slint";
+import { LivestreamPill } from "LivestreamPill.slint";
+import { LazyImage } from "LazyImage.slint";
+import { ResponsiveImage } from "ResponsiveImage.slint";
+import { ImageGallery } from "ImageGallery.slint";
+import { ImageMasonry } from "ImageMasonry.slint";
+import { LightboxViewer } from "LightboxViewer.slint";
+import { ImageCropTool } from "ImageCropTool.slint";
+import { BeforeAfterSlider } from "BeforeAfterSlider.slint";
+import { AvatarSquare } from "AvatarSquare.slint";
+import { AvatarStatusRing } from "AvatarStatusRing.slint";
+import { AvatarBadge } from "AvatarBadge.slint";
+import { AvatarFallback } from "AvatarFallback.slint";
+import { IconDisplay } from "IconDisplay.slint";
+import { AnimatedIcon } from "AnimatedIcon.slint";
+import { SvgIllustration } from "SvgIllustration.slint";
+import { VideoPlayer } from "VideoPlayer.slint";
+import { AudioWaveform } from "AudioWaveform.slint";
+import { PodcastPlayer } from "PodcastPlayer.slint";
+import { StoryViewer } from "StoryViewer.slint";
+import { GifPlayer } from "GifPlayer.slint";
+import { MapEmbed } from "MapEmbed.slint";
+import { BarcodeDisplay } from "BarcodeDisplay.slint";
+import { CameraPreview } from "CameraPreview.slint";
+import { ModelViewer } from "ModelViewer.slint";
+
+export component MediaTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 1600px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Media Components — Test";
+                color: Theme.text-primary;
+                font-family: Theme.font-display;
+                font-size: Theme.text-3xl;
+                font-weight: Theme.weight-bold;
+            }
+
+            // --- IMAGE ---
+            Text { text: "ImageSlot"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ImageSlot { width: 120px; height: 120px; alt: "Photo"; }
+
+            Text { text: "LazyImage / ResponsiveImage"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                LazyImage { width: 160px; height: 120px; alt: "Lazy Load"; }
+                ResponsiveImage { width: 160px; height: 120px; alt: "Responsive"; }
+            }
+
+            Text { text: "ImageCropTool / BeforeAfterSlider"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ImageCropTool { width: 180px; height: 180px; }
+                BeforeAfterSlider { width: 280px; height: 180px; }
+            }
+
+            Text { text: "ImageCarousel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ImageCarousel { width: 400px; height: 300px; total: 5; current: 2; }
+
+            Text { text: "ImageGallery / ImageMasonry"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                ImageGallery { columns: 3; count: 6; }
+            }
+
+            Text { text: "LightboxViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            LightboxViewer { width: 300px; height: 60px; active: true; alt: "Preview"; }
+
+            // --- AVATAR ---
+            Text { text: "Avatars (Circle / Square / Fallback / StatusRing / Badge)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+                AvatarCircle { initials: "AB"; size: 40px; }
+                AvatarSquare { fallback: "CD"; avatar-size: 40px; }
+                AvatarFallback { fallback: "EF"; avatar-size: 40px; }
+                AvatarStatusRing { fallback: "GH"; avatar-size: 48px; status-color: Theme.state-success; }
+                AvatarBadge { fallback: "JK"; avatar-size: 48px; badge-text: "3"; }
+            }
+
+            Text { text: "AvatarGroupStack"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            AvatarGroupStack { width: 300px; count: 6; }
+
+            // --- ICON ---
+            Text { text: "IconDisplay / AnimatedIcon"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+                IconDisplay { icon: "★"; icon-size: 24px; }
+                IconDisplay { icon: "⚙"; icon-size: 32px; icon-color: Theme.accent; }
+                AnimatedIcon { icon: "⟳"; icon-size: 24px; }
+                SvgIllustration { width: 160px; height: 100px; label: "Hero"; }
+            }
+
+            // --- VIDEO / AUDIO ---
+            Text { text: "VideoPlayer / VideoThumbnail"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                VideoPlayer { width: 300px; height: 200px; title: "Tutorial"; }
+                VideoThumbnail { width: 180px; height: 200px; title: "Quick Tip"; }
+            }
+
+            Text { text: "AudioPlayer / AudioWaveform"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AudioPlayer { width: 300px; height: 80px; title: "Track"; duration: "3:42"; }
+                AudioWaveform { width: 300px; height: 60px; bars: 32; progress: 35; }
+            }
+
+            Text { text: "PodcastPlayer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            PodcastPlayer { width: 400px; title: "Episode 1"; podcast: "Tech Talk"; progress: 45; }
+
+            // --- SPECIAL ---
+            Text { text: "StoryViewer / GifPlayer / LivestreamPill"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                StoryViewer { width: 180px; height: 280px; username: "alice"; current: 2; total: 5; }
+                GifPlayer { width: 180px; height: 140px; label: "Cat"; }
+                LivestreamPill { viewer-count: 1247; }
+            }
+
+            Text { text: "MapEmbed / QRCode / LogoMark"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                MapEmbed { width: 200px; height: 140px; label: "Office"; }
+                QRCode { width: 100px; height: 100px; data: "https://ltk.dev"; }
+                LogoMark { width: 100px; height: 100px; label: "LTK"; }
+            }
+
+            Text { text: "BarcodeDisplay / CameraPreview / ModelViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                BarcodeDisplay { width: 200px; height: 80px; data: "1234567890"; }
+                CameraPreview { width: 200px; height: 150px; active: true; }
+                ModelViewer { width: 200px; height: 150px; label: "Cube"; }
+            }
+        }
+    }
+}

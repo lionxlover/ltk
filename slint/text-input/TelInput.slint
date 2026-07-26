@@ -1,0 +1,60 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TelInput inherits Rectangle {
+    in-out property <string> text;
+    in-out property <string> country-code: "+1";
+    in-out property <string> placeholder: "(555) 123-4567";
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: 60px;
+        height: parent.height;
+        background: Theme.bg-raised;
+
+        Text {
+            x: 12px;
+            y: (parent.height - self.height) / 2;
+            text: root.country-code;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+
+        TouchArea {
+            clicked => { }
+        }
+    }
+
+    Rectangle {
+        x: 60px;
+        y: 8px;
+        width: 1px;
+        height: parent.height - 16px;
+        background: Theme.border-base;
+    }
+
+    Text {
+        x: 72px;
+        y: (parent.height - self.height) / 2;
+        text: root.text == "" ? root.placeholder : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RoundedRect inherits Rectangle {
+    in property <length> root-radius: Theme.radius-md;
+    in property <color> root-color: Theme.bg-base;
+    in property <bool> border-enabled: true;
+
+    background: root-color;
+    border-radius: self.root-radius;
+    border-width: border-enabled ? 1px : 0px;
+    border-color: Theme.border-subtle;
+
+    animate background { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+}

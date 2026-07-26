@@ -1,0 +1,44 @@
+// Shadow / Elevation scale (0–6 levels)
+export global ShadowElevation {
+    // Level 0 — none
+    out property <color> shadow-0: #00000000;
+    out property <length> shadow-0-y: 0px;
+    out property <length> shadow-0-blur: 0px;
+    out property <length> shadow-0-spread: 0px;
+
+    // Level 1 — subtle (small elements)
+    out property <color> shadow-1: #00000033;
+    out property <length> shadow-1-y: 1px;
+    out property <length> shadow-1-blur: 3px;
+    out property <length> shadow-1-spread: 0px;
+
+    // Level 2 — low (cards, buttons)
+    out property <color> shadow-2: #00000055;
+    out property <length> shadow-2-y: 4px;
+    out property <length> shadow-2-blur: 12px;
+    out property <length> shadow-2-spread: 0px;
+
+    // Level 3 — medium (dropdowns, popovers)
+    out property <color> shadow-3: #00000077;
+    out property <length> shadow-3-y: 8px;
+    out property <length> shadow-3-blur: 24px;
+    out property <length> shadow-3-spread: 0px;
+
+    // Level 4 — high (dialogs, modals)
+    out property <color> shadow-4: #000000AA;
+    out property <length> shadow-4-y: 16px;
+    out property <length> shadow-4-blur: 48px;
+    out property <length> shadow-4-spread: 0px;
+
+    // Level 5 — very high (tooltips, toast)
+    out property <color> shadow-5: #000000CC;
+    out property <length> shadow-5-y: 24px;
+    out property <length> shadow-5-blur: 64px;
+    out property <length> shadow-5-spread: 0px;
+
+    // Level 6 — maximum (spotlight overlay)
+    out property <color> shadow-6: #000000E0;
+    out property <length> shadow-6-y: 32px;
+    out property <length> shadow-6-blur: 80px;
+    out property <length> shadow-6-spread: 0px;
+}

@@ -1,0 +1,162 @@
+import { Theme } from "../core/Theme.slint";
+import { Checkbox } from "Checkbox.slint";
+import { CheckboxIndeterminate } from "CheckboxIndeterminate.slint";
+import { CheckboxGroup } from "CheckboxGroup.slint";
+import { RadioButton } from "RadioButton.slint";
+import { RadioGroup } from "RadioGroup.slint";
+import { ToggleSwitch } from "ToggleSwitch.slint";
+import { ToggleGroup } from "ToggleGroup.slint";
+import { SegmentedControl } from "SegmentedControl.slint";
+import { ButtonToggleGroup } from "ButtonToggleGroup.slint";
+import { ChipSelectSingle } from "ChipSelectSingle.slint";
+import { MultiChipSelect } from "MultiChipSelect.slint";
+import { SelectDropdown } from "SelectDropdown.slint";
+import { SelectMultiTags } from "SelectMultiTags.slint";
+import { Combobox } from "Combobox.slint";
+import { ListboxSingle } from "ListboxSingle.slint";
+import { ListboxMulti } from "ListboxMulti.slint";
+import { OptionGroup } from "OptionGroup.slint";
+import { CascadingSelect } from "CascadingSelect.slint";
+import { CountryPicker } from "CountryPicker.slint";
+import { LanguagePicker } from "LanguagePicker.slint";
+import { TimezonePicker } from "TimezonePicker.slint";
+import { CurrencyPicker } from "CurrencyPicker.slint";
+import { FlagPicker } from "FlagPicker.slint";
+import { ColorSwatchPicker } from "ColorSwatchPicker.slint";
+import { SizeVariantPicker } from "SizeVariantPicker.slint";
+
+component SectionHeader inherits Text {
+    color: Theme.text-secondary;
+    font-size: Theme.text-sm;
+    font-weight: Theme.weight-semibold;
+}
+
+export component SelectionControlsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 5000px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-4;
+
+            Text {
+                text: "Selection Controls \u{2014} Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        SectionHeader { text: "1 \u{2014} Checkbox"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            Checkbox { label: "Checked"; checked: true; }
+            Checkbox { label: "Unchecked"; }
+            Checkbox { label: "Disabled"; enabled: false; }
+        }
+
+        SectionHeader { text: "2 \u{2014} Checkbox Indeterminate"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            CheckboxIndeterminate { label: "Indeterminate"; indeterminate: true; }
+            CheckboxIndeterminate { label: "Checked"; checked: true; indeterminate: false; }
+        }
+
+        SectionHeader { text: "3 \u{2014} Checkbox Group"; }
+        CheckboxGroup {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "4 \u{2014} Radio Button"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            RadioButton { label: "Selected"; selected: true; }
+            RadioButton { label: "Unselected"; }
+            RadioButton { label: "Disabled"; enabled: false; }
+        }
+
+        SectionHeader { text: "5 \u{2014} Radio Group"; }
+        RadioGroup {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "6 \u{2014} Toggle / Switch"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            ToggleSwitch { checked: true; }
+            ToggleSwitch { checked: false; }
+        }
+
+        SectionHeader { text: "7 \u{2014} Toggle Group"; }
+        ToggleGroup {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "8 \u{2014} Segmented Control"; }
+        SegmentedControl {}
+
+        SectionHeader { text: "9 \u{2014} Button Toggle Group"; }
+        ButtonToggleGroup {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "10 \u{2014} Chip Select (single)"; }
+        ChipSelectSingle {}
+
+        SectionHeader { text: "11 \u{2014} Multi-Chip Select"; }
+        MultiChipSelect {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "12 \u{2014} Select / Dropdown"; }
+        SelectDropdown {}
+
+        SectionHeader { text: "13 \u{2014} Select Multi (tags)"; }
+        SelectMultiTags {}
+
+        SectionHeader { text: "14 \u{2014} Combobox"; }
+        Combobox {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "15 \u{2014} Listbox (single)"; }
+        ListboxSingle {}
+
+        SectionHeader { text: "16 \u{2014} Listbox (multi)"; }
+        ListboxMulti {}
+
+        SectionHeader { text: "17 \u{2014} Option Group"; }
+        OptionGroup {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "18 \u{2014} Cascading / Nested Select"; }
+        CascadingSelect {}
+
+        SectionHeader { text: "19 \u{2014} Country Picker"; }
+        CountryPicker {}
+
+        SectionHeader { text: "20 \u{2014} Language Picker"; }
+        LanguagePicker {}
+
+        SectionHeader { text: "21 \u{2014} Timezone Picker"; }
+        TimezonePicker {}
+
+        SectionHeader { text: "22 \u{2014} Currency Picker"; }
+        CurrencyPicker {}
+
+        SectionHeader { text: "23 \u{2014} Flag Picker"; }
+        FlagPicker {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "24 \u{2014} Color Swatch Picker"; }
+        ColorSwatchPicker {}
+
+        SectionHeader { text: "25 \u{2014} Size / Variant Picker"; }
+        SizeVariantPicker {}
+        }
+    }
+}

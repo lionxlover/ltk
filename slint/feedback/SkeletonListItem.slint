@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonListItem inherits Rectangle {
+    height: 56px;
+
+    HorizontalLayout {
+        spacing: 12px;
+        alignment: start;
+
+        SkeletonAvatar { size: 40; }
+
+        VerticalLayout {
+            spacing: 8px;
+            y: (parent.height - self.preferred-height) / 2;
+
+            SkeletonText { skeleton-width: 140px; }
+            SkeletonText { skeleton-width: 200px; }
+        }
+    }
+}

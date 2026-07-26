@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Kbd inherits Rectangle {
+    in property <string> text: "";
+
+    horizontal-stretch: 0;
+
+    bg := Rectangle {
+        border-radius: Theme.radius-xs;
+        border-width: 1px;
+        border-color: Theme.border-base;
+        background: Theme.bg-overlay;
+    }
+
+    label := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.text;
+        color: Theme.text-secondary;
+        font-family: Theme.font-mono;
+        font-size: Theme.text-xs;
+        font-weight: Theme.weight-medium;
+        vertical-alignment: center;
+    }
+
+    width: max(label.preferred-width + Theme.sp-3, 24px);
+    height: 22px;
+}

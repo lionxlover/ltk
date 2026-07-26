@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FloatingLabel inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> has-value: false;
+    in property <bool> focused: false;
+
+    height: root.focused || root.has-value ? 18px : 36px;
+    vertical-stretch: 0;
+
+    Text {
+        x: Theme.sp-3;
+        y: root.focused || root.has-value ? 2px : (parent.height - self.height) / 2;
+        text: root.label;
+        color: root.focused ? Theme.accent
+            : root.has-value ? Theme.text-secondary
+            : Theme.text-placeholder;
+        font-family: Theme.font-ui;
+        font-size: root.focused || root.has-value ? Theme.text-xs : Theme.text-base;
+        font-weight: root.focused || root.has-value ? Theme.weight-medium : Theme.weight-regular;
+        vertical-alignment: center;
+
+        animate y { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+        animate font-size { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+        animate color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+}

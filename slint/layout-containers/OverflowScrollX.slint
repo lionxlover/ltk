@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OverflowScrollX inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    Flickable {
+        viewport-width: 2000px;
+        horizontal-stretch: 1;
+
+        HorizontalLayout {
+            spacing: Theme.sp-4;
+        }
+    }
+}

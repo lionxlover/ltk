@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StickyHeader inherits Rectangle {
+    in property <string> title: "";
+
+    height: 48px;
+    background: Theme.bg-elevated;
+
+    Text {
+        x: 16px;
+        text: root.title;
+        color: Theme.text-primary;
+        font-size: 16px;
+        font-weight: Theme.weight-semibold;
+        vertical-alignment: center;
+    }
+}

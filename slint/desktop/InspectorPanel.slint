@@ -1,0 +1,178 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component InspectorPanel inherits Rectangle {
+    in property <string> title: "Inspector";
+
+    background: Theme.bg-sidebar;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // Header
+        Rectangle {
+            background: Theme.bg-headerbar;
+            height: 40px;
+            border-radius: Theme.radius-md;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/eye.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.accent;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Content
+        Rectangle {
+            background: Theme.bg-sidebar;
+
+            VerticalLayout {
+                padding: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                // Placeholder property rows
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+                    height: 28px;
+
+                    Text {
+                        text: "X";
+                        color: Theme.text-tertiary;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                        width: 40px;
+                    }
+
+                    Rectangle {
+                        background: Theme.bg-raised;
+                        border-radius: Theme.radius-xs;
+                        border-width: 1px;
+                        border-color: Theme.border-subtle;
+                        height: 26px;
+
+                        Text {
+                            text: "0";
+                            color: Theme.text-primary;
+                            font-size: Theme.text-xs;
+                            font-family: Theme.font-mono;
+                            x: Theme.sp-2;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+                    height: 28px;
+
+                    Text {
+                        text: "Y";
+                        color: Theme.text-tertiary;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                        width: 40px;
+                    }
+
+                    Rectangle {
+                        background: Theme.bg-raised;
+                        border-radius: Theme.radius-xs;
+                        border-width: 1px;
+                        border-color: Theme.border-subtle;
+                        height: 26px;
+
+                        Text {
+                            text: "0";
+                            color: Theme.text-primary;
+                            font-size: Theme.text-xs;
+                            font-family: Theme.font-mono;
+                            x: Theme.sp-2;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+                    height: 28px;
+
+                    Text {
+                        text: "W";
+                        color: Theme.text-tertiary;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                        width: 40px;
+                    }
+
+                    Rectangle {
+                        background: Theme.bg-raised;
+                        border-radius: Theme.radius-xs;
+                        border-width: 1px;
+                        border-color: Theme.border-subtle;
+                        height: 26px;
+
+                        Text {
+                            text: "100";
+                            color: Theme.text-primary;
+                            font-size: Theme.text-xs;
+                            font-family: Theme.font-mono;
+                            x: Theme.sp-2;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Theme.sp-2;
+                    height: 28px;
+
+                    Text {
+                        text: "H";
+                        color: Theme.text-tertiary;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                        width: 40px;
+                    }
+
+                    Rectangle {
+                        background: Theme.bg-raised;
+                        border-radius: Theme.radius-xs;
+                        border-width: 1px;
+                        border-color: Theme.border-subtle;
+                        height: 26px;
+
+                        Text {
+                            text: "100";
+                            color: Theme.text-primary;
+                            font-size: Theme.text-xs;
+                            font-family: Theme.font-mono;
+                            x: Theme.sp-2;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

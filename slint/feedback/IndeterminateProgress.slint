@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IndeterminateProgress inherits Rectangle {
+    in property <color> bar-color: Theme.accent;
+    in property <color> track-color: Theme.bg-overlay;
+
+    height: 4px;
+    background: #00000000;
+
+    Rectangle {
+        border-radius: Theme.radius-full;
+        background: track-color;
+    }
+
+    pulse := Rectangle {
+        x: -parent.width * 0.4;
+        y: 0;
+        width: parent.width * 0.4;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        background: bar-color;
+        animate x { duration: 1400ms; easing: Theme.ease-in-out; loop-count: -1; }
+    }
+}

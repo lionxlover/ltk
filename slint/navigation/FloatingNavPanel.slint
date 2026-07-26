@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FloatingNavPanel inherits Rectangle {
+    width: 220px;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    visible: root.visible;
+
+    drop-shadow-offset-y: 4px;
+    drop-shadow-blur: 16px;
+    drop-shadow-color: Theme.border-default;
+
+    VerticalLayout {
+        padding: 8px;
+        spacing: 2px;
+
+        Rectangle {
+            height: 36px;
+            background: Theme.accent-subtle;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Dashboard";
+                color: Theme.accent;
+                font-size: 13px;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { } }
+        }
+
+        Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Projects";
+                color: Theme.text-primary;
+                font-size: 13px;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { } }
+        }
+
+        Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: 12px;
+                text: "Settings";
+                color: Theme.text-primary;
+                font-size: 13px;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { } }
+        }
+    }
+}

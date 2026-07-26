@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CommandSpotlightInput inherits Rectangle {
+    in-out property <string> text;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 48px;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 16px;
+        y: (parent.height - self.height) / 2;
+        text: "⌘";
+        color: Theme.text-tertiary;
+        font-size: 16px;
+        vertical-alignment: center;
+    }
+
+    Text {
+        x: 40px;
+        y: (parent.height - self.height) / 2;
+        text: root.text == "" ? "Search commands, files, actions..." : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 15px;
+        vertical-alignment: center;
+    }
+
+    // Keyboard shortcut hint
+    Rectangle {
+        x: parent.width - 80px;
+        y: (parent.height - 24px) / 2;
+        width: 68px;
+        height: 24px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-raised;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "⌘ K";
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

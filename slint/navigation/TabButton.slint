@@ -1,0 +1,77 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TabButton inherits Rectangle {
+    in property <bool> checked: false;
+    in property <string> text: "";
+    in property <bool> close-visible: true;
+
+    callback clicked();
+    callback close-clicked();
+
+    height: Theme.button-height-md;
+
+    Rectangle {
+        x: Theme.sp-0-5;
+        y: Theme.sp-0-5;
+        width: parent.width - Theme.sp-1;
+        height: parent.height - Theme.sp-1;
+        border-radius: Theme.radius-sm;
+        background: ta.pressed ? Theme.surface-pressed
+            : ta.has-hover ? Theme.surface-hover
+            : transparent;
+    }
+
+    if checked: Rectangle {
+        x: Theme.sp-0-5;
+        y: Theme.sp-0-5;
+        width: parent.width - Theme.sp-1;
+        height: parent.height - Theme.sp-1;
+        border-radius: Theme.radius-sm;
+        background: Theme.accent;
+    }
+
+    HorizontalLayout {
+        x: Theme.sp-1;
+        y: Theme.sp-0-5;
+        width: parent.width - Theme.sp-2;
+        height: parent.height - Theme.sp-1;
+        spacing: 0px;
+        alignment: center;
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.text;
+            color: checked ? Theme.on-accent : Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-base;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        if close-visible && checked: Rectangle {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            horizontal-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "\u{00D7}";
+                color: Theme.on-accent;
+                font-size: 12px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.close-clicked(); }
+            }
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

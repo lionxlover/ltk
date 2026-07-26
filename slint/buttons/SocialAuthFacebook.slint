@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SocialAuthFacebook inherits Rectangle {
+    in-out property <string> text: "Continue with Facebook";
+
+    background: #1877F2;
+    border-radius: Theme.radius-md;
+    height: 44px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/facebook.svg");
+            fa-size: 18px;
+            fa-color: #ffffff;
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

@@ -1,0 +1,57 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RegistrationForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 400px;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        VerticalLayout { spacing: Theme.sp-1; alignment: center;
+            Text { text: "Create Account"; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
+            Text { text: "Start your journey with us"; font-size: Theme.text-sm; color: Theme.text-tertiary; horizontal-alignment: center; }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Full Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+            Text { text: "Must be at least 8 characters"; font-size: Theme.text-xs; color: Theme.text-tertiary; }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Confirm Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        Rectangle { height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+            Text { text: "Create Account"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+        }
+
+        HorizontalLayout { alignment: center; spacing: Theme.sp-2;
+            Text { text: "Already have an account?"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+            Text { text: "Sign in"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+        }
+    }
+}

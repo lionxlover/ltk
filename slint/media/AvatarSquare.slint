@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarSquare inherits Rectangle {
+    in property <string> fallback: "?";
+    in property <length> avatar-size: 40px;
+
+    width: avatar-size;
+    height: avatar-size;
+    background: Theme.accent-subtle;
+    border-radius: Theme.radius-md;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.fallback;
+        color: Theme.accent;
+        font-size: avatar-size * 0.4;
+        font-weight: Theme.weight-bold;
+        vertical-alignment: center;
+    }
+}

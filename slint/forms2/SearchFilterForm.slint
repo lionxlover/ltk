@@ -1,0 +1,112 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SearchFilterForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    padding: Theme.sp-4;
+
+    VerticalLayout {
+        spacing: Theme.sp-4;
+
+        HorizontalLayout {
+            spacing: Theme.sp-3;
+
+            Rectangle {
+                height: 36px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+                vertical-stretch: 1;
+                clip: true;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-3;
+                    spacing: Theme.sp-2;
+
+                    Text {
+                        text: "🔍";
+                        font-size: 14px;
+                        y: (parent.height - self.height) / 2;
+                    }
+
+                    Text {
+                        text: "Search...";
+                        font-size: Theme.text-sm;
+                        color: Theme.text-tertiary;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 80px;
+                height: 36px;
+                border-radius: Theme.radius-md;
+                background: Theme.accent;
+
+                Text {
+                    text: "Search";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: #ffffff;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: Theme.sp-3;
+
+            Rectangle {
+                height: 32px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: "All Types ▾";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-secondary;
+                    padding-left: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                height: 32px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: "Any Date ▾";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-secondary;
+                    padding-left: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                height: 32px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: "Sort: Relevance ▾";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-secondary;
+                    padding-left: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

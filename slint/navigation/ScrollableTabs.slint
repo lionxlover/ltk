@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScrollableTabs inherits Rectangle {
+    in-out property <int> active: 0;
+
+    height: 40px;
+    background: Theme.bg-surface;
+
+    HorizontalLayout {
+        padding: 4px;
+        spacing: 4px;
+
+        Rectangle {
+            height: 32px;
+            background: root.active == 0 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+            horizontal-stretch: 0;
+            min-width: 80px;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "Tab 1";
+                color: root.active == 0 ? Theme.accent : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: root.active == 0 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 0; } }
+        }
+
+        Rectangle {
+            height: 32px;
+            background: root.active == 1 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+            horizontal-stretch: 0;
+            min-width: 80px;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "Tab 2";
+                color: root.active == 1 ? Theme.accent : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: root.active == 1 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 1; } }
+        }
+
+        Rectangle {
+            height: 32px;
+            background: root.active == 2 ? Theme.accent-subtle : #00000000;
+            border-radius: Theme.radius-sm;
+            horizontal-stretch: 0;
+            min-width: 80px;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "Tab 3";
+                color: root.active == 2 ? Theme.accent : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: root.active == 2 ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.active = 2; } }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TableToolbar inherits Rectangle {
+    in property <string> search-placeholder: "Search...";
+    in property <int> result-count: 0;
+
+    height: 48px;
+    background: Theme.bg-surface;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 200px;
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: Theme.border-base;
+
+            Text {
+                x: Theme.sp-2;
+                y: (parent.height - self.height) / 2;
+                text: root.search_placeholder;
+                color: Theme.text-placeholder;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+            }
+        }
+
+        Rectangle {
+            width: 1px;
+            horizontal-stretch: 0;
+        }
+
+        Text {
+            text: "\{root.result_count} results";
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+    }
+}

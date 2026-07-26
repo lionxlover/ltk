@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FieldSuccessMessage inherits Rectangle {
+    background: transparent;
+
+    in property <string> text: "";
+
+    height: text != "" ? 16px : 0px;
+
+    if text != "": HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "✓";
+            font-size: Theme.text-xs;
+            color: Theme.success;
+            y: 1px;
+        }
+
+        Text {
+            text: root.text;
+            font-size: Theme.text-xs;
+            color: Theme.success;
+            overflow: elide;
+        }
+    }
+}

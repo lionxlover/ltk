@@ -1,0 +1,78 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FriendRequestButton inherits Rectangle {
+    background: transparent;
+
+    in property <string> state: "pending";
+
+    width: 120px;
+    height: 36px;
+
+    if state == "none": Rectangle {
+        width: 120px;
+        height: 36px;
+        border-radius: Theme.radius-full;
+        background: Theme.accent;
+
+        Text {
+            text: "Add Friend";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: #ffffff;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    if state == "pending": Rectangle {
+        width: 120px;
+        height: 36px;
+        border-radius: Theme.radius-full;
+        border-width: 1px;
+        border-color: Theme.border-default;
+
+        Text {
+            text: "Requested";
+            font-size: Theme.text-sm;
+            color: Theme.text-secondary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    if state == "accept": HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        Rectangle {
+            width: 60px;
+            height: 36px;
+            border-radius: Theme.radius-full;
+            background: Theme.accent;
+
+            Text {
+                text: "Accept";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 60px;
+            height: 36px;
+            border-radius: Theme.radius-full;
+            border-width: 1px;
+            border-color: Theme.border-default;
+
+            Text {
+                text: "Decline";
+                font-size: Theme.text-sm;
+                color: Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

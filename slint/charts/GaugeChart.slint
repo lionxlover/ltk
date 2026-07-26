@@ -1,0 +1,53 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GaugeChart inherits Rectangle {
+    in property <int> value: 72;
+    in property <string> label: "Gauge";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Rectangle {
+                width: 100px; height: 50px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                clip: true;
+            }
+
+            Rectangle {
+                width: 100px; height: 100px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2 - 50px;
+                border-radius: Theme.radius-full;
+                border-width: 10px;
+                border-color: Theme.bg-overlay;
+                background: transparent;
+            }
+
+            Rectangle {
+                width: 100px; height: 100px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2 - 50px;
+                border-radius: Theme.radius-full;
+                border-width: 10px;
+                border-color: Theme.accent;
+                background: transparent;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2; y: (parent.height) / 2;
+                text: "\{root.value}%";
+                color: Theme.text-primary;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-bold;
+                font-family: Theme.font-display;
+            }
+        }
+    }
+}

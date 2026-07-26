@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WaterfallChart inherits Rectangle {
+    in property <[float]> data: [0.3, 0.15, -0.1, 0.2, -0.05, 0.25];
+    in property <string> label: "Waterfall Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            Rectangle { y: parent.height * 0.5; height: 1px; width: parent.width; background: Theme.border-subtle; }
+
+            for bar[i] in root.data: Rectangle {
+                x: i * (parent.width / root.data.length) + Theme.sp-2;
+                width: parent.width / root.data.length - Theme.sp-4;
+                y: bar >= 0 ? parent.height * 0.5 - bar * parent.height * 0.4 : parent.height * 0.5;
+                height: Math.abs(bar) * parent.height * 0.4;
+                background: bar >= 0 ? Theme.state-success : Theme.state-error;
+                border-radius: 2px;
+            }
+        }
+    }
+}

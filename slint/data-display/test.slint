@@ -1,0 +1,310 @@
+import { Theme } from "../core/Theme.slint";
+import { Table } from "Table.slint";
+import { SortableDataTable } from "SortableDataTable.slint";
+import { VirtualizedTable } from "VirtualizedTable.slint";
+import { FrozenColumnTable } from "FrozenColumnTable.slint";
+import { ExpandableRowTable } from "ExpandableRowTable.slint";
+import { EditableInlineTable } from "EditableInlineTable.slint";
+import { TreeTable } from "TreeTable.slint";
+import { SummaryFooterRow } from "SummaryFooterRow.slint";
+import { ColumnHeader } from "ColumnHeader.slint";
+import { TableToolbar } from "TableToolbar.slint";
+import { BulkActionBar } from "BulkActionBar.slint";
+import { FeatureComparisonMatrix } from "FeatureComparisonMatrix.slint";
+import { LeaderboardTable } from "LeaderboardTable.slint";
+import { PriceComparisonTable } from "PriceComparisonTable.slint";
+import { DenseList } from "DenseList.slint";
+import { TwoLineList } from "TwoLineList.slint";
+import { AvatarList } from "AvatarList.slint";
+import { LeadingIconList } from "LeadingIconList.slint";
+import { TrailingActionList } from "TrailingActionList.slint";
+import { VirtualizedList } from "VirtualizedList.slint";
+import { GroupedList } from "GroupedList.slint";
+import { SortableList } from "SortableList.slint";
+import { SelectionList } from "SelectionList.slint";
+import { Checklist } from "Checklist.slint";
+import { DefinitionList } from "DefinitionList.slint";
+import { HorizontalTimeline } from "HorizontalTimeline.slint";
+import { ActivityFeed } from "ActivityFeed.slint";
+import { ChatMessageThread } from "ChatMessageThread.slint";
+import { NestedCommentSection } from "NestedCommentSection.slint";
+import { DiffViewer } from "DiffViewer.slint";
+import { LogViewer } from "LogViewer.slint";
+import { TerminalOutput } from "TerminalOutput.slint";
+import { JsonTreeViewer } from "JsonTreeViewer.slint";
+import { KeyValueRow } from "KeyValueRow.slint";
+import { PropertyInspectorPanel } from "PropertyInspectorPanel.slint";
+import { KPITile } from "KPITile.slint";
+import { PriceDisplay } from "PriceDisplay.slint";
+import { ReceiptInvoiceView } from "ReceiptInvoiceView.slint";
+import { TreeView } from "TreeView.slint";
+import { NetworkGraph } from "NetworkGraph.slint";
+import { GanttTimeline } from "GanttTimeline.slint";
+import { OrgChart } from "OrgChart.slint";
+import { MonthCalendar } from "MonthCalendar.slint";
+import { WeekCalendar } from "WeekCalendar.slint";
+import { DayAgendaCalendar } from "DayAgendaCalendar.slint";
+import { EmptyState } from "EmptyState.slint";
+import { ListItem } from "ListItem.slint";
+import { TimelineItem } from "Timeline.slint";
+import { Kbd } from "Kbd.slint";
+import { CodeBlock } from "CodeBlock.slint";
+import { StatCard } from "StatCard.slint";
+import { Badge } from "Badge.slint";
+
+export component DataDisplayTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+        Flickable {
+            width: 800px;
+            height: 700px;
+            viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Data Display — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // --- TABLES ---
+        Text { text: "Table (basic)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            Table { columns: ["Name", "Role", "Status"]; row-count: 3; striped: true; bordered: true; }
+        }
+
+        Text { text: "SortableDataTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            SortableDataTable { columns: ["Name", "Score", "Rank"]; row-count: 3; sort-column: 1; sort-ascending: false; }
+        }
+
+        Text { text: "VirtualizedTable (showing 1-5 of 100)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            VirtualizedTable { columns: ["ID", "Name", "Value"]; total-rows: 100; visible-start: 0; visible-count: 3; }
+        }
+
+        Text { text: "ExpandableRowTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            ExpandableRowTable { columns: ["Name", "Type"]; row-count: 2; expanded-row: 0; }
+        }
+
+        Text { text: "FrozenColumnTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            FrozenColumnTable { columns: ["ID", "Name", "Status"]; row-count: 3; }
+        }
+
+        Text { text: "EditableInlineTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            EditableInlineTable { columns: ["Field", "Value"]; row-count: 3; }
+        }
+
+        Text { text: "TreeTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            TreeTable { columns: ["Name", "Type"]; row-count: 4; depths: [0, 1, 1, 2]; }
+        }
+
+        Text { text: "LeaderboardTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 180px; background: transparent;
+            LeaderboardTable { row-count: 4; highlight-rank: 3; }
+        }
+
+        Text { text: "SummaryFooterRow"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        SummaryFooterRow { cells: ["", "Total", "$1,234", "100%"]; }
+
+        Text { text: "TableToolbar + BulkActionBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        TableToolbar { search-placeholder: "Filter items..."; result-count: 42; }
+        BulkActionBar { selected-count: 5; show-bar: true; }
+
+        Text { text: "ColumnHeader (sort states)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-1;
+            ColumnHeader { label: "Name"; sort-state: 0; col-width: 120px; }
+            ColumnHeader { label: "Score"; sort-state: 1; col-width: 100px; }
+            ColumnHeader { label: "Rank"; sort-state: 2; col-width: 80px; }
+        }
+
+        Text { text: "FeatureComparisonMatrix"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            FeatureComparisonMatrix { features: ["Auth", "API", "Export", "Priority"]; plans: ["Free", "Pro", "Team"]; matrix: [true, true, true, false, true, true, true, true, true]; }
+        }
+
+        Text { text: "PriceComparisonTable"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 180px; background: transparent;
+            PriceComparisonTable { features: ["Users", "Storage", "Support"]; plans: ["Basic", "Pro", "Enterprise"]; prices: ["$0", "$29", "$99"]; matrix: [true, true, true, true, true, true, true, true, true]; featured-plan: 1; }
+        }
+
+        // --- LISTS ---
+        Text { text: "DenseList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 120px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            DenseList { item-count: 3; items: ["Dashboard", "Settings", "Profile"]; }
+        }
+
+        Text { text: "TwoLineList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            TwoLineList { titles: ["Dashboard", "Components", "Settings"]; subtitles: ["Overview", "Library", "Preferences"]; metas: ["New", "42", "→"]; }
+        }
+
+        Text { text: "AvatarList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            AvatarList { titles: ["Alice", "Bob", "Carol"]; subtitles: ["Admin", "Editor", "Viewer"]; avatar-labels: ["AL", "BO", "CA"]; }
+        }
+
+        Text { text: "SelectionList + Checklist"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 140px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            SelectionList { items: ["Option A", "Option B", "Option C"]; selected: [true, false, true]; }
+        }
+
+        Rectangle { height: 140px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            Checklist { items: ["Task 1", "Task 2", "Task 3"]; checked: [true, true, false]; }
+        }
+
+        Text { text: "GroupedList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 150px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            GroupedList { sections: ["Recent", "Favorites"]; items-per-section: [2, 1]; }
+        }
+
+        Text { text: "DefinitionList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 140px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            DefinitionList { keys: ["Name", "Type", "Version", "License"]; values: ["LTK", "UI Framework", "1.0.0", "MIT"]; }
+        }
+
+        Text { text: "VirtualizedList"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 130px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            VirtualizedList { total-items: 1000; visible-start: 0; visible-count: 3; }
+        }
+
+        // --- TIMELINE / FEED ---
+        Text { text: "HorizontalTimeline"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalTimeline { items: ["Design", "Develop", "Test", "Deploy"]; active-index: 2; }
+
+        Text { text: "ActivityFeed"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 220px; background: transparent; clip: true;
+            ActivityFeed { item-count: 4; }
+        }
+
+        Text { text: "ChatMessageThread"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 260px; background: transparent; clip: true;
+            ChatMessageThread { is-own: [false, true, false, true]; }
+        }
+
+        Text { text: "NestedCommentSection"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent; clip: true;
+            NestedCommentSection { item-count: 3; }
+        }
+
+        Text { text: "Timeline (vertical)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+            VerticalLayout { padding: Theme.sp-3; spacing: Theme.sp-1;
+                TimelineItem { title: "Project created"; description: "Initial setup"; time: "2h ago"; completed: true; }
+                TimelineItem { title: "Components added"; description: "15 components"; time: "1h ago"; completed: true; }
+                TimelineItem { title: "Testing"; description: "Running tests"; time: "Now"; active: true; }
+            }
+        }
+
+        // --- CODE VIEWERS ---
+        Text { text: "DiffViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            DiffViewer { }
+        }
+
+        Text { text: "LogViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent;
+            LogViewer { item-count: 6; }
+        }
+
+        Text { text: "TerminalOutput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 120px; background: transparent;
+            TerminalOutput { }
+        }
+
+        Text { text: "JsonTreeViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 150px; background: transparent;
+            JsonTreeViewer { item-count: 4; }
+        }
+
+        Text { text: "CodeBlock"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        CodeBlock { width: 400px; height: 100px; language: "rust"; code: "fn main() {\n    println!(\"Hello, LTK!\");\n}"; }
+
+        // --- DATA DISPLAY ---
+        Text { text: "KeyValueRow + PropertyInspectorPanel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        KeyValueRow { key: "Status"; value: "Active"; }
+        PropertyInspectorPanel { keys: ["Name", "Type", "Version"]; values: ["LTK", "Framework", "1.0.0"]; }
+
+        Text { text: "KPITile"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            KPITile { label: "Revenue"; value: "$12.4K"; change: "+12%"; trend: 1; }
+            KPITile { label: "Users"; value: "8,420"; change: "-3%"; trend: 2; }
+            KPITile { label: "Uptime"; value: "99.9%"; change: "Stable"; trend: 0; }
+        }
+
+        Text { text: "PriceDisplay"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-6;
+            PriceDisplay { amount: "29"; currency: "$"; period: "/mo"; }
+            PriceDisplay { amount: "99"; currency: "$"; period: "/mo"; }
+        }
+
+        Text { text: "ReceiptInvoiceView"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent;
+            ReceiptInvoiceView { title: "Invoice #1234"; item-labels: ["Subtotal", "Tax", "Discount"]; item-amounts: ["$100.00", "$8.00", "-$5.00"]; total-label: "Total"; total-amount: "$103.00"; }
+        }
+
+        Text { text: "StatCard"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            StatCard { label: "USERS"; value: "12,345"; subtitle: "+12%"; stat-color: Theme.green-700; }
+            StatCard { label: "REVENUE"; value: "$8,420"; subtitle: "-3%"; stat-color: Theme.red-600; }
+        }
+
+        // --- GRAPHS / TREE ---
+        Text { text: "TreeView"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; background: transparent; clip: true;
+            TreeView { item-count: 4; }
+        }
+
+        Text { text: "NetworkGraph"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        NetworkGraph { width: 300px; height: 280px; }
+
+        Text { text: "GanttTimeline"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent;
+            GanttTimeline { item-count: 4; }
+        }
+
+        Text { text: "OrgChart"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent;
+            OrgChart { item-count: 3; }
+        }
+
+        // --- CALENDARS ---
+        Text { text: "MonthCalendar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        MonthCalendar { width: 350px; month: "July"; year: "2026"; selected-day: 23; current-day: 23; }
+
+        Text { text: "WeekCalendar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent;
+            WeekCalendar { selected-day: 2; }
+        }
+
+        Text { text: "DayAgendaCalendar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 200px; background: transparent;
+            DayAgendaCalendar { selected-day: "Wednesday, July 23"; item-count: 3; }
+        }
+
+        // --- LEGACY (kept for completeness) ---
+        Text { text: "EmptyState"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 120px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            EmptyState { icon: "📂"; title: "No files yet"; description: "Create your first file"; }
+        }
+
+        Text { text: "Kbd"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-2; alignment: start;
+            Kbd { text: "Ctrl"; }
+            Kbd { text: "+"; }
+            Kbd { text: "S"; }
+        }
+        }
+    }
+}

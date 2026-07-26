@@ -1,0 +1,68 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FlyoutMenuItem inherits Rectangle {
+    in property <string> icon: "";
+    in property <string> label: "";
+    in property <string> shortcut: "";
+    in property <bool> show-separator: false;
+    in property <bool> danger: false;
+
+    height: show-separator ? 20px : 32px;
+    border-radius: 6px;
+
+    if show-separator: HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+        Rectangle {
+            y: 9px;
+            height: 1px;
+            background: Theme.border-default;
+        }
+    }
+
+    if !show-separator: HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        if icon != "": Text {
+            text: icon;
+            font-size: 14px;
+            y: (parent.height - self.height) / 2;
+            width: 20px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: label;
+            font-size: Theme.text-sm;
+            color: danger ? Theme.error : Theme.text-primary;
+            y: (parent.height - self.height) / 2;
+            vertical-stretch: 1;
+            overflow: elide;
+        }
+
+        if shortcut != "": Text {
+            text: shortcut;
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    if !show-separator: TouchArea { }
+}
+
+export component FlyoutMenu inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    padding: Theme.sp-1;
+    width: 220px;
+    clip: true;
+
+    in property <bool> show-icons: true;
+    in property <bool> show-shortcuts: true;
+}

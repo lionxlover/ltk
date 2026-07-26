@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DragToDismiss inherits Rectangle {
+    background: transparent;
+
+    in property <bool> dismissed: false;
+    in property <length> dismiss-threshold: 100px;
+
+    opacity: dismissed ? 0 : 1;
+    y: dismissed ? 200px : 0px;
+    animate opacity, y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+}

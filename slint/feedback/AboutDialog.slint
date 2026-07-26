@@ -1,0 +1,82 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AboutDialog inherits Rectangle {
+    in property <image> icon-source: @image-url("");
+    in property <string> name: "";
+    in property <string> description: "";
+    in property <string> link: "https://github.com/lionxlover/ltk";
+    in property <bool> active: false;
+
+    callback link-clicked(string);
+
+    width: 340px;
+    visible: active;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-dialog;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    VerticalLayout {
+        padding: Theme.sp-8;
+        spacing: 0px;
+        alignment: center;
+
+        Rectangle { vertical-stretch: 1; }
+
+        Image {
+            source: root.icon-source;
+            width: 72px;
+            height: 72px;
+            image-fit: contain;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle { height: Theme.sp-4; vertical-stretch: 0; }
+
+        Text {
+            text: root.name;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        Rectangle { height: Theme.sp-2; vertical-stretch: 0; }
+
+        Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-base;
+            horizontal-alignment: center;
+            horizontal-stretch: 1;
+            wrap: word-wrap;
+        }
+
+        Rectangle { height: Theme.sp-4; vertical-stretch: 0; }
+
+        TouchArea {
+            horizontal-stretch: 1;
+            clicked => { root.link-clicked(root.link); }
+
+            Text {
+                text: root.link;
+                color: Theme.text-link;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-base;
+                horizontal-alignment: center;
+            }
+        }
+
+        Rectangle { vertical-stretch: 1; }
+    }
+
+    ta := TouchArea { }
+}

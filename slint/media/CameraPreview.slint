@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CameraPreview inherits Rectangle {
+    in property <bool> active: false;
+
+    width: 300px;
+    height: 240px;
+    background: #000000;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "📷";
+            font-size: 48px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.active ? "Camera Active" : "Camera Off";
+            color: root.active ? Theme.state-success : Theme.text-tertiary;
+            font-size: Theme.text-sm;
+            horizontal-alignment: center;
+        }
+    }
+
+    Rectangle {
+        x: parent.width - 24px;
+        y: 8px;
+        width: 16px;
+        height: 16px;
+        border-radius: Theme.radius-full;
+        background: root.active ? Theme.state-error : Theme.text-tertiary;
+    }
+}

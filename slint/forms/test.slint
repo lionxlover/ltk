@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+import { Select } from "Select.slint";
+import { AccordionItem } from "AccordionItem.slint";
+import { ToggleGroup } from "ToggleGroup.slint";
+import { CheckboxGroup } from "CheckboxGroup.slint";
+
+export component FormsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 600px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Forms — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "Select"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+            Select { width: 240px; placeholder: "Choose..."; options: ["Red", "Green", "Blue"]; current-index: 0; }
+            Select { width: 240px; placeholder: "Disabled"; options: ["A"]; enabled: false; }
+        }
+
+        Text { text: "ToggleGroup"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        ToggleGroup { width: 350px; options: ["Day", "Week", "Month", "Year"]; current-index: 1; }
+
+        Text { text: "CheckboxGroup"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        CheckboxGroup { options: ["Design", "Code", "Test", "Deploy"]; checked-items: [true, true, false, false]; width: 200px; }
+
+        Text { text: "Accordion"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            VerticalLayout { padding: Theme.sp-2;
+                AccordionItem { title: "What is LTK?"; expanded: true; }
+                AccordionItem { title: "How to start?"; expanded: false; }
+            }
+        }
+        }
+    }
+}

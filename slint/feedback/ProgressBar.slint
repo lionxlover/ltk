@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ProgressBar inherits Rectangle {
+    in property <float> value: 0;
+    in property <float> maximum: 100;
+    in property <bool> indeterminate: false;
+    in property <color> progress-color: Theme.accent;
+    in property <color> track-color: Theme.bg-overlay;
+
+    height: 6px;
+    background: transparent;
+
+    track := Rectangle {
+        border-radius: Theme.radius-full;
+        background: track-color;
+    }
+
+    fill := Rectangle {
+        x: 0;
+        y: 0;
+        width: indeterminate ? parent.width * 0.4 : (parent.width * Math.min(value, maximum) / maximum);
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        background: progress-color;
+        visible: !indeterminate;
+    }
+
+    indeterminate-rect := Rectangle {
+        x: indeterminate ? parent.width * 0.3 : 0px;
+        y: 0;
+        width: parent.width * 0.4;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        background: progress-color;
+        visible: indeterminate;
+        opacity: indeterminate ? 0.6 : 0;
+        animate x { duration: 1200ms; easing: Theme.ease-in-out; }
+        animate opacity { duration: 300ms; }
+    }
+}

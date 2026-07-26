@@ -1,0 +1,97 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AnimationPresetSelector inherits Rectangle {
+    in-out property <int> selected: 1;
+
+    callback preset-selected(int);
+
+    width: 100%;
+    height: 40px;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    HorizontalLayout {
+        padding: Theme.sp-1;
+        spacing: 0px;
+
+        // Fast
+        Rectangle {
+            horizontal-stretch: 1;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: root.selected == 0 ? Theme.accent : #00000000;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Fast";
+                color: root.selected == 0 ? Theme.on-accent : Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected = 0;
+                    root.preset-selected(0);
+                }
+            }
+        }
+
+        // Normal
+        Rectangle {
+            horizontal-stretch: 1;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: root.selected == 1 ? Theme.accent : #00000000;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Normal";
+                color: root.selected == 1 ? Theme.on-accent : Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected = 1;
+                    root.preset-selected(1);
+                }
+            }
+        }
+
+        // Slow
+        Rectangle {
+            horizontal-stretch: 1;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: root.selected == 2 ? Theme.accent : #00000000;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Slow";
+                color: root.selected == 2 ? Theme.on-accent : Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected = 2;
+                    root.preset-selected(2);
+                }
+            }
+        }
+    }
+}

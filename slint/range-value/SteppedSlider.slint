@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SteppedSlider inherits Rectangle {
+    in-out property <int> step: 2;
+    in-out property <int> value: 2;
+    in-out property <int> minimum: 0;
+    in-out property <int> maximum: 10;
+    in-out property <int> steps: 5;
+
+    height: 20px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        y: (parent.height - self.height) / 2;
+        height: 6px;
+        background: Theme.bg-overlay;
+        border-radius: 3px;
+
+        fill := Rectangle {
+            width: max(0, (root.value - root.minimum) / max(1, root.maximum - root.minimum) * parent.width);
+            height: parent.height;
+            background: Theme.accent;
+            border-radius: 3px;
+        }
+    }
+
+    handle := Rectangle {
+        width: 20px;
+        height: 20px;
+        background: Theme.bg-surface;
+        border-width: 2px;
+        border-color: Theme.accent;
+        border-radius: 10px;
+        x: max(0, min(parent.width - self.width,
+            (root.value - root.minimum) / max(1, root.maximum - root.minimum) * (parent.width - self.width)));
+        y: (parent.height - self.height) / 2;
+
+        drop-shadow-color: Theme.border-default;
+        drop-shadow-blur: 4px;
+    }
+
+    TouchArea {
+        moved => {
+            root.value = round((self.mouse-x / parent.width) * (root.maximum - root.minimum) / root.steps) * root.steps + root.minimum;
+        }
+    }
+}

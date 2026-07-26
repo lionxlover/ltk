@@ -1,0 +1,112 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component PrevNextPagination inherits Rectangle {
+    in property <int> current: 1;
+    in property <int> total: 1;
+
+    callback prev-clicked();
+    callback next-clicked();
+
+    height: 40px;
+    background: #00000000;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-4;
+
+        // Prev button
+        Rectangle {
+            width: 80px;
+            height: 36px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: prev-ta.pressed ? Theme.surface-pressed
+                : prev-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+            visible: root.current > 1;
+
+            HorizontalLayout {
+                alignment: center;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-left.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.text-secondary;
+                }
+
+                Text {
+                    text: "Prev";
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+            }
+
+            prev-ta := TouchArea {
+                clicked => {
+                    root.prev-clicked();
+                }
+            }
+        }
+
+        // Current / Total
+        Rectangle {
+            height: 36px;
+            horizontal-stretch: 0;
+            background: #00000000;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: root.current + " / " + root.total;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        // Next button
+        Rectangle {
+            width: 80px;
+            height: 36px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: next-ta.pressed ? Theme.surface-pressed
+                : next-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+            visible: root.current < root.total;
+
+            HorizontalLayout {
+                alignment: center;
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: "Next";
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-right.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.text-secondary;
+                }
+            }
+
+            next-ta := TouchArea {
+                clicked => {
+                    root.next-clicked();
+                }
+            }
+        }
+    }
+}

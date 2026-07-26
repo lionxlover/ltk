@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ViewTransitionWrapper inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> transitioning: false;
+    in property <string> transition-type: "cross-fade";
+
+    opacity: transitioning ? 0.8 : 1;
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+}

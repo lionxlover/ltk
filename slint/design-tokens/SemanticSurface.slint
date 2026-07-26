@@ -1,0 +1,27 @@
+// Semantic — Surface (3 elevation tiers)
+export global SemanticSurface {
+    in-out property <bool> dark: true;
+
+    // Tier 0 — flat surface
+    out property <color> surface-base: dark ? #15171B : #ffffff;
+    out property <color> surface-base-border: dark ? rgba(255,255,255,0.06) : rgba(0,0,0,0.06);
+
+    // Tier 1 — slightly elevated
+    out property <color> surface-raised: dark ? #1C1F25 : #f8f9fb;
+    out property <color> surface-raised-border: dark ? rgba(255,255,255,0.08) : rgba(0,0,0,0.08);
+
+    // Tier 2 — elevated (cards, panels)
+    out property <color> surface-elevated: dark ? #1a1f2e : #ffffff;
+    out property <color> surface-elevated-border: dark ? rgba(255,255,255,0.10) : rgba(0,0,0,0.10);
+
+    // Interactive states
+    out property <color> surface-hover: dark ? #111318 : #eceef2;
+    out property <color> surface-pressed: dark ? #0D0F12 : #e2e5ea;
+    out property <color> surface-selected: dark ? #1a2332 : #e8edf5;
+    out property <color> surface-disabled: dark ? #14161A : #f5f5f5;
+
+    // Glass
+    out property <color> glass-thin: dark ? rgba(21,23,27,0.40) : rgba(255,255,255,0.40);
+    out property <color> glass-regular: dark ? rgba(21,23,27,0.67) : rgba(255,255,255,0.67);
+    out property <color> glass-thick: dark ? rgba(21,23,27,0.85) : rgba(255,255,255,0.85);
+}

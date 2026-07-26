@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BubbleChart inherits Rectangle {
+    in property <[int]> count: [0, 1, 2, 3, 4, 5, 6, 7];
+    in property <string> label: "Bubble Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            for b[i] in root.count: Rectangle {
+                x: Math.mod(i * 41 + 11, 80) * (parent.width - 40px) / 80;
+                y: Math.mod(i * 59 + 7, 80) * (parent.height - 40px) / 80;
+                width: 16px + Math.mod(i * 13, 4) * 10px;
+                height: self.width;
+                border-radius: Theme.radius-full;
+                background: Math.mod(i, 3) == 0 ? Theme.accent-subtle : (Math.mod(i, 3) == 1 ? Theme.green_100 : Theme.amber_100);
+                border-width: 1px;
+                border-color: Math.mod(i, 3) == 0 ? Theme.accent : (Math.mod(i, 3) == 1 ? Theme.state-success : Theme.state-warning);
+            }
+        }
+    }
+}

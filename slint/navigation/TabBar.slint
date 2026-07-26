@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+import { RoundImageButton } from "RoundImageButton.slint";
+
+export component TabBar inherits Rectangle {
+    in property <[string]> tabs: [];
+    in property <int> current-index: 0;
+    in property <bool> new-tab-visible: true;
+
+    callback new-tab-clicked();
+    callback tab-clicked(int);
+    callback tab-close-clicked(int);
+
+    height: 40px;
+    background: transparent;
+
+    HorizontalLayout {
+        x: 0;
+        y: 0;
+        width: parent.width;
+        height: parent.height;
+        spacing: Theme.spacing.small / 2;
+
+        for tab[idx] in root.tabs: TabButton {
+            horizontal-stretch: 1;
+            text: tab;
+            checked: idx == root.current-index;
+            clicked => { root.tab-clicked(idx); }
+            close-clicked => { root.tab-close-clicked(idx); }
+        }
+
+        if new-tab-visible: RoundImageButton {
+            horizontal-stretch: 0;
+            width: 31px;
+            height: 31px;
+            icon-margins: 2px;
+            source: @image-url("../src/images/light/add.svg");
+            clicked => { root.new-tab-clicked(); }
+        }
+
+        Rectangle { horizontal-stretch: 1; }
+    }
+}

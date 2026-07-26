@@ -1,0 +1,96 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TokenExporterOption inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> active: false;
+
+    callback activated();
+
+    height: 32px;
+    border-radius: Theme.radius-sm;
+    background: root.active ? Theme.accent-subtle : (item-ta.has-hover ? Theme.surface-hover : #00000000);
+    border-width: root.active ? 1px : 0px;
+    border-color: root.active ? Theme.accent : #00000000;
+
+    animate background { duration: Theme.dur-fast; }
+    animate border-color { duration: Theme.dur-fast; }
+
+    Text {
+        x: Theme.sp-3;
+        y: (parent.height - self.height) / 2;
+        text: root.label;
+        color: root.active ? Theme.accent : Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: Theme.text-sm;
+        font-weight: root.active ? Theme.weight-semibold : Theme.weight-regular;
+        vertical-alignment: center;
+    }
+
+    item-ta := TouchArea {
+        clicked => { root.activated(); }
+    }
+}
+
+export component TokenExporter inherits Rectangle {
+    in-out property <int> selected: 0;
+
+    callback format-selected(int);
+
+    width: 100%;
+    min-height: 200px;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "Export Format";
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle { height: 4px; }
+
+        TokenExporterOption {
+            label: "JSON";
+            active: root.selected == 0;
+            activated => {
+                root.selected = 0;
+                root.format-selected(0);
+            }
+        }
+
+        TokenExporterOption {
+            label: "CSS Variables";
+            active: root.selected == 1;
+            activated => {
+                root.selected = 1;
+                root.format-selected(1);
+            }
+        }
+
+        TokenExporterOption {
+            label: "SCSS";
+            active: root.selected == 2;
+            activated => {
+                root.selected = 2;
+                root.format-selected(2);
+            }
+        }
+
+        TokenExporterOption {
+            label: "Tailwind Config";
+            active: root.selected == 3;
+            activated => {
+                root.selected = 3;
+                root.format-selected(3);
+            }
+        }
+    }
+}

@@ -1,0 +1,46 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FlipCard inherits Rectangle {
+    in-out property <string> front-title: "Front";
+    in-out property <string> back-title: "Back";
+    in-out property <bool> flipped: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    height: 200px;
+    horizontal-stretch: 1;
+
+    front := Rectangle {
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-lg;
+        visible: !root.flipped;
+
+        Text {
+            text: root.front-title;
+            color: Theme.text-primary;
+            font-size: 18px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    back := Rectangle {
+        background: Theme.accent-subtle;
+        border-radius: Theme.radius-lg;
+        visible: root.flipped;
+
+        Text {
+            text: root.back-title;
+            color: Theme.accent;
+            font-size: 18px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea { clicked => { root.flipped = !root.flipped; } }
+}

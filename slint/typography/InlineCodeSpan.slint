@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InlineCodeSpan inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    horizontal-stretch: 1;
+    height: self.preferred-height;
+    vertical-stretch: 0;
+
+    VerticalLayout {
+        alignment: center;
+        padding-left: 6px;
+        padding-right: 6px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+
+        Text {
+            text: "let x = 42;";
+            color: Theme.accent;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+            font-weight: Theme.weight-regular;
+        }
+    }
+}

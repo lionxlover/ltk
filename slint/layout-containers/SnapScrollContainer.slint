@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SnapScrollContainer inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> horizontal: false;
+    in property <int> snap-count: 4;
+    in property <int> current-snap: 0;
+    in property <bool> show-dots: true;
+
+    Flickable {
+        viewport-height: horizontal ? parent.height : snap-count * parent.height;
+        viewport-width: horizontal ? snap-count * parent.width : parent.width;
+    }
+
+    if show-dots: Rectangle {
+        x: (parent.width - snap-count * 12px) / 2;
+        y: parent.height - 20px;
+        width: snap-count * 12px;
+        height: 12px;
+
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: center;
+
+            for dot[idx] in snap-count: Rectangle {
+                width: 8px;
+                height: 8px;
+                border-radius: 4px;
+                background: idx == current-snap ? Theme.accent : Theme.text-tertiary;
+            }
+        }
+    }
+}

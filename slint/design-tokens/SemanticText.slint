@@ -1,0 +1,24 @@
+// Semantic — On-Surface / Foreground Text
+export global SemanticText {
+    in-out property <bool> dark: true;
+
+    out property <color> text-primary: dark ? #F1F2F5 : #0f172a;
+    out property <color> text-secondary: dark ? #9CA3AF : #64748b;
+    out property <color> text-tertiary: dark ? #6B7280 : #94a3b8;
+    out property <color> text-disabled: dark ? #4B5563 : #9ca3af;
+    out property <color> text-placeholder: dark ? #4B5563 : #a0aec0;
+    out property <color> text-inverse: dark ? #0f172a : #f8fafc;
+    out property <color> text-link: dark ? #60a5fa : #2563eb;
+    out property <color> text-link-hover: dark ? #93bbfd : #1d4ed8;
+
+    // On accent
+    out property <color> text-on-accent: #ffffff;
+    out property <color> text-on-error: #ffffff;
+    out property <color> text-on-success: #ffffff;
+
+    // Foreground icons
+    out property <color> fg-primary: dark ? #F1F2F5 : #0f172a;
+    out property <color> fg-secondary: dark ? #9CA3AF : #64748b;
+    out property <color> fg-tertiary: dark ? #6B7280 : #94a3b8;
+    out property <color> fg-disabled: dark ? #374151 : #c0c5ce;
+}

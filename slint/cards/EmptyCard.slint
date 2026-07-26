@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EmptyCard inherits Rectangle {
+    in-out property <string> label: "Empty";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 1px; y: 1px;
+        width: parent.width - 2px;
+        height: parent.height - 2px;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.text-tertiary;
+    }
+
+    Text {
+        text: root.label;
+        color: Theme.text-tertiary;
+        font-size: 14px;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}

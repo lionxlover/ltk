@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MultiRingDonut inherits Rectangle {
+    in property <string> label: "Multi-ring Donut";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Rectangle {
+                width: 130px; height: 130px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                border-width: 16px;
+                border-color: Theme.accent;
+                background: transparent;
+            }
+            Rectangle {
+                width: 90px; height: 90px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                border-width: 12px;
+                border-color: Theme.state-success;
+                background: transparent;
+            }
+            Rectangle {
+                width: 50px; height: 50px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                border-width: 8px;
+                border-color: Theme.state-warning;
+                background: transparent;
+            }
+        }
+    }
+}

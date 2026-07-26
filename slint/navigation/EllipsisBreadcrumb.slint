@@ -1,0 +1,77 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EllipsisBreadcrumb inherits Rectangle {
+    background: transparent;
+    height: 32px;
+    horizontal-stretch: 1;
+    clip: true;
+
+    in property <[string]> items: ["Home", "Documents", "Projects", "LTK", "src"];
+    in-out property <int> active-index: 4;
+    in property <int> max-visible: 3;
+    in property <string> separator: "›";
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+        alignment: start;
+
+        for item[idx] in root.items: HorizontalLayout {
+            spacing: Theme.sp-1;
+            visible: idx < max-visible || idx == root.items.length - 1 || (idx > root.items.length - max-visible - 1);
+
+            if idx > 0 && idx < root.items.length: Text {
+                text: root.separator;
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                y: 4px;
+            }
+
+            if idx == max-visible - 1 && root.items.length > root.max-visible + 1: Rectangle {
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;
+                y: 4px;
+                background: transparent;
+
+                Text {
+                    text: "•••";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { /* expand all */ }
+                }
+            }
+
+            if idx != max-visible - 1 || root.items.length <= root.max-visible + 1: Rectangle {
+                height: 24px;
+                border-radius: 4px;
+                background: active-index == idx ? Theme.accent-subtle : transparent;
+                y: 4px;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-2;
+                    padding-right: Theme.sp-2;
+                    spacing: Theme.sp-1;
+
+                    Text {
+                        text: item;
+                        font-size: Theme.text-sm;
+                        font-weight: active-index == idx ? Theme.weight-medium : Theme.weight-regular;
+                        color: active-index == idx ? Theme.accent : Theme.text-secondary;
+                        y: 1px;
+                        overflow: elide;
+                        max-width: 120px;
+                    }
+                }
+
+                TouchArea {
+                    clicked => { root.active-index = idx; }
+                }
+            }
+        }
+    }
+}

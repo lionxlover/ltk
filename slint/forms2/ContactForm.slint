@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ContactForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 400px;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Get in Touch"; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+            Text { text: "We'd love to hear from you. Fill out the form below."; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Your name"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Subject"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "How can we help?"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Message"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 100px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "Your message..."; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+            }
+        }
+
+        Rectangle { height: 40px; border-radius: Theme.radius-md; background: Theme.accent;
+            Text { text: "Send Message"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component LikeHeartButton inherits Rectangle {
+    in-out property <bool> liked: false;
+
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    horizontal-stretch: 0;
+
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
+        fa-size: 18px;
+        fa-color: root.liked ? #E63950 : Theme.text-tertiary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { root.liked = !root.liked; }
+    }
+}

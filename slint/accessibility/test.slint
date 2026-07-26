@@ -1,0 +1,81 @@
+import { SkipLink } from "SkipLink.slint";
+import { FocusRing } from "FocusRing.slint";
+import { SrOnlyText } from "SrOnlyText.slint";
+import { HighContrastToggle } from "HighContrastToggle.slint";
+import { FontSizeAdjuster } from "FontSizeAdjuster.slint";
+import { ReduceMotionToggle } from "ReduceMotionToggle.slint";
+import { KeyboardShortcutLegend } from "KeyboardShortcutLegend.slint";
+import { ScreenReaderStatus } from "ScreenReaderStatus.slint";
+
+export component AccessibilityTest inherits Rectangle {
+    background: transparent;
+    preferred-height: 600px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: 16px;
+            spacing: 12px;
+
+            SkipLink {
+            target: "main-content";
+            visible: true;
+        }
+
+        FocusRing {
+            focused: true;
+            style: 0;
+            width: 200px;
+            height: 40px;
+        }
+
+        FocusRing {
+            focused: true;
+            style: 1;
+            width: 200px;
+            height: 40px;
+        }
+
+        SrOnlyText {
+            text: "This text is only visible to screen readers";
+        }
+
+        HorizontalLayout {
+            spacing: 12px;
+            alignment: center;
+
+            HighContrastToggle {
+                active: false;
+            }
+
+            ReduceMotionToggle {
+                active: false;
+            }
+        }
+
+        FontSizeAdjuster {
+            level: 0;
+        }
+
+        KeyboardShortcutLegend {
+            shortcut: "Ctrl+C";
+            description: "Copy selected text";
+            width: 250px;
+        }
+
+        KeyboardShortcutLegend {
+            shortcut: "Ctrl+V";
+            description: "Paste from clipboard";
+            width: 250px;
+        }
+
+        ScreenReaderStatus {
+            message: "Ready";
+            width: 250px;
+        }
+        }
+    }
+}

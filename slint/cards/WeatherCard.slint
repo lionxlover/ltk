@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WeatherCard inherits Rectangle {
+    in-out property <string> city: "San Francisco";
+    in-out property <int> temp: 72;
+    in-out property <string> condition: "Sunny";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        padding: 20px;
+        spacing: 16px;
+
+        VerticalLayout {
+            spacing: 4px;
+
+            Text {
+                text: root.city;
+                color: Theme.text-secondary;
+                font-size: 13px;
+            }
+
+            Text {
+                text: root.temp;
+                color: Theme.text-primary;
+                font-size: 40px;
+                font-weight: Theme.weight-bold;
+            }
+
+            Text {
+                text: root.condition;
+                color: Theme.text-tertiary;
+                font-size: 14px;
+            }
+        }
+    }
+}

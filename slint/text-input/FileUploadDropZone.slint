@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FileUploadDropZone inherits Rectangle {
+    in-out property <bool> dragging: false;
+    in-out property <string> status-text: "Drop files here or click to browse";
+
+    background: dragging ? Theme.accent-subtle : Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 2px;
+    border-color: dragging ? Theme.accent : Theme.border-dashed;
+    height: 120px;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Text {
+            text: "↑";
+            color: dragging ? Theme.accent : Theme.text-tertiary;
+            font-size: 28px;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: root.status-text;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: "Max 10MB per file";
+            color: Theme.text-disabled;
+            font-size: 11px;
+            horizontal-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

@@ -1,0 +1,49 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PropertyInspectorPanel inherits Rectangle {
+    in property <[string]> keys: [];
+    in property <[string]> values: [];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+
+        for item[idx] in root.keys: Rectangle {
+            height: 36px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-1;
+                padding-right: Theme.sp-1;
+
+                Text {
+                    text: item;
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: idx < root.values.length ? root.values[idx] : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+
+            if idx < root.keys.length - 1: Rectangle {
+                height: 1px;
+                background: Theme.border-subtle;
+            }
+        }
+    }
+}

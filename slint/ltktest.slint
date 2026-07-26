@@ -1,0 +1,137 @@
+import { CoreTest } from "core/test.slint";
+import { ButtonsTest } from "buttons/test.slint";
+import { InputsTest } from "inputs/test.slint";
+import { FeedbackTest } from "feedback/test.slint";
+import { DataDisplayTest } from "data-display/test.slint";
+import { NavigationTest } from "navigation/test.slint";
+import { FormsTest } from "forms/test.slint";
+import { ProgressTest } from "progress/test.slint";
+import { LayoutTest } from "layout/test.slint";
+import { TypographyTest } from "typography/test.slint";
+import { TextInputTest } from "text-input/test.slint";
+import { SelectionControlsTest } from "selection-controls/test.slint";
+import { DesignTokensTest } from "design-tokens/test.slint";
+import { RangeValueTest } from "range-value/test.slint";
+import { CardsTest } from "cards/test.slint";
+import { OverlaysTest } from "overlays/test.slint";
+import { IndicatorsTest } from "indicators/test.slint";
+import { MediaTest } from "media/test.slint";
+import { DesktopTest } from "desktop/test.slint";
+import { AccessibilityTest } from "accessibility/test.slint";
+import { SocialTest } from "social/test.slint";
+import { ThemingTest } from "theming/test.slint";
+import { ChartsTest } from "charts/test.slint";
+import { LayoutContainersTest } from "layout-containers/test.slint";
+import { FormsTest2 } from "forms2/test.slint";
+import { Desktop2Test } from "desktop2/test.slint";
+import { MobileTest } from "mobile/test.slint";
+import { AccessibilityTest2 } from "accessibility2/test.slint";
+import { SocialTest2 } from "social2/test.slint";
+import { AnimationTest } from "animation/test.slint";
+import { ThemingTest2 } from "theming2/test.slint";
+import { UtilityTest } from "utility/test.slint";
+
+export component LtkTest inherits Window {
+    title: "LTK Component Tests";
+    width: 1100px;
+    height: 700px;
+    background: #0B0D0F;
+
+    in-out property <int> active-test: 0;
+
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 12px;
+
+        // Sidebar
+        Rectangle {
+            width: 140px;
+            background: #1A1D23;
+            border-radius: 12px;
+            clip: true;
+
+            Flickable {
+                viewport-height: sidebar-content.preferred-height;
+
+                sidebar-content := VerticalLayout {
+                    padding: 8px;
+                    spacing: 2px;
+
+                    Rectangle {
+                        height: 28px;
+
+                        Text {
+                            text: "LTK Tests";
+                            font-size: 12px;
+                            font-weight: 700;
+                            color: #6B7280;
+                            x: 8px;
+                            y: (parent.height - self.height) / 2;
+                        }
+                    }
+
+                    for name[i] in ["Core", "Buttons", "Inputs", "Feedback", "Data", "Nav", "Forms", "Progress", "Layout", "Typography", "TextInputs", "Select", "Tokens", "Range", "Cards", "Overlays", "Badges", "Media", "Desktop", "A11y", "Social", "Theming", "Charts", "LayoutContainers", "Forms2", "Desktop2", "Mobile", "A11y2", "Social2", "Anim", "ThemeTool", "Utility"]: Rectangle {
+                        height: 32px;
+                        border-radius: 8px;
+                        background: active-test == i ? #5B9DFA : transparent;
+
+                        Text {
+                            x: 12px;
+                            y: (parent.height - self.height) / 2;
+                            text: name;
+                            color: active-test == i ? #ffffff : #9CA3AF;
+                            font-size: 11px;
+                            font-weight: active-test == i ? 600 : 400;
+                            vertical-alignment: center;
+                        }
+
+                        TouchArea {
+                            clicked => { root.active-test = i; }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Content area
+        Rectangle {
+            vertical-stretch: 1;
+            background: #15171B;
+            border-radius: 12px;
+            clip: true;
+
+            if active-test == 0: CoreTest { }
+            if active-test == 1: ButtonsTest { }
+            if active-test == 2: InputsTest { }
+            if active-test == 3: FeedbackTest { }
+            if active-test == 4: DataDisplayTest { }
+            if active-test == 5: NavigationTest { }
+            if active-test == 6: FormsTest { }
+            if active-test == 7: ProgressTest { }
+            if active-test == 8: LayoutTest { }
+            if active-test == 9: TypographyTest { }
+            if active-test == 10: TextInputTest { }
+            if active-test == 11: SelectionControlsTest { }
+            if active-test == 12: DesignTokensTest { }
+            if active-test == 13: RangeValueTest { }
+            if active-test == 14: CardsTest { }
+            if active-test == 15: OverlaysTest { }
+            if active-test == 16: IndicatorsTest { }
+            if active-test == 17: MediaTest { }
+            if active-test == 18: DesktopTest { }
+            if active-test == 19: AccessibilityTest { }
+            if active-test == 20: SocialTest { }
+            if active-test == 21: ThemingTest { }
+            if active-test == 22: ChartsTest { }
+            if active-test == 23: LayoutContainersTest { }
+            if active-test == 24: FormsTest2 { }
+            if active-test == 25: Desktop2Test { }
+            if active-test == 26: MobileTest { }
+            if active-test == 27: AccessibilityTest2 { }
+            if active-test == 28: SocialTest2 { }
+            if active-test == 29: AnimationTest { }
+            if active-test == 30: ThemingTest2 { }
+            if active-test == 31: UtilityTest { }
+        }
+    }
+}

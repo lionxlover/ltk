@@ -1,0 +1,138 @@
+import { Theme } from "../core/Theme.slint";
+import { DisplayJumbo } from "DisplayJumbo.slint";
+import { DisplayXL } from "DisplayXL.slint";
+import { DisplayLG } from "DisplayLG.slint";
+import { DisplayMD } from "DisplayMD.slint";
+import { HeadingH1 } from "HeadingH1.slint";
+import { HeadingH2 } from "HeadingH2.slint";
+import { HeadingH3 } from "HeadingH3.slint";
+import { HeadingH4 } from "HeadingH4.slint";
+import { HeadingH5 } from "HeadingH5.slint";
+import { HeadingH6 } from "HeadingH6.slint";
+import { TitleLG } from "TitleLG.slint";
+import { TitleMD } from "TitleMD.slint";
+import { TitleSM } from "TitleSM.slint";
+import { TitleXS } from "TitleXS.slint";
+import { BodyLG } from "BodyLG.slint";
+import { BodyMD } from "BodyMD.slint";
+import { BodySM } from "BodySM.slint";
+import { BodyXS } from "BodyXS.slint";
+import { LabelLG } from "LabelLG.slint";
+import { LabelMD } from "LabelMD.slint";
+import { LabelSM } from "LabelSM.slint";
+import { LabelXS } from "LabelXS.slint";
+import { Caption } from "Caption.slint";
+import { Overline } from "Overline.slint";
+import { Eyebrow } from "Eyebrow.slint";
+import { Tagline } from "Tagline.slint";
+import { Footnote } from "Footnote.slint";
+import { LegalFinePrint } from "LegalFinePrint.slint";
+import { CodeBlock } from "CodeBlock.slint";
+import { InlineCodeSpan } from "InlineCodeSpan.slint";
+import { Blockquote } from "Blockquote.slint";
+import { PullQuote } from "PullQuote.slint";
+import { DropCap } from "DropCap.slint";
+import { RunningText } from "RunningText.slint";
+import { HighlightMark } from "HighlightMark.slint";
+import { NumericTabular } from "NumericTabular.slint";
+
+export component TypographyTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 3200px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-4;
+
+            Text {
+                text: "Typography \u{2014} Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // ── Display ──
+        Text { text: "Display"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        DisplayJumbo {}
+        DisplayXL {}
+        DisplayLG {}
+        DisplayMD {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Headings ──
+        Text { text: "Headings"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HeadingH1 {}
+        HeadingH2 {}
+        HeadingH3 {}
+        HeadingH4 {}
+        HeadingH5 {}
+        HeadingH6 {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Titles ──
+        Text { text: "Titles"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        TitleLG {}
+        TitleMD {}
+        TitleSM {}
+        TitleXS {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Body ──
+        Text { text: "Body"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        BodyLG {}
+        BodyMD {}
+        BodySM {}
+        BodyXS {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Labels ──
+        Text { text: "Labels"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3; LabelLG {} LabelMD {} LabelSM {} LabelXS {} }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Meta ──
+        Text { text: "Meta / Utility"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Caption {}
+        Overline {}
+        Eyebrow {}
+        Tagline {}
+        Footnote {}
+        LegalFinePrint {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Code ──
+        Text { text: "Code"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        CodeBlock {}
+        InlineCodeSpan {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Editorial ──
+        Text { text: "Editorial"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Blockquote {}
+        PullQuote {}
+        DropCap {}
+        RunningText {}
+        HighlightMark {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        // ── Numeric ──
+        Text { text: "Numeric / Tabular"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        NumericTabular {}
+        }
+    }
+}

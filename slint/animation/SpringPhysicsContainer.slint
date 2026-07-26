@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SpringPhysicsContainer inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <float> spring-tension: 0.34;
+    in property <float> spring-friction: 1.56;
+
+    opacity: active ? 1 : 0.8;
+    animate opacity { duration: Theme.dur-slowest; easing: Theme.ease-spring; }
+}

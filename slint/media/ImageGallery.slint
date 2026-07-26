@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ImageGallery inherits Rectangle {
+    in property <int> columns: 3;
+    in property <int> count: 6;
+
+    background: transparent;
+
+    for item[i] in 6: Rectangle {
+        background: Theme.bg-overlay;
+        border-radius: Theme.radius-md;
+        clip: true;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "\{i + 1}";
+            color: Theme.text-tertiary;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+        }
+    }
+}

@@ -1,0 +1,217 @@
+import { Theme } from "../core/Theme.slint";
+import { PrimaryButton } from "PrimaryButton.slint";
+import { SecondaryButton } from "SecondaryButton.slint";
+import { GhostButton } from "GhostButton.slint";
+import { OutlinedButton } from "OutlinedButton.slint";
+import { TextLinkButton } from "TextLinkButton.slint";
+import { DangerButton } from "DangerButton.slint";
+import { SuccessButton } from "SuccessButton.slint";
+import { WarningButton } from "WarningButton.slint";
+import { IconButtonSquare } from "IconButtonSquare.slint";
+import { IconButtonCircle } from "IconButtonCircle.slint";
+import { Fab } from "Fab.slint";
+import { FabExtended } from "FabExtended.slint";
+import { FabMini } from "FabMini.slint";
+import { SpeedDial } from "SpeedDial.slint";
+import { SplitButton } from "SplitButton.slint";
+import { DropdownButton } from "DropdownButton.slint";
+import { LoadingButton } from "LoadingButton.slint";
+import { ToggleButton } from "ToggleButton.slint";
+import { ChipFilterButton } from "ChipFilterButton.slint";
+import { PillButton } from "PillButton.slint";
+import { CopyButton } from "CopyButton.slint";
+import { ShareButton } from "ShareButton.slint";
+import { BookmarkButton } from "BookmarkButton.slint";
+import { LikeHeartButton } from "LikeHeartButton.slint";
+import { ReactionButton } from "ReactionButton.slint";
+import { CloseDismissButton } from "CloseDismissButton.slint";
+import { BackNavButton } from "BackNavButton.slint";
+import { SubmitButton } from "SubmitButton.slint";
+import { SwipeToConfirm } from "SwipeToConfirm.slint";
+import { LongPressButton } from "LongPressButton.slint";
+import { CtaHeroButton } from "CtaHeroButton.slint";
+import { PlayPauseButton } from "PlayPauseButton.slint";
+import { RecordButton } from "RecordButton.slint";
+import { MuteUnmuteButton } from "MuteUnmuteButton.slint";
+import { SocialAuthGoogle } from "SocialAuthGoogle.slint";
+import { SocialAuthApple } from "SocialAuthApple.slint";
+import { SocialAuthGitHub } from "SocialAuthGitHub.slint";
+import { SocialAuthFacebook } from "SocialAuthFacebook.slint";
+import { SocialAuthTwitter } from "SocialAuthTwitter.slint";
+import { BackToTopButton } from "BackToTopButton.slint";
+import { ScrollAnchorButton } from "ScrollAnchorButton.slint";
+import { DownloadExportButton } from "DownloadExportButton.slint";
+
+component SectionHeader inherits Text {
+    color: Theme.text-secondary;
+    font-size: Theme.text-sm;
+    font-weight: Theme.weight-semibold;
+}
+
+export component ButtonsTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 5000px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-4;
+
+            Text {
+                text: "Buttons & Actions \u{2014} Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        SectionHeader { text: "1 \u{2014} Primary"; }
+        PrimaryButton {}
+
+        SectionHeader { text: "2 \u{2014} Secondary"; }
+        SecondaryButton {}
+
+        SectionHeader { text: "3 \u{2014} Ghost"; }
+        GhostButton {}
+
+        SectionHeader { text: "4 \u{2014} Outlined"; }
+        OutlinedButton {}
+
+        SectionHeader { text: "5 \u{2014} Text / Link"; }
+        TextLinkButton {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "6 \u{2014} Danger"; }
+        DangerButton {}
+
+        SectionHeader { text: "7 \u{2014} Success"; }
+        SuccessButton {}
+
+        SectionHeader { text: "8 \u{2014} Warning"; }
+        WarningButton {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "9 \u{2014} Icon (square)"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            IconButtonSquare { }
+            IconButtonSquare { }
+            IconButtonSquare { }
+        }
+
+        SectionHeader { text: "10 \u{2014} Icon (circle)"; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            IconButtonCircle { }
+            IconButtonCircle { }
+            IconButtonCircle { }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "11 \u{2014} FAB"; }
+        HorizontalLayout { spacing: Theme.sp-3; Fab {} FabMini {} }
+
+        SectionHeader { text: "12 \u{2014} Extended FAB"; }
+        FabExtended {}
+
+        SectionHeader { text: "13 \u{2014} Speed Dial"; }
+        SpeedDial {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "14 \u{2014} Split Button"; }
+        SplitButton {}
+
+        SectionHeader { text: "15 \u{2014} Dropdown Button"; }
+        DropdownButton {}
+
+        SectionHeader { text: "16 \u{2014} Loading"; }
+        LoadingButton { loading: true; }
+
+        SectionHeader { text: "17 \u{2014} Toggle"; }
+        HorizontalLayout { spacing: Theme.sp-3; ToggleButton { text: "ON"; active: true; } ToggleButton { text: "OFF"; } }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "18 \u{2014} Chip / Filter"; }
+        HorizontalLayout { spacing: 6px; ChipFilterButton { text: "All"; active: true; } ChipFilterButton { text: "Active"; } ChipFilterButton { text: "Done"; } }
+
+        SectionHeader { text: "19 \u{2014} Pill"; }
+        HorizontalLayout { spacing: 6px; PillButton { text: "Save"; } PillButton { text: "Cancel"; } }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "20 \u{2014} Copy"; }
+        HorizontalLayout { spacing: 6px; CopyButton {} CopyButton { copied: true; } }
+
+        SectionHeader { text: "21 \u{2014} Share"; }
+        ShareButton {}
+
+        SectionHeader { text: "22 \u{2014} Bookmark"; }
+        HorizontalLayout { spacing: 6px; BookmarkButton {} BookmarkButton { saved: true; } }
+
+        SectionHeader { text: "23 \u{2014} Like / Heart"; }
+        HorizontalLayout { spacing: 6px; LikeHeartButton {} LikeHeartButton { liked: true; } }
+
+        SectionHeader { text: "24 \u{2014} Reaction"; }
+        HorizontalLayout { spacing: 6px; ReactionButton { count: 12; } ReactionButton { count: 8; active: true; } }
+
+        SectionHeader { text: "25 \u{2014} Close / Dismiss"; }
+        HorizontalLayout { spacing: 6px; CloseDismissButton {} }
+
+        SectionHeader { text: "26 \u{2014} Back / Up"; }
+        HorizontalLayout { spacing: 6px; BackNavButton { direction: "back"; } BackNavButton { direction: "up"; } }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "27 \u{2014} Submit"; }
+        SubmitButton { text: "Create Account"; }
+
+        SectionHeader { text: "28 \u{2014} Swipe to Confirm"; }
+        SwipeToConfirm {}
+
+        SectionHeader { text: "29 \u{2014} Long-press"; }
+        LongPressButton {}
+
+        SectionHeader { text: "30 \u{2014} CTA / Hero"; }
+        CtaHeroButton {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "31 \u{2014} Play / Pause"; }
+        HorizontalLayout { spacing: Theme.sp-3; PlayPauseButton { playing: false; } PlayPauseButton { playing: true; } }
+
+        SectionHeader { text: "32 \u{2014} Record"; }
+        HorizontalLayout { spacing: Theme.sp-3; RecordButton { recording: false; } RecordButton { recording: true; } }
+
+        SectionHeader { text: "33 \u{2014} Mute / Unmute"; }
+        HorizontalLayout { spacing: Theme.sp-3; MuteUnmuteButton { muted: false; } MuteUnmuteButton { muted: true; } }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "34-38 \u{2014} Social Auth"; }
+        SocialAuthGoogle {}
+        SocialAuthApple {}
+        SocialAuthGitHub {}
+        SocialAuthFacebook {}
+        SocialAuthTwitter {}
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        SectionHeader { text: "39 \u{2014} Back to Top"; }
+        HorizontalLayout { spacing: Theme.sp-3; BackToTopButton {} }
+
+        SectionHeader { text: "40 \u{2014} Scroll Anchor"; }
+        ScrollAnchorButton { text: "Section 1"; }
+
+        SectionHeader { text: "41 \u{2014} Download / Export"; }
+        DownloadExportButton {}
+        }
+    }
+}

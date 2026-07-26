@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormRoot inherits Rectangle {
+    background: transparent;
+
+    in property <bool> has-error: false;
+    in property <bool> disabled: false;
+    in property <length> gap: 16px;
+
+    VerticalLayout {
+        spacing: gap;
+    }
+}

@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonAvatar inherits Rectangle {
+    in property <length> size: 40px;
+
+    width: size;
+    height: size;
+    background: Theme.bg-overlay;
+    border-radius: size / 2;
+}

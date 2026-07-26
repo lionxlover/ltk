@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MediaQueryHook inherits Rectangle {
+    background: transparent;
+
+    in property <string> query: "(min-width: 768px)";
+    in property <bool> matches: false;
+    in property <string> matched-viewport: "desktop";
+}

@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DropTargetPrimitive inherits Rectangle {
+    background: transparent;
+    border-radius: Theme.radius-md;
+
+    in property <string> drop-id: "";
+    in property <bool> hover-over: false;
+    in property <bool> accept-drop: true;
+
+    border-width: 2px;
+    border-color: hover-over ? (accept-drop ? Theme.accent : Theme.error) : Theme.border-default;
+
+    Rectangle {
+        background: hover-over ? Theme.accent-subtle : transparent;
+        border-radius: Theme.radius-md;
+    }
+}

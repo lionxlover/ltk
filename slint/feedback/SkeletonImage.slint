@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonImage inherits Rectangle {
+    in property <length> image-height: 120px;
+
+    height: image-height;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+}

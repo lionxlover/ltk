@@ -1,0 +1,109 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component FullScreenDialog inherits Rectangle {
+    visible: false;
+    in property <string> title: "";
+
+    callback close();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+    visible: root.visible;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.bg-surface;
+        opacity: root.visible ? 1 : 0;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        VerticalLayout {
+            spacing: 0px;
+
+            // Header bar
+            Rectangle {
+                height: 52px;
+                background: Theme.bg-headerbar;
+                border-width: 0px;
+                border-radius: 0px;
+
+                HorizontalLayout {
+                    padding: Theme.sp-3;
+                    spacing: Theme.sp-3;
+
+                    // Back arrow
+                    Rectangle {
+                        width: 32px;
+                        height: 32px;
+                        horizontal-stretch: 0;
+
+                        back-bg := Rectangle {
+                            border-radius: Theme.radius-sm;
+                            background: back-ta.pressed ? Theme.surface-pressed
+                                : back-ta.has-hover ? Theme.surface-hover
+                                : #00000000;
+                        }
+
+                        FaIcon {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            fa-size: 14px;
+                            fa-color: Theme.text-primary;
+                            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-left.svg");
+                        }
+
+                        back-ta := TouchArea {
+                            clicked => { root.close(); }
+                        }
+                    }
+
+                    // Title
+                    if root.title != "": Text {
+                        text: root.title;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-lg;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+
+                    Rectangle { horizontal-stretch: 1; }
+
+                    // Close button
+                    Rectangle {
+                        width: 32px;
+                        height: 32px;
+                        horizontal-stretch: 0;
+
+                        close-bg := Rectangle {
+                            border-radius: Theme.radius-sm;
+                            background: close-ta.pressed ? Theme.surface-pressed
+                                : close-ta.has-hover ? Theme.surface-hover
+                                : #00000000;
+                        }
+
+                        FaIcon {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            fa-size: 12px;
+                            fa-color: Theme.text-tertiary;
+                            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+                        }
+
+                        close-ta := TouchArea {
+                            clicked => { root.close(); }
+                        }
+                    }
+                }
+            }
+
+            // Content slot
+            Rectangle {
+                vertical-stretch: 1;
+            }
+        }
+    }
+}

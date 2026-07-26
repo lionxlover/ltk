@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component EnvironmentBadge inherits Rectangle {
+    in property <int> env: 0;
+
+    min-width: 52px;
+    height: 22px;
+    background: env == 0 ? Theme.green-500 : (env == 1 ? Theme.amber-500 : Theme.red-500);
+    border-radius: Theme.radius-sm;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: env == 0 ? "DEV" : (env == 1 ? "STAGING" : "PROD");
+        color: #ffffff;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-xs;
+        font-weight: Theme.weight-bold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+}

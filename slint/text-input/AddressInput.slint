@@ -1,0 +1,85 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AddressInput inherits Rectangle {
+    in-out property <string> street;
+    in-out property <string> city;
+    in-out property <string> zip;
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    horizontal-stretch: 1;
+    height: self.preferred-height;
+
+    VerticalLayout {
+        padding: 12px;
+        spacing: 8px;
+
+        Text {
+            text: "Address";
+            color: Theme.text-secondary;
+            font-size: 12px;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: Theme.border-base;
+
+            Text {
+                x: 10px;
+                y: (parent.height - self.height) / 2;
+                text: root.street == "" ? "Street address" : root.street;
+                color: root.street == "" ? Theme.text-placeholder : Theme.text-primary;
+                font-size: 13px;
+                vertical-alignment: center;
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 8px;
+
+            Rectangle {
+                horizontal-stretch: 2;
+                height: 36px;
+                border-radius: Theme.radius-sm;
+                border-width: 1px;
+                border-color: Theme.border-base;
+
+                Text {
+                    x: 10px;
+                    y: (parent.height - self.height) / 2;
+                    text: root.city == "" ? "City" : root.city;
+                    color: root.city == "" ? Theme.text-placeholder : Theme.text-primary;
+                    font-size: 13px;
+                    vertical-alignment: center;
+                }
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+                height: 36px;
+                border-radius: Theme.radius-sm;
+                border-width: 1px;
+                border-color: Theme.border-base;
+
+                Text {
+                    x: 10px;
+                    y: (parent.height - self.height) / 2;
+                    text: root.zip == "" ? "ZIP" : root.zip;
+                    color: root.zip == "" ? Theme.text-placeholder : Theme.text-primary;
+                    font-size: 13px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

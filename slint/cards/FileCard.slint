@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component FileCard inherits Rectangle {
+    in-out property <string> filename: "document.pdf";
+    in-out property <string> size: "2.4 MB";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 12px;
+
+        Rectangle {
+            width: 44px;
+            height: 44px;
+            background: Theme.accent-subtle;
+            border-radius: Theme.radius-md;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/file.svg");
+                fa-size: 20px;
+                fa-color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        VerticalLayout {
+            spacing: 2px;
+
+            Text {
+                text: root.filename;
+                color: Theme.text-primary;
+                font-size: 14px;
+                font-weight: Theme.weight-medium;
+            }
+
+            Text {
+                text: root.size;
+                color: Theme.text-tertiary;
+                font-size: 12px;
+            }
+        }
+    }
+}

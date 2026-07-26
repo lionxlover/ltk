@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatusDot inherits Rectangle {
+    in property <int> status: 0;
+
+    width: 8px;
+    height: 8px;
+    background: status == 0 ? Theme.state-success : (status == 1 ? Theme.text-tertiary : (status == 2 ? Theme.state-warning : Theme.state-error));
+    border-radius: Theme.radius-full;
+    horizontal-stretch: 0;
+}

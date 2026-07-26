@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SwipeToConfirm inherits Rectangle {
+    in-out property <bool> confirmed: false;
+
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    height: 56px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Rectangle {
+            width: 16px;
+            height: 16px;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-right.svg");
+                width: 16px;
+                height: 16px;
+                visible: !root.confirmed;
+                colorize: root.confirmed ? Theme.success : Theme.text-secondary;
+            }
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+                width: 16px;
+                height: 16px;
+                visible: root.confirmed;
+                colorize: Theme.success;
+            }
+        }
+
+        Text {
+            text: root.confirmed ? "Confirmed!" : "Swipe to confirm";
+            color: root.confirmed ? Theme.success : Theme.text-secondary;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.confirmed = !root.confirmed; }
+    }
+}

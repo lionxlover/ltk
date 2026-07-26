@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Toast inherits Rectangle {
+    in property <string> popup-text: "";
+    in-out property <bool> active: false;
+    in property <duration> auto-hide-duration: 7000ms;
+
+    callback dismissed();
+
+    visible: active;
+    min-height: 48px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    opacity: active ? 1 : 0;
+    animate opacity { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+    label := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.popup-text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        overflow: elide;
+    }
+
+    ta := TouchArea {
+        clicked => {
+            root.active = false;
+            root.dismissed();
+        }
+    }
+
+    timer := Timer {
+        interval: root.auto-hide-duration;
+        running: root.active;
+        triggered => {
+            root.active = false;
+            root.dismissed();
+        }
+    }
+}

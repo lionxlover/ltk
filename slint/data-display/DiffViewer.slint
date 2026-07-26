@@ -1,0 +1,360 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DiffViewer inherits Rectangle {
+    in property <string> left-title: "Before";
+    in property <string> right-title: "After";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    HorizontalLayout {
+        padding: 0;
+        spacing: 1px;
+
+        // Left panel — removed lines
+        Rectangle {
+            background: Theme.bg-base;
+            clip: true;
+            horizontal-stretch: 1;
+
+            VerticalLayout {
+                padding: 0;
+
+                // Header
+                Rectangle {
+                    background: Theme.bg-overlay;
+                    height: 32px;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-3;
+                        padding-right: Theme.sp-3;
+
+                        Text {
+                            text: root.left-title;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            font-weight: Theme.weight-semibold;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                // Lines
+                Rectangle {
+                    clip: true;
+
+                    VerticalLayout {
+                        padding: 0;
+                        spacing: 0;
+
+                        // Line 1: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "1";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  const config = load();";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 2: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "2";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  if (config.debug) {";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 3: removed (red tint)
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.red-100.darker(0.1);
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "3";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "-   console.log(config);";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.red-600;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 4: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "4";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  }";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Right panel — added lines
+        Rectangle {
+            background: Theme.bg-base;
+            clip: true;
+            horizontal-stretch: 1;
+
+            VerticalLayout {
+                padding: 0;
+
+                // Header
+                Rectangle {
+                    background: Theme.bg-overlay;
+                    height: 32px;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-3;
+                        padding-right: Theme.sp-3;
+
+                        Text {
+                            text: root.right-title;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            font-weight: Theme.weight-semibold;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                // Lines
+                Rectangle {
+                    clip: true;
+
+                    VerticalLayout {
+                        padding: 0;
+                        spacing: 0;
+
+                        // Line 1: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "1";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  const config = load();";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 2: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "2";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  if (config.debug) {";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 3: added (green tint)
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.green-100.darker(0.1);
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "3";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "+   logger.info(config);";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.green-600;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 4: added (green tint)
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.green-100.darker(0.1);
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "4";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "+   metrics.record();";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.green-600;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Line 5: unchanged
+                        Rectangle {
+                            height: 26px;
+                            background: Theme.bg-base;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-3;
+                                padding-right: Theme.sp-3;
+                                spacing: Theme.sp-3;
+
+                                Text {
+                                    text: "5";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-tertiary;
+                                    vertical-alignment: center;
+                                    width: 30px;
+                                }
+
+                                Text {
+                                    text: "  }";
+                                    font-family: Theme.font-mono;
+                                    font-size: Theme.text-sm;
+                                    color: Theme.text-primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

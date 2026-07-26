@@ -1,0 +1,85 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Snackbar inherits Rectangle {
+    in property <string> text: "";
+    in property <string> action-text: "";
+
+    callback action-clicked();
+    callback dismissed();
+
+    height: 48px;
+    background: Theme.dark-mode ? Theme.slate_800 : Theme.slate_900;
+    border-radius: Theme.radius-md;
+
+    drop-shadow-offset-y: 4px;
+    drop-shadow-blur: 8px;
+    drop-shadow-color: Theme.border-default;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-2;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        if action-text != "": Rectangle {
+            horizontal-stretch: 0;
+
+            action-bg := Rectangle {
+                border-radius: Theme.radius-sm;
+                background: action-ta.pressed ? Theme.accent-dim
+                    : action-ta.has-hover ? Theme.accent
+                    : transparent;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: root.action-text;
+                color: Theme.accent;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            action-ta := TouchArea {
+                clicked => { root.action-clicked(); }
+            }
+        }
+
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            horizontal-stretch: 0;
+
+            dismiss-bg := Rectangle {
+                border-radius: Theme.radius-xs;
+                background: dismiss-ta.pressed ? rgba(255, 255, 255, 0.15)
+                    : dismiss-ta.has-hover ? rgba(255, 255, 255, 0.08)
+                    : transparent;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: rgba(255, 255, 255, 0.6);
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            dismiss-ta := TouchArea {
+                clicked => { root.dismissed(); }
+            }
+        }
+    }
+}

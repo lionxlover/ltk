@@ -1,0 +1,92 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ActionToast inherits Rectangle {
+    in property <string> message: "";
+    in property <string> action-text: "";
+    in property <int> kind: 0;
+
+    callback action-clicked();
+    callback dismiss();
+
+    min-height: 48px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: kind == 3 ? Theme.state-error.with-alpha(0.25) : (kind == 2 ? Theme.state-warning.with-alpha(0.25) : (kind == 1 ? Theme.state-success.with-alpha(0.25) : Theme.state-info.with-alpha(0.25)));
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        Rectangle {
+            width: 3px;
+            horizontal-stretch: 0;
+            border-radius: 2px;
+            background: kind == 3 ? Theme.state-error : (kind == 2 ? Theme.state-warning : (kind == 1 ? Theme.state-success : Theme.state-info));
+        }
+
+        Text {
+            text: root.message;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+            wrap: word-wrap;
+        }
+
+        if action-text != "": Rectangle {
+            horizontal-stretch: 0;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: action-ta.pressed ? Theme.btn-primary-bg-pressed : (action-ta.has-hover ? Theme.btn-primary-bg-hover : Theme.btn-primary-bg);
+
+            animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+            action-ta := TouchArea {
+                clicked => { root.action-clicked(); }
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: root.action-text;
+                color: Theme.on-accent;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+        }
+
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            horizontal-stretch: 0;
+
+            dismiss-bg := Rectangle {
+                border-radius: Theme.radius-xs;
+                background: dismiss-ta.pressed ? Theme.surface-pressed : (dismiss-ta.has-hover ? Theme.surface-hover : #00000000);
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+
+            dismiss-ta := TouchArea {
+                clicked => { root.dismiss(); }
+            }
+        }
+    }
+}

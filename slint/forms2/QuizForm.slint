@@ -1,0 +1,57 @@
+import { Theme } from "../core/Theme.slint";
+
+export component QuizForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    padding: Theme.sp-6;
+    width: 480px;
+
+    in property <int> current-question: 0;
+    in property <int> score: 0;
+    in property <bool> completed: false;
+
+    VerticalLayout {
+        spacing: Theme.sp-4;
+
+        if !completed: VerticalLayout { spacing: Theme.sp-4; vertical-stretch: 1;
+            Text { text: "Quiz"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+            Text { text: "Question " + Math.mod(current-question + 1, 10) + " of 10"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+
+            Rectangle { height: 4px; border-radius: 2px; background: Theme.border-default;
+                Rectangle { height: 4px; width: parent.width * 0.1; border-radius: 2px; background: Theme.accent; }
+            }
+
+            Text { text: "What is the capital of France?"; font-size: Theme.text-lg; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+
+            VerticalLayout { spacing: Theme.sp-3;
+                for option[opt] in ["London", "Berlin", "Paris", "Madrid"]: Rectangle {
+                    height: 44px;
+                    border-radius: Theme.radius-md;
+                    border-width: 1px;
+                    border-color: Theme.border-default;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-4;
+                        padding-right: Theme.sp-4;
+
+                        Text {
+                            text: option;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-primary;
+                            y: (parent.height - self.height) / 2;
+                            vertical-stretch: 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        if completed: VerticalLayout { spacing: Theme.sp-4; alignment: center;
+            Text { text: "🎉"; font-size: 48px; horizontal-alignment: center; }
+            Text { text: "Quiz Complete!"; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
+            Text { text: "Score: " + score + "/10"; font-size: Theme.text-xl; color: Theme.accent; font-weight: Theme.weight-semibold; horizontal-alignment: center; }
+        }
+    }
+}

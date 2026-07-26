@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CustomScrollbar inherits Rectangle {
+    background: transparent;
+
+    in property <bool> show-vertical: true;
+    in property <bool> show-horizontal: false;
+    in property <length> thumb-min-height: 32px;
+
+    // Vertical scrollbar track
+    if show-vertical: Rectangle {
+        x: parent.width - 8px;
+        width: 6px;
+        border-radius: 3px;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            width: 6px;
+            height: thumb-min-height;
+            border-radius: 3px;
+            background: Theme.text-tertiary;
+            opacity: 0.5;
+        }
+    }
+}

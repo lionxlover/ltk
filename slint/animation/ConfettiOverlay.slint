@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ConfettiOverlay inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> active: false;
+    in property <int> particle-count: 30;
+    in property <[brush]> colors: [#ff6b6b, #ffd93d, #6bcb77, #4d96ff, #c084fc];
+
+    for p[i] in particle-count: Rectangle {
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        x: Math.mod(i * 37, 400) * 1px;
+        y: active ? root.height + 20px : -10px;
+        background: colors[Math.mod(i, colors.length)];
+
+        animate y { duration: 1000ms + i * 20ms; easing: Theme.ease-decelerate; }
+    }
+}

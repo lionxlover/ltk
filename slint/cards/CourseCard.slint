@@ -1,0 +1,64 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CourseCard inherits Rectangle {
+    in-out property <string> title: "Course Title";
+    in-out property <string> instructor: "Instructor";
+    in-out property <string> lessons: "24 lessons";
+    in-out property <string> duration: "8h 30m";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 100px;
+            background: Theme.accent-subtle;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "📚";
+                font-size: 32px;
+            }
+        }
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 4px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 14px;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: root.instructor;
+                color: Theme.text-secondary;
+                font-size: 12px;
+            }
+
+            HorizontalLayout {
+                spacing: 12px;
+
+                Text {
+                    text: root.lessons;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                }
+
+                Text {
+                    text: root.duration;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}

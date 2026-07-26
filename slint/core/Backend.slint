@@ -1,0 +1,23 @@
+// Backend Global — bridges Rust ↔ Slint
+// Rust sets properties and handles callbacks
+
+export global Backend {
+    // System info (set by Rust)
+    in property <string> app-name: "LTK";
+    in property <string> app-version: "1.0.0";
+    in property <string> app-description: "Lion Toolkit UI component library, Slint + Rust.";
+    in property <string> app-link: "https://github.com/lionxlover/ltk";
+
+    // System theme info (set by Rust from D-Bus)
+    in property <string> system-font: "Inter";
+    in property <float> system-font-size: 14;
+    in property <float> device-pixel-ratio: 1.0;
+
+    // Accent color components (set by Rust)
+    in property <color> system-accent: #5B9DFA;
+
+    // Callbacks (handled by Rust)
+    callback theme-changed(bool);
+    callback accent-changed(color);
+    callback font-changed(string, float);
+}

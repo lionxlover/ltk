@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component NavItem inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> active: false;
+    in property <string> icon-name: "";
+
+    callback clicked();
+
+    height: 36px;
+    background: active ? Theme.accent-subtle
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : #00000000;
+    border-radius: Theme.radius-sm;
+
+    animate background { duration: Theme.dur-fast; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
+        alignment: stretch;
+
+        if icon-name != "": FaIcon {
+            source: @image-url("");
+            fa-size: Theme.icon-md;
+            fa-color: active ? Theme.accent : Theme.text-tertiary;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Text {
+            text: root.label;
+            color: active ? Theme.accent : Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: active ? Theme.weight-medium : Theme.weight-regular;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

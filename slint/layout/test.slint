@@ -1,0 +1,61 @@
+import { Theme } from "../core/Theme.slint";
+import { Spacer } from "Spacer.slint";
+
+export component LayoutTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 400px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Layout — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "Spacer (horizontal)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 40px;
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            HorizontalLayout {
+                padding: Theme.sp-2;
+
+                Rectangle { width: 60px; height: 32px; border-radius: Theme.radius-sm; background: Theme.accent; }
+                Spacer { horizontal: true; }
+                Rectangle { width: 60px; height: 32px; border-radius: Theme.radius-sm; background: Theme.state-success; }
+            }
+        }
+
+        Text { text: "Spacer (vertical)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle {
+            height: 120px;
+            background: Theme.bg-surface;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            VerticalLayout {
+                padding: Theme.sp-2;
+
+                Rectangle { height: 24px; border-radius: Theme.radius-sm; background: Theme.state-warning; horizontal-stretch: 1; }
+                Spacer { }
+                Rectangle { height: 24px; border-radius: Theme.radius-sm; background: Theme.state-error; horizontal-stretch: 1; }
+            }
+        }
+        }
+    }
+}

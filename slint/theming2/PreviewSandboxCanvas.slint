@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PreviewSandboxCanvas inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <length> canvas-width: 400px;
+    in property <length> canvas-height: 300px;
+    in property <bool> show-grid: false;
+    in property <bool> show-rulers: false;
+
+    width: canvas-width;
+    height: canvas-height;
+
+    if show-grid: Rectangle {
+        background: Theme.border-subtle;
+    }
+
+    Rectangle {
+        background: Theme.bg-base;
+    }
+}

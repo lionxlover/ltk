@@ -1,0 +1,108 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColorPaletteEditor inherits Rectangle {
+    width: 100%;
+    height: 48px;
+    background: #00000000;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+        alignment: start;
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #5B9DFA;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #A78BFA;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #F472B6;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #34D399;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #FBBF24;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: #F87171;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+            y: (parent.height - self.height) / 2;
+
+            TouchArea { }
+        }
+
+        // Add button
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: Theme.bg-overlay;
+            border-width: 1px;
+            border-color: Theme.border-default;
+            y: (parent.height - self.height) / 2;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "+";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-light;
+                vertical-alignment: center;
+            }
+
+            TouchArea { }
+        }
+    }
+}

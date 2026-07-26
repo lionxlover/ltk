@@ -1,0 +1,80 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MenuBar inherits Rectangle {
+    background: Theme.bg-headerbar;
+    height: 32px;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+        spacing: 0px;
+
+        Rectangle {
+            width: 70px;
+            height: 28px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+            y: 2px;
+
+            Text {
+                text: "File";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 70px;
+            height: 28px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+            y: 2px;
+
+            Text {
+                text: "Edit";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 70px;
+            height: 28px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+            y: 2px;
+
+            Text {
+                text: "View";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 70px;
+            height: 28px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+            y: 2px;
+
+            Text {
+                text: "Help";
+                color: Theme.text-primary;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

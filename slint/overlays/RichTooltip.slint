@@ -1,0 +1,77 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RichTooltip inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <string> tip-title: "";
+    in property <string> tip-body: "";
+    in property <string> action-text: "";
+
+    callback action-clicked();
+
+    width: 260px;
+    min-height: 60px;
+    visible: active;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-tooltip;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: active ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-1-y;
+    drop-shadow-blur: Theme.elevation-1-blur;
+    drop-shadow-color: Theme.elevation-1-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        if root.tip-title != "": Text {
+            text: root.tip-title;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            wrap: word-wrap;
+        }
+
+        if root.tip-body != "": Text {
+            text: root.tip-body;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            wrap: word-wrap;
+        }
+
+        if root.action-text != "": Rectangle {
+            height: 24px;
+            vertical-stretch: 0;
+
+            action-bg := Rectangle {
+                border-radius: Theme.radius-xs;
+                background: action-ta.pressed ? Theme.accent-subtle
+                    : action-ta.has-hover ? Theme.accent-subtle
+                    : #00000000;
+            }
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: root.action-text;
+                color: Theme.accent;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            action-ta := TouchArea {
+                clicked => { root.action-clicked(); }
+            }
+        }
+    }
+
+    ta := TouchArea { }
+}

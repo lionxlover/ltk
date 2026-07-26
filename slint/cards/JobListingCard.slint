@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component JobListingCard inherits Rectangle {
+    in-out property <string> title: "Job Title";
+    in-out property <string> company: "Company";
+    in-out property <string> location: "Remote";
+    in-out property <string> salary: "$80K – $120K";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 8px;
+
+        HorizontalLayout {
+            spacing: 8px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 15px;
+                font-weight: Theme.weight-semibold;
+                horizontal-stretch: 1;
+            }
+
+            Rectangle {
+                height: 22px;
+                background: Theme.accent-subtle;
+                border-radius: Theme.radius-sm;
+                horizontal-stretch: 0;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "New";
+                    color: Theme.accent;
+                    font-size: 10px;
+                    font-weight: Theme.weight-bold;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Text {
+            text: root.company;
+            color: Theme.text-secondary;
+            font-size: 13px;
+        }
+
+        HorizontalLayout {
+            spacing: 16px;
+
+            Text {
+                text: root.location;
+                color: Theme.text-tertiary;
+                font-size: 12px;
+            }
+
+            Text {
+                text: root.salary;
+                color: Theme.state-success;
+                font-size: 12px;
+                font-weight: Theme.weight-medium;
+            }
+        }
+    }
+}

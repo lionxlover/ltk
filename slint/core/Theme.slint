@@ -1,0 +1,378 @@
+// LTK Theme Global
+
+export global Theme {
+    // ═══════════════════════════════════════════
+    // THEME MODE
+    // ═══════════════════════════════════════════
+    in-out property <bool> dark-mode: true;
+
+    // ═══════════════════════════════════════════
+    // PRIMITIVE PALETTES
+    // ═══════════════════════════════════════════
+    out property <color> slate_50: #f8fafc;
+    out property <color> slate_100: #f1f5f9;
+    out property <color> slate_200: #e2e8f0;
+    out property <color> slate_300: #cbd5e1;
+    out property <color> slate_400: #94a3b8;
+    out property <color> slate_500: #64748b;
+    out property <color> slate_600: #475569;
+    out property <color> slate_700: #334155;
+    out property <color> slate_800: #1e293b;
+    out property <color> slate_900: #0f172a;
+
+    out property <color> blue_50: #eff6ff;
+    out property <color> blue_100: #dbeafe;
+    out property <color> blue_200: #bfdbfe;
+    out property <color> blue_300: #93c5fd;
+    out property <color> blue_400: #60a5fa;
+    out property <color> blue_500: #3b82f6;
+    out property <color> blue_600: #2563eb;
+    out property <color> blue_700: #1d4ed8;
+    out property <color> blue_800: #1e40af;
+    out property <color> blue_900: #1e3a8a;
+
+    out property <color> violet_50: #f5f3ff;
+    out property <color> violet_100: #ede9fe;
+    out property <color> violet_200: #ddd6fe;
+    out property <color> violet_300: #c4b5fd;
+    out property <color> violet_400: #a78bfa;
+    out property <color> violet_500: #8b5cf6;
+    out property <color> violet_600: #7c3aed;
+    out property <color> violet_700: #6d28d9;
+    out property <color> violet_800: #5b21b6;
+    out property <color> violet_900: #4c1d95;
+
+    out property <color> cyan_400: #22d3ee;
+    out property <color> cyan_500: #06b6d4;
+    out property <color> cyan_600: #0891b2;
+
+    out property <color> green_50: #f0fdf4;
+    out property <color> green_100: #dcfce7;
+    out property <color> green_200: #bbf7d0;
+    out property <color> green_300: #86efac;
+    out property <color> green_400: #4ade80;
+    out property <color> green_500: #22c55e;
+    out property <color> green_600: #16a34a;
+    out property <color> green_700: #15803d;
+
+    out property <color> amber_50: #fffbeb;
+    out property <color> amber_100: #fef3c7;
+    out property <color> amber_200: #fde68a;
+    out property <color> amber_300: #fcd34d;
+    out property <color> amber_400: #fbbf24;
+    out property <color> amber_500: #f59e0b;
+    out property <color> amber_600: #d97706;
+
+    out property <color> red_50: #fef2f2;
+    out property <color> red_100: #fee2e2;
+    out property <color> red_200: #fecaca;
+    out property <color> red_300: #fca5a5;
+    out property <color> red_400: #f87171;
+    out property <color> red_500: #ef4444;
+    out property <color> red_600: #dc2626;
+    out property <color> red_700: #b91c1c;
+
+    out property <color> orange_400: #fb923c;
+    out property <color> orange_500: #f97316;
+    out property <color> orange_600: #ea580c;
+
+    out property <color> pink_400: #f472b6;
+    out property <color> pink_500: #ec4899;
+    out property <color> pink_600: #db2777;
+
+    // ═══════════════════════════════════════════
+    // ACCENT PALETTE
+    // ═══════════════════════════════════════════
+    out property <color> accent: #5B9DFA;
+    out property <color> accent-dim: #3B7DD8;
+    out property <color> accent-glow: #5B9DFA44;
+    out property <color> accent-subtle: #5B9DFA1A;
+    out property <color> on-accent: #ffffff;
+
+    // Named Swatches
+    out property <color> swatch-blue: #5B9DFA;
+    out property <color> swatch-purple: #9D7AFA;
+    out property <color> swatch-pink: #F472B6;
+    out property <color> swatch-red: #F28B82;
+    out property <color> swatch-orange: #FB923C;
+    out property <color> swatch-yellow: #FBBF24;
+    out property <color> swatch-green: #5EE29A;
+    out property <color> swatch-graphite: #8B8FA8;
+
+    // ═══════════════════════════════════════════
+    // SURFACE COLORS — Dark/Light
+    // ═══════════════════════════════════════════
+    out property <color> bg-base: dark-mode ? #0B0D0F : #f5f6f8;
+    out property <color> bg-surface: dark-mode ? #15171B : #ffffff;
+    out property <color> bg-raised: dark-mode ? #1C1F25 : #f8f9fb;
+    out property <color> bg-overlay: dark-mode ? #24272F : #f0f1f4;
+    out property <color> bg-headerbar: dark-mode ? #12141A : #ebedf0;
+    out property <color> bg-sidebar: dark-mode ? #0F1115 : #f2f3f5;
+    out property <color> bg-elevated: dark-mode ? #1a1f2e : #ffffff;
+    out property <color> bg-scrim: dark-mode ? rgba(0, 0, 0, 0.6) : rgba(0, 0, 0, 0.04);
+
+    // Glass
+    out property <color> glass-thin: dark-mode ? rgba(21, 23, 27, 0.40) : rgba(255, 255, 255, 0.40);
+    out property <color> glass-regular: dark-mode ? rgba(21, 23, 27, 0.67) : rgba(255, 255, 255, 0.67);
+    out property <color> glass-thick: dark-mode ? rgba(21, 23, 27, 0.85) : rgba(255, 255, 255, 0.85);
+    out property <color> glass-bg: dark-mode ? rgba(18, 21, 30, 0.72) : rgba(255, 255, 255, 0.72);
+    out property <color> glass-border: dark-mode ? rgba(255, 255, 255, 0.10) : rgba(0, 0, 0, 0.08);
+
+    // ═══════════════════════════════════════════
+    // SEMANTIC TOKENS — Dark/Light
+    // ═══════════════════════════════════════════
+    out property <color> btn-primary-bg: dark-mode ? #5B9DFA : #2563eb;
+    out property <color> btn-primary-bg-hover: dark-mode ? #3B7DD8 : #1d4ed8;
+    out property <color> btn-primary-bg-pressed: dark-mode ? #3B7DD8 : #1d4ed8;
+    out property <color> btn-disabled-bg: dark-mode ? #2b3440 : #e2e5ea;
+    out property <color> btn-disabled-text: dark-mode ? #6B7280 : #71767f;
+
+    out property <color> surface-base: dark-mode ? #15171B : #ffffff;
+    out property <color> surface-hover: dark-mode ? #111318 : #eceef2;
+    out property <color> surface-pressed: dark-mode ? #0D0F12 : #e2e5ea;
+    out property <color> surface-elevated: dark-mode ? #1a1f2e : #ffffff;
+    out property <color> surface-overlay: dark-mode ? rgba(0, 0, 0, 0.6) : rgba(0, 0, 0, 0.04);
+
+    // Text
+    out property <color> text-primary: dark-mode ? #F1F2F5 : #0f172a;
+    out property <color> text-secondary: dark-mode ? #9CA3AF : #64748b;
+    out property <color> text-tertiary: dark-mode ? #6B7280 : #94a3b8;
+    out property <color> text-disabled: dark-mode ? #4B5563 : #9ca3af;
+    out property <color> text-on-accent: #ffffff;
+    out property <color> text-inverse: dark-mode ? #0f172a : #f8fafc;
+    out property <color> text-link: dark-mode ? #60a5fa : #2563eb;
+    out property <color> text-placeholder: dark-mode ? #4B5563 : #9ca3af;
+
+    // Borders
+    out property <color> border-subtle: dark-mode ? rgba(255, 255, 255, 0.06) : rgba(0, 0, 0, 0.06);
+    out property <color> border-base: dark-mode ? rgba(255, 255, 255, 0.10) : rgba(0, 0, 0, 0.10);
+    out property <color> border-strong: dark-mode ? rgba(255, 255, 255, 0.18) : rgba(0, 0, 0, 0.16);
+    out property <color> border-focus: dark-mode ? #5B9DFA : #2563eb;
+    out property <color> border-error: dark-mode ? #F28B82 : #dc2626;
+    out property <color> border-default: dark-mode ? rgba(255, 255, 255, 0.08) : rgba(0, 0, 0, 0.08);
+    out property <color> border-dashed: dark-mode ? rgba(255, 255, 255, 0.15) : rgba(0, 0, 0, 0.15);
+
+    // State
+    out property <color> state-success: dark-mode ? #5EE29A : #15803d;
+    out property <color> state-warning: dark-mode ? #FBBF24 : #92400e;
+    out property <color> state-error: dark-mode ? #F28B82 : #dc2626;
+    out property <color> state-info: dark-mode ? #5B9DFA : #2563eb;
+    out property <color> error: dark-mode ? #F28B82 : #dc2626;
+    out property <color> success: dark-mode ? #5EE29A : #15803d;
+    out property <color> warning: dark-mode ? #FBBF24 : #92400e;
+
+    // Traffic lights
+    out property <color> traffic-close: #FF5F57;
+    out property <color> traffic-minimize: #FFBD2E;
+    out property <color> traffic-zoom: #28C840;
+    out property <color> traffic-inactive: #3A3D45;
+
+    // Focus ring
+    out property <color> focus-ring: dark-mode ? #5B9DFA40 : rgba(37, 99, 235, 0.25);
+
+    // Selection
+    out property <color> selection-bg: dark-mode ? #3b82f6 : #2563eb;
+    out property <color> selection-text: #ffffff;
+
+    // Divider
+    out property <color> divider: dark-mode ? rgba(255, 255, 255, 0.06) : rgba(0, 0, 0, 0.06);
+
+    // Backdrop
+    out property <color> backdrop: dark-mode ? rgba(0, 0, 0, 0.7) : rgba(0, 0, 0, 0.4);
+
+    // ═══════════════════════════════════════════
+    // SPACING (8px grid)
+    // ═══════════════════════════════════════════
+    out property <length> space-xs: 4px;
+    out property <length> space-sm: 8px;
+    out property <length> space-md: 12px;
+    out property <length> space-lg: 16px;
+    out property <length> space-xl: 24px;
+    out property <length> space-2xl: 32px;
+    out property <length> space-3xl: 48px;
+
+    // Granular scale
+    out property <length> sp-0: 0px;
+    out property <length> sp-0-5: 2px;
+    out property <length> sp-1: 4px;
+    out property <length> sp-1-5: 6px;
+    out property <length> sp-2: 8px;
+    out property <length> sp-2-5: 10px;
+    out property <length> sp-3: 12px;
+    out property <length> sp-4: 16px;
+    out property <length> sp-5: 20px;
+    out property <length> sp-6: 24px;
+    out property <length> sp-7: 28px;
+    out property <length> sp-8: 32px;
+    out property <length> sp-10: 40px;
+
+    // Gutters
+    out property <length> gutter-sm: 8px;
+    out property <length> gutter-md: 12px;
+    out property <length> gutter-lg: 16px;
+    out property <length> gutter-xl: 24px;
+
+    // Section
+    out property <length> section-sm: 16px;
+    out property <length> section-md: 24px;
+    out property <length> section-lg: 32px;
+
+    // ═══════════════════════════════════════════
+    // BORDER RADIUS
+    // ═══════════════════════════════════════════
+    out property <length> radius-xs: 3px;
+    out property <length> radius-sm: 6px;
+    out property <length> radius-md: 10px;
+    out property <length> radius-lg: 14px;
+    out property <length> radius-xl: 18px;
+    out property <length> radius-2xl: 24px;
+    out property <length> radius-full: 9999px;
+
+    // Component radius
+    out property <length> radius-button: 8px;
+    out property <length> radius-button-pill: 9999px;
+    out property <length> radius-input: 8px;
+    out property <length> radius-card: 12px;
+    out property <length> radius-dialog: 16px;
+    out property <length> radius-window: 12px;
+    out property <length> radius-tooltip: 6px;
+
+    // ═══════════════════════════════════════════
+    // TYPOGRAPHY
+    // ═══════════════════════════════════════════
+    out property <string> font-ui: "Inter";
+    out property <string> font-display: "Space Grotesk";
+    out property <string> font-mono: "JetBrains Mono";
+
+    // Type scale
+    out property <length> text-xs: 11px;
+    out property <length> text-sm: 12px;
+    out property <length> text-base: 14px;
+    out property <length> text-md: 15px;
+    out property <length> text-lg: 16px;
+    out property <length> text-xl: 18px;
+    out property <length> text-2xl: 20px;
+    out property <length> text-3xl: 24px;
+    out property <length> text-4xl: 30px;
+
+    // Weights
+    out property <int> weight-light: 300;
+    out property <int> weight-regular: 400;
+    out property <int> weight-medium: 500;
+    out property <int> weight-semibold: 600;
+    out property <int> weight-bold: 700;
+
+    // Letter spacing
+    out property <length> tracking-tight: -0.2px;
+    out property <length> tracking-normal: 0px;
+    out property <length> tracking-wide: 0.3px;
+
+    // ═══════════════════════════════════════════
+    // SHADOW & ELEVATION
+    // ═══════════════════════════════════════════
+    out property <color> shadow-xs: #00000033;
+    out property <color> shadow-sm: #00000055;
+    out property <color> shadow-md: #00000077;
+    out property <color> shadow-lg: #000000AA;
+
+    out property <length> elevation-1-y: 1px;
+    out property <length> elevation-1-blur: 3px;
+    out property <color> elevation-1-color: shadow-xs;
+
+    out property <length> elevation-2-y: 4px;
+    out property <length> elevation-2-blur: 12px;
+    out property <color> elevation-2-color: shadow-sm;
+
+    out property <length> elevation-3-y: 10px;
+    out property <length> elevation-3-blur: 20px;
+    out property <color> elevation-3-color: shadow-md;
+
+    // ═══════════════════════════════════════════
+    // ANIMATION & MOTION
+    // ═══════════════════════════════════════════
+    out property <duration> dur-instant: 0ms;
+    out property <duration> dur-fastest: 50ms;
+    out property <duration> dur-faster: 100ms;
+    out property <duration> dur-fast: 150ms;
+    out property <duration> dur-normal: 200ms;
+    out property <duration> dur-medium: 250ms;
+    out property <duration> dur-slow: 300ms;
+    out property <duration> dur-slower: 400ms;
+    out property <duration> dur-slowest: 500ms;
+
+    // Easing
+    out property <easing> ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1.0);
+    out property <easing> ease-soft: cubic-bezier(0.16, 1.0, 0.3, 1.0);
+    out property <easing> ease-out: cubic-bezier(0.0, 0.0, 0.58, 1.0);
+    out property <easing> ease-in: cubic-bezier(0.42, 0.0, 1.0, 1.0);
+    out property <easing> ease-in-out: cubic-bezier(0.42, 0.0, 0.58, 1.0);
+    out property <easing> ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1.0);
+    out property <easing> ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+    out property <easing> ease-accelerate: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+
+    // Stagger
+    out property <duration> stagger-xs: 30ms;
+    out property <duration> stagger-sm: 50ms;
+    out property <duration> stagger-md: 80ms;
+    out property <duration> stagger-lg: 120ms;
+
+    // ═══════════════════════════════════════════
+    // COMPONENT SIZING
+    // ═══════════════════════════════════════════
+    out property <length> button-height-xs: 24px;
+    out property <length> button-height-sm: 30px;
+    out property <length> button-height-md: 36px;
+    out property <length> button-height-lg: 42px;
+    out property <length> button-padding-x: 14px;
+
+    out property <length> input-height-sm: 30px;
+    out property <length> input-height-md: 36px;
+    out property <length> input-height-lg: 42px;
+    out property <length> input-padding-x: 12px;
+
+    out property <length> checkbox-size-sm: 14px;
+    out property <length> checkbox-size-md: 16px;
+    out property <length> checkbox-size-lg: 20px;
+
+    out property <length> toggle-width: 38px;
+    out property <length> toggle-height: 22px;
+    out property <length> toggle-thumb: 16px;
+
+    out property <color> toggle-track-off: dark-mode ? #2A2D35 : #d1d5db;
+    out property <color> toggle-track-disabled: dark-mode ? #1E2128 : #e5e7eb;
+
+    out property <length> icon-sm: 14px;
+    out property <length> icon-md: 16px;
+    out property <length> icon-lg: 20px;
+    out property <length> icon-xl: 24px;
+
+    out property <length> toast-width: 360px;
+    out property <length> toast-padding: 14px;
+
+    out property <length> card-padding: 16px;
+
+    // ═══════════════════════════════════════════
+    // INTERACTIVE STATES
+    // ═══════════════════════════════════════════
+    out property <float> opacity-hover: 0.92;
+    out property <float> opacity-pressed: 0.85;
+    out property <float> opacity-disabled: 0.4;
+
+    out property <color> hover-overlay: dark-mode ? rgba(255, 255, 255, 0.06) : rgba(0, 0, 0, 0.04);
+    out property <color> pressed-overlay: dark-mode ? rgba(255, 255, 255, 0.10) : rgba(0, 0, 0, 0.08);
+
+    out property <length> focus-ring-width: 2px;
+    out property <length> focus-ring-offset: 2px;
+
+    // ═══════════════════════════════════════════
+    // TRANSITION PRESETS
+    // ═══════════════════════════════════════════
+    out property <duration> transition-fade-in: 200ms;
+    out property <duration> transition-fade-out: 150ms;
+    out property <duration> transition-scale-enter: 200ms;
+    out property <duration> transition-scale-exit: 150ms;
+    out property <duration> transition-slide-up: 300ms;
+    out property <duration> transition-color: 150ms;
+
+    // ═══════════════════════════════════════════
+}

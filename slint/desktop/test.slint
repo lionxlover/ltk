@@ -1,0 +1,152 @@
+import { Theme } from "../core/Theme.slint";
+import { WindowChrome } from "WindowChrome.slint";
+import { Toolbar } from "Toolbar.slint";
+import { MenuBar } from "MenuBar.slint";
+import { StatusBar } from "StatusBar.slint";
+import { ContextMenu } from "ContextMenu.slint";
+import { InspectorPanel } from "InspectorPanel.slint";
+import { AboutDialog } from "AboutDialog.slint";
+import { SystemTray } from "SystemTray.slint";
+import { DragHandle } from "DragHandle.slint";
+import { ColumnResizer } from "ColumnResizer.slint";
+
+export component DesktopTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 900px;
+    height: 900px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Desktop — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        // WindowChrome
+        Text { text: "WindowChrome"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        WindowChrome {
+            title: "My Application";
+            closable: true;
+            minimizable: true;
+            maximizable: true;
+            width: 400px;
+            height: 200px;
+        }
+
+        // Toolbar
+        Text { text: "Toolbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Toolbar {
+            label: "Actions";
+            width: 400px;
+        }
+
+        // MenuBar
+        Text { text: "MenuBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        MenuBar {
+            width: 400px;
+        }
+
+        // StatusBar
+        Text { text: "StatusBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        StatusBar {
+            text: "Ready — 3 items loaded";
+            width: 400px;
+        }
+
+        HorizontalLayout {
+            spacing: Theme.sp-6;
+            alignment: start;
+
+            // ContextMenu
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "ContextMenu"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                ContextMenu {
+                    width: 200px;
+                }
+            }
+
+            // InspectorPanel
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "InspectorPanel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                InspectorPanel {
+                    title: "Properties";
+                    width: 220px;
+                    height: 200px;
+                }
+            }
+
+            // AboutDialog
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "AboutDialog"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                AboutDialog {
+                    app-name: "FishUI";
+                    version: "0.1.0";
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: Theme.sp-6;
+            alignment: start;
+
+            // SystemTray
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "SystemTray"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                SystemTray {}
+            }
+
+            // DragHandle
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "DragHandle"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                Rectangle {
+                    height: 80px;
+                    width: 20px;
+                    background: Theme.bg-raised;
+                    border-radius: Theme.radius-xs;
+
+                    DragHandle {
+                        height: parent.height;
+                    }
+                }
+            }
+
+            // ColumnResizer
+            VerticalLayout {
+                spacing: Theme.sp-2;
+
+                Text { text: "ColumnResizer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+                Rectangle {
+                    height: 80px;
+                    width: 20px;
+                    background: Theme.bg-raised;
+                    border-radius: Theme.radius-xs;
+
+                    ColumnResizer {
+                        height: parent.height;
+                    }
+                }
+            }
+        }
+        }
+    }
+}

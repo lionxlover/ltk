@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ArticlePreviewCard inherits Rectangle {
+    in-out property <string> title: "Article Title";
+    in-out property <string> excerpt: "A brief excerpt from the article...";
+    in-out property <string> author: "Author Name";
+    in-out property <string> date: "Jul 23, 2026";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 120px;
+            background: Theme.bg-overlay;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Article Image";
+                color: Theme.text-tertiary;
+                font-size: 13px;
+            }
+        }
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 8px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 16px;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: root.excerpt;
+                color: Theme.text-secondary;
+                font-size: 13px;
+                wrap: word-wrap;
+            }
+
+            HorizontalLayout {
+                spacing: 8px;
+
+                Text {
+                    text: root.author;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: root.date;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}

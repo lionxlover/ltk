@@ -1,0 +1,21 @@
+// Motion Duration (5 tiers: instant → slowest)
+export global MotionDuration {
+    out property <duration> dur-instant: 0ms;
+    out property <duration> dur-fastest: 50ms;
+    out property <duration> dur-faster: 100ms;
+    out property <duration> dur-fast: 150ms;
+    out property <duration> dur-normal: 200ms;
+    out property <duration> dur-medium: 250ms;
+    out property <duration> dur-slow: 300ms;
+    out property <duration> dur-slower: 400ms;
+    out property <duration> dur-slowest: 500ms;
+    out property <duration> dur-glacial: 800ms;
+    out property <duration> dur-geological: 1200ms;
+
+    // Named presets
+    out property <duration> duration-instant: 0ms;
+    out property <duration> duration-fast: 150ms;
+    out property <duration> duration-normal: 200ms;
+    out property <duration> duration-slow: 300ms;
+    out property <duration> duration-slower: 500ms;
+}

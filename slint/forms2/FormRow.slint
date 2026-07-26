@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormRow inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 12px;
+    in property <int> columns: 2;
+    in property <bool> equal-width: false;
+
+    HorizontalLayout {
+        spacing: gap;
+    }
+}

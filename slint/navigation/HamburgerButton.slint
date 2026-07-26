@@ -1,0 +1,62 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HamburgerButton inherits Rectangle {
+    in property <bool> open: false;
+
+    callback clicked();
+
+    width: 36px;
+    height: 36px;
+    background: ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : #00000000;
+    border-radius: Theme.radius-sm;
+
+    animate background { duration: Theme.dur-fast; }
+
+    Rectangle {
+        width: 18px;
+        height: 14px;
+        y: (parent.height - self.height) / 2;
+        x: (parent.width - self.width) / 2;
+
+        Rectangle {
+            width: 18px;
+            height: 2px;
+            y: open ? 6px : 0px;
+            background: Theme.text-primary;
+            border-radius: 1px;
+
+            rotate-angle: open ? 45deg : 0deg;
+            animate y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            animate rotate-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+        }
+
+        Rectangle {
+            width: 18px;
+            height: 2px;
+            y: 6px;
+            background: Theme.text-primary;
+            border-radius: 1px;
+            opacity: open ? 0 : 1;
+
+            animate opacity { duration: Theme.dur-fast; }
+        }
+
+        Rectangle {
+            width: 18px;
+            height: 2px;
+            y: open ? 6px : 12px;
+            background: Theme.text-primary;
+            border-radius: 1px;
+
+            rotate-angle: open ? -45deg : 0deg;
+            animate y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            animate rotate-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

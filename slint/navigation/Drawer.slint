@@ -1,0 +1,109 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Drawer inherits Rectangle {
+    in property <bool> open: false;
+    in property <string> side: "start"; // start, end
+    in property <length> drawer-width: 280px;
+    in property <bool> modal: true;
+
+    callback closed();
+
+    background: transparent;
+    clip: true;
+
+    // Backdrop
+    if modal && open: Rectangle {
+        background: Theme.backdrop;
+
+        ta-backdrop := TouchArea {
+            clicked => { root.closed(); }
+        }
+
+        animate background { duration: Theme.dur-medium; }
+    }
+
+    // Drawer panel
+    panel := Rectangle {
+        x: {
+            if !open { side == "start" ? -drawer-width : parent.width }
+            else { side == "start" ? 0px : parent.width - drawer-width }
+        }
+        width: drawer-width;
+        height: parent.height;
+        background: Theme.bg-surface;
+        border-radius: side == "start" ? 0px : Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+        clip: true;
+
+        drop-shadow-offset-x: open ? (side == "start" ? 4px : -4px) : 0px;
+        drop-shadow-blur: open ? 16px : 0px;
+        drop-shadow-color: open ? Theme.border-default : transparent;
+
+        animate x { duration: Theme.dur-medium; easing: Theme.ease-decelerate; }
+        animate drop-shadow-offset-x { duration: Theme.dur-medium; }
+        animate drop-shadow-blur { duration: Theme.dur-medium; }
+        animate drop-shadow-color { duration: Theme.dur-medium; }
+
+        // Header
+        Rectangle {
+            height: 56px;
+            background: transparent;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                alignment: stretch;
+
+                Text {
+                    text: root.open ? "Menu" : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-lg;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Rectangle {
+                    width: 32px;
+                    height: 32px;
+                    horizontal-stretch: 0;
+                    vertical-stretch: 0;
+
+                    close-bg := Rectangle {
+                        border-radius: Theme.radius-sm;
+                        background: ta-close.pressed ? Theme.surface-pressed
+                            : ta-close.has-hover ? Theme.surface-hover
+                            : transparent;
+                        animate background { duration: Theme.dur-fast; }
+                    }
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "✕";
+                        color: Theme.text-secondary;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+
+                    ta-close := TouchArea {
+                        clicked => { root.closed(); }
+                    }
+                }
+            }
+        }
+
+        // Divider
+        Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        // Content slot
+        content-layout := VerticalLayout {
+            padding: Theme.sp-2;
+        }
+    }
+}

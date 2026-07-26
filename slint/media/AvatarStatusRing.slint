@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarStatusRing inherits Rectangle {
+    in property <string> fallback: "?";
+    in property <length> avatar-size: 48px;
+    in property <brush> status-color: Theme.state-success;
+
+    width: avatar-size;
+    height: avatar-size;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        border-width: 3px;
+        border-color: root.status-color;
+    }
+
+    Rectangle {
+        x: 3px;
+        y: 3px;
+        width: parent.width - 6px;
+        height: parent.height - 6px;
+        border-radius: Theme.radius-full;
+        background: Theme.accent-subtle;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.fallback;
+            color: Theme.accent;
+            font-size: avatar-size * 0.35;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+}

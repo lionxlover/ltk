@@ -1,0 +1,76 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Alert inherits Rectangle {
+    in property <string> title: "";
+    in property <string> text: "";
+    in property <string> kind: "info"; // info, success, warning, error
+    in property <bool> show-icon: true;
+
+    callback close();
+
+    min-height: 44px;
+    background: kind == "error" ? Theme.state-error.with-alpha(0.12) : (kind == "warning" ? Theme.state-warning.with-alpha(0.12) : (kind == "success" ? Theme.state-success.with-alpha(0.12) : Theme.state-info.with-alpha(0.12)));
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: kind == "error" ? Theme.state-error.with-alpha(0.25) : (kind == "warning" ? Theme.state-warning.with-alpha(0.25) : (kind == "success" ? Theme.state-success.with-alpha(0.25) : Theme.state-info.with-alpha(0.25)));
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        // Icon
+        if show-icon: Text {
+            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "ℹ"));
+            color: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
+            font-size: Theme.text-lg;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        // Content
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: Theme.sp-1;
+
+            if title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            if text != "": Text {
+                text: root.text;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                wrap: word-wrap;
+            }
+        }
+
+        // Close button
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            horizontal-stretch: 0;
+            vertical-stretch: 0;
+            background: transparent;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.close(); }
+            }
+        }
+    }
+}

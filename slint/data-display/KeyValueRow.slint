@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component KeyValueRow inherits Rectangle {
+    in property <string> key: "";
+    in property <string> value: "";
+    in property <brush> value-color: Theme.text-primary;
+
+    height: 36px;
+    background: transparent;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+
+        Text {
+            text: root.key;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+
+        Text {
+            text: root.value;
+            color: root.value-color;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.border-subtle;
+    }
+}

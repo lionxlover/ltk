@@ -1,0 +1,72 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RichTextEditor inherits Rectangle {
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 300px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: 40px;
+        background: Theme.bg-raised;
+
+        HorizontalLayout {
+            padding-left: 8px;
+            padding-right: 8px;
+            spacing: 4px;
+            alignment: start;
+
+            for op in ["B", "I", "U", "S", "-", "=", "<>", "><", "Img", "Link"]: Rectangle {
+                width: 32px;
+                height: 28px;
+                border-radius: Theme.radius-sm;
+                vertical-stretch: 0;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: op;
+                    color: Theme.text-secondary;
+                    font-size: 13px;
+                    font-weight: op == "B" ? 700 : 400;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+
+                TouchArea {
+                    clicked => { }
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        x: 0px;
+        y: 40px;
+        width: parent.width;
+        height: 1px;
+        background: Theme.border-subtle;
+    }
+
+    Text {
+        x: 16px;
+        y: 56px;
+        width: parent.width - 32px;
+        text: "Start writing your rich text content here. Use the toolbar above to format text.";
+        color: Theme.text-placeholder;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        wrap: word-wrap;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

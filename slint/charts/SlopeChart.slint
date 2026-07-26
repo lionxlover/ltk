@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SlopeChart inherits Rectangle {
+    in property <string> label: "Slope Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Text { text: "Before"; color: Theme.text-tertiary; font-size: Theme.text-xs; x: 10px; y: 0px; }
+            Text { text: "After"; color: Theme.text-tertiary; font-size: Theme.text-xs; x: parent.width - 50px; y: 0px; }
+
+            Rectangle { x: 20px; y: 30px; width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: parent.width - 30px; y: 20px; width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Rectangle { x: 20px; y: 20px; width: parent.width - 40px; height: 2px; background: Theme.accent-subtle;  }
+
+            Rectangle { x: 20px; y: 70px; width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: parent.width - 30px; y: 60px; width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Rectangle { x: 20px; y: 60px; width: parent.width - 40px; height: 2px; background: Theme.green_100;  }
+        }
+    }
+}

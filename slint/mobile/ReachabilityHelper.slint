@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ReachabilityHelper inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <int> shift-down: 120;
+
+    y: active ? shift-down : 0px;
+}

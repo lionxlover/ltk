@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FeatureCard inherits Rectangle {
+    in-out property <string> title: "Feature";
+    in-out property <string> description: "Feature description goes here";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 12px;
+
+        Rectangle {
+            width: 44px;
+            height: 44px;
+            background: Theme.accent-subtle;
+            border-radius: Theme.radius-md;
+
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/star.svg");
+                width: 20px;
+                height: 20px;
+                colorize: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-size: 16px;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-size: 13px;
+            wrap: word-wrap;
+        }
+    }
+}

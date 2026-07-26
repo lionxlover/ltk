@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TileGrid inherits Rectangle {
+    background: transparent;
+
+    in property <int> columns: 4;
+    in property <length> gap: 4px;
+    in property <bool> uniform: true;
+
+    Flickable {
+        HorizontalLayout {
+            spacing: gap;
+
+            for col_idx[ci] in columns: VerticalLayout {
+                vertical-stretch: 1;
+                spacing: gap;
+            }
+        }
+    }
+}

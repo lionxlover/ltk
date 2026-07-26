@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CopyButton inherits Rectangle {
+    in-out property <bool> copied: false;
+
+    width: 32px;
+    height: 32px;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-sm;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        width: 14px;
+        height: 14px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg");
+            width: 14px;
+            height: 14px;
+            visible: !root.copied;
+            colorize: Theme.text-tertiary;
+        }
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+            width: 14px;
+            height: 14px;
+            visible: root.copied;
+            colorize: Theme.success;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.copied = !root.copied; }
+    }
+}

@@ -1,0 +1,136 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component Toolbar inherits Rectangle {
+    in property <string> label: "";
+
+    background: Theme.bg-raised;
+    height: 40px;
+    border-radius: Theme.radius-sm;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+        spacing: Theme.sp-1;
+        alignment: space-between;
+
+        // Left: Label
+        if root.label != "": HorizontalLayout {
+            padding-left: Theme.sp-1;
+            Text {
+                text: root.label;
+                color: Theme.text-secondary;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+        }
+
+        // Left group
+        HorizontalLayout {
+            spacing: 2px;
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paste.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                width: 1px;
+                height: 20px;
+                background: Theme.border-subtle;
+                y: (parent.height - self.height) / 2;
+            }
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/undo.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/redo.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        // Right group
+        HorizontalLayout {
+            spacing: 2px;
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            Rectangle {
+                width: 30px;
+                height: 30px;
+                border-radius: Theme.radius-xs;
+                background: #00000000;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg");
+                    fa-size: 14px;
+                    fa-color: Theme.text-secondary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

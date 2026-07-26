@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MicroAreaChart inherits Rectangle {
+    in property <[float]> data: [0.2, 0.5, 0.3, 0.8, 0.6, 0.9];
+    in property <brush> area-color: Theme.accent;
+
+    height: 32px;
+    background: transparent;
+
+    for pt[i] in root.data: Rectangle {
+        x: i * (parent.width / (root.data.length > 1 ? root.data.length - 1 : 1));
+        width: parent.width / (root.data.length > 1 ? root.data.length - 1 : 1);
+        y: parent.height - pt * parent.height;
+        height: pt * parent.height;
+        background: root.area-color;
+        opacity: 0.2;
+    }
+}

@@ -1,0 +1,8 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MutationObserverHook inherits Rectangle {
+    background: transparent;
+
+    in property <int> mutation-count: 0;
+    in property <bool> subtree-changed: false;
+}

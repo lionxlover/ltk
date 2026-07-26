@@ -1,0 +1,46 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InlineForm inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 8px;
+    in property <bool> compact: true;
+
+    HorizontalLayout {
+        spacing: gap;
+        alignment: start;
+
+        Rectangle {
+            height: 32px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-default;
+            vertical-stretch: 1;
+            clip: true;
+
+            Text {
+                text: "Search...";
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                padding-left: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 64px;
+            height: 32px;
+            border-radius: Theme.radius-md;
+            background: Theme.accent;
+
+            Text {
+                text: "Go";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

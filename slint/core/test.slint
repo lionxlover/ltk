@@ -1,0 +1,64 @@
+import { Theme } from "Theme.slint";
+import { Backend } from "Backend.slint";
+
+export component CoreTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 500px;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text {
+                text: "Core — Test";
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text { text: "Theme"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            Rectangle { width: 120px; height: 48px; background: Theme.bg-surface; border-radius: Theme.radius-md; }
+            Rectangle { width: 120px; height: 48px; background: Theme.bg-raised; border-radius: Theme.radius-md; }
+            Rectangle { width: 120px; height: 48px; background: Theme.accent; border-radius: Theme.radius-md; }
+            Rectangle { width: 120px; height: 48px; background: Theme.error; border-radius: Theme.radius-md; }
+            Rectangle { width: 120px; height: 48px; background: Theme.success; border-radius: Theme.radius-md; }
+        }
+
+        Text { text: "Typography"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            Text { text: "Display — 48px bold"; color: Theme.text-primary; font-size: Theme.text-4xl; font-weight: Theme.weight-bold; font-family: Theme.font-display; }
+            Text { text: "Heading — 30px semibold"; color: Theme.text-primary; font-size: Theme.text-3xl; font-weight: Theme.weight-semibold; }
+            Text { text: "Body — 16px regular"; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "Caption — 12px light"; color: Theme.text-tertiary; font-size: Theme.text-xs; font-weight: Theme.weight-light; }
+        }
+
+        Text { text: "Spacing"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            Rectangle { width: 16px; height: 16px; background: Theme.accent; border-radius: Theme.radius-sm; }
+            Rectangle { width: 32px; height: 32px; background: Theme.accent; border-radius: Theme.radius-sm; }
+            Rectangle { width: 48px; height: 48px; background: Theme.accent; border-radius: Theme.radius-sm; }
+            Rectangle { width: 64px; height: 64px; background: Theme.accent; border-radius: Theme.radius-sm; }
+        }
+
+        Text { text: "Backend"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Text {
+            text: "App: " + Backend.app-name + " v" + Backend.app-version;
+            color: Theme.text-primary;
+            font-size: Theme.text-base;
+        }
+        Text {
+            text: "Dark mode: " + (Theme.dark-mode ? "Yes" : "No");
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+        }
+        }
+    }
+}

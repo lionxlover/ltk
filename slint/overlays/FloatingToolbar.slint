@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FloatingToolbarButton inherits Rectangle {
+    in property <string> icon: "";
+    in property <bool> active: false;
+    in property <bool> disabled: false;
+
+    callback clicked();
+
+    width: 32px;
+    height: 32px;
+
+    btn-bg := Rectangle {
+        border-radius: Theme.radius-sm;
+        background: btn-ta.pressed ? Theme.surface-pressed
+            : btn-ta.has-hover ? Theme.surface-hover
+            : root.active ? Theme.accent-subtle
+            : #00000000;
+
+        animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+
+    Image {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/ellipsis.svg");
+        width: 14px;
+        height: 14px;
+        colorize: root.active ? Theme.accent : (root.disabled ? Theme.text-disabled : Theme.text-secondary);
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    btn-ta := TouchArea {
+        enabled: !root.disabled;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component FloatingToolbar inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <[string]> icons: [];
+
+    callback button-clicked(int);
+
+    min-width: 40px;
+    height: 40px;
+    visible: active;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: active ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    HorizontalLayout {
+        padding: Theme.sp-2;
+        spacing: Theme.sp-1;
+
+        for iconentry[iconidx] in root.icons: FloatingToolbarButton {
+            icon: iconentry;
+            clicked => { root.button-clicked(iconidx); }
+        }
+    }
+
+    ta := TouchArea { }
+}

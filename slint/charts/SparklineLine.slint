@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SparklineLine inherits Rectangle {
+    in property <[float]> data: [0.3, 0.5, 0.4, 0.7, 0.6, 0.8, 0.5];
+    in property <brush> line-color: Theme.accent;
+
+    height: 24px;
+    background: transparent;
+
+    for pt[i] in root.data: Rectangle {
+        x: i * (parent.width / (root.data.length > 1 ? root.data.length - 1 : 1));
+        y: parent.height - pt * parent.height - 2px;
+        width: 4px; height: 4px;
+        border-radius: Theme.radius-full;
+        background: root.line-color;
+    }
+}

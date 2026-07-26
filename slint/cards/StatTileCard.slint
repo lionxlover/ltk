@@ -1,0 +1,33 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatTileCard inherits Rectangle {
+    in-out property <string> label: "Metric";
+    in-out property <string> value: "0";
+    in-out property <brush> accent-color: Theme.accent;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 4px;
+
+        Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Text {
+            text: root.value;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: 28px;
+            font-weight: Theme.weight-bold;
+        }
+    }
+}

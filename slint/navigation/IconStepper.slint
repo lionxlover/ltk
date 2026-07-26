@@ -1,0 +1,68 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component IconStepper inherits Rectangle {
+    in property <int> current: 0;
+
+    in property <[image]> icons: [];
+    in property <[string]> labels: [];
+
+    height: 80px;
+    background: #00000000;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 0;
+
+        for icon[idx] in root.icons: HorizontalLayout {
+            horizontal-stretch: 1;
+            spacing: 0;
+
+            // Icon + label column
+            VerticalLayout {
+                horizontal-stretch: 0;
+                spacing: Theme.sp-2;
+                alignment: center;
+
+                Rectangle {
+                    width: 36px;
+                    height: 36px;
+                    horizontal-stretch: 0;
+                    border-radius: Theme.radius-full;
+                    background: idx < root.current ? Theme.accent
+                        : idx == root.current ? Theme.accent
+                        : Theme.bg-overlay;
+                    border-width: idx <= root.current ? 0px : 2px;
+                    border-color: Theme.border-base;
+
+                    FaIcon {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        source: icon;
+                        fa-size: 14px;
+                        fa-color: idx <= root.current ? Theme.on-accent : Theme.text-tertiary;
+                    }
+                }
+
+                if idx < root.labels.length: Text {
+                    text: root.labels[idx];
+                    color: idx <= root.current ? Theme.text-primary : Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: idx == root.current ? Theme.weight-semibold : Theme.weight-regular;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+
+            // Connector
+            if idx < root.icons.length - 1: Rectangle {
+                height: 2px;
+                horizontal-stretch: 1;
+                y: 18px;
+                background: idx < root.current ? Theme.accent : Theme.border-subtle;
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HealthBar inherits Rectangle {
+    in property <float> score: 80;
+    in property <float> max-score: 100;
+
+    height: 8px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        background: Theme.bg-overlay;
+        border-radius: 4px;
+
+        Rectangle {
+            width: max(0, parent.width * root.score / max(1, root.max-score));
+            height: parent.height;
+            background: root.score >= 70 ? Theme.success : (root.score >= 40 ? Theme.warning : Theme.error);
+            border-radius: 4px;
+        }
+    }
+}

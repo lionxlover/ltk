@@ -1,0 +1,20 @@
+// Semantic — Background tokens
+export global SemanticBackground {
+    in-out property <bool> dark: true;
+
+    out property <color> bg-base: dark ? #0B0D0F : #f5f6f8;
+    out property <color> bg-surface: dark ? #15171B : #ffffff;
+    out property <color> bg-raised: dark ? #1C1F25 : #f8f9fb;
+    out property <color> bg-overlay: dark ? #24272F : #f0f1f4;
+    out property <color> bg-sunken: dark ? #080A0C : #ebedf0;
+    out property <color> bg-veil: dark ? rgba(0,0,0,0.55) : rgba(0,0,0,0.30);
+    out property <color> bg-scrim: dark ? rgba(0,0,0,0.60) : rgba(0,0,0,0.04);
+    out property <color> bg-recessed: dark ? #060810 : #f0f1f4;
+
+    // Named backgrounds
+    out property <color> bg-headerbar: dark ? #12141A : #ebedf0;
+    out property <color> bg-sidebar: dark ? #0F1115 : #f2f3f5;
+    out property <color> bg-footer: dark ? #0D0F13 : #ebedf0;
+    out property <color> bg-modal: dark ? #1A1D24 : #ffffff;
+    out property <color> bg-popover: dark ? #1E2128 : #ffffff;
+}

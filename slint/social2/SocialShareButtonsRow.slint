@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SocialShareButtonsRow inherits Rectangle {
+    background: transparent;
+
+    in property <[string]> platforms: ["Twitter", "Facebook", "LinkedIn", "Reddit"];
+    in property <[string]> platform-icons: ["🐦", "📘", "💼", "🔴"];
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        for platform[idx] in platforms: Rectangle {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: Theme.bg-overlay;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            Text {
+                text: idx < root.platform-icons.length ? root.platform-icons[idx] : "🔗";
+                font-size: 16px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea { }
+        }
+    }
+}

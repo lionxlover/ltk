@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component QuadPanelLayout inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> gap: 1px;
+    in property <int> horizontal-split: 50;
+    in property <int> vertical-split: 50;
+
+    HorizontalLayout {
+        spacing: gap;
+
+        VerticalLayout {
+            spacing: gap;
+            horizontal-stretch: 1;
+
+            Rectangle { background: Theme.bg-surface; }
+            Rectangle { background: Theme.bg-surface; }
+        }
+
+        Rectangle { width: gap; background: Theme.border-default; }
+
+        VerticalLayout {
+            spacing: gap;
+            horizontal-stretch: 1;
+
+            Rectangle { background: Theme.bg-raised; }
+            Rectangle { background: Theme.bg-raised; }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component KeyboardShortcutLegend inherits Rectangle {
+    in property <string> shortcut: "";
+    in property <string> description: "";
+
+    height: 28px;
+    background: Theme.bg-surface;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    border-radius: Theme.radius-sm;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        Text {
+            text: root.shortcut;
+            color: Theme.text-primary;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            font-family: Theme.font-mono;
+            vertical-alignment: center;
+        }
+
+        Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+        }
+    }
+}

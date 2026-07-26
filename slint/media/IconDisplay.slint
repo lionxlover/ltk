@@ -1,0 +1,21 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IconDisplay inherits Rectangle {
+    in property <string> icon: "★";
+    in property <string> variant: "mono";
+    in property <length> icon-size: 24px;
+    in property <brush> icon-color: Theme.text-primary;
+
+    width: icon-size;
+    height: icon-size;
+    background: transparent;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.icon;
+        color: root.icon_color;
+        font-size: icon-size;
+        vertical-alignment: center;
+    }
+}

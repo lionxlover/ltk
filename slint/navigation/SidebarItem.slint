@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SidebarItem inherits Rectangle {
+    in property <string> text: "";
+    in property <bool> active: false;
+    in property <string> icon: "";
+
+    callback clicked();
+
+    height: 36px;
+    background: active ? Theme.accent-subtle
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : transparent;
+    border-radius: Theme.radius-sm;
+
+    animate background { duration: Theme.dur-fast; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
+        alignment: stretch;
+
+        if icon != "": Text {
+            text: icon;
+            color: active ? Theme.accent : Theme.text-tertiary;
+            font-size: Theme.text-base;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Text {
+            text: root.text;
+            color: active ? Theme.accent : Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: active ? Theme.weight-medium : Theme.weight-regular;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

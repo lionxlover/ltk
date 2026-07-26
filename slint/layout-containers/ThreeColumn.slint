@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ThreeColumn inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> left-width: 220px;
+    in property <length> right-width: 280px;
+    in property <length> gap: 0px;
+
+    HorizontalLayout {
+        spacing: gap;
+
+        Rectangle {
+            width: left-width;
+            background: Theme.bg-surface;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+        }
+
+        Rectangle {
+            width: right-width;
+            background: Theme.bg-surface;
+        }
+    }
+}

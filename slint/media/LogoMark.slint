@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component LogoMark inherits Rectangle {
+    in property <string> label: "";
+
+    width: 120px;
+    height: 48px;
+    background: #00000000;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            background: Theme.accent;
+            border-radius: Theme.radius-md;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fish.svg");
+                fa-size: 16px;
+                fa-color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        if root.label != "": Text {
+            text: root.label;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-xl;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+}

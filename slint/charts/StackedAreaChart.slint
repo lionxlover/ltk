@@ -1,0 +1,36 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StackedAreaChart inherits Rectangle {
+    in property <[float]> series-a: [0.2, 0.4, 0.3, 0.5];
+    in property <[float]> series-b: [0.1, 0.2, 0.3, 0.2];
+    in property <string> label: "Stacked Area Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            for pt[i] in root.series-a: Rectangle {
+                x: i * (parent.width / (root.series-a.length > 1 ? root.series-a.length - 1 : 1));
+                width: parent.width / (root.series-a.length > 1 ? root.series-a.length - 1 : 1);
+                y: parent.height - (pt + (i < root.series-b.length ? root.series-b[i] : 0)) * parent.height;
+                height: (pt + (i < root.series-b.length ? root.series-b[i] : 0)) * parent.height;
+                background: Theme.accent-subtle;
+            }
+            for pt[i] in root.series-b: Rectangle {
+                x: i * (parent.width / (root.series-b.length > 1 ? root.series-b.length - 1 : 1));
+                width: parent.width / (root.series-b.length > 1 ? root.series-b.length - 1 : 1);
+                y: parent.height - pt * parent.height;
+                height: pt * parent.height;
+                background: Theme.accent-subtle;
+            }
+        }
+    }
+}

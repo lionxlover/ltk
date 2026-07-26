@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FishTextField inherits Rectangle {
+    in-out property <string> text: "";
+    in property <string> placeholder: "";
+    in property <bool> enabled: true;
+    in-out property <bool> has-focus: input.has-focus;
+
+    callback edited(string);
+    callback accepted(string);
+
+    width: max(220px, placeholder-label.preferred-width + Theme.input-height-md);
+    height: Theme.input-height-md;
+    border-radius: Theme.radius-input;
+    background: Theme.bg-raised;
+    border-width: 1px;
+    border-color: has-focus ? Theme.border-focus : Theme.border-default;
+
+    animate border-color { duration: Theme.dur-fastest; easing: Theme.ease-standard; }
+
+    placeholder-label := Text {
+        x: Theme.input-padding-x;
+        y: (parent.height - self.height) / 2;
+        text: root.placeholder;
+        color: Theme.text-tertiary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        visible: root.text == "" && !input.has-focus;
+        overflow: elide;
+    }
+
+    input := TextInput {
+        x: Theme.input-padding-x;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - Theme.input-padding-x * 2;
+        text: root.text;
+        color: enabled ? Theme.text-primary : Theme.text-disabled;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-base;
+        vertical-alignment: center;
+        selection-background-color: Theme.selection-bg;
+        selection-foreground-color: Theme.selection-text;
+        enabled: root.enabled;
+
+        edited => { root.edited(self.text); }
+        accepted => { root.accepted(self.text); }
+    }
+}

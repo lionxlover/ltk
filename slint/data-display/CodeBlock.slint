@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CodeBlock inherits Rectangle {
+    in property <string> code: "";
+    in property <string> language: "";
+
+    background: Theme.dark-mode ? #0D1117 : #f6f8fa;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    clip: true;
+
+    VerticalLayout {
+        // Header
+        if language != "": Rectangle {
+            height: 32px;
+            background: Theme.dark-mode ? #161b22 : #eaeef2;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                alignment: stretch;
+
+                Text {
+                    text: root.language;
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Code
+        Rectangle {
+            vertical-stretch: 1;
+            clip: true;
+
+            Text {
+                x: Theme.sp-4;
+                y: Theme.sp-3;
+                text: root.code;
+                color: Theme.text-primary;
+                font-family: Theme.font-mono;
+                font-size: Theme.text-sm;
+                wrap: no-wrap;
+            }
+        }
+    }
+}

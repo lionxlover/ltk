@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FishSlider inherits Rectangle {
+    in property <float> minimum: 0;
+    in property <float> maximum: 100;
+    in-out property <float> value: 0;
+    in property <bool> enabled: true;
+    in property <bool> horizontal: true;
+    in property <length> track-height: 5px;
+
+    callback changed(float);
+
+    background: transparent;
+
+    track-bg := Rectangle {
+        x: horizontal ? 0 : (parent.width - self.width) / 2;
+        y: horizontal ? (parent.height - self.height) / 2 : 0;
+        width: horizontal ? parent.width : track-height;
+        height: horizontal ? track-height : parent.height;
+        border-radius: self.width / 2;
+        background: Theme.toggle-track-off;
+    }
+
+    filled-track := Rectangle {
+        x: track-bg.x;
+        y: track-bg.y;
+        width: horizontal ? (value - minimum) / (maximum - minimum) * track-bg.width : track-height;
+        height: horizontal ? track-height : (value - minimum) / (maximum - minimum) * track-bg.height;
+        border-radius: self.width / 2;
+        background: Theme.accent;
+    }
+
+    handle := Rectangle {
+        x: horizontal
+            ? track-bg.x + (value - minimum) / (maximum - minimum) * (track-bg.width - self.width)
+            : (parent.width - self.width) / 2;
+        y: horizontal
+            ? (parent.height - self.height) / 2
+            : track-bg.y + (value - minimum) / (maximum - minimum) * (track-bg.height - self.height);
+        width: 22px;
+        height: 22px;
+        border-radius: self.height / 2;
+        background: Theme.dark-mode ? #E8EAED : #FFFFFF;
+        border-width: 1px;
+        border-color: Theme.dark-mode ? rgba(255, 255, 255, 0.15) : rgba(0, 0, 0, 0.12);
+
+        drop-shadow-offset-x: 0px;
+        drop-shadow-offset-y: 0px;
+        drop-shadow-blur: 8px;
+        drop-shadow-color: ta.pressed ? rgba(0, 0, 0, 0.25) : rgba(0, 0, 0, 0.15);
+    }
+
+    ta := TouchArea {
+        moved => {
+            if (horizontal) {
+                root.value = clamp(
+                    root.minimum + (self.pressed-x / track-bg.width) * (root.maximum - root.minimum),
+                    root.minimum,
+                    root.maximum
+                );
+            } else {
+                root.value = clamp(
+                    root.minimum + (self.pressed-y / track-bg.height) * (root.maximum - root.minimum),
+                    root.minimum,
+                    root.maximum
+                );
+            }
+            root.changed(root.value);
+        }
+    }
+}

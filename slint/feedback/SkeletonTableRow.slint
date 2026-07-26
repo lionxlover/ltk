@@ -1,0 +1,19 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonTableRow inherits Rectangle {
+    in property <[int]> columns: [0, 1, 2, 3];
+
+    height: 40px;
+
+    HorizontalLayout {
+        spacing: 12px;
+
+        for idx in root.columns: Rectangle {
+            horizontal-stretch: 1;
+            height: 14px;
+            background: Theme.bg-overlay;
+            border-radius: 4px;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

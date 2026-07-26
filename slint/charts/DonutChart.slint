@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DonutChart inherits Rectangle {
+    in property <[float]> data: [0.4, 0.3, 0.2, 0.1];
+    in property <[brush]> colors: [Theme.accent, Theme.state-success, Theme.state-warning, Theme.state-error];
+    in property <string> center-text: "75%";
+    in property <string> label: "Donut Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Rectangle {
+                width: 120px; height: 120px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+            Rectangle {
+                width: 60px; height: 60px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                background: Theme.bg-surface;
+
+                Text {
+                    x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                    text: root.center-text;
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-bold;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

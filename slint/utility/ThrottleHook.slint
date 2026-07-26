@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ThrottleHook inherits Rectangle {
+    background: transparent;
+
+    in property <string> value: "";
+    in property <int> interval-ms: 100;
+    in property <bool> throttled: false;
+
+    out property <string> throttled-value: value;
+}

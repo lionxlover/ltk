@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AppSwitcher inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <int> active-index: 0;
+    in property <[string]> app-names: ["App 1", "App 2", "App 3", "App 4"];
+    in property <[string]> app-icons: ["📄", "🌐", "📁", "🎵"];
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-4;
+
+        for app[idx] in app-names: Rectangle {
+            width: 120px;
+            height: 120px;
+            border-radius: Theme.radius-lg;
+            background: active-index == idx ? Theme.bg-elevated : Theme.bg-overlay;
+            border-width: active-index == idx ? 2px : 0px;
+            border-color: Theme.accent;
+
+            VerticalLayout {
+                alignment: center;
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: idx < root.app-icons.length ? root.app-icons[idx] : "📦";
+                    font-size: 36px;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: app;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: Theme.text-primary;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                }
+            }
+        }
+    }
+}

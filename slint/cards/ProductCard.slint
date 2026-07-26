@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ProductCard inherits Rectangle {
+    in-out property <string> name: "Product Name";
+    in-out property <string> price: "$29.99";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 160px;
+            background: Theme.bg-overlay;
+            clip: true;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/image.svg");
+                fa-size: 32px;
+                fa-color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 4px;
+
+            Text {
+                text: root.name;
+                color: Theme.text-primary;
+                font-size: 14px;
+                font-weight: Theme.weight-medium;
+            }
+
+            Text {
+                text: root.price;
+                color: Theme.accent;
+                font-size: 16px;
+                font-weight: Theme.weight-bold;
+            }
+        }
+    }
+}

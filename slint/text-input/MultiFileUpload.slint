@@ -1,0 +1,61 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MultiFileUpload inherits Rectangle {
+    in-out property <bool> dragging: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 2px;
+    border-color: dragging ? Theme.accent : Theme.border-dashed;
+    horizontal-stretch: 1;
+    height: self.preferred-height;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        Text {
+            text: "↑ Drop files here";
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+
+        // File list
+        for item in ["report.pdf (2.4 MB)", "image.png (890 KB)", "data.csv (156 KB)"]: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: Theme.bg-raised;
+
+            HorizontalLayout {
+                padding-left: 12px;
+                padding-right: 12px;
+                spacing: 8px;
+
+                Text {
+                    text: "📄";
+                    font-size: 14px;
+                    vertical-alignment: center;
+                }
+                Text {
+                    text: item;
+                    color: Theme.text-primary;
+                    font-size: 12px;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+                Text {
+                    text: "✕";
+                    color: Theme.text-tertiary;
+                    font-size: 12px;
+                    vertical-alignment: center;
+                    horizontal-alignment: right;
+                }
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

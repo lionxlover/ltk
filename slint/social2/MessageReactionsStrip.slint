@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MessageReactionsStrip inherits Rectangle {
+    background: transparent;
+    height: 28px;
+
+    in property <[string]> reactions: ["👍 3", "❤️ 1", "😂 2"];
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        for reaction[r] in reactions: Rectangle {
+            height: 24px;
+            border-radius: 12px;
+            background: Theme.bg-overlay;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            Text {
+                text: reaction;
+                font-size: Theme.text-xs;
+                color: Theme.text-secondary;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background: Theme.bg-overlay;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            Text {
+                text: "+";
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

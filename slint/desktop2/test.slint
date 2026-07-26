@@ -1,0 +1,102 @@
+import { Theme } from "../core/Theme.slint";
+import { ResizableDraggableWindow } from "ResizableDraggableWindow.slint";
+import { MinimizedWindowChip } from "MinimizedWindowChip.slint";
+import { MaximizedWindow } from "MaximizedWindow.slint";
+import { FloatingPanel } from "FloatingPanel.slint";
+import { OverflowToolbar } from "OverflowToolbar.slint";
+import { RibbonBar } from "RibbonBar.slint";
+import { AppMenuItem } from "AppMenuItem.slint";
+import { DesktopWidgetContainer } from "DesktopWidgetContainer.slint";
+import { NotificationCenterPanel } from "NotificationCenterPanel.slint";
+import { AppSwitcher } from "AppSwitcher.slint";
+import { SpotlightDialog } from "SpotlightDialog.slint";
+import { ControlPanelLayout } from "ControlPanelLayout.slint";
+import { PreferencesWindow } from "PreferencesWindow.slint";
+import { SplashScreen } from "SplashScreen.slint";
+import { ShortcutReferenceSheet } from "ShortcutReferenceSheet.slint";
+import { PanelSash } from "PanelSash.slint";
+import { OsNotificationToast } from "OsNotificationToast.slint";
+
+export component Desktop2Test inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 2600px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Desktop-Specific — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Resizable + Draggable Window"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ResizableDraggableWindow { title: "My App"; win-width: 400px; win-height: 200px; win-x: 0px; win-y: 0px; }
+
+            Text { text: "Maximized / Fullscreen Window"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            MaximizedWindow { width: 400px; height: 160px; title: "Full App"; }
+
+            Text { text: "Minimized Window Chips"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                MinimizedWindowChip { title: "Browser"; icon: "🌐"; active: true; }
+                MinimizedWindowChip { title: "Terminal"; icon: "💻"; }
+                MinimizedWindowChip { title: "Files"; icon: "📁"; }
+            }
+
+            Text { text: "Floating Panel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            FloatingPanel { title: "Palette"; panel-width: 260px; panel-height: 160px; }
+
+            Text { text: "Overflow Toolbar / Ribbon Bar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                OverflowToolbar { width: 240px; visible-items: 4; total-items: 8; }
+                RibbonBar { width: 360px; height: 80px; tabs: ["Home", "Insert", "Design"]; }
+            }
+
+            Text { text: "App Menu Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { width: 260px; height: 120px; background: Theme.bg-elevated; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                VerticalLayout { spacing: 0;
+                    AppMenuItem { label: "Copy"; shortcut: "Ctrl+C"; }
+                    AppMenuItem { label: "Paste"; shortcut: "Ctrl+V"; }
+                    AppMenuItem { label: "Delete"; danger: true; }
+                }
+            }
+
+            Text { text: "Desktop Widget / Notification Center"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                DesktopWidgetContainer { title: "Clock"; widget-width: 180px; widget-height: 120px; }
+                NotificationCenterPanel { panel-width: 300px; notification-count: 2; }
+            }
+
+            Text { text: "App Switcher (Cmd+Tab)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 140px; background: Theme.bg-base; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                AppSwitcher { app-names: ["Browser", "Files", "Terminal"]; app-icons: ["🌐", "📁", "💻"]; active-index: 1; }
+            }
+
+            Text { text: "Spotlight / Quick Launch"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 100px; background: Theme.bg-base; border-radius: Theme.radius-md;
+                SpotlightDialog { }
+            }
+
+            Text { text: "Control Panel / Preferences"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ControlPanelLayout { width: 300px; height: 180px; title: "Settings"; }
+                PreferencesWindow { win-width: 300px; win-height: 200px; }
+            }
+
+            Text { text: "Splash Screen / About / Shortcuts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SplashScreen { width: 200px; height: 200px; app-name: "LTK"; version: "1.0"; }
+                ShortcutReferenceSheet { panel-width: 260px; }
+            }
+
+            Text { text: "Panel Sash / OS Toast"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Rectangle { width: 20px; height: 80px; background: Theme.bg-surface; border-radius: Theme.radius-xs;
+                    PanelSash { }
+                }
+                OsNotificationToast { app-name: "System"; title: "Update Available"; body: "Version 2.0 is ready"; }
+            }
+        }
+    }
+}

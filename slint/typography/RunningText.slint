@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component RunningText inherits Rectangle {
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    VerticalLayout {
+        spacing: 12px;
+
+        Text {
+            text: "Typography is the craft of endowing human language with a durable visual form. It is the art of arranging type to make written language legible, readable and appealing when displayed.";
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-regular;
+            wrap: word-wrap;
+        }
+
+        Text {
+            text: "The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing, as well as adjusting the space between pairs of letters.";
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-regular;
+            wrap: word-wrap;
+        }
+    }
+}

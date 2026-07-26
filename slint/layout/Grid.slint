@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Grid inherits Rectangle {
+    in property <[int]> columns: [0, 1];
+    in property <length> gap: Theme.sp-3;
+
+    background: transparent;
+
+    HorizontalLayout {
+        spacing: root.gap;
+
+        for col[i] in root.columns: VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: root.gap;
+        }
+    }
+}

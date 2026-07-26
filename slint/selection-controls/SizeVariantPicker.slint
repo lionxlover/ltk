@@ -1,0 +1,36 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SizeVariantPicker inherits Rectangle {
+    in-out property <[string]> sizes: ["XS", "S", "M", "L", "XL", "2XL"];
+    in-out property <int> selected-index: 2;
+
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: 4px;
+
+        for sz[idx] in root.sizes: Rectangle {
+            width: 44px;
+            height: 36px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: idx == root.selected-index ? Theme.accent : Theme.border-base;
+            background: idx == root.selected-index ? Theme.accent-subtle : transparent;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: sz;
+                color: idx == root.selected-index ? Theme.accent : Theme.text-secondary;
+                font-size: 12px;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.selected-index = idx; }
+            }
+        }
+    }
+}

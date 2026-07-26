@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DebounceHook inherits Rectangle {
+    background: transparent;
+
+    in property <string> value: "";
+    in property <int> delay-ms: 300;
+    in property <bool> pending: false;
+
+    out property <string> debounced-value: value;
+}

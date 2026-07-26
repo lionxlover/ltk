@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CodeBlock inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 4px;
+
+        Text {
+            text: "fn main() {";
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+            font-weight: Theme.weight-regular;
+        }
+        Text {
+            text: "    let x = 42;";
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+            font-weight: Theme.weight-regular;
+        }
+        Text {
+            text: "    println!(\"{x}\");";
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+            font-weight: Theme.weight-regular;
+        }
+        Text {
+            text: "}";
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+            font-weight: Theme.weight-regular;
+        }
+    }
+}

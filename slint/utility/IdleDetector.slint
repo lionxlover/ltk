@@ -1,0 +1,23 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IdleDetector inherits Rectangle {
+    background: transparent;
+
+    in property <bool> idle: false;
+    in property <int> idle-seconds: 0;
+    in property <int> threshold: 300;
+
+    if idle: Rectangle {
+        height: 32px;
+        border-radius: Theme.radius-sm;
+        background: Theme.warning;
+
+        Text {
+            text: "Idle for " + idle-seconds + "s";
+            font-size: Theme.text-xs;
+            color: Theme.warning;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

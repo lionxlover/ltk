@@ -1,0 +1,107 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WeekCalendar inherits Rectangle {
+    in-out property <int> selected-day: 2;
+
+    in property <[string]> day-headers: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    in property <[string]> time-slots: ["9 AM", "10 AM", "11 AM"];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        padding: Theme.card-padding;
+        spacing: Theme.sp-3;
+
+        // Day column headers
+        HorizontalLayout {
+            spacing: Theme.sp-1;
+            vertical-stretch: 0;
+
+            // Time gutter placeholder
+            Rectangle {
+                width: 60px;
+            }
+
+            for hdr_idx in 7: Rectangle {
+                horizontal-stretch: 1;
+                height: 32px;
+                border-radius: Theme.radius-sm;
+                background: hdr_idx == root.selected-day ? Theme.accent : #00000000;
+
+                Text {
+                    text: root.day-headers[hdr_idx];
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    color: hdr_idx == root.selected-day ? Theme.on-accent : Theme.text-secondary;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                    letter-spacing: Theme.tracking-wide;
+                }
+            }
+        }
+
+        // Time slot rows
+        for time_idx in 3: HorizontalLayout {
+            spacing: Theme.sp-1;
+            vertical-stretch: 1;
+
+            // Time label
+            Rectangle {
+                width: 60px;
+
+                Text {
+                    text: root.time-slots[time_idx];
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    color: Theme.text-tertiary;
+                    horizontal-alignment: right;
+                    vertical-alignment: top;
+                }
+            }
+
+            // 7 day columns per row
+            for day_col in 7: Rectangle {
+                horizontal-stretch: 1;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+                border-radius: Theme.radius-xs;
+
+                // Event on Wed (index 2) at 10 AM (index 1)
+                visible: day_col == 2 && time_idx == 1;
+
+                Rectangle {
+                    x: 4px;
+                    y: 4px;
+                    width: parent.width - 8px;
+                    height: parent.height - 8px;
+                    border-radius: Theme.radius-xs;
+                    background: Theme.accent-subtle;
+
+                    Rectangle {
+                        x: 0px;
+                        y: 0px;
+                        width: 3px;
+                        height: parent.height;
+                        border-radius: 1px;
+                        background: Theme.accent;
+                    }
+
+                    Text {
+                        x: 10px;
+                        y: 4px;
+                        text: "Meeting";
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-medium;
+                        color: Theme.text-primary;
+                    }
+                }
+            }
+        }
+    }
+}

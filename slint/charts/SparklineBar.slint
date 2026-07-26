@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SparklineBar inherits Rectangle {
+    in property <[float]> data: [0.4, 0.7, 0.5, 0.8, 0.3];
+    in property <brush> bar-color: Theme.accent;
+
+    height: 24px;
+    background: transparent;
+
+    HorizontalLayout { spacing: 2px; alignment: end;
+        for bar[i] in root.data: Rectangle { horizontal-stretch: 1;
+            VerticalLayout { alignment: end;
+                Rectangle { height: bar * parent.height; background: root.bar-color; border-radius: 1px; }
+            }
+        }
+    }
+}

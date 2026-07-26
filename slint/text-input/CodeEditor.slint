@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CodeEditor inherits Rectangle {
+    in-out property <bool> has-focus: false;
+
+    background: Theme.bg-base;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: 280px;
+    horizontal-stretch: 1;
+
+
+    HorizontalLayout {
+        // Line numbers
+        Rectangle {
+            width: 48px;
+            background: Theme.bg-surface;
+
+            VerticalLayout {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                spacing: 0px;
+
+                for ln in [1, 2, 3, 4, 5, 6, 7]: Text {
+                    horizontal-stretch: 0;
+                    text: "\{ln}";
+                    color: Theme.text-disabled;
+                    font-family: Theme.font-mono;
+                    font-size: 12px;
+                    horizontal-alignment: right;
+                }
+            }
+        }
+
+        // Code area
+        Rectangle {
+            background: Theme.bg-base;
+
+            VerticalLayout {
+                padding: 12px;
+                spacing: 0px;
+
+                Text { text: "fn main() {"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: "    let name = \"LTK\";"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: "    let version = 1.0;"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: ""; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: "    if name == \"LTK\" {"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: "        println!(\"Hello, {name}!\");"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
+                Text { text: "    }"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

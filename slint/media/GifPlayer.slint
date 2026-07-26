@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GifPlayer inherits Rectangle {
+    in property <string> label: "GIF";
+    in property <bool> playing: false;
+
+    width: 200px;
+    height: 160px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.label;
+        color: Theme.text-tertiary;
+        font-size: Theme.text-lg;
+        font-weight: Theme.weight-bold;
+    }
+
+    if !root.playing: Rectangle {
+        x: parent.width - 40px;
+        y: 8px;
+        width: 32px;
+        height: 20px;
+        border-radius: Theme.radius-sm;
+        background: #000000aa;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "GIF";
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+}

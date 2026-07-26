@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ParallaxLayer inherits Rectangle {
+    background: transparent;
+
+    in property <float> scroll-factor: 0.5;
+    in property <length> scroll-offset: 0px;
+
+    y: scroll-offset * scroll-factor;
+}

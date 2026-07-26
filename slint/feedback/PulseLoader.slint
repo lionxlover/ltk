@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PulseLoader inherits Rectangle {
+    in property <length> size: 12px;
+
+    width: size;
+    height: size;
+    background: Theme.accent;
+    border-radius: size / 2;
+    opacity: 0.4;
+
+    animate opacity { duration: 800ms; easing: ease-in-out; }
+}

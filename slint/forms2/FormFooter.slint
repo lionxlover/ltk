@@ -1,0 +1,49 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormFooter inherits Rectangle {
+    background: Theme.bg-raised;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    padding: Theme.sp-4;
+
+    in property <bool> show-cancel: true;
+    in property <string> submit-label: "Submit";
+    in property <bool> loading: false;
+
+    HorizontalLayout {
+        spacing: Theme.sp-3;
+        alignment: end;
+
+        if show-cancel: Rectangle {
+            width: 80px;
+            height: 36px;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: Theme.border-default;
+
+            Text {
+                text: "Cancel";
+                font-size: Theme.text-sm;
+                color: Theme.text-primary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 100px;
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: loading ? Theme.accent-dim : Theme.accent;
+
+            Text {
+                text: loading ? "..." : submit-label;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MapEmbedCard inherits Rectangle {
+    in-out property <string> label: "Map";
+    in-out property <string> sublabel: "Interactive map preview";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 180px;
+            background: Theme.dark-mode ? #1a2332 : #e8f0fe;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "🗺";
+                font-size: 32px;
+            }
+        }
+
+        HorizontalLayout {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 12px;
+            padding-bottom: 2px;
+            Text {
+                text: root.label;
+                color: Theme.text-primary;
+                font-size: 13px;
+                font-weight: Theme.weight-semibold;
+            }
+        }
+
+        HorizontalLayout {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: 12px;
+            Text {
+                text: root.sublabel;
+                color: Theme.text-tertiary;
+                font-size: 11px;
+            }
+        }
+    }
+}

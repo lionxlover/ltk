@@ -1,0 +1,46 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component SuccessState inherits Rectangle {
+    in property <string> title: "Success!";
+    in property <string> message: "Your action was completed.";
+
+    background: Theme.bg-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        Rectangle {
+            width: 64px;
+            height: 64px;
+            background: Theme.success;
+            border-radius: 32px;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-check.svg");
+                fa-size: 28px;
+                fa-color: Theme.success;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-size: 16px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.message;
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

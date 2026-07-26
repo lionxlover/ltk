@@ -1,0 +1,92 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SortableDataTable inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> row-count: 0;
+    in property <int> sort-column: -1;
+    in property <bool> sort-ascending: true;
+
+    callback column-clicked(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        if columns.length > 0: Rectangle {
+            height: 40px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: 1;
+                    height: 40px;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-3;
+                        spacing: Theme.sp-1;
+                        alignment: start;
+
+                        Text {
+                            text: col;
+                            color: root.sort-column == i ? Theme.accent : Theme.text-secondary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-semibold;
+                            vertical-alignment: center;
+                        }
+
+                        if root.sort-column == i: Text {
+                            text: root.sort-ascending ? "▲" : "▼";
+                            color: Theme.accent;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    col-ta := TouchArea {
+                        clicked => { root.column-clicked(i); }
+                    }
+                }
+            }
+        }
+
+        if columns.length > 0: Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        VerticalLayout {
+            for row[rowidx] in root.row-count: Rectangle {
+                height: 40px;
+                background: row-ta.pressed ? Theme.surface-pressed
+                    : row-ta.has-hover ? Theme.surface-hover
+                    : transparent;
+
+                animate background { duration: Theme.dur-fast; }
+
+                HorizontalLayout {
+                    for col[i] in root.columns: Rectangle {
+                        horizontal-stretch: 1;
+
+                        Text {
+                            x: Theme.sp-3;
+                            y: (parent.height - self.height) / 2;
+                            text: "Row \{rowidx + 1} — \{col}";
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+
+                row-ta := TouchArea {}
+            }
+        }
+    }
+}

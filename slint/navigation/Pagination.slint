@@ -1,0 +1,103 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Pagination inherits Rectangle {
+    in-out property <int> current-page: 1;
+    in property <int> total-pages: 10;
+
+    callback page-changed(int);
+
+    height: 32px;
+    background: transparent;
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        // Previous
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: prev-ta.pressed ? Theme.surface-pressed
+                : prev-ta.has-hover ? Theme.surface-hover : transparent;
+            visible: current-page > 1;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "‹";
+                color: Theme.text-secondary;
+                font-size: Theme.text-lg;
+                vertical-alignment: center;
+            }
+
+            prev-ta := TouchArea {
+                clicked => {
+                    if root.current-page > 1 {
+                        root.current-page = root.current-page - 1;
+                        root.page-changed(root.current-page);
+                    }
+                }
+            }
+        }
+
+        // Pages
+        for page[i] in root.total-pages: Rectangle {
+            width: 32px;
+            height: 32px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: page == root.current-page ? Theme.accent
+                : page-ta.pressed ? Theme.surface-pressed
+                : page-ta.has-hover ? Theme.surface-hover
+                : transparent;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "\{page + 1}";
+                color: page == root.current-page ? Theme.on-accent : Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: page == root.current-page ? Theme.weight-semibold : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            page-ta := TouchArea {
+                clicked => {
+                    root.current-page = page + 1;
+                    root.page-changed(root.current-page);
+                }
+            }
+        }
+
+        // Next
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            horizontal-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: next-ta.pressed ? Theme.surface-pressed
+                : next-ta.has-hover ? Theme.surface-hover : transparent;
+            visible: current-page < total-pages;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "›";
+                color: Theme.text-secondary;
+                font-size: Theme.text-lg;
+                vertical-alignment: center;
+            }
+
+            next-ta := TouchArea {
+                clicked => {
+                    if root.current-page < root.total-pages {
+                        root.current-page = root.current-page + 1;
+                        root.page-changed(root.current-page);
+                    }
+                }
+            }
+        }
+    }
+}

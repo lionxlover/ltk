@@ -1,0 +1,67 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TwoLineList inherits Rectangle {
+    in property <[string]> titles: [];
+    in property <[string]> subtitles: [];
+    in property <[string]> metas: [];
+
+    callback clicked(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for title[idx] in root.titles: Rectangle {
+            height: 56px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+                alignment: stretch;
+
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: Theme.sp-0-5;
+                    alignment: center;
+
+                    Text {
+                        text: root.titles[idx];
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: root.subtitles[idx];
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    text: root.metas[idx];
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                    horizontal-stretch: 0;
+                }
+            }
+
+            row-ta := TouchArea {
+                clicked => { root.clicked(idx); }
+            }
+        }
+    }
+}

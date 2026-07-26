@@ -1,0 +1,59 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ChatBubbleReceived inherits Rectangle {
+    in property <string> message: "";
+    in property <string> time: "";
+    in property <string> sender: "";
+
+    width: 100%;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: start;
+        spacing: Theme.sp-2;
+
+        VerticalLayout {
+            alignment: start;
+            spacing: Theme.sp-1;
+            horizontal-stretch: 1;
+            max-width: parent.width * 0.75;
+
+            if root.sender != "": Text {
+                text: root.sender;
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+            }
+
+            Rectangle {
+                background: Theme.bg-overlay;
+                border-radius: Theme.radius-md;
+                horizontal-stretch: 1;
+                vertical-stretch: 0;
+                min-height: self.preferred-height;
+
+                VerticalLayout {
+                    padding: Theme.sp-3;
+
+                    Text {
+                        text: root.message;
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-base;
+                        wrap: word-wrap;
+                        width: 100%;
+                    }
+                }
+            }
+
+            Text {
+                text: root.time;
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                horizontal-alignment: left;
+            }
+        }
+    }
+}

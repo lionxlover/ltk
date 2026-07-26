@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FocusRingCustom inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <length> ring-width: 2px;
+    in property <length> ring-offset: 2px;
+    in property <string> ring-color-name: "accent";
+
+    border-width: active ? ring-width : 0px;
+    border-color: Theme.accent;
+    border-radius: Theme.radius-sm;
+}

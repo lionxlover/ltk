@@ -1,0 +1,74 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ContactPicker inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-xl;
+    clip: true;
+
+    in property <[string]> contacts: ["Alice", "Bob", "Charlie", "Diana"];
+    in property <[string]> avatars: ["A", "B", "C", "D"];
+
+    VerticalLayout {
+        spacing: 0;
+
+        Rectangle {
+            height: 48px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                alignment: center;
+
+                Text {
+                    text: "Cancel";
+                    font-size: Theme.text-base;
+                    color: Theme.accent;
+                }
+
+                Text {
+                    text: "Contacts";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        for contact[idx] in contacts: Rectangle {
+            height: 52px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+
+                Rectangle {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 18px;
+                    background: Theme.accent-subtle;
+
+                    Text {
+                        text: idx < root.avatars.length ? root.avatars[idx] : "?";
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        color: Theme.accent;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+
+                Text {
+                    text: contact;
+                    font-size: Theme.text-base;
+                    color: Theme.text-primary;
+                    vertical-stretch: 1;
+                }
+            }
+
+            Rectangle { height: 1px; x: 52px; background: Theme.border-subtle; }
+        }
+    }
+}

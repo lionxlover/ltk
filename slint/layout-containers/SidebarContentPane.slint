@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SidebarContentPane inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <length> sidebar-width: 260px;
+    in property <bool> sidebar-collapsed: false;
+    in property <bool> show-divider: true;
+
+    HorizontalLayout {
+        Rectangle {
+            width: sidebar-collapsed ? 48 : sidebar-width;
+            background: Theme.bg-surface;
+        }
+
+        if show-divider: Rectangle {
+            width: 1px;
+            background: Theme.border-default;
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PhotoMediaPicker inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-xl;
+    clip: true;
+
+    in property <int> grid-columns: 4;
+    in property <int> grid-rows: 4;
+    in property <int> spacing: 2;
+
+    VerticalLayout {
+        spacing: 0;
+
+        Rectangle {
+            height: 48px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                alignment: center;
+
+                Text {
+                    text: "Cancel";
+                    font-size: Theme.text-base;
+                    color: Theme.accent;
+                }
+
+                Text {
+                    text: "Photo Library";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                }
+
+                Text {
+                    text: "Done";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.accent;
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: Theme.bg-base;
+        }
+    }
+}

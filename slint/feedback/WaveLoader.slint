@@ -1,0 +1,36 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WaveLoader inherits Rectangle {
+    in property <length> size: 32px;
+
+    width: size * 1.5;
+    height: size;
+    background: #00000000;
+
+    Rectangle {
+        width: 4px;
+        height: parent.height * 0.6;
+        x: parent.width * 0.2;
+        y: (parent.height - self.height) / 2;
+        background: Theme.accent;
+        border-radius: 2px;
+    }
+
+    Rectangle {
+        width: 4px;
+        height: parent.height * 0.8;
+        x: parent.width * 0.45;
+        y: (parent.height - self.height) / 2;
+        background: Theme.accent;
+        border-radius: 2px;
+    }
+
+    Rectangle {
+        width: 4px;
+        height: parent.height;
+        x: parent.width * 0.7;
+        y: (parent.height - self.height) / 2;
+        background: Theme.accent;
+        border-radius: 2px;
+    }
+}

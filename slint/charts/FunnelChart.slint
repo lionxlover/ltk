@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FunnelChart inherits Rectangle {
+    in property <[float]> data: [1.0, 0.7, 0.45, 0.25, 0.1];
+    in property <string> label: "Funnel Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: 4px;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        for step[i] in root.data: Rectangle { height: 24px;
+            Rectangle {
+                x: (parent.width - step * parent.width) / 2;
+                width: step * parent.width;
+                height: parent.height;
+                background: Theme.accent;
+                opacity: 1 - i * 0.15;
+                border-radius: Theme.radius-sm;
+            }
+        }
+    }
+}

@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component InfiniteScrollWrapper inherits Rectangle {
+    background: transparent;
+
+    in property <bool> loading: false;
+    in property <bool> has-more: true;
+
+    Flickable {
+        vertical-stretch: 1;
+
+        VerticalLayout {
+            spacing: Theme.sp-4;
+        }
+    }
+
+    if loading: Rectangle {
+        y: parent.height - 48px;
+        height: 48px;
+        background: Theme.bg-surface;
+
+        Text {
+            text: "Loading...";
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+}

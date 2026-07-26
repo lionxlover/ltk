@@ -1,0 +1,27 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WordCloud inherits Rectangle {
+    in property <string> label: "Word Cloud";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Text { text: "Design"; color: Theme.accent; font-size: Theme.text-xl; font-weight: Theme.weight-bold; x: 10px; y: 10px; }
+            Text { text: "Code"; color: Theme.state-success; font-size: Theme.text-lg; font-weight: Theme.weight-semibold; x: 100px; y: 5px; }
+            Text { text: "Build"; color: Theme.state-warning; font-size: Theme.text-base; x: 160px; y: 20px; }
+            Text { text: "Test"; color: Theme.state-error; font-size: Theme.text-sm; x: 30px; y: 50px; }
+            Text { text: "Ship"; color: Theme.accent; font-size: Theme.text-lg; x: 90px; y: 45px; }
+            Text { text: "Deploy"; color: Theme.text-secondary; font-size: Theme.text-base; x: 150px; y: 50px; }
+            Text { text: "Iterate"; color: Theme.state-success; font-size: Theme.text-sm; x: 60px; y: 80px; }
+        }
+    }
+}

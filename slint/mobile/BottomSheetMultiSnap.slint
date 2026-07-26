@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BottomSheetMultiSnap inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <string> title: "";
+    in property <int> snap-index: 1;
+    in property <[length]> snap-points: [80px, 300px, 500px];
+
+    VerticalLayout {
+        alignment: end;
+
+        Rectangle {
+            height: snap-points[snap-index];
+            background: Theme.bg-elevated;
+            border-radius: Theme.radius-xl;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+
+            Rectangle {
+                height: 36px;
+
+                Rectangle {
+                    width: 36px;
+                    height: 4px;
+                    border-radius: 2px;
+                    background: Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: 16px;
+                }
+            }
+
+            if title != "": Text {
+                text: title;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                height: 24px;
+            }
+        }
+    }
+}

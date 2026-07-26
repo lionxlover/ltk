@@ -1,0 +1,39 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AppShell inherits Rectangle {
+    background: Theme.bg-base;
+
+    in property <bool> show-topbar: true;
+    in property <bool> show-sidebar: true;
+    in property <bool> show-statusbar: false;
+    in property <length> sidebar-width: 240px;
+
+    VerticalLayout {
+        if show-topbar: Rectangle {
+            height: 48px;
+            background: Theme.bg-raised;
+            Rectangle { height: 1px; width: parent.width; y: parent.height - 1px; background: Theme.border-default; }
+        }
+
+        HorizontalLayout {
+            vertical-stretch: 1;
+
+            if show-sidebar && sidebar-width > 0: Rectangle {
+                width: sidebar-width;
+                background: Theme.bg-surface;
+                Rectangle { width: 1px; height: parent.height; x: parent.width - 1px; background: Theme.border-default; }
+            }
+
+            Rectangle {
+                vertical-stretch: 1;
+                background: Theme.bg-base;
+            }
+        }
+
+        if show-statusbar: Rectangle {
+            height: 28px;
+            background: Theme.bg-raised;
+            Rectangle { height: 1px; width: parent.width; background: Theme.border-default; }
+        }
+    }
+}

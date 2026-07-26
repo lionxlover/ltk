@@ -1,0 +1,75 @@
+import { Theme } from "../core/Theme.slint";
+
+export component WorkspaceSwitcher inherits Rectangle {
+    background: Theme.bg-raised;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    horizontal-stretch: 0;
+    width: 220px;
+    clip: true;
+
+    in property <int> workspaces: 4;
+    in-out property <int> active-workspace: 0;
+    in property <[string]> workspace-names: ["Desktop 1", "Desktop 2", "Desktop 3", "Desktop 4"];
+    in property <[bool]> workspace-visible: [true, true, true, true];
+
+    VerticalLayout {
+        padding: Theme.sp-2;
+
+        Text {
+            text: "Workspaces";
+            font-size: Theme.text-xs;
+            color: Theme.text-tertiary;
+            font-weight: Theme.weight-semibold;
+        }
+
+        VerticalLayout {
+            spacing: Theme.sp-1;
+
+            for ws[idx] in root.workspace-names: Rectangle {
+                height: 36px;
+                border-radius: 8px;
+                background: active-workspace == idx ? Theme.accent-subtle : transparent;
+                border-width: 1px;
+                border-color: active-workspace == idx ? Theme.accent-subtle : transparent;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-3;
+                    padding-right: Theme.sp-3;
+                    spacing: Theme.sp-2;
+
+                    Rectangle {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 6px;
+                        background: active-workspace == idx ? Theme.accent : Theme.bg-base;
+                        y: 6px;
+
+                        Text {
+                            text: "\{Math.mod(idx + 1, 10)}";
+                            font-size: 11px;
+                            font-weight: Theme.weight-bold;
+                            color: active-workspace == idx ? #ffffff : Theme.text-secondary;
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                        }
+                    }
+
+                    Text {
+                        text: ws;
+                        font-size: Theme.text-sm;
+                        color: active-workspace == idx ? Theme.accent : Theme.text-primary;
+                        font-weight: active-workspace == idx ? Theme.weight-medium : Theme.weight-regular;
+                        y: 6px;
+                        overflow: elide;
+                    }
+                }
+
+                TouchArea {
+                    clicked => { root.active-workspace = idx; }
+                }
+            }
+        }
+    }
+}

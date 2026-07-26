@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TextareaFixed inherits Rectangle {
+    in-out property <string> text;
+    in-out property <string> placeholder: "Enter text...";
+    in-out property <bool> has-focus: false;
+    in-out property <length> input-height: 120px;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: has-focus ? Theme.accent : Theme.border-base;
+    height: self.input-height;
+    horizontal-stretch: 1;
+
+
+    Text {
+        x: 12px;
+        y: 12px;
+        width: parent.width - 24px;
+        text: root.text == "" ? root.placeholder : root.text;
+        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        wrap: word-wrap;
+    }
+
+    TouchArea {
+        clicked => { root.has-focus = true; }
+    }
+}

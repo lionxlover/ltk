@@ -1,0 +1,83 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NestedCommentThread inherits Rectangle {
+    background: transparent;
+
+    in property <string> author: "Alice";
+    in property <string> text: "Great work!";
+    in property <int> depth: 0;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        if depth > 0: Rectangle {
+            width: depth * 24px;
+        }
+
+        Rectangle {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background: Theme.accent-subtle;
+            y: 2px;
+
+            Text {
+                text: author;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        VerticalLayout {
+            vertical-stretch: 1;
+            spacing: 2px;
+
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: author;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    y: 1px;
+                }
+
+                Text {
+                    text: "2h ago";
+                    font-size: Theme.text-xs;
+                    color: Theme.text-tertiary;
+                    y: 2px;
+                }
+            }
+
+            Text {
+                text: text;
+                font-size: Theme.text-sm;
+                color: Theme.text-secondary;
+            }
+
+            HorizontalLayout {
+                spacing: Theme.sp-3;
+                height: 24px;
+
+                Text {
+                    text: "👍 2";
+                    font-size: Theme.text-xs;
+                    color: Theme.text-tertiary;
+                    y: 2px;
+                }
+
+                Text {
+                    text: "Reply";
+                    font-size: Theme.text-xs;
+                    color: Theme.accent;
+                    y: 2px;
+                }
+            }
+        }
+    }
+}

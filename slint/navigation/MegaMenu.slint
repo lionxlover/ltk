@@ -1,0 +1,129 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MegaMenu inherits Rectangle {
+    visible: false;
+
+    callback link-clicked(string);
+
+    width: 560px;
+    height: visible ? menu-content.preferred-height + Theme.sp-4 : 0px;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; }
+    opacity: visible ? 1 : 0;
+
+    menu-content := VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-4;
+
+        HorizontalLayout {
+            spacing: Theme.sp-6;
+
+            VerticalLayout {
+                spacing: Theme.sp-2;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: "Navigation";
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    letter-spacing: Theme.tracking-wide;
+                }
+
+                for item in ["Dashboard", "Analytics", "Reports", "Settings"]: Rectangle {
+                    height: 30px;
+                    background: item-ta.pressed ? Theme.surface-pressed
+                        : item-ta.has-hover ? Theme.surface-hover
+                        : #00000000;
+                    border-radius: Theme.radius-xs;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-2;
+                        padding-right: Theme.sp-2;
+
+                        Text {
+                            text: item;
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    item-ta := TouchArea {
+                        clicked => { root.link-clicked(item); }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 1px;
+                background: Theme.border-subtle;
+                vertical-stretch: 1;
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-2;
+                horizontal-stretch: 1;
+
+                Text {
+                    text: "Actions";
+                    color: Theme.text-tertiary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    letter-spacing: Theme.tracking-wide;
+                }
+
+                for action in ["Create New", "Import Data", "Export Report", "Team Settings"]: Rectangle {
+                    height: 30px;
+                    background: act-ta.pressed ? Theme.surface-pressed
+                        : act-ta.has-hover ? Theme.surface-hover
+                        : #00000000;
+                    border-radius: Theme.radius-xs;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-2;
+                        padding-right: Theme.sp-2;
+
+                        Text {
+                            text: action;
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    act-ta := TouchArea {
+                        clicked => { root.link-clicked(action); }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Theme.border-subtle;
+        }
+
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            padding-right: Theme.sp-2;
+
+            Text {
+                text: "Press Enter to select, Esc to close";
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

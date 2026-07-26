@@ -1,0 +1,28 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SummaryFooterRow inherits Rectangle {
+    in property <[string]> cells: [];
+    in property <bool> bold: true;
+
+    height: 40px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-card;
+
+    HorizontalLayout {
+        for cell[i] in root.cells: Rectangle {
+            horizontal-stretch: 1;
+
+            Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: cell;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: root.bold ? Theme.weight-bold : Theme.weight-medium;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+        }
+    }
+}

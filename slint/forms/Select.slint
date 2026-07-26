@@ -1,0 +1,103 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Select inherits Rectangle {
+    in property <string> placeholder: "Select...";
+    in property <[string]> options: [];
+    in-out property <int> current-index: -1;
+    in property <bool> enabled: true;
+
+    callback changed(int);
+
+    height: Theme.input-height-md;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    bg := Rectangle {
+        border-radius: Theme.radius-input;
+        border-width: 1px;
+        border-color: {
+            if (ta.has-hover || expanded) && enabled { Theme.border-strong }
+            else { Theme.border-base }
+        }
+        background: enabled ? Theme.bg-surface : Theme.btn-disabled-bg;
+
+        animate border-color { duration: Theme.dur-fast; }
+    }
+
+    selected-text := Text {
+        x: Theme.input-padding-x;
+        y: (parent.height - self.height) / 2;
+        text: current-index >= 0 && current-index < options.length
+            ? options[current-index] : placeholder;
+        color: current-index >= 0 ? Theme.text-primary : Theme.text-tertiary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-sm;
+        vertical-alignment: center;
+        horizontal-stretch: 1;
+    }
+
+    chevron := Text {
+        text: expanded ? "▴" : "▾";
+        color: Theme.text-tertiary;
+        font-size: Theme.text-sm;
+        vertical-alignment: center;
+        horizontal-stretch: 0;
+    }
+
+    // Dropdown overlay
+    in-out property <bool> expanded: false;
+
+    dropdown := Rectangle {
+        y: parent.height + Theme.sp-1;
+        width: parent.width;
+        height: min(options.length * 32px + Theme.sp-2 * 2, 200px);
+        background: Theme.bg-elevated;
+        border-radius: Theme.radius-input;
+        border-width: 1px;
+        border-color: Theme.border-base;
+        clip: true;
+        visible: root.expanded;
+
+        drop-shadow-offset-y: 4px;
+        drop-shadow-blur: 12px;
+        drop-shadow-color: Theme.border-default;
+
+        VerticalLayout {
+            padding: Theme.sp-1;
+
+            for opt[i] in root.options: Rectangle {
+                height: 32px;
+                background: option-ta.pressed ? Theme.surface-pressed
+                    : option-ta.has-hover ? Theme.surface-hover
+                    : i == root.current-index ? Theme.accent-subtle
+                    : transparent;
+                border-radius: Theme.radius-xs;
+
+                Text {
+                    x: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                    text: opt;
+                    color: i == root.current-index ? Theme.accent : Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: i == root.current-index ? Theme.weight-medium : Theme.weight-regular;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                option-ta := TouchArea {
+                    clicked => {
+                        root.current-index = i;
+                        root.expanded = false;
+                        root.changed(i);
+                    }
+                }
+            }
+        }
+    }
+
+    ta := TouchArea {
+        clicked => {
+            if enabled { root.expanded = !root.expanded; }
+        }
+    }
+}

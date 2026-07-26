@@ -1,0 +1,71 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TrailingActionList inherits Rectangle {
+    in property <[string]> titles: [];
+    in property <[string]> trailing-icons: [];
+
+    callback action(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for title[idx] in root.titles: Rectangle {
+            height: 48px;
+            background: row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : #00000000;
+
+            animate background { duration: Theme.dur-fast; }
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+                alignment: stretch;
+
+                Text {
+                    text: root.titles[idx];
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-base;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                Rectangle {
+                    width: 32px;
+                    height: 32px;
+                    horizontal-stretch: 0;
+
+                    icon-ta := TouchArea {
+                        clicked => { root.action(idx); }
+                    }
+
+                    Rectangle {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: Theme.radius-sm;
+                        background: icon-ta.pressed ? Theme.surface-pressed
+                            : icon-ta.has-hover ? Theme.surface-hover
+                            : #00000000;
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: root.trailing-icons[idx];
+                            color: Theme.text-tertiary;
+                            font-size: Theme.text-lg;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            row-ta := TouchArea {
+                clicked => { root.action(idx); }
+            }
+        }
+    }
+}

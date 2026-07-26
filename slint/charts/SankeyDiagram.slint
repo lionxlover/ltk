@@ -1,0 +1,33 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SankeyDiagram inherits Rectangle {
+    in property <string> label: "Sankey Diagram";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            // Left nodes
+            Rectangle { x: 0; y: 10px; width: 20px; height: 30px; background: Theme.accent; border-radius: 4px; }
+            Rectangle { x: 0; y: 50px; width: 20px; height: 20px; background: Theme.state-success; border-radius: 4px; }
+            Rectangle { x: 0; y: 80px; width: 20px; height: 25px; background: Theme.state-warning; border-radius: 4px; }
+
+            // Right nodes
+            Rectangle { x: parent.width - 20px; y: 15px; width: 20px; height: 40px; background: Theme.accent; border-radius: 4px; }
+            Rectangle { x: parent.width - 20px; y: 65px; width: 20px; height: 30px; background: Theme.state-success; border-radius: 4px; }
+
+            // Flows
+            Rectangle { x: 20px; y: 18px; width: parent.width - 40px; height: 8px; background: Theme.accent-subtle; border-radius: 4px; }
+            Rectangle { x: 20px; y: 52px; width: parent.width - 40px; height: 6px; background: Theme.green_100; border-radius: 4px; }
+            Rectangle { x: 20px; y: 84px; width: parent.width - 40px; height: 5px; background: Theme.amber_100; border-radius: 4px; }
+        }
+    }
+}

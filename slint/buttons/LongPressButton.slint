@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component LongPressButton inherits Rectangle {
+    in-out property <string> text: "Hold to confirm";
+    in-out property <bool> pressed: false;
+
+    background: root.pressed ? Theme.success : Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: root.pressed ? Theme.success : Theme.border-base;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/hand-pointer.svg");
+            fa-size: 14px;
+            fa-color: root.pressed ? #ffffff : Theme.text-primary;
+        }
+
+        Text {
+            text: root.pressed ? "Done" : root.text;
+            color: root.pressed ? #ffffff : Theme.text-primary;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.pressed = !root.pressed; }
+    }
+}

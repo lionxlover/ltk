@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ReadReceipt inherits Rectangle {
+    in property <bool> read: false;
+
+    width: self.preferred-width;
+    height: 16px;
+
+    HorizontalLayout {
+        spacing: 1px;
+        alignment: end;
+
+        if !root.read: FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+            fa-size: 12px;
+            fa-color: Theme.text-tertiary;
+        }
+
+        if root.read: FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check-double.svg");
+            fa-size: 12px;
+            fa-color: Theme.accent;
+        }
+    }
+}

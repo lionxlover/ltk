@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ReviewCard inherits Rectangle {
+    in-out property <string> reviewer: "User";
+    in-out property <int> stars: 4;
+    in-out property <string> text: "Great product, works as expected.";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 8px;
+
+        HorizontalLayout {
+            spacing: 8px;
+
+            Text {
+                text: root.reviewer;
+                color: Theme.text-primary;
+                font-size: 13px;
+                font-weight: Theme.weight-semibold;
+                horizontal-stretch: 1;
+                vertical-alignment: center;
+            }
+
+            HorizontalLayout {
+                spacing: 2px;
+
+                for s[i] in 5: Text {
+                    text: i < root.stars ? "★" : "☆";
+                    color: i < root.stars ? #FBBF24 : Theme.text-tertiary;
+                    font-size: 14px;
+                }
+            }
+        }
+
+        Text {
+            text: root.text;
+            color: Theme.text-secondary;
+            font-size: 13px;
+            wrap: word-wrap;
+        }
+    }
+}

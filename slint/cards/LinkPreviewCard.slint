@@ -1,0 +1,55 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LinkPreviewCard inherits Rectangle {
+    in-out property <string> url: "https://example.com";
+    in-out property <string> title: "Link Preview";
+    in-out property <string> description: "A preview of the linked content.";
+    in-out property <string> domain: "example.com";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 80px;
+            background: Theme.bg-overlay;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "🔗";
+                font-size: 24px;
+            }
+        }
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 4px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 14px;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: root.description;
+                color: Theme.text-secondary;
+                font-size: 12px;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: root.domain;
+                color: Theme.text-tertiary;
+                font-size: 11px;
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CircularKnob inherits Rectangle {
+    in-out property <float> value: 50;
+    in-out property <float> minimum: 0;
+    in-out property <float> maximum: 100;
+
+    width: 64px;
+    height: 64px;
+
+    Rectangle {
+        width: 56px;
+        height: 56px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        background: Theme.bg-raised;
+        border-width: 3px;
+        border-color: Theme.accent;
+        border-radius: 28px;
+
+        drop-shadow-color: Theme.border-default;
+        drop-shadow-blur: 8px;
+        drop-shadow-offset-y: 2px;
+    }
+
+    Text {
+        text: round(root.value);
+        color: Theme.text-primary;
+        font-size: 13px;
+        font-weight: Theme.weight-bold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}

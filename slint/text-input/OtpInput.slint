@@ -1,0 +1,40 @@
+import { Theme } from "../core/Theme.slint";
+
+export component OtpInput inherits Rectangle {
+    in property <[int]> length: [0, 1, 2, 3, 4, 5];
+    in-out property <int> focused-index: 0;
+
+    horizontal-stretch: 1;
+    height: 56px;
+
+    HorizontalLayout {
+        spacing: 8px;
+        alignment: center;
+
+        for i[index] in root.length: Rectangle {
+            width: 48px;
+            height: 52px;
+            border-radius: Theme.radius-md;
+            background: Theme.bg-surface;
+            border-width: 2px;
+            border-color: index == root.focused-index ? Theme.accent : Theme.border-base;
+            vertical-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: index < 3 ? "•" : "";
+                color: Theme.text-primary;
+                font-family: Theme.font-mono;
+                font-size: 24px;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.focused-index = index; }
+            }
+        }
+    }
+}

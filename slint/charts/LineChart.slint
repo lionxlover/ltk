@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LineChart inherits Rectangle {
+    in property <[float]> data: [0.2, 0.5, 0.3, 0.8, 0.6, 0.9, 0.7];
+    in property <string> label: "Line Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            for pt[i] in root.data: Rectangle {
+                x: i * (parent.width / (root.data.length > 1 ? root.data.length - 1 : 1));
+                y: parent.height - pt * parent.height - 2px;
+                width: 6px;
+                height: 6px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+        }
+    }
+}

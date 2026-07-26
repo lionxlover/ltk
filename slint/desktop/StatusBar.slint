@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatusBar inherits Rectangle {
+    in property <string> text: "";
+
+    background: Theme.bg-headerbar;
+    height: 24px;
+    border-radius: Theme.radius-sm;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+
+        Text {
+            text: root.text;
+            color: Theme.text-tertiary;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-regular;
+            vertical-alignment: center;
+        }
+    }
+}

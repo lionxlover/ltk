@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HalfSheetModal inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <string> title: "";
+
+    VerticalLayout {
+        alignment: end;
+
+        Rectangle {
+            height: parent.height / 2;
+            background: Theme.bg-elevated;
+            border-radius: Theme.radius-xl;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+
+            Rectangle {
+                height: 36px;
+
+                Rectangle {
+                    width: 36px;
+                    height: 4px;
+                    border-radius: 2px;
+                    background: Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: 16px;
+                }
+            }
+
+            if title != "": Text {
+                text: title;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                height: 24px;
+            }
+        }
+    }
+}

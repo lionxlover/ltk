@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScrollableRegion inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <bool> horizontal-scroll: false;
+    in property <bool> vertical-scroll: true;
+    in property <int> scroll-step: 20;
+
+    Flickable {
+        viewport-width: horizontal-scroll ? 1600px : parent.width;
+    }
+}

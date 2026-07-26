@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AudioWaveform inherits Rectangle {
+    in property <int> bars: 32;
+    in property <int> progress: 35;
+
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: 2px;
+        alignment: center;
+
+        for bar[i] in 32: Rectangle {
+            width: 3px;
+            height: Math.mod(i, 4) == 0 ? 24px : (Math.mod(i, 4) == 1 ? 16px : (Math.mod(i, 4) == 2 ? 20px : 12px));
+            border-radius: 1px;
+            background: i < root.progress * root.bars / 100 ? Theme.accent : Theme.border-subtle;
+            vertical-stretch: 0;
+        }
+    }
+}

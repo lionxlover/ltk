@@ -1,0 +1,44 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CssPropertyInjector inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> property-name: "--color-primary";
+    in property <string> property-value: "#5B9DFA";
+
+    height: 40px;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: property-name;
+            font-size: Theme.text-sm;
+            font-family: Theme.font-mono;
+            color: Theme.accent;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Text {
+            text: ":";
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Text {
+            text: property-value;
+            font-size: Theme.text-sm;
+            font-family: Theme.font-mono;
+            color: Theme.text-secondary;
+            y: (parent.height - self.height) / 2;
+            vertical-stretch: 1;
+        }
+    }
+}

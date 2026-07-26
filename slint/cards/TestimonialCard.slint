@@ -1,0 +1,72 @@
+import { Theme } from "../core/Theme.slint";
+
+export component TestimonialCard inherits Rectangle {
+    in-out property <string> quote: "This product changed how we work. Highly recommended.";
+    in-out property <string> author: "Jane Doe";
+    in-out property <string> role: "CTO, Acme Corp";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 16px;
+
+        Text {
+            text: ">";
+            color: Theme.accent;
+            font-family: Theme.font-display;
+            font-size: 48px;
+            font-weight: Theme.weight-bold;
+        }
+
+        Text {
+            text: root.quote;
+            color: Theme.text-primary;
+            font-size: 14px;
+            wrap: word-wrap;
+        }
+
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+
+            Rectangle {
+                width: 32px;
+                height: 32px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent-subtle;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "?";
+                    color: Theme.accent;
+                    font-size: 14px;
+                    font-weight: Theme.weight-bold;
+                    vertical-alignment: center;
+                }
+            }
+
+            VerticalLayout {
+                spacing: 0px;
+
+                Text {
+                    text: root.author;
+                    color: Theme.text-primary;
+                    font-size: 12px;
+                    font-weight: Theme.weight-semibold;
+                }
+
+                Text {
+                    text: root.role;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}

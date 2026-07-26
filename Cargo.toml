@@ -1,0 +1,30 @@
+[package]
+name = "ltk"
+version = "1.0.0"
+edition = "2021"
+description = "LTK — Lion Toolkit UI component library, Slint + Rust"
+license = "GPL-3.0"
+
+[[bin]]
+name = "ltk"
+path = "src/main.rs"
+
+[dependencies]
+slint = "1.17"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+env_logger = "0.11"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+x11rb = { version = "0.13", features = ["allow-unsafe-code", "randr"] }
+
+[build-dependencies]
+slint-build = "1.17"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true

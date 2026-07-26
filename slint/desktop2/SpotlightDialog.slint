@@ -1,0 +1,52 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SpotlightDialog inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <string> placeholder: "Search apps, files, commands...";
+    in-out property <string> query: "";
+
+    Rectangle {
+        width: 560px;
+        height: 64px;
+        background: Theme.bg-elevated;
+        border-radius: Theme.radius-xl;
+        border-width: 1px;
+        border-color: Theme.border-default;
+        x: (parent.width - self.width) / 2;
+        y: parent.height / 3;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-4;
+            padding-right: Theme.sp-4;
+            spacing: Theme.sp-3;
+
+            Text {
+                text: "🔍";
+                font-size: 18px;
+                y: (parent.height - self.height) / 2;
+            }
+
+            Text {
+                text: query != "" ? query : placeholder;
+                font-size: Theme.text-lg;
+                color: query != "" ? Theme.text-primary : Theme.text-tertiary;
+                y: (parent.height - self.height) / 2;
+                vertical-stretch: 1;
+                overflow: elide;
+            }
+        }
+    }
+
+    Rectangle {
+        width: 560px;
+        height: 200px;
+        background: Theme.bg-elevated;
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border-default;
+        x: (parent.width - self.width) / 2;
+        y: parent.height / 3 + 72px;
+    }
+}

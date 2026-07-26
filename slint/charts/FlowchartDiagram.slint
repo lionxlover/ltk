@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FlowchartDiagram inherits Rectangle {
+    in property <string> label: "Flowchart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Rectangle { x: 80px; y: 0px; width: 80px; height: 30px; background: Theme.accent-subtle; border-radius: Theme.radius-sm; border-width: 1px; border-color: Theme.accent;
+                Text { text: "Start"; color: Theme.accent; font-size: Theme.text-xs; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { x: 118px; y: 30px; width: 4px; height: 16px; background: Theme.border-subtle; }
+            Rectangle { x: 80px; y: 46px; width: 80px; height: 30px; background: Theme.bg-overlay; border-radius: Theme.radius-sm; border-width: 1px; border-color: Theme.border-base;
+                Text { text: "Process"; color: Theme.text-primary; font-size: Theme.text-xs; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { x: 118px; y: 76px; width: 4px; height: 16px; background: Theme.border-subtle; }
+            Rectangle { x: 80px; y: 92px; width: 80px; height: 30px; background: Theme.amber_100; border-radius: Theme.radius-sm; border-width: 1px; border-color: Theme.state-warning;
+                Text { text: "Decision"; color: Theme.state-warning; font-size: Theme.text-xs; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+            Rectangle { x: 118px; y: 122px; width: 4px; height: 16px; background: Theme.border-subtle; }
+            Rectangle { x: 80px; y: 138px; width: 80px; height: 30px; background: Theme.green_100; border-radius: Theme.radius-sm; border-width: 1px; border-color: Theme.state-success;
+                Text { text: "End"; color: Theme.state-success; font-size: Theme.text-xs; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            }
+        }
+    }
+}

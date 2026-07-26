@@ -1,0 +1,9 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ThemeProvider inherits Rectangle {
+    background: Theme.bg-base;
+
+    in property <bool> dark-mode: true;
+    in property <string> brand-accent: "#5B9DFA";
+    in property <int> font-scale: 100;
+}

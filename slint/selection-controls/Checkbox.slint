@@ -1,0 +1,49 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Checkbox inherits Rectangle {
+    in-out property <bool> checked: false;
+    in-out property <bool> enabled: true;
+    in-out property <string> label: "Option";
+
+    height: 32px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        x: 0px;
+        y: (parent.height - 20px) / 2;
+        width: 20px;
+        height: 20px;
+        border-radius: Theme.radius-sm;
+        background: root.checked ? Theme.accent : transparent;
+        border-width: 2px;
+        border-color: root.checked ? Theme.accent : Theme.border-base;
+
+        if root.checked: Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "\u{2713}";
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    Text {
+        x: 28px;
+        y: (parent.height - self.height) / 2;
+        text: root.label;
+        color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => {
+            if (root.enabled) {
+                root.checked = !root.checked;
+            }
+        }
+    }
+}

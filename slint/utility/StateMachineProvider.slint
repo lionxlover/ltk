@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StateMachineProvider inherits Rectangle {
+    background: transparent;
+
+    in property <string> state: "idle";
+    in property <[string]> states: ["idle", "loading", "success", "error"];
+    in property <string> previous-state: "";
+
+    Rectangle {
+        height: 32px;
+        border-radius: Theme.radius-sm;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: Theme.border-default;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            spacing: Theme.sp-1;
+
+            for s[idx] in states: Rectangle {
+                height: 24px;
+                border-radius: 4px;
+                background: state == s ? Theme.accent : transparent;
+
+                Text {
+                    text: s;
+                    font-size: Theme.text-xs;
+                    font-weight: state == s ? Theme.weight-semibold : Theme.weight-regular;
+                    color: state == s ? #ffffff : Theme.text-tertiary;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ScrollAnchorButton inherits Rectangle {
+    in-out property <string> text: "Section 1";
+
+    background: transparent;
+    border-radius: Theme.radius-sm;
+    height: 32px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-right.svg");
+            fa-size: 10px;
+            fa-color: Theme.text-link;
+        }
+
+        Text {
+            text: root.text;
+            color: Theme.text-link;
+            font-size: 13px;
+            font-weight: Theme.weight-medium;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

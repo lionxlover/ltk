@@ -1,0 +1,93 @@
+import { Theme } from "../core/Theme.slint";
+
+export component NotificationBellDropdown inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <int> notification-count: 5;
+    in property <[string]> notifications: ["New message from Alice", "Bob liked your post", "System update available"];
+
+    VerticalLayout {
+        Rectangle {
+            height: 44px;
+            border-radius: Theme.radius-lg;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: "Notifications";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                if notification_count > 0: Rectangle {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 10px;
+                    background: Theme.error;
+
+                    Text {
+                        text: "\{Math.mod(notification-count, 100)}";
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-bold;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        for notif[n] in notifications: Rectangle {
+            height: 52px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+                spacing: Theme.sp-3;
+
+                Rectangle {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: Theme.accent;
+                    y: 22px;
+                }
+
+                Text {
+                    text: notif;
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                    overflow: elide;
+                }
+            }
+
+            Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }
+        }
+
+        Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-lg;
+
+            Text {
+                text: "View all notifications";
+                font-size: Theme.text-sm;
+                color: Theme.accent;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

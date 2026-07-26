@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component UserPresenceIndicator inherits Rectangle {
+    background: transparent;
+
+    in property <string> status: "online";
+    in property <length> dot-size: 10px;
+
+    width: dot-size;
+    height: dot-size;
+
+    Rectangle {
+        width: dot-size;
+        height: dot-size;
+        border-radius: dot-size / 2;
+        background: status == "online" ? Theme.success : status == "away" ? Theme.warning : status == "busy" ? Theme.error : Theme.text-tertiary;
+    }
+}

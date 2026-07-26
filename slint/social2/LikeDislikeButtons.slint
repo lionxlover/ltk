@@ -1,0 +1,78 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LikeDislikeButtons inherits Rectangle {
+    background: transparent;
+
+    in-out property <bool> liked: false;
+    in-out property <bool> disliked: false;
+    in property <int> like-count: 42;
+    in property <int> dislike-count: 3;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        Rectangle {
+            height: 32px;
+            border-radius: Theme.radius-full;
+            background: liked ? Theme.accent-subtle : transparent;
+            border-width: 1px;
+            border-color: liked ? Theme.accent : Theme.border-default;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-1;
+
+                Text {
+                    text: "👍";
+                    font-size: 14px;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "\{like_count}";
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-medium;
+                    color: liked ? Theme.accent : Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.liked = !root.liked; }
+            }
+        }
+
+        Rectangle {
+            height: 32px;
+            border-radius: Theme.radius-full;
+            background: disliked ? Theme.error : transparent;
+            border-width: 1px;
+            border-color: disliked ? Theme.error : Theme.border-default;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-1;
+
+                Text {
+                    text: "👎";
+                    font-size: 14px;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "\{dislike_count}";
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-medium;
+                    color: disliked ? Theme.error : Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.disliked = !root.disliked; }
+            }
+        }
+    }
+}

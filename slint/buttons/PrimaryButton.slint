@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component PrimaryButton inherits Rectangle {
+    in-out property <string> text: "Primary";
+    in-out property <bool> enabled: true;
+
+    callback clicked();
+
+    background: Theme.accent;
+    border-radius: Theme.radius-md;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+            fa-size: 14px;
+            fa-color: #ffffff;
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

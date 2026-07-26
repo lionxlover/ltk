@@ -1,0 +1,131 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MonthCalendar inherits Rectangle {
+    in property <string> month: "July";
+    in property <string> year: "2026";
+    in-out property <int> selected-day: 23;
+    in property <int> current-day: 23;
+
+    in property <[string]> weekdays: ["S", "M", "T", "W", "T", "F", "S"];
+    in property <[int]> demo-days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 0, 0, 0, 0];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        padding: Theme.card-padding;
+        spacing: Theme.sp-3;
+
+        // Header: month + year + nav arrows
+        HorizontalLayout {
+            alignment: space-between;
+            vertical-stretch: 0;
+
+            Text {
+                text: root.month + " " + root.year;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+            }
+
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+                alignment: center;
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: Theme.radius-sm;
+                    background: touch-left.has-hover ? Theme.surface-hover : #00000000;
+
+                    touch-left := TouchArea {}
+
+                    Text {
+                        text: "◀";
+                        font-size: Theme.text-sm;
+                        color: Theme.text-secondary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: Theme.radius-sm;
+                    background: touch-right.has-hover ? Theme.surface-hover : #00000000;
+
+                    touch-right := TouchArea {}
+
+                    Text {
+                        text: "▶";
+                        font-size: Theme.text-sm;
+                        color: Theme.text-secondary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        // Weekday header row
+        HorizontalLayout {
+            vertical-stretch: 0;
+
+            for day in root.weekdays: Rectangle {
+                horizontal-stretch: 1;
+                height: 28px;
+
+                Text {
+                    text: day;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-medium;
+                    color: Theme.text-tertiary;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                    letter-spacing: Theme.tracking-wide;
+                }
+            }
+        }
+
+        // 5 rows x 7 columns grid
+        for row_idx in 5: HorizontalLayout {
+            vertical-stretch: 1;
+
+            for col_idx in 7: Rectangle {
+                horizontal-stretch: 1;
+
+                property <int> cell-index: row_idx * 7 + col_idx;
+                property <int> day-val: root.demo-days[cell-index];
+                property <bool> is-selected: day-val == root.selected-day && day-val > 0;
+                property <bool> is-today: day-val == root.current-day && day-val > 0;
+
+                Rectangle {
+                    x: (parent.width - 30px) / 2;
+                    y: (parent.height - 30px) / 2;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: Theme.radius-full;
+                    background: is-selected ? Theme.accent : #00000000;
+                    border-width: is-today && !is-selected ? 1.5px : 0px;
+                    border-color: is-today && !is-selected ? Theme.accent : #00000000;
+
+                    Text {
+                        text: day-val > 0 ? day-val : "";
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: is-selected ? Theme.weight-semibold : Theme.weight-medium;
+                        color: is-selected ? Theme.on-accent : Theme.text-primary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

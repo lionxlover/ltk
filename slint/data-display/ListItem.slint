@@ -1,0 +1,89 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ListItem inherits Rectangle {
+    in property <string> title: "";
+    in property <string> subtitle: "";
+    in property <string> icon: "";
+    in property <string> trailing: "";
+    in property <bool> pressable: true;
+
+    callback clicked();
+
+    height: 52px;
+    background: ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : transparent;
+    border-radius: Theme.radius-sm;
+
+    animate background { duration: Theme.dur-fast; }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-3;
+        alignment: stretch;
+
+        if icon != "": Rectangle {
+            width: 36px;
+            height: 36px;
+            horizontal-stretch: 0;
+
+            icon-bg := Rectangle {
+                width: 36px;
+                height: 36px;
+                border-radius: Theme.radius-sm;
+                background: Theme.bg-overlay;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: root.icon;
+                    color: Theme.text-secondary;
+                    font-size: Theme.text-lg;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: Theme.sp-0-5;
+
+            if title != "": Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            if subtitle != "": Text {
+                text: root.subtitle;
+                color: Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+        }
+
+        if trailing != "": Text {
+            text: root.trailing;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+
+        Rectangle {
+            width: 1px;
+            horizontal-stretch: 0;
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.pressable;
+        clicked => { root.clicked(); }
+    }
+}

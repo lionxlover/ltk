@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ProgressSpinner inherits Rectangle {
+    in property <color> spinner-color: Theme.accent;
+    in property <length> spinner-size: 24px;
+    in property <length> stroke-width: 3px;
+
+    width: spinner-size;
+    height: spinner-size;
+    background: transparent;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        border-width: stroke-width;
+        border-color: spinner-color;
+        background: transparent;
+    }
+}

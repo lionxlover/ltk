@@ -1,0 +1,126 @@
+import { Theme } from "../core/Theme.slint";
+import { PageTransitionFade } from "PageTransitionFade.slint";
+import { PageTransitionSlide } from "PageTransitionSlide.slint";
+import { PageTransitionScale } from "PageTransitionScale.slint";
+import { SharedElementTransition } from "SharedElementTransition.slint";
+import { HeroMorphLayout } from "HeroMorphLayout.slint";
+import { ListStaggerEntrance } from "ListStaggerEntrance.slint";
+import { ScrollReveal } from "ScrollReveal.slint";
+import { ParallaxLayer } from "ParallaxLayer.slint";
+import { SpringPhysicsContainer } from "SpringPhysicsContainer.slint";
+import { DragToDismiss } from "DragToDismiss.slint";
+import { PinchToZoomHandler } from "PinchToZoomHandler.slint";
+import { RubberBandOverscroll } from "RubberBandOverscroll.slint";
+import { ConfettiOverlay } from "ConfettiOverlay.slint";
+import { RippleEffect } from "RippleEffect.slint";
+import { ShimmerKeyframe } from "ShimmerKeyframe.slint";
+import { LottieRivePlayer } from "LottieRivePlayer.slint";
+import { IntersectionObserverTrigger } from "IntersectionObserverTrigger.slint";
+import { FlipAnimationHelper } from "FlipAnimationHelper.slint";
+import { MorphingSvgPath } from "MorphingSvgPath.slint";
+import { CounterNumberTween } from "CounterNumberTween.slint";
+import { CssVariableSpring } from "CssVariableSpring.slint";
+import { ViewTransitionWrapper } from "ViewTransitionWrapper.slint";
+
+export component AnimationTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 800px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 2800px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Animation & Motion — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Page Transitions"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                PageTransitionFade { width: 120px; height: 80px; show: true;
+                    Rectangle { background: Theme.accent; border-radius: Theme.radius-md; }
+                }
+                PageTransitionSlide { width: 120px; height: 80px; slide_visible: true; direction: "right";
+                    Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
+                }
+                PageTransitionScale { width: 120px; height: 80px; scale_visible: true;
+                    Rectangle { background: Theme.warning; border-radius: Theme.radius-md; }
+                }
+            }
+
+            Text { text: "Shared Element / Hero Morph"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SharedElementTransition { width: 200px; height: 120px; active: true; from-w: 80px; from-h: 60px; to-w: 180px; to-h: 100px;
+                    Rectangle { background: Theme.accent; border-radius: Theme.radius-md; }
+                }
+                HeroMorphLayout { width: 220px; height: 140px; expanded: true;
+                    Rectangle { background: Theme.bg-surface; border-radius: Theme.radius-lg; border-width: 1px; border-color: Theme.border-default; }
+                }
+            }
+
+            Text { text: "List Stagger Entrance"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ListStaggerEntrance { width: 300px; item-count: 4; animate-in: true; }
+
+            Text { text: "Scroll Reveal / Parallax"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ScrollReveal { width: 200px; height: 80px; revealed: true; direction: "up";
+                    Rectangle { background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                }
+                ParallaxLayer { width: 200px; height: 80px; scroll-factor: 0.3; scroll-offset: 100px;
+                    Rectangle { background: Theme.accent-subtle; border-radius: Theme.radius-md; }
+                }
+            }
+
+            Text { text: "Spring Physics / Drag / Swipe / Pinch"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SpringPhysicsContainer { width: 120px; height: 80px; active: true;
+                    Rectangle { background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                }
+                DragToDismiss { width: 120px; height: 80px; dismissed: false;
+                    Rectangle { background: Theme.error; border-radius: Theme.radius-md; }
+                }
+                PinchToZoomHandler { width: 120px; height: 80px; scale: 1.0;
+                    Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
+                }
+                RubberBandOverscroll { width: 120px; height: 80px; overscrolling: false;
+                    Rectangle { background: Theme.warning; border-radius: Theme.radius-md; }
+                }
+            }
+
+            Text { text: "Confetti Burst / Ripple / Shimmer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ConfettiOverlay { width: 180px; height: 120px; active: true; }
+                RippleEffect { width: 180px; height: 120px; active: true; ripple-x: 90px; ripple-y: 60px;
+                    Rectangle { background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                }
+                ShimmerKeyframe { width: 180px; height: 120px; active: true; }
+            }
+
+            Text { text: "Lottie Player / CSS Spring / Intersection Observer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                LottieRivePlayer { width: 140px; height: 100px; playing: true; }
+                CssVariableSpring { width: 140px; height: 100px; active: true;
+                    Rectangle { background: Theme.accent; border-radius: Theme.radius-md; }
+                }
+                IntersectionObserverTrigger { width: 140px; height: 100px; in-viewport: true;
+                    Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
+                }
+            }
+
+            Text { text: "FLIP / View Transition / Morphing SVG / Counter Tween"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FlipAnimationHelper { width: 120px; height: 80px; playing: true; to-x: 50px; to-y: 20px;
+                    Rectangle { background: Theme.warning; border-radius: Theme.radius-md; }
+                }
+                ViewTransitionWrapper { width: 120px; height: 80px; transitioning: false;
+                    Rectangle { background: Theme.accent; border-radius: Theme.radius-md; }
+                }
+                MorphingSvgPath { width: 120px; height: 80px; morphed: true;
+                    Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
+                }
+                CounterNumberTween { width: 120px; height: 80px; to-value: 42; }
+            }
+        }
+    }
+}

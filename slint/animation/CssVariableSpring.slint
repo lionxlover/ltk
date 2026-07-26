@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CssVariableSpring inherits Rectangle {
+    background: transparent;
+
+    in property <bool> active: false;
+    in property <float> tension: 1.0;
+    in property <float> friction: 0.7;
+
+    opacity: active ? 1 : 0.95;
+    animate opacity { duration: Theme.dur-slowest; easing: Theme.ease-spring; }
+}

@@ -1,0 +1,65 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ErrorState inherits Rectangle {
+    in property <string> message: "Something went wrong";
+
+    callback retry();
+
+    background: Theme.bg-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 12px;
+
+        Rectangle {
+            width: 64px;
+            height: 64px;
+            background: Theme.error;
+            border-radius: 32px;
+
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/triangle-exclamation.svg");
+                fa-size: 28px;
+                fa-color: Theme.error;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: "Error";
+            color: Theme.text-primary;
+            font-size: 16px;
+            font-weight: Theme.weight-semibold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.message;
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+
+        Rectangle {
+            height: 36px;
+            background: Theme.accent;
+            border-radius: Theme.radius-md;
+            horizontal-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "Retry";
+                color: #ffffff;
+                font-size: 13px;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            TouchArea { clicked => { root.retry(); } }
+        }
+    }
+}

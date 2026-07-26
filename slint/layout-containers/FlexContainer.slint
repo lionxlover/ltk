@@ -1,0 +1,20 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FlexContainer inherits Rectangle {
+    background: transparent;
+
+    in property <bool> horizontal: true;
+    in property <length> gap: 8px;
+    in property <bool> wrap: true;
+    in property <string> alignment: "start";
+
+    HorizontalLayout {
+        visible: horizontal;
+        spacing: gap;
+    }
+
+    VerticalLayout {
+        visible: !horizontal;
+        spacing: gap;
+    }
+}

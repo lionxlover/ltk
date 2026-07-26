@@ -1,0 +1,58 @@
+import { Theme } from "../core/Theme.slint";
+import { Slider } from "Slider.slint";
+import { RangeSlider } from "RangeSlider.slint";
+import { SteppedSlider } from "SteppedSlider.slint";
+import { VerticalSlider } from "VerticalSlider.slint";
+import { StarRating } from "StarRating.slint";
+import { EmojiRating } from "EmojiRating.slint";
+import { NumberStepper } from "NumberStepper.slint";
+import { HueSlider } from "HueSlider.slint";
+import { OpacitySlider } from "OpacitySlider.slint";
+import { CircularKnob } from "CircularKnob.slint";
+
+export component RangeValueTest inherits Rectangle {
+    background: Theme.bg-base;
+
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding: 24px;
+            spacing: 24px;
+
+            Text { text: "Range & Value"; color: Theme.text-primary; font-size: 20px; font-weight: Theme.weight-bold; }
+
+        Text { text: "Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        Slider { value: 40; }
+
+        Text { text: "Range Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        RangeSlider { low: 20; high: 70; }
+
+        Text { text: "Stepped Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        SteppedSlider { value: 3; steps: 5; }
+
+        Text { text: "Vertical Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        VerticalSlider { value: 60; height: 120px; }
+
+        Text { text: "Star Rating"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        StarRating { rating: 4; }
+
+        Text { text: "Emoji Rating"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        EmojiRating { rating: 4; }
+
+        Text { text: "Number Stepper"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        NumberStepper { value: 5; step: 1; }
+
+        Text { text: "Hue Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        HueSlider { hue: 200; }
+
+        Text { text: "Opacity Slider"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        OpacitySlider { opacity-value: 70; }
+
+        Text { text: "Circular Knob"; color: Theme.text-tertiary; font-size: 12px; font-weight: Theme.weight-semibold; }
+        CircularKnob { value: 42; }
+        }
+    }
+}

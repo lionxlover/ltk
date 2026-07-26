@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Fab inherits Rectangle {
+    width: 56px;
+    height: 56px;
+    background: Theme.accent;
+    border-radius: 16px;
+    horizontal-stretch: 0;
+
+    Image {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+        width: 24px;
+        height: 24px;
+        colorize: #ffffff;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

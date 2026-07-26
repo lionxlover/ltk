@@ -1,0 +1,10 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MorphingSvgPath inherits Rectangle {
+    background: transparent;
+
+    in property <bool> morphed: false;
+
+    opacity: morphed ? 1 : 0.6;
+    animate opacity { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+}

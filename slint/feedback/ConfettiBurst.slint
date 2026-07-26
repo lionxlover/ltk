@@ -1,0 +1,16 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ConfettiBurst inherits Rectangle {
+    background: #00000000;
+
+    for i in 20: Rectangle {
+        x: (mod(i * 37, 100)) * 1%;
+        y: (mod(i * 53, 100)) * 1%;
+        width: 6px;
+        height: 6px;
+        background: i == 0 ? Theme.accent : (i == 1 ? Theme.error : (i == 2 ? Theme.success : (i == 3 ? Theme.warning : Theme.accent)));
+        border-radius: 3px;
+        opacity: 0.8;
+        rotate-angle: i * 18;
+    }
+}

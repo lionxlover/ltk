@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SkeletonParagraph inherits Rectangle {
+    VerticalLayout {
+        spacing: 8px;
+
+        SkeletonText { skeleton-width: parent.width; }
+        SkeletonText { skeleton-width: parent.width * 0.9; }
+        SkeletonText { skeleton-width: parent.width * 0.75; }
+    }
+}

@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AccessibilityAuditOverlay inherits Rectangle {
+    background: Theme.bg-scrim;
+    clip: true;
+
+    in property <bool> active: false;
+    in property <int> issues-count: 0;
+    in property <[string]> issues: [];
+
+    if active: Rectangle {
+        x: parent.width - 300px;
+        width: 280px;
+        height: parent.height;
+        background: Theme.bg-elevated;
+        border-color: Theme.border-default;
+
+        VerticalLayout {
+            padding: Theme.sp-3;
+            spacing: Theme.sp-3;
+
+            HorizontalLayout {
+                Text {
+                    text: "Accessibility Audit";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    vertical-stretch: 1;
+                }
+
+                Rectangle {
+                    height: 20px;
+                    border-radius: 10px;
+                    background: issues_count > 0 ? Theme.error : Theme.success;
+
+                    Text {
+                        text: issues_count;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-bold;
+                        color: #ffffff;
+                        padding-left: Theme.sp-2;
+                        padding-right: Theme.sp-2;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+
+            for issue[i] in issues: Rectangle {
+                height: 36px;
+                border-radius: Theme.radius-sm;
+                background: Theme.bg-surface;
+
+                Text {
+                    text: issue;
+                    font-size: Theme.text-xs;
+                    color: Theme.text-secondary;
+                    padding-left: Theme.sp-2;
+                    padding-right: Theme.sp-2;
+                    y: (parent.height - self.height) / 2;
+                    overflow: elide;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LottieRivePlayer inherits Rectangle {
+    background: transparent;
+
+    in property <string> source: "";
+    in property <bool> playing: true;
+    in property <int> speed: 1;
+    in property <bool> loop: true;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        background: Theme.bg-overlay;
+    }
+}

@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Heatmap inherits Rectangle {
+    in property <string> label: "Heatmap";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            for row[r] in 7: HorizontalLayout { spacing: 2px;
+                for col[c] in 12: Rectangle {
+                    horizontal-stretch: 1;
+                    height: 14px;
+                    border-radius: 2px;
+                    background: Math.mod(r * 12 + c, 5) == 0 ? Theme.accent
+                        : Math.mod(r * 12 + c, 5) == 1 ? Theme.accent-subtle
+                        : Math.mod(r * 12 + c, 5) == 2 ? Theme.green_100
+                        : Math.mod(r * 12 + c, 5) == 3 ? Theme.amber_100
+                        : Theme.bg-overlay;
+                }
+            }
+        }
+    }
+}

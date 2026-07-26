@@ -1,0 +1,76 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LineHeightAdjuster inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+
+    in-out property <float> line-height: 1.5;
+
+    HorizontalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "Line Height";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: Theme.text-primary;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: Theme.border-default;
+            y: 4px;
+
+            Text {
+                text: "A−";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea {
+                clicked => { if line-height > 1.0 { line-height -= 0.1; } }
+            }
+        }
+
+        Text {
+            text: Math.round(line-height * 10) / 10;
+            font-size: Theme.text-sm;
+            color: Theme.text-secondary;
+            y: (parent.height - self.height) / 2;
+            width: 30px;
+            horizontal-alignment: center;
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: Theme.border-default;
+            y: 4px;
+
+            Text {
+                text: "A+";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+
+            TouchArea {
+                clicked => { if line-height < 3.0 { line-height += 0.1; } }
+            }
+        }
+    }
+}

@@ -1,0 +1,75 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ImageUploadPreview inherits Rectangle {
+    in-out property <bool> has-image: false;
+    in-out property <bool> dragging: false;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 2px;
+    border-color: dragging ? Theme.accent : Theme.border-base;
+    height: 180px;
+    horizontal-stretch: 1;
+
+    if !root.has-image: VerticalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Text {
+            text: "🖼";
+            font-size: 32px;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: "Upload image or drag & drop";
+            color: Theme.text-secondary;
+            font-size: 13px;
+            horizontal-alignment: center;
+        }
+        Text {
+            text: "PNG, JPG, WebP up to 5MB";
+            color: Theme.text-disabled;
+            font-size: 11px;
+            horizontal-alignment: center;
+        }
+    }
+
+    if root.has-image: Rectangle {
+        background: Theme.bg-raised;
+        border-radius: Theme.radius-md;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "Image Preview";
+            color: Theme.text-tertiary;
+            font-size: 13px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        // Crop overlay hint
+        Rectangle {
+            x: parent.width - 36px;
+            y: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: Theme.bg-surface;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "⊡";
+                color: Theme.text-secondary;
+                font-size: 14px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

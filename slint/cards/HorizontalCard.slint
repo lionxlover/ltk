@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HorizontalCard inherits Rectangle {
+    in-out property <string> title: "Horizontal Card";
+    in-out property <string> description: "Card with side image layout";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    height: 100px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        Rectangle {
+            width: 100px;
+            background: Theme.bg-overlay;
+            clip: true;
+
+            Text {
+                text: "Img";
+                color: Theme.text-tertiary;
+                font-size: 12px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 4px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 15px;
+                font-weight: Theme.weight-semibold;
+            }
+
+            Text {
+                text: root.description;
+                color: Theme.text-secondary;
+                font-size: 13px;
+            }
+        }
+    }
+}

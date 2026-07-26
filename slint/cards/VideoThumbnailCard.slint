@@ -1,0 +1,88 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VideoThumbnailCard inherits Rectangle {
+    in-out property <string> title: "Video Title";
+    in-out property <string> channel: "Channel Name";
+    in-out property <string> duration: "12:34";
+    in-out property <string> views: "1.2K views";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        Rectangle {
+            height: 140px;
+            background: Theme.dark-mode ? #1a1a2e : #e8e8f0;
+            clip: true;
+
+            Rectangle {
+                x: (parent.width - 40px) / 2;
+                y: (parent.height - 32px) / 2;
+                width: 40px;
+                height: 32px;
+                border-radius: Theme.radius-sm;
+                background: #000000aa;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "▶";
+                    color: #ffffff;
+                    font-size: 14px;
+                    vertical-alignment: center;
+                }
+            }
+
+            Rectangle {
+                x: parent.width - 56px;
+                y: parent.height - 24px;
+                height: 20px;
+                border-radius: Theme.radius-sm;
+                background: #000000cc;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: root.duration;
+                    color: #ffffff;
+                    font-size: 10px;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 4px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 13px;
+                font-weight: Theme.weight-semibold;
+                wrap: word-wrap;
+            }
+
+            HorizontalLayout {
+                spacing: 8px;
+
+                Text {
+                    text: root.channel;
+                    color: Theme.text-secondary;
+                    font-size: 11px;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: root.views;
+                    color: Theme.text-tertiary;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}

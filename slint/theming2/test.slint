@@ -1,0 +1,110 @@
+import { ThemeProvider } from "ThemeProvider.slint";
+import { SystemColorSchemeAdapter } from "SystemColorSchemeAdapter.slint";
+import { HighContrastAdapter } from "HighContrastAdapter.slint";
+import { CustomThemeBuilder } from "CustomThemeBuilder.slint";
+import { CssPropertyInjector } from "CssPropertyInjector.slint";
+import { TypographyConfigurator } from "TypographyConfigurator.slint";
+import { SpacingConfigurator } from "SpacingConfigurator.slint";
+import { IconSetSwitcher } from "IconSetSwitcher.slint";
+import { PreviewSandboxCanvas } from "PreviewSandboxCanvas.slint";
+import { ComponentPlayground } from "ComponentPlayground.slint";
+import { WcagContrastChecker } from "WcagContrastChecker.slint";
+import { AccessibilityAuditOverlay } from "AccessibilityAuditOverlay.slint";
+import { Theme } from "../core/Theme.slint";
+
+export component ThemingTest2 inherits Rectangle {
+    background: Theme.bg-base;
+    vertical-stretch: 1;
+    clip: true;
+
+    Flickable {
+        HorizontalLayout {
+            alignment: start;
+            padding: Theme.sp-4;
+            spacing: Theme.sp-4;
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 280px;
+
+                ThemeProvider {
+                    height: 140px;
+                    dark-mode: true;
+                    brand-accent: "#fde047";
+                }
+
+                SystemColorSchemeAdapter {
+                    height: 60px;
+                    follow-system: true;
+                }
+
+                HighContrastAdapter {
+                    height: 60px;
+                }
+
+                IconSetSwitcher {
+                    height: 200px;
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 320px;
+
+                CustomThemeBuilder {
+                    height: 360px;
+                }
+
+                TypographyConfigurator {
+                    height: 280px;
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 300px;
+
+                SpacingConfigurator {
+                    height: 220px;
+                }
+
+                CssPropertyInjector {
+                    property-name: "--color-primary";
+                    property-value: "#5B9DFA";
+                }
+
+                CssPropertyInjector {
+                    property-name: "--radius-default";
+                    property-value: "8px";
+                }
+
+                CssPropertyInjector {
+                    property-name: "--font-sans";
+                    property-value: "Inter";
+                }
+
+                WcagContrastChecker {
+                    height: 280px;
+                    fg-color: #F1F2F5;
+                    bg-color: #0B0D0F;
+                    contrast-ratio: 15.4;
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 320px;
+
+                PreviewSandboxCanvas {
+                    height: 260px;
+                    show-grid: true;
+                }
+
+                ComponentPlayground {
+                    height: 300px;
+                    component-name: "Button";
+                }
+            }
+        }
+    }
+}

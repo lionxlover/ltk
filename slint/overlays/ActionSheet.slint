@@ -1,0 +1,105 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ActionSheetItem inherits Rectangle {
+    in property <string> label: "";
+    in property <bool> destructive: false;
+    in property <bool> cancel: false;
+
+    callback activated();
+
+    height: Theme.button-height-lg;
+    background: item-ta.has-hover
+        ? (root.cancel ? Theme.surface-hover : Theme.surface-hover)
+        : #00000000;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: root.label;
+        color: root.destructive ? Theme.state-error : (root.cancel ? Theme.text-primary : Theme.text-primary);
+        font-family: Theme.font-ui;
+        font-size: root.cancel ? Theme.text-base : Theme.text-md;
+        font-weight: root.cancel ? Theme.weight-semibold : Theme.weight-regular;
+        vertical-alignment: center;
+    }
+
+    item-ta := TouchArea {
+        clicked => { root.activated(); }
+    }
+}
+
+export component ActionSheet inherits Rectangle {
+    in-out property <bool> active: false;
+    in property <[string]> options: [];
+    in property <[string]> destructive-options: [];
+    in property <string> cancel-text: "Cancel";
+
+    callback option-clicked(int);
+    callback destructive-clicked(int);
+    callback cancelled();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.active ? 1 : 0;
+        visible: root.active;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+
+    // Sheet
+    Rectangle {
+        x: 0;
+        y: root.active ? parent.height - self.height : parent.height;
+        width: parent.width;
+        min-height: 120px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-xl;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        animate y { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-2;
+            spacing: Theme.sp-2;
+
+            for option[optionidx] in root.options: ActionSheetItem {
+                label: option;
+                activated => { root.option-clicked(optionidx); }
+            }
+
+            for doption[didx] in root.destructive-options: ActionSheetItem {
+                label: doption;
+                destructive: true;
+                activated => { root.destructive-clicked(didx); }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Theme.divider;
+                x: Theme.sp-4;
+                width: parent.width - Theme.sp-4 * 2;
+            }
+
+            if root.cancel-text != "": ActionSheetItem {
+                label: root.cancel-text;
+                cancel: true;
+                activated => { root.cancelled(); }
+            }
+        }
+
+        TouchArea { }
+    }
+}

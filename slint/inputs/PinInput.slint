@@ -1,0 +1,34 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PinInput inherits Rectangle {
+    in property <int> pin-length: 6;
+    in property <bool> enabled: true;
+
+    callback completed(string);
+
+    height: Theme.input-height-lg;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    HorizontalLayout {
+        spacing: Theme.sp-2;
+
+        for digit[i] in root.pin-length: Rectangle {
+            horizontal-stretch: 1;
+            border-radius: Theme.radius-input;
+            border-width: 1px;
+            border-color: i == 0 ? Theme.border-focus : Theme.border-base;
+            background: enabled ? Theme.bg-surface : Theme.btn-disabled-bg;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "•";
+                color: Theme.text-primary;
+                font-size: Theme.text-xl;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    ta := TouchArea { }
+}

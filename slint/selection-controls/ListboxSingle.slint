@@ -1,0 +1,37 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ListboxSingle inherits Rectangle {
+    in-out property <[string]> items: ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+    in-out property <int> selected-index: 0;
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+    height: self.preferred-height;
+
+    VerticalLayout {
+        padding: 4px;
+
+        for itm[idx] in root.items: Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: idx == root.selected-index ? Theme.accent-subtle : transparent;
+
+            Text {
+                x: 12px;
+                y: (parent.height - self.height) / 2;
+                text: itm;
+                color: idx == root.selected-index ? Theme.accent : Theme.text-primary;
+                font-size: 14px;
+                font-weight: idx == root.selected-index ? Theme.weight-medium : Theme.weight-regular;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.selected-index = idx; }
+            }
+        }
+    }
+}

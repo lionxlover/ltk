@@ -1,0 +1,42 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MinimizedWindowChip inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    height: 32px;
+    width: 160px;
+    clip: true;
+
+    in property <string> title: "App";
+    in property <string> icon: "📄";
+    in property <bool> active: false;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: icon;
+            font-size: 14px;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Text {
+            text: title;
+            font-size: Theme.text-xs;
+            color: Theme.text-primary;
+            y: (parent.height - self.height) / 2;
+            vertical-stretch: 1;
+            overflow: elide;
+        }
+    }
+
+    Rectangle {
+        y: parent.height - 2px;
+        height: 2px;
+        background: active ? Theme.accent : transparent;
+    }
+}

@@ -1,0 +1,18 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColumnGrid inherits Rectangle {
+    background: transparent;
+
+    in property <int> columns: 12;
+    in property <length> gutter: 16px;
+
+    HorizontalLayout {
+        spacing: gutter;
+    }
+}
+
+export component GridColumn inherits Rectangle {
+    in property <int> span: 1;
+    background: transparent;
+    horizontal-stretch: span;
+}

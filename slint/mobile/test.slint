@@ -1,0 +1,129 @@
+import { Theme } from "../core/Theme.slint";
+import { PullToRefresh } from "PullToRefresh.slint";
+import { SwipeToDelete } from "SwipeToDelete.slint";
+import { SwipeToArchive } from "SwipeToArchive.slint";
+import { SwipeToAction } from "SwipeToAction.slint";
+import { LongPressActionSheet } from "LongPressActionSheet.slint";
+import { SafeAreaTopSpacer } from "SafeAreaTopSpacer.slint";
+import { SafeAreaBottomSpacer } from "SafeAreaBottomSpacer.slint";
+import { DynamicIslandSlot } from "DynamicIslandSlot.slint";
+import { StatusBarOverlay } from "StatusBarOverlay.slint";
+import { LockScreenWidgetSmall } from "LockScreenWidgetSmall.slint";
+import { LockScreenWidgetMedium } from "LockScreenWidgetMedium.slint";
+import { HomeScreenWidget2x2 } from "HomeScreenWidget2x2.slint";
+import { HomeScreenWidget2x4 } from "HomeScreenWidget2x4.slint";
+import { HomeScreenWidget4x4 } from "HomeScreenWidget4x4.slint";
+import { AppIconBadge } from "AppIconBadge.slint";
+import { SplashLaunchScreen } from "SplashLaunchScreen.slint";
+import { OnboardingPager } from "OnboardingPager.slint";
+import { BiometricAuthPrompt } from "BiometricAuthPrompt.slint";
+import { BottomSheetMultiSnap } from "BottomSheetMultiSnap.slint";
+import { HalfSheetModal } from "HalfSheetModal.slint";
+import { ActionSheetDestructive } from "ActionSheetDestructive.slint";
+import { ShareSheet } from "ShareSheet.slint";
+import { PhotoMediaPicker } from "PhotoMediaPicker.slint";
+import { ContactPicker } from "ContactPicker.slint";
+import { AppClipMiniCard } from "AppClipMiniCard.slint";
+import { FloatingIslandPill } from "FloatingIslandPill.slint";
+import { SwipeNavigationGestureArea } from "SwipeNavigationGestureArea.slint";
+
+export component MobileTest inherits Rectangle {
+    background: Theme.bg-base;
+    width: 400px;
+    height: 700px;
+
+    Flickable {
+        viewport-height: 3600px;
+
+        VerticalLayout {
+            padding: Theme.sp-6;
+            spacing: Theme.sp-6;
+
+            Text { text: "Mobile-Specific — Test"; color: Theme.text-primary; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; }
+
+            Text { text: "Pull-to-Refresh"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            PullToRefresh { width: 300px; refreshing: false; }
+
+            Text { text: "Swipe Rows"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            VerticalLayout { spacing: Theme.sp-1;
+                SwipeToDelete { width: 340px; label: "Delete this message"; }
+                SwipeToArchive { width: 340px; label: "Archive this item"; }
+                SwipeToAction { width: 340px; content: "Swipe for more"; action-label: "More"; }
+            }
+
+            Text { text: "Long-press Action Sheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                LongPressActionSheet { title: "Actions"; actions: ["Copy", "Share", "Delete"]; }
+            }
+
+            Text { text: "Safe Area / Status Bar / Gesture"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 100px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                VerticalLayout {
+                    StatusBarOverlay { }
+                    SafeAreaTopSpacer { notch-height: 20px; }
+                    SwipeNavigationGestureArea { }
+                }
+            }
+
+            Text { text: "Dynamic Island / Floating Pill"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                DynamicIslandSlot { width: 120px; }
+                FloatingIslandPill { width: 120px; }
+            }
+
+            Text { text: "Lock Screen Widgets"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                LockScreenWidgetSmall { width: 140px; height: 140px; }
+                LockScreenWidgetMedium { width: 300px; height: 140px; }
+            }
+
+            Text { text: "Home Screen Widgets"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                HomeScreenWidget2x2 { width: 120px; height: 120px; }
+                HomeScreenWidget2x4 { width: 240px; height: 120px; }
+            }
+            HomeScreenWidget4x4 { width: 340px; height: 240px; }
+
+            Text { text: "App Icon with Badge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AppIconBadge { icon: "📱"; badge-count: 5; }
+                AppIconBadge { icon: "✉️"; badge-count: 120; }
+                AppIconBadge { icon: "🌐"; badge-count: 0; }
+            }
+
+            Text { text: "Splash / Onboarding"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                SplashLaunchScreen { width: 160px; height: 200px; }
+                OnboardingPager { width: 200px; height: 200px; }
+            }
+
+            Text { text: "Biometric Auth"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 180px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                BiometricAuthPrompt { auth-type: "face-id"; }
+            }
+
+            Text { text: "Bottom Sheet / Half Sheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                BottomSheetMultiSnap { width: 180px; height: 160px; title: "Options"; snap-index: 1; }
+                HalfSheetModal { width: 180px; height: 160px; title: "Details"; }
+            }
+
+            Text { text: "Action Sheet (destructive)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                ActionSheetDestructive { title: "Delete item?"; actions: ["Delete", "Remove from list"]; }
+            }
+
+            Text { text: "Share Sheet / Photo Picker / Contacts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                ShareSheet { width: 340px; }
+            }
+            HorizontalLayout { spacing: Theme.sp-3;
+                PhotoMediaPicker { width: 180px; height: 180px; }
+                ContactPicker { width: 180px; height: 180px; }
+            }
+
+            Text { text: "App Clip Card"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            AppClipMiniCard { }
+        }
+    }
+}

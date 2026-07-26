@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PlayPauseButton inherits Rectangle {
+    in-out property <bool> playing: false;
+
+    width: 48px;
+    height: 48px;
+    background: Theme.accent;
+    border-radius: 24px;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        width: 20px;
+        height: 20px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+            width: 20px;
+            height: 20px;
+            visible: !root.playing;
+            colorize: #ffffff;
+        }
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg");
+            width: 20px;
+            height: 20px;
+            visible: root.playing;
+            colorize: #ffffff;
+        }
+    }
+
+    TouchArea {
+        clicked => { root.playing = !root.playing; }
+    }
+}

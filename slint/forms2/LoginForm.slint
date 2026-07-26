@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LoginForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 360px;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+        alignment: center;
+
+        Text {
+            text: "Welcome Back";
+            font-size: Theme.text-2xl;
+            font-weight: Theme.weight-bold;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: "Sign in to your account";
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            HorizontalLayout {
+                Text { text: "Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; vertical-stretch: 1; }
+                Text { text: "Forgot?"; font-size: Theme.text-xs; color: Theme.accent; y: 2px; }
+            }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-md;
+            background: Theme.accent;
+
+            Text {
+                text: "Sign In";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.sp-2;
+
+            Text { text: "Don't have an account?"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+            Text { text: "Sign up"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component WindowChrome inherits Rectangle {
+    in property <string> title: "Untitled";
+    in property <bool> closable: true;
+    in property <bool> minimizable: true;
+    in property <bool> maximizable: true;
+
+    background: Theme.bg-headerbar;
+    border-radius: Theme.radius-window;
+    border-width: 1px;
+    border-color: Theme.border-base;
+
+    VerticalLayout {
+        spacing: 0px;
+
+        // Title bar
+        Rectangle {
+            background: Theme.bg-headerbar;
+            height: 38px;
+            border-radius: Theme.radius-window;
+
+            HorizontalLayout {
+                padding-left: 12px;
+                padding-right: 12px;
+                spacing: 8px;
+                alignment: space-between;
+
+                // Traffic light buttons
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+
+                    // Close button
+                    Rectangle {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 6px;
+                        background: root.closable ? Theme.traffic-close : Theme.traffic-inactive;
+                    }
+
+                    // Minimize button
+                    Rectangle {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 6px;
+                        background: root.minimizable ? Theme.traffic-minimize : Theme.traffic-inactive;
+                    }
+
+                    // Maximize button
+                    Rectangle {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 6px;
+                        background: root.maximizable ? Theme.traffic-zoom : Theme.traffic-inactive;
+                    }
+                }
+
+                // Title
+                Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+
+                // Spacer
+                Rectangle {
+                    width: 44px;
+                }
+            }
+        }
+
+        // Content area
+        Rectangle {
+            background: Theme.bg-surface;
+        }
+    }
+}

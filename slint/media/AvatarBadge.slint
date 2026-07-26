@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AvatarBadge inherits Rectangle {
+    in property <string> fallback: "?";
+    in property <length> avatar-size: 48px;
+    in property <string> badge-text: "3";
+    in property <brush> badge-color: Theme.state-error;
+
+    width: avatar-size;
+    height: avatar-size;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        background: Theme.accent-subtle;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.fallback;
+            color: Theme.accent;
+            font-size: avatar-size * 0.35;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+
+    Rectangle {
+        x: parent.width - 14px;
+        y: 0px;
+        min-width: 14px;
+        height: 14px;
+        border-radius: Theme.radius-full;
+        background: root.badge-color;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: root.badge_text;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: Theme.weight-bold;
+            vertical-alignment: center;
+        }
+    }
+}

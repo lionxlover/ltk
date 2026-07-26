@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component GroupedList inherits Rectangle {
+    in property <[string]> sections: [];
+    in property <[int]> items-per-section: [];
+
+    callback item-clicked(int, int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-sm;
+    clip: true;
+
+    VerticalLayout {
+        for section[si] in root.sections: Rectangle {
+            height: items-per-section[si] > 0
+                ? 32px + items-per-section[si] * 40px
+                : 32px;
+
+            VerticalLayout {
+                Rectangle {
+                    height: 32px;
+                    background: Theme.bg-overlay;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-4;
+                        padding-right: Theme.sp-4;
+                        alignment: start;
+
+                        Text {
+                            text: section;
+                            color: Theme.text-secondary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-xs;
+                            font-weight: Theme.weight-bold;
+                            letter-spacing: Theme.tracking-wide;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: items-per-section[si] * 40px;
+                    background: item-ta.pressed ? Theme.surface-pressed
+                        : item-ta.has-hover ? Theme.surface-hover
+                        : #00000000;
+
+                    animate background { duration: Theme.dur-fast; }
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-8;
+                        padding-right: Theme.sp-4;
+                        alignment: start;
+
+                        Text {
+                            text: "Item " + (si + 1);
+                            color: Theme.text-primary;
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    item-ta := TouchArea {
+                        clicked => { root.item-clicked(si, 0); }
+                    }
+                }
+            }
+        }
+    }
+}

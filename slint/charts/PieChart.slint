@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PieChart inherits Rectangle {
+    in property <[float]> data: [0.35, 0.25, 0.20, 0.20];
+    in property <[brush]> colors: [Theme.accent, Theme.state-success, Theme.state-warning, Theme.state-error];
+    in property <string> label: "Pie Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            Rectangle {
+                width: 120px; height: 120px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-2; alignment: center;
+            for c[i] in root.colors: HorizontalLayout { spacing: 4px;
+                Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: c; }
+                Text { text: "\{round((i < root.data.length ? root.data[i] : 0) * 100)}%"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
+            }
+        }
+    }
+}

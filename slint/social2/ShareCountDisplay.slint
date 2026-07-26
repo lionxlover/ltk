@@ -1,0 +1,25 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ShareCountDisplay inherits Rectangle {
+    background: transparent;
+
+    in property <int> shares: 128;
+
+    HorizontalLayout {
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "↗";
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            y: 1px;
+        }
+
+        Text {
+            text: shares >= 1000 ? Math.round(shares / 100) / 10 + "k" : shares;
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+            y: 1px;
+        }
+    }
+}

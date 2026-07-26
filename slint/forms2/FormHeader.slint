@@ -1,0 +1,48 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormHeader inherits Rectangle {
+    background: transparent;
+
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> badge: "";
+
+    VerticalLayout {
+        spacing: Theme.sp-2;
+
+        HorizontalLayout {
+            spacing: Theme.sp-2;
+            height: 28px;
+
+            Text {
+                text: title;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-bold;
+                color: Theme.text-primary;
+                y: 2px;
+            }
+
+            if badge != "": Rectangle {
+                height: 20px;
+                border-radius: 10px;
+                background: Theme.accent-subtle;
+                y: 4px;
+
+                Text {
+                    text: badge;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.accent;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+        }
+
+        if description != "": Text {
+            text: description;
+            font-size: Theme.text-sm;
+            color: Theme.text-tertiary;
+        }
+    }
+}

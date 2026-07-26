@@ -1,0 +1,43 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MultiLineChart inherits Rectangle {
+    in property <[float]> series-a: [0.2, 0.5, 0.3, 0.8, 0.6];
+    in property <[float]> series-b: [0.4, 0.3, 0.7, 0.5, 0.9];
+    in property <string> label: "Multi-series Line Chart";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1; clip: true;
+            for pt[i] in root.series-a: Rectangle {
+                x: i * (parent.width / (root.series-a.length > 1 ? root.series-a.length - 1 : 1));
+                y: parent.height - pt * parent.height - 2px;
+                width: 6px; height: 6px;
+                border-radius: Theme.radius-full;
+                background: Theme.accent;
+            }
+            for pt[i] in root.series-b: Rectangle {
+                x: i * (parent.width / (root.series-b.length > 1 ? root.series-b.length - 1 : 1));
+                y: parent.height - pt * parent.height - 2px;
+                width: 6px; height: 6px;
+                border-radius: Theme.radius-full;
+                background: Theme.state-success;
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.accent; }
+            Text { text: "Series A"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
+            Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.state-success; }
+            Text { text: "Series B"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
+        }
+    }
+}

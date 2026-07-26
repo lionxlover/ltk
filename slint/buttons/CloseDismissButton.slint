@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component CloseDismissButton inherits Rectangle {
+    in-out property <bool> enabled: true;
+
+    width: 28px;
+    height: 28px;
+    background: Theme.bg-raised;
+    border-radius: 14px;
+    horizontal-stretch: 0;
+
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+        fa-size: 14px;
+        fa-color: Theme.text-tertiary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

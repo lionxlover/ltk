@@ -1,0 +1,31 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CorrelationMatrix inherits Rectangle {
+    in property <string> label: "Correlation Matrix";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+
+        Rectangle { vertical-stretch: 1;
+            for row[r] in 5: HorizontalLayout { spacing: 2px;
+                for col[c] in 5: Rectangle {
+                    horizontal-stretch: 1;
+                    height: 20px;
+                    border-radius: 2px;
+                    background: r == c ? Theme.accent
+                        : Math.abs(r - c) == 1 ? Theme.accent-subtle
+                        : Math.abs(r - c) == 2 ? Theme.bg-overlay
+                        : Theme.bg-surface;
+                }
+            }
+        }
+    }
+}

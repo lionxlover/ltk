@@ -1,0 +1,41 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HashtagAutocomplete inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> tags: ["design", "development", "launch"];
+
+    VerticalLayout {
+        for tag[t] in tags: Rectangle {
+            height: 40px;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: "#";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-bold;
+                    color: Theme.accent;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: tag;
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+            }
+
+            Rectangle { height: 1px; x: Theme.sp-3; background: Theme.border-subtle; }
+        }
+    }
+}

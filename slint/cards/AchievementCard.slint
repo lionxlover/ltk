@@ -1,0 +1,56 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AchievementCard inherits Rectangle {
+    in-out property <string> title: "Achievement Unlocked";
+    in-out property <string> description: "Completed 100 tasks";
+    in-out property <string> date: "Jul 23, 2026";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: #FBBF24;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 8px;
+        alignment: center;
+
+        Rectangle {
+            width: 56px;
+            height: 56px;
+            border-radius: Theme.radius-full;
+            background: #FBBF2420;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "🏆";
+                font-size: 28px;
+                vertical-alignment: center;
+            }
+        }
+
+        Text {
+            text: root.title;
+            color: #FBBF24;
+            font-size: 14px;
+            font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-size: 12px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.date;
+            color: Theme.text-tertiary;
+            font-size: 11px;
+            horizontal-alignment: center;
+        }
+    }
+}

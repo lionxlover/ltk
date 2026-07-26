@@ -1,0 +1,38 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HighContrastToggle inherits Rectangle {
+    in-out property <bool> active: false;
+
+    height: Theme.toggle-height;
+    width: Theme.toggle-width;
+    background: active ? Theme.accent : Theme.toggle-track-off;
+    border-radius: Theme.radius-full;
+
+    TouchArea {
+        clicked => {
+            root.active = !root.active;
+        }
+    }
+
+    Rectangle {
+        x: parent.active ? parent.width - Theme.toggle-thumb - 3px : 3px;
+        width: Theme.toggle-thumb;
+        height: Theme.toggle-thumb;
+        background: Theme.on-accent;
+        border-radius: Theme.radius-full;
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.sp-2;
+        padding-right: Theme.sp-2;
+        alignment: center;
+
+        Text {
+            text: "High Contrast";
+            color: Theme.text-primary;
+            font-size: Theme.text-xs;
+            vertical-alignment: center;
+            visible: false;
+        }
+    }
+}

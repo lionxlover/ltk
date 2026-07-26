@@ -1,0 +1,14 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HorizontalStack inherits Rectangle {
+    background: transparent;
+
+    in property <length> gap: 8px;
+    in property <string> alignment: "start";
+    in property <length> padding: 0px;
+
+    HorizontalLayout {
+        spacing: gap;
+        padding: padding;
+    }
+}

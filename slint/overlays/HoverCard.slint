@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HoverCard inherits Rectangle {
+    visible: false;
+    in property <string> title: "";
+    in property <string> description: "";
+
+    min-width: 240px;
+    max-width: 320px;
+    visible: root.visible;
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+    opacity: root.visible ? 1 : 0;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        if root.title != "": Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            wrap: word-wrap;
+        }
+
+        if root.description != "": Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            wrap: word-wrap;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component DangerButton inherits Rectangle {
+    in-out property <string> text: "Delete";
+    in-out property <bool> enabled: true;
+
+    background: Theme.error;
+    border-radius: Theme.radius-md;
+    height: 40px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trash.svg");
+            fa-size: 14px;
+            fa-color: #ffffff;
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

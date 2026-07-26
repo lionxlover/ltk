@@ -1,0 +1,66 @@
+import { Theme } from "../core/Theme.slint";
+
+export component BottomSheet inherits Rectangle {
+    in-out property <bool> active: false;
+
+    callback dismissed();
+
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+
+    // Scrim
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.backdrop;
+        opacity: root.active ? 1 : 0;
+        visible: root.active;
+        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        TouchArea {
+            clicked => { root.dismissed(); }
+        }
+    }
+
+    // Sheet panel
+    Rectangle {
+        x: 0;
+        y: root.active ? parent.height - self.height : parent.height;
+        width: parent.width;
+        height: 480px;
+        background: Theme.bg-surface;
+        border-radius: Theme.radius-xl;
+        border-width: 1px;
+        border-color: Theme.border-subtle;
+
+        drop-shadow-offset-y: -4px;
+        drop-shadow-blur: 20px;
+        drop-shadow-color: Theme.border-default;
+
+        animate y { duration: Theme.dur-slow; easing: Theme.ease-soft; }
+
+        VerticalLayout {
+            padding: Theme.sp-4;
+            spacing: Theme.sp-4;
+
+            // Handle
+            Rectangle {
+                width: 36px;
+                height: 4px;
+                border-radius: 2px;
+                background: Theme.border-strong;
+                horizontal-stretch: 0;
+                vertical-stretch: 0;
+                x: (parent.width - self.width) / 2;
+            }
+
+            // Content slot
+            Rectangle {
+                vertical-stretch: 1;
+            }
+        }
+
+        TouchArea { }
+    }
+}

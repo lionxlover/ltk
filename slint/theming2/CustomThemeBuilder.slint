@@ -1,0 +1,76 @@
+import { Theme } from "../core/Theme.slint";
+
+export component CustomThemeBuilder inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <string> theme-name: "My Theme";
+
+    VerticalLayout {
+        padding: Theme.sp-4;
+        spacing: Theme.sp-4;
+
+        Text {
+            text: "Custom Theme Builder";
+            font-size: Theme.text-lg;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        for section[s] in ["Colors", "Typography", "Spacing", "Radius"]: VerticalLayout {
+            spacing: Theme.sp-2;
+
+            Text {
+                text: s;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-secondary;
+            }
+
+            Rectangle {
+                height: 40px;
+                border-radius: Theme.radius-md;
+                border-width: 1px;
+                border-color: Theme.border-default;
+
+                HorizontalLayout {
+                    padding-left: Theme.sp-3;
+                    padding-right: Theme.sp-3;
+
+                    Text {
+                        text: s + " settings";
+                        font-size: Theme.text-sm;
+                        color: Theme.text-tertiary;
+                        y: (parent.height - self.height) / 2;
+                        vertical-stretch: 1;
+                    }
+
+                    Text {
+                        text: "›";
+                        font-size: Theme.text-lg;
+                        color: Theme.text-tertiary;
+                        y: (parent.height - self.height) / 2;
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-md;
+            background: Theme.accent;
+
+            Text {
+                text: "Apply Theme";
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: #ffffff;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+}

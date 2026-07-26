@@ -1,0 +1,57 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LaunchpadGrid inherits Rectangle {
+    in property <int> count: 0;
+
+    callback app-clicked(int);
+
+    background: #00000000;
+
+    in property <int> cols: 4;
+    in property <int> row-count: Math.ceil(count / cols);
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-8;
+
+        for row-idx in root.row-count: HorizontalLayout {
+            spacing: Theme.sp-6;
+            alignment: center;
+
+            for col-idx in root.cols: Rectangle {
+                width: 80px;
+                height: 96px;
+                background: app-ta.pressed ? Theme.surface-pressed
+                    : app-ta.has-hover ? Theme.surface-hover
+                    : #00000000;
+                border-radius: Theme.radius-md;
+                visible: (row-idx * root.cols + col-idx) < root.count;
+
+                VerticalLayout {
+                    alignment: center;
+                    spacing: Theme.sp-2;
+
+                    Rectangle {
+                        width: 52px;
+                        height: 52px;
+                        x: (parent.width - self.width) / 2;
+                        background: Theme.bg-overlay;
+                        border-radius: Theme.radius-lg;
+                    }
+
+                    Text {
+                        text: "App";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        horizontal-alignment: center;
+                    }
+                }
+
+                app-ta := TouchArea {
+                    clicked => { root.app-clicked(row-idx * root.cols + col-idx); }
+                }
+            }
+        }
+    }
+}

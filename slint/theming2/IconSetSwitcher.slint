@@ -1,0 +1,60 @@
+import { Theme } from "../core/Theme.slint";
+
+export component IconSetSwitcher inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <[string]> icon-sets: ["Font Awesome", "Lucide", "Phosphor", "Heroicons"];
+    in-out property <int> active-set: 0;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: "Icon Set";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+        }
+
+        for set[idx] in icon-sets: Rectangle {
+            height: 40px;
+            border-radius: Theme.radius-sm;
+            background: active-set == idx ? Theme.accent-subtle : transparent;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: "🎨";
+                    font-size: 14px;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: set;
+                    font-size: Theme.text-sm;
+                    color: active-set == idx ? Theme.accent : Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                if active-set == idx: Text {
+                    text: "✓";
+                    font-size: Theme.text-sm;
+                    color: Theme.accent;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.active-set = idx; }
+            }
+        }
+    }
+}

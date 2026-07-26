@@ -1,0 +1,24 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatusChip inherits Rectangle {
+    in property <string> text: "Active";
+    in property <int> variant: 0;
+
+    min-width: max(chip-text.preferred-width + 16px, 48px);
+    height: 24px;
+    background: variant == 0 ? Theme.success : (variant == 1 ? Theme.error : (variant == 2 ? Theme.warning : Theme.bg-overlay));
+    border-radius: 12px;
+    horizontal-stretch: 0;
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        text: root.text;
+        color: variant == 0 ? Theme.success : (variant == 1 ? Theme.error : (variant == 2 ? Theme.warning : Theme.text-secondary));
+        font-size: 11px;
+        font-weight: Theme.weight-semibold;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    chip-text := Text { visible: false; text: root.text; }
+}

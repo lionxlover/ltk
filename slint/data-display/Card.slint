@@ -1,0 +1,26 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Card inherits Rectangle {
+    in property <bool> elevated: false;
+    in property <bool> outlined: false;
+    in property <bool> padded: true;
+    in property <bool> pressable: false;
+
+    callback clicked();
+
+    min-width: 120px;
+    min-height: 60px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: outlined ? Theme.border-base : transparent;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: elevated ? Theme.elevation-2-y : 0px;
+    drop-shadow-blur: elevated ? Theme.elevation-2-blur : 0px;
+    drop-shadow-color: elevated ? Theme.elevation-2-color : transparent;
+
+    if pressable: TouchArea {
+        clicked => { root.clicked(); }
+    }
+}

@@ -1,0 +1,22 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PanelSash inherits Rectangle {
+    background: transparent;
+
+    in property <bool> vertical: true;
+    in property <bool> is-hovered: false;
+    in property <length> sash-size: 4px;
+
+    min-width: vertical ? sash-size : 0px;
+    max-width: vertical ? sash-size : 9999px;
+    min-height: vertical ? 0px : sash-size;
+    max-height: vertical ? 9999px : sash-size;
+
+    Rectangle {
+        x: vertical ? (parent.width - 1px) / 2 : 0px;
+        y: vertical ? 0px : (parent.height - 1px) / 2;
+        width: vertical ? 2px : parent.width;
+        height: vertical ? parent.height : 2px;
+        background: is-hovered ? Theme.accent : Theme.border-default;
+    }
+}

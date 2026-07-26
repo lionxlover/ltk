@@ -1,0 +1,101 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FontLoaderItem inherits Rectangle {
+    in property <string> font-name: "";
+    in property <bool> active: false;
+    in property <string> display-font: "";
+
+    callback activated();
+
+    height: 36px;
+    border-radius: Theme.radius-sm;
+    background: root.active ? Theme.accent-subtle : (item-ta.has-hover ? Theme.surface-hover : #00000000);
+    border-width: root.active ? 1px : 0px;
+    border-color: root.active ? Theme.accent : #00000000;
+
+    animate background { duration: Theme.dur-fast; }
+    animate border-color { duration: Theme.dur-fast; }
+
+    Text {
+        x: Theme.sp-3;
+        y: (parent.height - self.height) / 2;
+        text: root.font-name;
+        color: root.active ? Theme.accent : Theme.text-primary;
+        font-family: root.display-font != "" ? root.display-font : Theme.font-ui;
+        font-size: Theme.text-base;
+        font-weight: root.active ? Theme.weight-semibold : Theme.weight-regular;
+        vertical-alignment: center;
+    }
+
+    item-ta := TouchArea {
+        clicked => { root.activated(); }
+    }
+}
+
+export component FontLoader inherits Rectangle {
+    in-out property <int> selected: 0;
+
+    callback font-selected(int);
+
+    width: 100%;
+    min-height: 180px;
+    background: Theme.bg-raised;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.sp-3;
+        spacing: Theme.sp-1;
+
+        Text {
+            text: "Font Family";
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+        }
+
+        Rectangle { height: 4px; }
+
+        FontLoaderItem {
+            font-name: "Inter";
+            display-font: "Inter";
+            active: root.selected == 0;
+            activated => {
+                root.selected = 0;
+                root.font-selected(0);
+            }
+        }
+
+        FontLoaderItem {
+            font-name: "Space Grotesk";
+            display-font: "Space Grotesk";
+            active: root.selected == 1;
+            activated => {
+                root.selected = 1;
+                root.font-selected(1);
+            }
+        }
+
+        FontLoaderItem {
+            font-name: "JetBrains Mono";
+            display-font: "JetBrains Mono";
+            active: root.selected == 2;
+            activated => {
+                root.selected = 2;
+                root.font-selected(2);
+            }
+        }
+
+        FontLoaderItem {
+            font-name: "System Default";
+            display-font: "";
+            active: root.selected == 3;
+            activated => {
+                root.selected = 3;
+                root.font-selected(3);
+            }
+        }
+    }
+}

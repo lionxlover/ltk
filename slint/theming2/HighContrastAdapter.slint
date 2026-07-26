@@ -1,0 +1,8 @@
+import { Theme } from "../core/Theme.slint";
+
+export component HighContrastAdapter inherits Rectangle {
+    background: transparent;
+
+    in-out property <bool> enabled: false;
+    in property <float> contrast-level: 1.0;
+}

@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatCard inherits Rectangle {
+    in property <string> label: "";
+    in property <string> value: "";
+    in property <string> subtitle: "";
+    in property <color> stat-color: Theme.accent;
+
+    min-width: 140px;
+    min-height: 80px;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    VerticalLayout {
+        padding: Theme.card-padding;
+        spacing: Theme.sp-2;
+
+        Text {
+            text: root.label;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xs;
+            font-weight: Theme.weight-semibold;
+            letter-spacing: Theme.tracking-wide;
+        }
+
+        Text {
+            text: root.value;
+            color: Theme.text-primary;
+            font-family: Theme.font-display;
+            font-size: Theme.text-3xl;
+            font-weight: Theme.weight-bold;
+        }
+
+        if root.subtitle != "": Text {
+            text: root.subtitle;
+            color: stat-color;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+        }
+    }
+}

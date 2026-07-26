@@ -1,0 +1,29 @@
+import { Theme } from "../core/Theme.slint";
+
+export component StatusBarOverlay inherits Rectangle {
+    background: transparent;
+    in property <length> bar-height: 44px;
+    height: bar-height;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-4;
+
+        Text {
+            text: "9:41";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.text-primary;
+            vertical-alignment: center;
+        }
+
+        Rectangle { vertical-stretch: 1; }
+
+        HorizontalLayout {
+            spacing: Theme.sp-1;
+
+            Text { text: "📶"; font-size: 12px; }
+            Text { text: "🔋"; font-size: 12px; }
+        }
+    }
+}

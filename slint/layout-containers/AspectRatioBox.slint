@@ -1,0 +1,12 @@
+import { Theme } from "../core/Theme.slint";
+
+export component AspectRatioBox inherits Rectangle {
+    background: transparent;
+
+    in property <int> ratio-numerator: 16;
+    in property <int> ratio-denominator: 9;
+    in property <bool> use-width: true;
+
+    // Calculate height from width based on aspect ratio
+    height: use-width ? (root.width / 1px * ratio-denominator / ratio-numerator) * 1px : 0px;
+}

@@ -1,0 +1,133 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ContextMenu inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    width: 200px;
+
+    drop-shadow-color: Theme.border-default;
+    drop-shadow-blur: 20px;
+    drop-shadow-offset-y: 8px;
+
+    VerticalLayout {
+        padding: Theme.sp-1;
+        spacing: 2px;
+
+        Rectangle {
+            height: 30px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "Copy";
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 30px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paste.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "Paste";
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 30px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/cut.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "Cut";
+                    color: Theme.text-primary;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Separator
+        HorizontalLayout {
+            padding-left: Theme.sp-2;
+            padding-right: Theme.sp-2;
+            Rectangle {
+                height: 1px;
+                background: Theme.border-subtle;
+            }
+        }
+
+        Rectangle {
+            height: 30px;
+            border-radius: Theme.radius-xs;
+            background: #00000000;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: Theme.sp-2;
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trash-can.svg");
+                    fa-size: 12px;
+                    fa-color: Theme.error;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: "Delete";
+                    color: Theme.error;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

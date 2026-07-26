@@ -1,0 +1,100 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DayAgendaCalendar inherits Rectangle {
+    in property <string> selected-day: "Wednesday, July 23";
+    in property <int> item-count: 3;
+
+    in property <[string]> event-times: ["9:00 AM", "10:30 AM", "2:00 PM"];
+    in property <[string]> event-titles: ["Team Standup", "Code Review", "Planning"];
+    in property <[string]> event-subtitles: ["Daily sync with the team", "Review pull request #142", "Sprint planning session"];
+    in property <[color]> event-colors: [Theme.accent, Theme.green-500, Theme.amber-500];
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        padding: Theme.card-padding;
+        spacing: Theme.sp-4;
+
+        // Header
+        VerticalLayout {
+            spacing: Theme.sp-1;
+            vertical-stretch: 0;
+
+            Text {
+                text: root.selected-day;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xl;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+            }
+
+            Rectangle {
+                width: 40px;
+                height: 3px;
+                border-radius: 1px;
+                background: Theme.accent;
+            }
+        }
+
+        // Event list
+        VerticalLayout {
+            spacing: Theme.sp-4;
+            vertical-stretch: 1;
+
+            for evt_idx in root.item-count: Rectangle {
+                height: 64px;
+                border-radius: Theme.radius-sm;
+                background: Theme.surface-hover;
+
+                HorizontalLayout {
+                    padding: Theme.sp-3;
+                    spacing: Theme.sp-3;
+
+                    // Time label
+                    Rectangle {
+                        width: 80px;
+
+                        Text {
+                            text: root.event-times[evt_idx];
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-xs;
+                            color: Theme.text-tertiary;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    // Colored left border
+                    Rectangle {
+                        width: 3px;
+                        border-radius: 1px;
+                        background: root.event-colors[evt_idx];
+                    }
+
+                    // Event content
+                    VerticalLayout {
+                        spacing: Theme.sp-0-5;
+
+                        Text {
+                            text: root.event-titles[evt_idx];
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-base;
+                            font-weight: Theme.weight-semibold;
+                            color: Theme.text-primary;
+                        }
+
+                        Text {
+                            text: root.event-subtitles[evt_idx];
+                            font-family: Theme.font-ui;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-secondary;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

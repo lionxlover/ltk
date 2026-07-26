@@ -1,0 +1,78 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VideoPlayer inherits Rectangle {
+    in property <string> title: "Video";
+    in property <bool> playing: false;
+
+    callback play-toggle();
+
+    background: Theme.dark-mode ? #0D1117 : #1a1a2e;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    VerticalLayout {
+        Rectangle {
+            vertical-stretch: 1;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "▶";
+                color: #ffffff;
+                font-size: 48px;
+                vertical-alignment: center;
+            }
+        }
+
+        Rectangle {
+            height: 48px;
+            background: #00000080;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                spacing: Theme.sp-3;
+
+                Rectangle {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: Theme.radius-full;
+                    background: Theme.accent;
+
+                    play-ta := TouchArea {
+                        clicked => { root.play-toggle(); }
+                    }
+                }
+
+                Rectangle {
+                    height: 4px;
+                    vertical-stretch: 0;
+
+                    Rectangle {
+                        y: (parent.height - self.height) / 2;
+                        height: 4px;
+                        width: parent.width * 0.35;
+                        background: Theme.accent;
+                        border-radius: 2px;
+                    }
+
+                    Rectangle {
+                        y: (parent.height - self.height) / 2;
+                        height: 4px;
+                        width: parent.width;
+                        background: #ffffff30;
+                        border-radius: 2px;
+                    }
+                }
+
+                Text {
+                    text: root.title;
+                    color: #ffffffcc;
+                    font-size: Theme.text-xs;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+        }
+    }
+}

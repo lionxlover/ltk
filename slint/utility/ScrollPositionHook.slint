@@ -1,0 +1,11 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ScrollPositionHook inherits Rectangle {
+    background: transparent;
+
+    in property <length> scroll-x: 0px;
+    in property <length> scroll-y: 0px;
+    in property <length> scroll-width: 0px;
+    in property <length> scroll-height: 0px;
+    in property <float> scroll-progress: 0.0;
+}

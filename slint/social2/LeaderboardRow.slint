@@ -1,0 +1,70 @@
+import { Theme } from "../core/Theme.slint";
+
+export component LeaderboardRow inherits Rectangle {
+    background: transparent;
+    height: 48px;
+
+    in property <int> rank: 1;
+    in property <string> user-name: "Alice";
+    in property <int> score: 1500;
+    in property <string> avatar: "A";
+
+    HorizontalLayout {
+        padding-left: Theme.sp-3;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-3;
+
+        Rectangle {
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            background: rank <= 3 ? Theme.accent-subtle : Theme.bg-overlay;
+            y: 10px;
+
+            Text {
+                text: "\{Math.mod(rank, 10)}";
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-bold;
+                color: rank <= 3 ? Theme.accent : Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Rectangle {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: Theme.bg-overlay;
+            y: 8px;
+
+            Text {
+                text: avatar;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+
+        Text {
+            text: user-name;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: Theme.text-primary;
+            y: (parent.height - self.height) / 2;
+            vertical-stretch: 1;
+        }
+
+        Text {
+            text: "\{score}";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            color: Theme.accent;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    Rectangle { height: 1px; x: Theme.sp-3; background: Theme.border-subtle; }
+}

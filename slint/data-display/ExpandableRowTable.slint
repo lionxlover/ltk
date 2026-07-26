@@ -1,0 +1,108 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ExpandableRowTable inherits Rectangle {
+    in property <[string]> columns: [];
+    in property <int> row-count: 0;
+    in property <int> expanded-row: -1;
+
+    callback expand-toggle(int);
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-card;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    clip: true;
+
+    VerticalLayout {
+        if columns.length > 0: Rectangle {
+            height: 40px;
+            background: Theme.bg-overlay;
+
+            HorizontalLayout {
+                Rectangle { width: 32px; horizontal-stretch: 0; }
+
+                for col[i] in root.columns: Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: col;
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-xs;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 1px; background: Theme.border-subtle; }
+
+        VerticalLayout {
+            for row[rowidx] in root.row-count: VerticalLayout {
+                Rectangle {
+                    height: 40px;
+                    background: row-ta.pressed ? Theme.surface-pressed
+                        : row-ta.has-hover ? Theme.surface-hover
+                        : transparent;
+
+                    animate background { duration: Theme.dur-fast; }
+
+                    HorizontalLayout {
+                        Rectangle {
+                            width: 32px;
+                            horizontal-stretch: 0;
+
+                            Text {
+                                x: (parent.width - self.width) / 2;
+                                y: (parent.height - self.height) / 2;
+                                text: root.expanded-row == rowidx ? "▼" : "▶";
+                                color: Theme.text-tertiary;
+                                font-family: Theme.font-ui;
+                                font-size: Theme.text-xs;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        for col[i] in root.columns: Rectangle {
+                            horizontal-stretch: 1;
+
+                            Text {
+                                x: Theme.sp-3;
+                                y: (parent.height - self.height) / 2;
+                                text: "Row \{rowidx + 1} — \{col}";
+                                color: Theme.text-primary;
+                                font-family: Theme.font-ui;
+                                font-size: Theme.text-sm;
+                                vertical-alignment: center;
+                                horizontal-stretch: 1;
+                            }
+                        }
+                    }
+
+                    row-ta := TouchArea {
+                        clicked => { root.expand-toggle(rowidx); }
+                    }
+                }
+
+                if root.expanded-row == rowidx: Rectangle {
+                    height: 48px;
+                    background: Theme.bg-overlay;
+
+                    Text {
+                        x: 48px;
+                        y: (parent.height - self.height) / 2;
+                        text: "Detail content for row \{rowidx + 1}";
+                        color: Theme.text-secondary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

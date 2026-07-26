@@ -1,0 +1,45 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ModelViewer inherits Rectangle {
+    in property <string> label: "3D Model";
+
+    width: 300px;
+    height: 240px;
+    background: Theme.dark-mode ? #0D1117 : #f0f0f0;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "🧊";
+            font-size: 48px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.label;
+            color: Theme.text-secondary;
+            font-size: Theme.text-sm;
+            horizontal-alignment: center;
+        }
+
+        Rectangle {
+            height: 24px;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "Drag to rotate";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

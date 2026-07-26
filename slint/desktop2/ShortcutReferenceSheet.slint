@@ -1,0 +1,87 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ShortcutReferenceSheet inherits Rectangle {
+    background: Theme.bg-elevated;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    clip: true;
+
+    in property <length> panel-width: 400px;
+
+    width: panel-width;
+
+    Rectangle {
+        height: 40px;
+        background: Theme.bg-headerbar;
+        border-radius: Theme.radius-lg;
+
+        HorizontalLayout {
+            padding-left: Theme.sp-4;
+            Text {
+                text: "Keyboard Shortcuts";
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+                y: (parent.height - self.height) / 2;
+            }
+        }
+    }
+
+    Flickable {
+        y: 40px;
+
+        VerticalLayout {
+            padding: Theme.sp-3;
+            spacing: Theme.sp-3;
+
+            for section[s] in ["General", "Editing", "Navigation"]: VerticalLayout {
+                spacing: Theme.sp-1;
+
+                Text {
+                    text: s;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-tertiary;
+                    height: 20px;
+                }
+
+                for action[a] in ["Copy", "Paste", "Undo", "Save"]: Rectangle {
+                    height: 28px;
+
+                    HorizontalLayout {
+                        padding-left: Theme.sp-2;
+                        padding-right: Theme.sp-2;
+
+                        Text {
+                            text: a;
+                            font-size: Theme.text-sm;
+                            color: Theme.text-primary;
+                            y: (parent.height - self.height) / 2;
+                            vertical-stretch: 1;
+                        }
+
+                        Rectangle {
+                            height: 22px;
+                            border-radius: 4px;
+                            background: Theme.bg-overlay;
+                            y: 3px;
+
+                            HorizontalLayout {
+                                padding-left: Theme.sp-2;
+                                padding-right: Theme.sp-2;
+                                Text {
+                                    text: "Ctrl+" + a;
+                                    font-size: Theme.text-xs;
+                                    font-family: Theme.font-mono;
+                                    color: Theme.text-secondary;
+                                    y: (parent.height - self.height) / 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

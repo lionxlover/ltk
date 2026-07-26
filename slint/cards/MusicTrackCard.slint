@@ -1,0 +1,61 @@
+import { Theme } from "../core/Theme.slint";
+
+export component MusicTrackCard inherits Rectangle {
+    in-out property <string> title: "Track Title";
+    in-out property <string> artist: "Artist Name";
+    in-out property <string> duration: "3:42";
+
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border-base;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 12px;
+
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: Theme.radius-md;
+            background: Theme.accent-subtle;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "♫";
+                color: Theme.accent;
+                font-size: 20px;
+                vertical-alignment: center;
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+
+            Text {
+                text: root.title;
+                color: Theme.text-primary;
+                font-size: 14px;
+                font-weight: Theme.weight-semibold;
+            }
+
+            Text {
+                text: root.artist;
+                color: Theme.text-secondary;
+                font-size: 12px;
+            }
+        }
+
+        Text {
+            text: root.duration;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-mono;
+            font-size: 12px;
+            vertical-alignment: center;
+            horizontal-stretch: 0;
+        }
+    }
+}

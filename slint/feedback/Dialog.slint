@@ -1,0 +1,111 @@
+import { Theme } from "../core/Theme.slint";
+
+export component Dialog inherits Rectangle {
+    in property <string> title: "";
+    in property <string> text: "";
+    in property <string> left-button-text: "";
+    in property <string> right-button-text: "";
+    in property <bool> active: false;
+
+    callback left-button-clicked();
+    callback right-button-clicked();
+
+    width: 480px;
+    min-height: 200px;
+    visible: active;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-dialog;
+    border-width: 1px;
+    border-color: Theme.border-subtle;
+
+    drop-shadow-offset-x: 0px;
+    drop-shadow-offset-y: Theme.elevation-2-y;
+    drop-shadow-blur: Theme.elevation-2-blur;
+    drop-shadow-color: Theme.elevation-2-color;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: 0px;
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-xl;
+            font-weight: Theme.weight-bold;
+            wrap: no-wrap;
+        }
+
+        Rectangle { height: Theme.sp-2; vertical-stretch: 0; }
+
+        Text {
+            text: root.text;
+            color: Theme.text-secondary;
+            font-family: Theme.font-ui;
+            font-size: Theme.text-base;
+            wrap: word-wrap;
+            vertical-stretch: 1;
+        }
+
+        Rectangle { vertical-stretch: 1; }
+        Rectangle { height: Theme.sp-4; vertical-stretch: 0; }
+
+        HorizontalLayout {
+            spacing: Theme.sp-3;
+            alignment: end;
+            height: Theme.button-height-md;
+
+            if left-button-text != "": Rectangle {
+                horizontal-stretch: 1;
+                min-width: 100px;
+                height: Theme.button-height-md;
+                border-radius: Theme.radius-button;
+                border-width: 1px;
+                border-color: Theme.border-base;
+                background: left-ta.has-hover ? Theme.surface-hover : Theme.bg-raised;
+
+                animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                left-ta := TouchArea {
+                    clicked => { root.left-button-clicked(); }
+                }
+
+                Text {
+                    text: root.left-button-text;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+
+            if right-button-text != "": Rectangle {
+                horizontal-stretch: 1;
+                min-width: 100px;
+                height: Theme.button-height-md;
+                border-radius: Theme.radius-button;
+                background: right-ta.has-hover ? Theme.btn-primary-bg-hover : Theme.btn-primary-bg;
+
+                animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+                right-ta := TouchArea {
+                    clicked => { root.right-button-clicked(); }
+                }
+
+                Text {
+                    text: root.right-button-text;
+                    color: Theme.on-accent;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-medium;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    ta := TouchArea { }
+}

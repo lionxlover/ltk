@@ -1,0 +1,36 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FabExtended inherits Rectangle {
+    in-out property <string> text: "New item";
+
+    height: 56px;
+    background: Theme.accent;
+    border-radius: 16px;
+    horizontal-stretch: 1;
+
+    HorizontalLayout {
+        padding-left: 20px;
+        padding-right: 20px;
+        spacing: 10px;
+
+        Image {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+            width: 20px;
+            height: 20px;
+            colorize: #ffffff;
+        }
+
+        Text {
+            text: root.text;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+    }
+
+    TouchArea {
+        clicked => { }
+    }
+}

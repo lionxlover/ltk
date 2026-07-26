@@ -1,0 +1,17 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SingleColumn inherits Rectangle {
+    background: transparent;
+
+    in property <length> max-width: 720px;
+    in property <int> padding-px: 24;
+
+    HorizontalLayout {
+        alignment: center;
+
+        Rectangle {
+            width: max-width;
+            background: transparent;
+        }
+    }
+}

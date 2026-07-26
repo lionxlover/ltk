@@ -1,0 +1,47 @@
+import { Theme } from "../core/Theme.slint";
+
+export component DyslexiaFontToggle inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-md;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    height: 48px;
+
+    in-out property <bool> enabled: false;
+
+    HorizontalLayout {
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-4;
+        spacing: Theme.sp-3;
+
+        Text {
+            text: "Dyslexia-Friendly Font";
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-medium;
+            color: Theme.text-primary;
+            y: (parent.height - self.height) / 2;
+            vertical-stretch: 1;
+        }
+
+        Rectangle {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: enabled ? Theme.accent : Theme.border-default;
+            y: 12px;
+
+            Rectangle {
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background: #ffffff;
+                x: enabled ? 22px : 2px;
+                y: 2px;
+            }
+        }
+    }
+
+    TouchArea {
+        clicked => { root.enabled = !root.enabled; }
+    }
+}

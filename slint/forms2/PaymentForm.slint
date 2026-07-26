@@ -1,0 +1,59 @@
+import { Theme } from "../core/Theme.slint";
+import { FormDivider } from "FormDivider.slint";
+
+export component PaymentForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 400px;
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        Text { text: "Payment Details"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Card Number"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
+                Text { text: "4242 4242 4242 4242"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "Expiry"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "MM / YY"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+                }
+            }
+            VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
+                Text { text: "CVC"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                    Text { text: "123"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+                }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Name on Card"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+                Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-primary; y: (parent.height - self.height) / 2; }
+            }
+        }
+
+        FormDivider { }
+
+        HorizontalLayout { spacing: Theme.sp-2;
+            Text { text: "Total:"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: Theme.text-primary; y: 2px; }
+            Text { text: "$99.00"; font-size: Theme.text-lg; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+        }
+
+        Rectangle { height: 40px; border-radius: Theme.radius-md; background: Theme.accent;
+            Text { text: "Pay $99.00"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+        }
+
+        Text { text: "🔒 Your payment info is secure"; font-size: Theme.text-xs; color: Theme.text-tertiary; horizontal-alignment: center; }
+    }
+}

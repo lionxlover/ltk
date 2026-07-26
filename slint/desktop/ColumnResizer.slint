@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ColumnResizer inherits Rectangle {
+    width: 4px;
+    background: #00000000;
+
+    Rectangle {
+        width: 1px;
+        height: parent.height;
+        background: Theme.border-subtle;
+        x: (parent.width - self.width) / 2;
+    }
+}

@@ -1,0 +1,15 @@
+import { Theme } from "../core/Theme.slint";
+
+export component VirtualGridEngine inherits Rectangle {
+    background: transparent;
+
+    in property <int> total-items: 0;
+    in property <int> cols: 3;
+    in property <int> visible-row-start: 0;
+    in property <int> visible-row-count: 5;
+    in property <length> cell-width: 120px;
+    in property <length> cell-height: 80px;
+    in property <length> gap: 8px;
+
+    out property <length> total-height: Math.ceil(total_items / cols) * (cell_height + gap);
+}

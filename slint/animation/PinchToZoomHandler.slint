@@ -1,0 +1,13 @@
+import { Theme } from "../core/Theme.slint";
+
+export component PinchToZoomHandler inherits Rectangle {
+    background: transparent;
+    clip: true;
+
+    in property <float> scale: 1.0;
+    in property <float> min-scale: 0.5;
+    in property <float> max-scale: 3.0;
+
+    opacity: scale;
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+}

@@ -1,0 +1,30 @@
+import { Theme } from "../core/Theme.slint";
+
+export component FormSection inherits Rectangle {
+    background: transparent;
+
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <length> gap: 16px;
+
+    VerticalLayout {
+        spacing: gap;
+
+        if title != "": VerticalLayout {
+            spacing: Theme.sp-1;
+
+            Text {
+                text: title;
+                font-size: Theme.text-lg;
+                font-weight: Theme.weight-semibold;
+                color: Theme.text-primary;
+            }
+
+            if description != "": Text {
+                text: description;
+                font-size: Theme.text-sm;
+                color: Theme.text-tertiary;
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+import { Theme } from "../core/Theme.slint";
+
+export component ImageCropTool inherits Rectangle {
+    in property <int> crop-x: 20;
+    in property <int> crop-y: 20;
+    in property <int> crop-w: 60;
+    in property <int> crop-h: 60;
+
+    width: 200px;
+    height: 200px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-md;
+    clip: true;
+
+    Rectangle {
+        x: root.crop-x * parent.width / 100;
+        y: root.crop-y * parent.height / 100;
+        width: root.crop-w * parent.width / 100;
+        height: root.crop-h * parent.height / 100;
+        border-width: 2px;
+        border-color: Theme.accent;
+        background: transparent;
+    }
+
+    Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: "Crop Area";
+        color: Theme.text-tertiary;
+        font-size: Theme.text-xs;
+    }
+}
