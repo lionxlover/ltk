@@ -3,13 +3,18 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component SocialAuthGoogle inherits Rectangle {
     in-out property <string> text: "Continue with Google";
+    in-out property <bool> enabled: true;
 
-    background: #ffffff;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #f1f3f4 : (ta.has-hover ? #f8f9fa : #ffffff));
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: #dadce0;
     height: 44px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -19,11 +24,12 @@ export component SocialAuthGoogle inherits Rectangle {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/google.svg");
             fa-size: 18px;
             fa-color: #4285F4;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #3c4043;
+            color: enabled ? #3c4043 : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
             font-size: 14px;
             font-weight: Theme.weight-medium;
@@ -31,7 +37,8 @@ export component SocialAuthGoogle inherits Rectangle {
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

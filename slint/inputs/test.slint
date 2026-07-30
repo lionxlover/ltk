@@ -12,8 +12,6 @@ import { PinInput } from "PinInput.slint";
 
 export component InputsTest inherits Rectangle {
     background: Theme.bg-base;
-    width: 800px;
-    height: 600px;
 
     Flickable {
         width: parent.width;
@@ -26,44 +24,44 @@ export component InputsTest inherits Rectangle {
 
             Text {
                 text: "Inputs — Test";
-            color: Theme.text-primary;
-            font-family: Theme.font-display;
-            font-size: Theme.text-3xl;
-            font-weight: Theme.weight-bold;
-        }
+                color: Theme.text-primary;
+                font-family: Theme.font-display;
+                font-size: Theme.text-3xl;
+                font-weight: Theme.weight-bold;
+            }
 
-        Text { text: "TextField"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        HorizontalLayout { spacing: Theme.sp-3;
-            FishTextField { placeholder: "Name..."; width: 240px; }
-            FishTextField { placeholder: "Email..."; text: "user@ltk.dev"; width: 240px; }
-            FishTextField { placeholder: "Disabled"; width: 240px; enabled: false; }
-        }
+            Text { text: "TextField"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                FishTextField { placeholder: "Name..."; width: 240px; }
+                FishTextField { placeholder: "Email..."; text: "user@ltk.dev"; width: 240px; }
+                FishTextField { placeholder: "Disabled"; width: 240px; enabled: false; }
+            }
 
-        Text { text: "TextArea"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        TextArea { width: 400px; placeholder: "Multi-line input..."; }
+            Text { text: "TextArea"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            TextArea { width: 400px; placeholder: "Multi-line input..."; }
 
-        Text { text: "SearchInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        SearchInput { width: 400px; placeholder: "Search..."; }
+            Text { text: "SearchInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            SearchInput { width: 400px; placeholder: "Search..."; }
 
-        Text { text: "NumberInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        NumberInput { width: 240px; value: 42; min-value: 0; max-value: 100; step: 1; }
+            Text { text: "NumberInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            NumberInput { width: 240px; value: 42; min-value: 0; max-value: 100; step: 1; }
 
-        Text { text: "PinInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        PinInput { width: 240px; pin-length: 6; }
+            Text { text: "PinInput"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            PinInput { width: 240px; pin-length: 6; }
 
-        Text { text: "CheckBox / Switch / Radio"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
-            FishCheckBox { text: "Agree"; checked: true; }
-            FishSwitch { text: "Enable"; checked: true; }
-            RadioButton { text: "Option A"; checked: true; }
-            RadioButton { text: "Option B"; }
-        }
+            Text { text: "CheckBox / Switch / Radio"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+                FishCheckBox { text: "Agree"; checked: true; }
+                FishSwitch { text: "Enable"; checked: true; }
+                RadioButton { label: "Option A"; selected: true; }
+                RadioButton { label: "Option B"; }
+            }
 
-        Text { text: "Slider"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        FishSlider { width: 400px; value: 60; }
+            Text { text: "Slider"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            FishSlider { width: 400px; value: 60; }
 
-        Text { text: "SegmentedControl"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        SegmentedControl { width: 300px; segments: ["S", "M", "L", "XL"]; current-index: 1; }
+            Text { text: "SegmentedControl"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            SegmentedControl { width: 300px; segments: ["S", "M", "L", "XL"]; current-index: 1; }
         }
     }
 }

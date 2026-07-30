@@ -25,12 +25,16 @@ export component FishCheckBox inherits Rectangle {
         animate border-color { duration: Theme.dur-faster; easing: Theme.ease-spring; }
 
         if checked: Text {
-            x: (parent.width - self.width) / 2;
-            y: (parent.height - self.height) / 2;
+            x: 0;
+            y: 0;
+            width: 100%;
+            height: 100%;
             text: "✓";
             color: Theme.on-accent;
             font-size: 12px;
             font-weight: Theme.weight-bold;
+            horizontal-alignment: center;
+            vertical-alignment: center;
         }
     }
 

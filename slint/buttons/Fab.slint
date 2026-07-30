@@ -1,22 +1,29 @@
 import { Theme } from "../core/Theme.slint";
 
 export component Fab inherits Rectangle {
+    in-out property <bool> enabled: true;
+
+    callback clicked();
+
     width: 56px;
     height: 56px;
-    background: Theme.accent;
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
     border-radius: 16px;
     horizontal-stretch: 0;
+
+    animate background { duration: Theme.dur-fast; }
 
     Image {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
         width: 24px;
         height: 24px;
-        colorize: #ffffff;
+        colorize: enabled ? #ffffff : Theme.btn-disabled-text;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

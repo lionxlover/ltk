@@ -2,14 +2,19 @@ import { Theme } from "../core/Theme.slint";
 
 export component CopyButton inherits Rectangle {
     in-out property <bool> copied: false;
+    in-out property <bool> enabled: true;
+
+    callback clicked();
 
     width: 32px;
     height: 32px;
-    background: Theme.bg-raised;
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
     border-radius: Theme.radius-sm;
     border-width: 1px;
     border-color: Theme.border-base;
     horizontal-stretch: 0;
+
+    animate background { duration: Theme.dur-fast; }
 
     Rectangle {
         width: 14px;
@@ -22,7 +27,7 @@ export component CopyButton inherits Rectangle {
             width: 14px;
             height: 14px;
             visible: !root.copied;
-            colorize: Theme.text-tertiary;
+            colorize: enabled ? Theme.text-tertiary : Theme.btn-disabled-text;
         }
 
         Image {
@@ -30,11 +35,15 @@ export component CopyButton inherits Rectangle {
             width: 14px;
             height: 14px;
             visible: root.copied;
-            colorize: Theme.success;
+            colorize: Theme.state-success;
         }
     }
 
-    TouchArea {
-        clicked => { root.copied = !root.copied; }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.copied = !root.copied;
+            root.clicked();
+        }
     }
 }

@@ -5,10 +5,14 @@ export component SuccessButton inherits Rectangle {
     in-out property <string> text: "Confirm";
     in-out property <bool> enabled: true;
 
-    background: Theme.success;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.success.with-alpha(0.8) : (ta.has-hover ? Theme.success.with-alpha(0.9) : Theme.success));
     border-radius: Theme.radius-md;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -17,19 +21,21 @@ export component SuccessButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-check.svg");
             fa-size: 14px;
-            fa-color: #ffffff;
+            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #ffffff;
+            color: enabled ? #ffffff : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

@@ -5,10 +5,14 @@ export component DangerButton inherits Rectangle {
     in-out property <string> text: "Delete";
     in-out property <bool> enabled: true;
 
-    background: Theme.error;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.error.with-alpha(0.8) : (ta.has-hover ? Theme.error.with-alpha(0.9) : Theme.error));
     border-radius: Theme.radius-md;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -17,19 +21,21 @@ export component DangerButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trash.svg");
             fa-size: 14px;
-            fa-color: #ffffff;
+            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #ffffff;
+            color: enabled ? #ffffff : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

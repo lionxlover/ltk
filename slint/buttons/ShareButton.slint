@@ -3,13 +3,18 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component ShareButton inherits Rectangle {
     in-out property <string> text: "Share";
+    in-out property <bool> enabled: true;
 
-    background: Theme.bg-raised;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -18,19 +23,21 @@ export component ShareButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/share-nodes.svg");
             fa-size: 14px;
-            fa-color: Theme.text-primary;
+            fa-color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: Theme.text-primary;
+            color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

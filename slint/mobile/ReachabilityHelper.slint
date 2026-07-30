@@ -4,7 +4,7 @@ export component ReachabilityHelper inherits Rectangle {
     background: transparent;
 
     in property <bool> active: false;
-    in property <int> shift-down: 120;
+    in property <length> shift-down: 120px;
 
     y: active ? shift-down : 0px;
 }

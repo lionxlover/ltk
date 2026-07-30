@@ -6,12 +6,16 @@ export component ToggleButton inherits Rectangle {
     in-out property <bool> active: false;
     in-out property <bool> enabled: true;
 
-    background: root.active ? Theme.accent : Theme.bg-raised;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (active ? Theme.accent : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised)));
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: root.active ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -20,22 +24,25 @@ export component ToggleButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/power-off.svg");
             fa-size: 14px;
-            fa-color: root.active ? #ffffff : Theme.text-primary;
+            fa-color: !enabled ? Theme.btn-disabled-text : (root.active ? #ffffff : Theme.text-primary);
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: root.active ? #ffffff : Theme.text-primary;
+            color: !enabled ? Theme.btn-disabled-text : (root.active ? #ffffff : Theme.text-primary);
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
+    ta := TouchArea {
+        enabled: root.enabled;
         clicked => {
             if (root.enabled) {
                 root.active = !root.active;
+                root.clicked();
             }
         }
     }

@@ -7,7 +7,7 @@ export component LoadMoreButton inherits Rectangle {
     callback clicked();
 
     height: 44px;
-    background: #00000000;
+    background: transparent;
 
     Rectangle {
         width: 180px;
@@ -19,7 +19,7 @@ export component LoadMoreButton inherits Rectangle {
         border-color: loading ? Theme.border-subtle : Theme.border-base;
         background: load-more-ta.pressed ? Theme.surface-pressed
             : load-more-ta.has-hover ? Theme.surface-hover
-            : #00000000;
+            : transparent;
         opacity: loading ? 0.6 : 1.0;
 
         HorizontalLayout {
@@ -33,7 +33,6 @@ export component LoadMoreButton inherits Rectangle {
                 border-radius: Theme.radius-full;
                 border-width: 2px;
                 border-color: Theme.accent;
-                border-color: #00000000;
             }
 
             Text {

@@ -1,709 +1,791 @@
-import { Theme } from "core/Theme.slint";
-import { PrimaryButton } from "buttons/PrimaryButton.slint";
-import { FishCheckBox } from "inputs/FishCheckBox.slint";
-import { FishSwitch } from "inputs/FishSwitch.slint";
-import { FishSlider } from "inputs/FishSlider.slint";
-import { FishTextField } from "inputs/FishTextField.slint";
-import { FishLabel } from "inputs/FishLabel.slint";
-import { RoundedRect } from "layout/RoundedRect.slint";
-import { IconButtonCircle } from "buttons/IconButtonCircle.slint";
-import { BusyIndicator } from "feedback/BusyIndicator.slint";
-import { TabButton } from "navigation/TabButton.slint";
-import { Dialog } from "feedback/Dialog.slint";
-import { AboutDialog } from "feedback/AboutDialog.slint";
-import { Toast } from "feedback/Toast.slint";
-import { IconButtonSquare } from "buttons/IconButtonSquare.slint";
-import { ToggleButton } from "buttons/ToggleButton.slint";
-import { Chip } from "data-display/Chip.slint";
-import { Badge } from "data-display/Badge.slint";
-import { RadioButton } from "inputs/RadioButton.slint";
-import { SegmentedControl } from "inputs/SegmentedControl.slint";
-import { TextArea } from "inputs/TextArea.slint";
-import { SearchInput } from "inputs/SearchInput.slint";
-import { ProgressBar } from "feedback/ProgressBar.slint";
-import { Card } from "data-display/Card.slint";
-import { StatCard } from "data-display/StatCard.slint";
-import { Avatar } from "data-display/Avatar.slint";
-import { Divider } from "data-display/Divider.slint";
-import { Alert } from "feedback/Alert.slint";
-import { Skeleton } from "feedback/Skeleton.slint";
-import { Breadcrumb } from "navigation/Breadcrumb.slint";
-import { Drawer } from "navigation/Drawer.slint";
-import { SidebarItem } from "navigation/SidebarItem.slint";
-import { Select } from "forms/Select.slint";
-import { AccordionItem } from "forms/AccordionItem.slint";
-import { ToggleGroup } from "forms/ToggleGroup.slint";
-import { Table } from "data-display/Table.slint";
-import { EmptyState } from "data-display/EmptyState.slint";
-import { ListItem } from "data-display/ListItem.slint";
-import { ProgressSpinner } from "progress/ProgressSpinner.slint";
+import { FocusRing, FontSizeAdjuster, HighContrastToggle, KeyboardShortcutLegend, ReduceMotionToggle, ScreenReaderStatus, SkipLink, SrOnlyText } from "accessibility/export.slint";
+import { AccessibleErrorSummary, AriaAnnouncer, AriaLiveAssertive, AriaLivePolite, ColorBlindnessToggle, DyslexiaFontToggle, FocusRingCustom, FocusTrapGuard, FocusVisibleIndicator, KeyboardNavIndicator, LineHeightAdjuster, RovingTabIndexGroup } from "accessibility2/export.slint";
+import { ConfettiOverlay, CounterNumberTween, CssVariableSpring, DragToDismiss, FlipAnimationHelper, HeroMorphLayout, InertiaMomentumScroll, IntersectionObserverTrigger, ListStaggerEntrance, LottieRivePlayer, MorphingSvgPath, PageTransitionFade, PageTransitionScale, PageTransitionSlide, ParallaxLayer, PinchToZoomHandler, RippleEffect, RubberBandOverscroll, ScrollReveal, SharedElementTransition, ShimmerKeyframe, SpringPhysicsContainer, SwipeGestureHandler, ViewTransitionWrapper } from "animation/export.slint";
+import { BackNavButton, BackToTopButton, BookmarkButton, ChipFilterButton, CloseDismissButton, CopyButton, CtaHeroButton, DangerButton, DownloadExportButton, DropdownButton, Fab, FabExtended, FabMini, GhostButton, IconButtonCircle, IconButtonSquare, LikeHeartButton, LoadingButton, LongPressButton, MuteUnmuteButton, OutlinedButton, PillButton, PlayPauseButton, PrimaryButton, ReactionButton, RecordButton, ScrollAnchorButton, SecondaryButton, ShareButton, SocialAuthApple, SocialAuthFacebook, SocialAuthGitHub, SocialAuthGoogle, SocialAuthTwitter, SpeedDial, SplitButton, SubmitButton, SuccessButton, SwipeToConfirm, TextLinkButton, ToggleButton, WarningButton } from "buttons/export.slint";
+import { AchievementCard, AlertCard, AppListingCard, ArticlePreviewCard, BasicCard, BlogPostCard, ContactCard, CourseCard, ElevatedCard, EmptyCard, EventCard, ExpandableCard, FeatureCard, FileCard, FlipCard, GlassCard, HorizontalCard, InteractiveCard, JobListingCard, LinkPreviewCard, LocationCard, MapEmbedCard, MediaCard, MetricSparklineCard, MusicTrackCard, NotificationCard, OutlinedCard, PodcastEpisodeCard, PricingCard, ProductCard, ProductComparisonCard, ProfileCard, ReviewCard, StatTileCard, SwipeableCard, TeamMemberCard, TestimonialCard, VideoThumbnailCard, WeatherCard } from "cards/export.slint";
+import { AreaChart, BarChartHorizontal, BarChartVertical, BoxPlot, BubbleChart, BumpChart, CandlestickChart, ChordDiagram, ChoroplethMap, CorrelationMatrix, DonutChart, DotDensityMap, FlowchartDiagram, FunnelChart, GanttResourceChart, GaugeChart, GeoHeatmap, GroupedBarChart, Heatmap, Histogram, HundredPercentBar, LineChart, MicroAreaChart, MultiLineChart, MultiRingDonut, NetworkGraphViz, PieChart, ProgressRingChart, RadarChart, RadialBarChart, SankeyDiagram, ScatterPlot, SlopeChart, SparklineBar, SparklineLine, StackedAreaChart, StackedBarChart, SunburstChart, Treemap, ViolinPlot, VolumeChart, WaterfallChart, WordCloud } from "charts/export.slint";
+import { Backend, FaIcon, Theme } from "core/export.slint";
+import { ActivityFeed, Avatar, AvatarGroup, AvatarList, Badge, BulkActionBar, Card, ChatMessageThread, Checklist, Chip, CodeBlock, ColumnHeader, DayAgendaCalendar, DefinitionList, DenseList, DiffViewer, Divider, EditableInlineTable, EmptyState, ExpandableRowTable, FeatureComparisonMatrix, FrozenColumnTable, GanttTimeline, GroupedList, HorizontalTimeline, JsonTreeViewer, KPITile, Kbd, KeyValueRow, LeaderboardTable, LeadingIconList, ListItem, LogViewer, MonthCalendar, NestedCommentSection, NetworkGraph, OrgChart, PriceComparisonTable, PriceDisplay, PropertyInspectorPanel, ReceiptInvoiceView, SelectionList, SortableDataTable, SortableList, StatCard, SummaryFooterRow, Table, TableToolbar, TerminalOutput, Timeline, Tooltip, TrailingActionList, TreeTable, TreeView, TwoLineList, VirtualizedList, VirtualizedTable, WeekCalendar } from "data-display/export.slint";
+import { AlphaTokens, BackdropBlur, BorderRadius, BorderWidth, Breakpoints, ColorPrimitives, ComponentSpacing, FocusRing, GlowLuminance, GridColumns, GridGutter, GridMargin, IconSize, MotionDuration, MotionEasingBasic, MotionEasingSpecial, OpacityScale, SemanticAccent, SemanticBackground, SemanticBorder, SemanticError, SemanticInfo, SemanticSuccess, SemanticSurface, SemanticText, SemanticWarning, ShadowElevation, SpacingScale, SpringPresets, TouchTarget, TypographyFontFamily, TypographyFontWeight, TypographyLetterSpacing, TypographyLineHeight, TypographyTypeScale, ZIndex } from "design-tokens/export.slint";
+import { AboutDialog, ColumnResizer, ContextMenu, DragHandle, InspectorPanel, MenuBar, StatusBar, SystemTray, Toolbar, WindowChrome } from "desktop/export.slint";
+import { AppMenuItem, AppSwitcher, ControlPanelLayout, DesktopWidgetContainer, FloatingPanel, MaximizedWindow, MinimizedWindowChip, NotificationCenterPanel, OsNotificationToast, OverflowToolbar, PanelSash, PreferencesWindow, ResizableDraggableWindow, RibbonBar, ShortcutReferenceSheet, SplashScreen, SpotlightDialog } from "desktop2/export.slint";
+import { AboutDialog, ActionToast, Alert, BusyIndicator, Callout, CircularProgress, ConfettiBurst, Dialog, DotsLoader, EmptyState, ErrorState, IndeterminateProgress, IndeterminateSpinner, MultilineToast, NoResultsState, Notification, OfflineState, PermissionDeniedState, PersistentBanner, ProgressBar, PulseLoader, SegmentedProgress, Skeleton, SkeletonAvatar, SkeletonCard, SkeletonHeading, SkeletonImage, SkeletonListItem, SkeletonParagraph, SkeletonTableRow, SkeletonText, Snackbar, StripedProgress, SuccessState, Toast, WaveLoader } from "feedback/export.slint";
+import { AccordionItem, CheckboxGroup, Select, ToggleGroup } from "forms/export.slint";
+import { AddressForm, CharacterCounter, ContactForm, DynamicFieldArray, FieldErrorMessage, FieldHelperText, FieldLabel, FieldSuccessMessage, FieldWrapper, Fieldset, FormDivider, FormFooter, FormGroup, FormHeader, FormRoot, FormRow, FormSection, HorizontalLabelForm, InlineForm, Legend, LoginForm, MultiStepForm, PasswordResetForm, PaymentForm, ProfileEditForm, QuizForm, RegistrationForm, SearchFilterForm, StackedForm, SurveyForm, WizardForm } from "forms2/export.slint";
+import { ActivityIndicator, AssistChip, BatteryIndicator, DeprecatedBadge, DotBadge, EnvironmentBadge, FilterChip, HealthBar, InputChip, LabelBadge, NumericBadge, Pill, SignalBars, StatusBadge, StatusChip, StatusDot, TagLabel, TextBadge, VerifiedBadge, VersionBadge } from "indicators/export.slint";
+import { FishCheckBox, FishLabel, FishSlider, FishSwitch, FishTextField, NumberInput, PinInput, RadioButton, SearchInput, SegmentedControl, TextArea } from "inputs/export.slint";
+import { Grid, RoundedRect, Spacer } from "layout/export.slint";
+import { AccordionGroup, AppShell, AspectRatioBox, BentoGrid, CardGridContainer, ColumnGrid, ContentRegion, CssGridContainer, CustomScrollbar, DisclosureWidget, DragDropZone, DualPanel, FeatureGrid, FixedContainer, FlexContainer, FocusTrapRegion, FullBleedBox, FullWidthSection, HolyGrailLayout, HorizontalDivider, HorizontalStack, InfiniteScrollWrapper, InlineCluster, LabeledDivider, MasonryGrid, MasterDetailSplit, MaxWidthContainer, OverflowScrollX, OverflowScrollY, PortalTeleport, QuadPanelLayout, ResizablePanelGroup, SafeAreaWrapper, ScrollableRegion, SidebarContentPane, SingleColumn, SnapScrollContainer, SpacerBox, StickyWrapper, TabPanelContainer, ThreeColumn, TileGrid, TwoColumn, VerticalDivider, VerticalStack, VirtualizedScroll, WaterfallLayout, WizardWrapper, WrapCluster, ZStack } from "layout-containers/export.slint";
+import { AnimatedIcon, AudioPlayer, AudioWaveform, AvatarBadge, AvatarCircle, AvatarFallback, AvatarGroupStack, AvatarSquare, AvatarStatusRing, BarcodeDisplay, BeforeAfterSlider, CameraPreview, GifPlayer, IconDisplay, ImageCarousel, ImageCropTool, ImageGallery, ImageMasonry, ImageSlot, LazyImage, LightboxViewer, LivestreamPill, LogoMark, MapEmbed, ModelViewer, PodcastPlayer, QRCode, ResponsiveImage, StoryViewer, SvgIllustration, VideoPlayer, VideoThumbnail } from "media/export.slint";
+import { ActionSheetDestructive, AppClipMiniCard, AppIconBadge, BiometricAuthPrompt, BottomSheetMultiSnap, ContactPicker, DocumentFilePicker, DynamicIslandSlot, FloatingIslandPill, HalfSheetModal, HapticFeedbackWrapper, HomeScreenWidget2x2, HomeScreenWidget2x4, HomeScreenWidget4x4, LockScreenWidgetMedium, LockScreenWidgetSmall, LongPressActionSheet, OnboardingPager, PhotoMediaPicker, PullToRefresh, ReachabilityHelper, SafeAreaBottomSpacer, SafeAreaTopSpacer, ShareSheet, SplashLaunchScreen, StatusBarOverlay, SwipeNavigationGestureArea, SwipeToAction, SwipeToArchive, SwipeToDelete } from "mobile/export.slint";
+import { AnchorNavBar, BottomNavBar, BottomNavRail, Breadcrumb, CollapsingHeader, CommandPalette, Dock, DotStepper, Drawer, EllipsisBreadcrumb, FloatingNavPanel, FlyoutMenu, HamburgerButton, HorizontalStepper, IconStepper, InfiniteScrollTrigger, LaunchpadGrid, LoadMoreButton, MegaMenu, MiniSidebar, NavBadge, NavCollapse, NavGroupHeader, NavItem, NestedTabs, Pagination, PrevNextPagination, ScrollableTabs, SidebarItem, Steps, StickyHeader, TabBar, TabButton, Taskbar, TokenPagination, TopAppBar, VerticalStepper, VerticalTabBar, WorkspaceSwitcher } from "navigation/export.slint";
+import { ActionSheet, AlertDialog, BottomSheet, ContextTooltip, DropdownMenu, FloatingActionPanel, FloatingLabel, FloatingToolbar, FullScreenDialog, HoverCard, ImageLightbox, InlineConfirmation, ModalDialog, NestedDropdownMenu, NotificationDrawer, OnboardingOverlay, PeekSheet, Popover, RichTooltip, ScrimOverlay, SideSheet, SimpleTooltip, SpotlightOverlay, VideoLightbox } from "overlays/export.slint";
+import { ProgressSpinner } from "progress/export.slint";
+import { CircularKnob, EmojiRating, HueSlider, NumberStepper, OpacitySlider, RangeSlider, Slider, StarRating, SteppedSlider, VerticalSlider } from "range-value/export.slint";
+import { ButtonToggleGroup, CascadingSelect, Checkbox, CheckboxGroup, CheckboxIndeterminate, ChipSelectSingle, ColorSwatchPicker, Combobox, CountryPicker, CurrencyPicker, FlagPicker, LanguagePicker, ListboxMulti, ListboxSingle, MultiChipSelect, OptionGroup, RadioButton, RadioGroup, SegmentedControl, SelectDropdown, SelectMultiTags, SizeVariantPicker, TimezonePicker, ToggleGroup, ToggleSwitch } from "selection-controls/export.slint";
+import { ChatBubbleReceived, ChatBubbleSent, ChatInputBar, EmojiReactionBar, FollowButton, ReadReceipt, TypingIndicator, UpvoteDownvote } from "social/export.slint";
+import { AttachmentPreview, BlockReportSheet, ChatBubbleSystem, CommentBox, DirectMessageHeader, EmojiPickerPanel, FollowUnfollowButton, FriendRequestButton, GifPickerPanel, GroupChatHeader, HashtagAutocomplete, InChatPollWidget, LeaderboardRow, LikeDislikeButtons, MentionAutocomplete, MessageReactionsStrip, MuteToggle, NestedCommentThread, NotificationBellDropdown, ReactionEmojiBar, ShareCountDisplay, SocialShareButtonsRow, ThreadReplyPreview, UserPresenceIndicator, ViewCountDisplay, VoiceMessagePlayer } from "social2/export.slint";
+import { AddressInput, AutocompleteInput, CameraCaptureInput, CodeEditor, ColorPickerInput, CommandSpotlightInput, CreditCardInput, CurrencyInput, DatePickerInput, DateRangePicker, DateTimePicker, EmailInput, EmojiPickerInput, FileUploadDropZone, FontPickerInput, GeolocationInput, GradientBuilderInput, HashtagInput, IconPickerInput, ImageUploadPreview, JsonYamlEditor, MarkdownEditor, MaskedInput, MeasurementInput, MentionInput, MonthYearPicker, MultiFileUpload, NumberInput, NumberStepper, OtpInput, PasswordInput, PercentageInput, QrBarcodeScanner, RichTextEditor, SearchInput, SignaturePad, TagsChipsInput, TelInput, TextInput, TextareaAutoResize, TextareaFixed, TimePickerInput, UrlInput, VoiceSpeechInput, WeekPicker } from "text-input/export.slint";
+import { AnimationPresetSelector, BrandKitSwitcher, ColorPaletteEditor, FontLoader, ThemeToggle, TokenExporter } from "theming/export.slint";
+import { AccessibilityAuditOverlay, ComponentPlayground, CssPropertyInjector, CustomThemeBuilder, HighContrastAdapter, IconSetSwitcher, PreviewSandboxCanvas, SpacingConfigurator, SystemColorSchemeAdapter, ThemeProvider, TypographyConfigurator, WcagContrastChecker } from "theming2/export.slint";
+import { Blockquote, BodyLG, BodyMD, BodySM, BodyXS, Caption, CodeBlock, DisplayJumbo, DisplayLG, DisplayMD, DisplayXL, DropCap, Eyebrow, Footnote, HeadingH1, HeadingH2, HeadingH3, HeadingH4, HeadingH5, HeadingH6, HighlightMark, InlineCodeSpan, LabelLG, LabelMD, LabelSM, LabelXS, LegalFinePrint, NumericTabular, Overline, PullQuote, RunningText, Tagline, TitleLG, TitleMD, TitleSM, TitleXS } from "typography/export.slint";
+import { ClipboardManager, ContentSlot, DebounceHook, DragSourcePrimitive, DropTargetPrimitive, ErrorBoundary, FocusManager, IdleDetector, InfiniteLoaderEngine, IntersectionObserverHook, KeyboardShortcutListener, MediaQueryHook, MutationObserverHook, NetworkDetector, PointerNormalizer, PortalTeleport, ResizeObserverHook, ScrollPositionHook, StateMachineProvider, SuspenseBoundary, ThrottleHook, VirtualGridEngine, VirtualListEngine } from "utility/export.slint";
+import { FaIcon } from "core/FaIcon.slint";
+import { LtkTest } from "ltktest.slint";
 
-component SectionHeader inherits Text {
-    color: Theme.text-tertiary;
-    font-size: Theme.text-xs;
-    font-weight: Theme.weight-semibold;
-    font-family: Theme.font-ui;
-    letter-spacing: Theme.tracking-wide;
+export {
+    Theme,
+    FaIcon,
+    FocusRing,
+    FontSizeAdjuster,
+    HighContrastToggle,
+    KeyboardShortcutLegend,
+    ReduceMotionToggle,
+    ScreenReaderStatus,
+    SkipLink,
+    SrOnlyText,
+    AccessibleErrorSummary,
+    AriaAnnouncer,
+    AriaLiveAssertive,
+    AriaLivePolite,
+    ColorBlindnessToggle,
+    DyslexiaFontToggle,
+    FocusRingCustom,
+    FocusTrapGuard,
+    FocusVisibleIndicator,
+    KeyboardNavIndicator,
+    LineHeightAdjuster,
+    RovingTabIndexGroup,
+    ConfettiOverlay,
+    CounterNumberTween,
+    CssVariableSpring,
+    DragToDismiss,
+    FlipAnimationHelper,
+    HeroMorphLayout,
+    InertiaMomentumScroll,
+    IntersectionObserverTrigger,
+    ListStaggerEntrance,
+    LottieRivePlayer,
+    MorphingSvgPath,
+    PageTransitionFade,
+    PageTransitionScale,
+    PageTransitionSlide,
+    ParallaxLayer,
+    PinchToZoomHandler,
+    RippleEffect,
+    RubberBandOverscroll,
+    ScrollReveal,
+    SharedElementTransition,
+    ShimmerKeyframe,
+    SpringPhysicsContainer,
+    SwipeGestureHandler,
+    ViewTransitionWrapper,
+    BackNavButton,
+    BackToTopButton,
+    BookmarkButton,
+    ChipFilterButton,
+    CloseDismissButton,
+    CopyButton,
+    CtaHeroButton,
+    DangerButton,
+    DownloadExportButton,
+    DropdownButton,
+    Fab,
+    FabExtended,
+    FabMini,
+    GhostButton,
+    IconButtonCircle,
+    IconButtonSquare,
+    LikeHeartButton,
+    LoadingButton,
+    LongPressButton,
+    MuteUnmuteButton,
+    OutlinedButton,
+    PillButton,
+    PlayPauseButton,
+    PrimaryButton,
+    ReactionButton,
+    RecordButton,
+    ScrollAnchorButton,
+    SecondaryButton,
+    ShareButton,
+    SocialAuthApple,
+    SocialAuthFacebook,
+    SocialAuthGitHub,
+    SocialAuthGoogle,
+    SocialAuthTwitter,
+    SpeedDial,
+    SplitButton,
+    SubmitButton,
+    SuccessButton,
+    SwipeToConfirm,
+    TextLinkButton,
+    ToggleButton,
+    WarningButton,
+    AchievementCard,
+    AlertCard,
+    AppListingCard,
+    ArticlePreviewCard,
+    BasicCard,
+    BlogPostCard,
+    ContactCard,
+    CourseCard,
+    ElevatedCard,
+    EmptyCard,
+    EventCard,
+    ExpandableCard,
+    FeatureCard,
+    FileCard,
+    FlipCard,
+    GlassCard,
+    HorizontalCard,
+    InteractiveCard,
+    JobListingCard,
+    LinkPreviewCard,
+    LocationCard,
+    MapEmbedCard,
+    MediaCard,
+    MetricSparklineCard,
+    MusicTrackCard,
+    NotificationCard,
+    OutlinedCard,
+    PodcastEpisodeCard,
+    PricingCard,
+    ProductCard,
+    ProductComparisonCard,
+    ProfileCard,
+    ReviewCard,
+    StatTileCard,
+    SwipeableCard,
+    TeamMemberCard,
+    TestimonialCard,
+    VideoThumbnailCard,
+    WeatherCard,
+    AreaChart,
+    BarChartHorizontal,
+    BarChartVertical,
+    BoxPlot,
+    BubbleChart,
+    BumpChart,
+    CandlestickChart,
+    ChordDiagram,
+    ChoroplethMap,
+    CorrelationMatrix,
+    DonutChart,
+    DotDensityMap,
+    FlowchartDiagram,
+    FunnelChart,
+    GanttResourceChart,
+    GaugeChart,
+    GeoHeatmap,
+    GroupedBarChart,
+    Heatmap,
+    Histogram,
+    HundredPercentBar,
+    LineChart,
+    MicroAreaChart,
+    MultiLineChart,
+    MultiRingDonut,
+    NetworkGraphViz,
+    PieChart,
+    ProgressRingChart,
+    RadarChart,
+    RadialBarChart,
+    SankeyDiagram,
+    ScatterPlot,
+    SlopeChart,
+    SparklineBar,
+    SparklineLine,
+    StackedAreaChart,
+    StackedBarChart,
+    SunburstChart,
+    Treemap,
+    ViolinPlot,
+    VolumeChart,
+    WaterfallChart,
+    WordCloud,
+    Backend,
+    ActivityFeed,
+    Avatar,
+    AvatarGroup,
+    AvatarList,
+    Badge,
+    BulkActionBar,
+    Card,
+    ChatMessageThread,
+    Checklist,
+    Chip,
+    CodeBlock,
+    ColumnHeader,
+    DayAgendaCalendar,
+    DefinitionList,
+    DenseList,
+    DiffViewer,
+    Divider,
+    EditableInlineTable,
+    EmptyState,
+    ExpandableRowTable,
+    FeatureComparisonMatrix,
+    FrozenColumnTable,
+    GanttTimeline,
+    GroupedList,
+    HorizontalTimeline,
+    JsonTreeViewer,
+    KPITile,
+    Kbd,
+    KeyValueRow,
+    LeaderboardTable,
+    LeadingIconList,
+    ListItem,
+    LogViewer,
+    MonthCalendar,
+    NestedCommentSection,
+    NetworkGraph,
+    OrgChart,
+    PriceComparisonTable,
+    PriceDisplay,
+    PropertyInspectorPanel,
+    ReceiptInvoiceView,
+    SelectionList,
+    SortableDataTable,
+    SortableList,
+    StatCard,
+    SummaryFooterRow,
+    Table,
+    TableToolbar,
+    TerminalOutput,
+    Timeline,
+    Tooltip,
+    TrailingActionList,
+    TreeTable,
+    TreeView,
+    TwoLineList,
+    VirtualizedList,
+    VirtualizedTable,
+    WeekCalendar,
+    AlphaTokens,
+    BackdropBlur,
+    BorderRadius,
+    BorderWidth,
+    Breakpoints,
+    ColorPrimitives,
+    ComponentSpacing,
+    GlowLuminance,
+    GridColumns,
+    GridGutter,
+    GridMargin,
+    IconSize,
+    MotionDuration,
+    MotionEasingBasic,
+    MotionEasingSpecial,
+    OpacityScale,
+    SemanticAccent,
+    SemanticBackground,
+    SemanticBorder,
+    SemanticError,
+    SemanticInfo,
+    SemanticSuccess,
+    SemanticSurface,
+    SemanticText,
+    SemanticWarning,
+    ShadowElevation,
+    SpacingScale,
+    SpringPresets,
+    TouchTarget,
+    TypographyFontFamily,
+    TypographyFontWeight,
+    TypographyLetterSpacing,
+    TypographyLineHeight,
+    TypographyTypeScale,
+    ZIndex,
+    AboutDialog,
+    ColumnResizer,
+    ContextMenu,
+    DragHandle,
+    InspectorPanel,
+    MenuBar,
+    StatusBar,
+    SystemTray,
+    Toolbar,
+    WindowChrome,
+    AppMenuItem,
+    AppSwitcher,
+    ControlPanelLayout,
+    DesktopWidgetContainer,
+    FloatingPanel,
+    MaximizedWindow,
+    MinimizedWindowChip,
+    NotificationCenterPanel,
+    OsNotificationToast,
+    OverflowToolbar,
+    PanelSash,
+    PreferencesWindow,
+    ResizableDraggableWindow,
+    RibbonBar,
+    ShortcutReferenceSheet,
+    SplashScreen,
+    SpotlightDialog,
+    ActionToast,
+    Alert,
+    BusyIndicator,
+    Callout,
+    CircularProgress,
+    ConfettiBurst,
+    Dialog,
+    DotsLoader,
+    ErrorState,
+    IndeterminateProgress,
+    IndeterminateSpinner,
+    MultilineToast,
+    NoResultsState,
+    Notification,
+    OfflineState,
+    PermissionDeniedState,
+    PersistentBanner,
+    ProgressBar,
+    PulseLoader,
+    SegmentedProgress,
+    Skeleton,
+    SkeletonAvatar,
+    SkeletonCard,
+    SkeletonHeading,
+    SkeletonImage,
+    SkeletonListItem,
+    SkeletonParagraph,
+    SkeletonTableRow,
+    SkeletonText,
+    Snackbar,
+    StripedProgress,
+    SuccessState,
+    Toast,
+    WaveLoader,
+    AccordionItem,
+    CheckboxGroup,
+    Select,
+    ToggleGroup,
+    AddressForm,
+    CharacterCounter,
+    ContactForm,
+    DynamicFieldArray,
+    FieldErrorMessage,
+    FieldHelperText,
+    FieldLabel,
+    FieldSuccessMessage,
+    FieldWrapper,
+    Fieldset,
+    FormDivider,
+    FormFooter,
+    FormGroup,
+    FormHeader,
+    FormRoot,
+    FormRow,
+    FormSection,
+    HorizontalLabelForm,
+    InlineForm,
+    Legend,
+    LoginForm,
+    MultiStepForm,
+    PasswordResetForm,
+    PaymentForm,
+    ProfileEditForm,
+    QuizForm,
+    RegistrationForm,
+    SearchFilterForm,
+    StackedForm,
+    SurveyForm,
+    WizardForm,
+    ActivityIndicator,
+    AssistChip,
+    BatteryIndicator,
+    DeprecatedBadge,
+    DotBadge,
+    EnvironmentBadge,
+    FilterChip,
+    HealthBar,
+    InputChip,
+    LabelBadge,
+    NumericBadge,
+    Pill,
+    SignalBars,
+    StatusBadge,
+    StatusChip,
+    StatusDot,
+    TagLabel,
+    TextBadge,
+    VerifiedBadge,
+    VersionBadge,
+    FishCheckBox,
+    FishLabel,
+    FishSlider,
+    FishSwitch,
+    FishTextField,
+    NumberInput,
+    PinInput,
+    RadioButton,
+    SearchInput,
+    SegmentedControl,
+    TextArea,
+    Grid,
+    RoundedRect,
+    Spacer,
+    AccordionGroup,
+    AppShell,
+    AspectRatioBox,
+    BentoGrid,
+    CardGridContainer,
+    ColumnGrid,
+    ContentRegion,
+    CssGridContainer,
+    CustomScrollbar,
+    DisclosureWidget,
+    DragDropZone,
+    DualPanel,
+    FeatureGrid,
+    FixedContainer,
+    FlexContainer,
+    FocusTrapRegion,
+    FullBleedBox,
+    FullWidthSection,
+    HolyGrailLayout,
+    HorizontalDivider,
+    HorizontalStack,
+    InfiniteScrollWrapper,
+    InlineCluster,
+    LabeledDivider,
+    MasonryGrid,
+    MasterDetailSplit,
+    MaxWidthContainer,
+    OverflowScrollX,
+    OverflowScrollY,
+    PortalTeleport,
+    QuadPanelLayout,
+    ResizablePanelGroup,
+    SafeAreaWrapper,
+    ScrollableRegion,
+    SidebarContentPane,
+    SingleColumn,
+    SnapScrollContainer,
+    SpacerBox,
+    StickyWrapper,
+    TabPanelContainer,
+    ThreeColumn,
+    TileGrid,
+    TwoColumn,
+    VerticalDivider,
+    VerticalStack,
+    VirtualizedScroll,
+    WaterfallLayout,
+    WizardWrapper,
+    WrapCluster,
+    ZStack,
+    AnimatedIcon,
+    AudioPlayer,
+    AudioWaveform,
+    AvatarBadge,
+    AvatarCircle,
+    AvatarFallback,
+    AvatarGroupStack,
+    AvatarSquare,
+    AvatarStatusRing,
+    BarcodeDisplay,
+    BeforeAfterSlider,
+    CameraPreview,
+    GifPlayer,
+    IconDisplay,
+    ImageCarousel,
+    ImageCropTool,
+    ImageGallery,
+    ImageMasonry,
+    ImageSlot,
+    LazyImage,
+    LightboxViewer,
+    LivestreamPill,
+    LogoMark,
+    MapEmbed,
+    ModelViewer,
+    PodcastPlayer,
+    QRCode,
+    ResponsiveImage,
+    StoryViewer,
+    SvgIllustration,
+    VideoPlayer,
+    VideoThumbnail,
+    ActionSheetDestructive,
+    AppClipMiniCard,
+    AppIconBadge,
+    BiometricAuthPrompt,
+    BottomSheetMultiSnap,
+    ContactPicker,
+    DocumentFilePicker,
+    DynamicIslandSlot,
+    FloatingIslandPill,
+    HalfSheetModal,
+    HapticFeedbackWrapper,
+    HomeScreenWidget2x2,
+    HomeScreenWidget2x4,
+    HomeScreenWidget4x4,
+    LockScreenWidgetMedium,
+    LockScreenWidgetSmall,
+    LongPressActionSheet,
+    OnboardingPager,
+    PhotoMediaPicker,
+    PullToRefresh,
+    ReachabilityHelper,
+    SafeAreaBottomSpacer,
+    SafeAreaTopSpacer,
+    ShareSheet,
+    SplashLaunchScreen,
+    StatusBarOverlay,
+    SwipeNavigationGestureArea,
+    SwipeToAction,
+    SwipeToArchive,
+    SwipeToDelete,
+    AnchorNavBar,
+    BottomNavBar,
+    BottomNavRail,
+    Breadcrumb,
+    CollapsingHeader,
+    CommandPalette,
+    Dock,
+    DotStepper,
+    Drawer,
+    EllipsisBreadcrumb,
+    FloatingNavPanel,
+    FlyoutMenu,
+    HamburgerButton,
+    HorizontalStepper,
+    IconStepper,
+    InfiniteScrollTrigger,
+    LaunchpadGrid,
+    LoadMoreButton,
+    MegaMenu,
+    MiniSidebar,
+    NavBadge,
+    NavCollapse,
+    NavGroupHeader,
+    NavItem,
+    NestedTabs,
+    Pagination,
+    PrevNextPagination,
+    ScrollableTabs,
+    SidebarItem,
+    Steps,
+    StickyHeader,
+    TabBar,
+    TabButton,
+    Taskbar,
+    TokenPagination,
+    TopAppBar,
+    VerticalStepper,
+    VerticalTabBar,
+    WorkspaceSwitcher,
+    ActionSheet,
+    AlertDialog,
+    BottomSheet,
+    ContextTooltip,
+    DropdownMenu,
+    FloatingActionPanel,
+    FloatingLabel,
+    FloatingToolbar,
+    FullScreenDialog,
+    HoverCard,
+    ImageLightbox,
+    InlineConfirmation,
+    ModalDialog,
+    NestedDropdownMenu,
+    NotificationDrawer,
+    OnboardingOverlay,
+    PeekSheet,
+    Popover,
+    RichTooltip,
+    ScrimOverlay,
+    SideSheet,
+    SimpleTooltip,
+    SpotlightOverlay,
+    VideoLightbox,
+    ProgressSpinner,
+    CircularKnob,
+    EmojiRating,
+    HueSlider,
+    NumberStepper,
+    OpacitySlider,
+    RangeSlider,
+    Slider,
+    StarRating,
+    SteppedSlider,
+    VerticalSlider,
+    ButtonToggleGroup,
+    CascadingSelect,
+    Checkbox,
+    CheckboxIndeterminate,
+    ChipSelectSingle,
+    ColorSwatchPicker,
+    Combobox,
+    CountryPicker,
+    CurrencyPicker,
+    FlagPicker,
+    LanguagePicker,
+    ListboxMulti,
+    ListboxSingle,
+    MultiChipSelect,
+    OptionGroup,
+    RadioGroup,
+    SelectDropdown,
+    SelectMultiTags,
+    SizeVariantPicker,
+    TimezonePicker,
+    ToggleSwitch,
+    ChatBubbleReceived,
+    ChatBubbleSent,
+    ChatInputBar,
+    EmojiReactionBar,
+    FollowButton,
+    ReadReceipt,
+    TypingIndicator,
+    UpvoteDownvote,
+    AttachmentPreview,
+    BlockReportSheet,
+    ChatBubbleSystem,
+    CommentBox,
+    DirectMessageHeader,
+    EmojiPickerPanel,
+    FollowUnfollowButton,
+    FriendRequestButton,
+    GifPickerPanel,
+    GroupChatHeader,
+    HashtagAutocomplete,
+    InChatPollWidget,
+    LeaderboardRow,
+    LikeDislikeButtons,
+    MentionAutocomplete,
+    MessageReactionsStrip,
+    MuteToggle,
+    NestedCommentThread,
+    NotificationBellDropdown,
+    ReactionEmojiBar,
+    ShareCountDisplay,
+    SocialShareButtonsRow,
+    ThreadReplyPreview,
+    UserPresenceIndicator,
+    ViewCountDisplay,
+    VoiceMessagePlayer,
+    AddressInput,
+    AutocompleteInput,
+    CameraCaptureInput,
+    CodeEditor,
+    ColorPickerInput,
+    CommandSpotlightInput,
+    CreditCardInput,
+    CurrencyInput,
+    DatePickerInput,
+    DateRangePicker,
+    DateTimePicker,
+    EmailInput,
+    EmojiPickerInput,
+    FileUploadDropZone,
+    FontPickerInput,
+    GeolocationInput,
+    GradientBuilderInput,
+    HashtagInput,
+    IconPickerInput,
+    ImageUploadPreview,
+    JsonYamlEditor,
+    MarkdownEditor,
+    MaskedInput,
+    MeasurementInput,
+    MentionInput,
+    MonthYearPicker,
+    MultiFileUpload,
+    OtpInput,
+    PasswordInput,
+    PercentageInput,
+    QrBarcodeScanner,
+    RichTextEditor,
+    SignaturePad,
+    TagsChipsInput,
+    TelInput,
+    TextInput,
+    TextareaAutoResize,
+    TextareaFixed,
+    TimePickerInput,
+    UrlInput,
+    VoiceSpeechInput,
+    WeekPicker,
+    AnimationPresetSelector,
+    BrandKitSwitcher,
+    ColorPaletteEditor,
+    FontLoader,
+    ThemeToggle,
+    TokenExporter,
+    AccessibilityAuditOverlay,
+    ComponentPlayground,
+    CssPropertyInjector,
+    CustomThemeBuilder,
+    HighContrastAdapter,
+    IconSetSwitcher,
+    PreviewSandboxCanvas,
+    SpacingConfigurator,
+    SystemColorSchemeAdapter,
+    ThemeProvider,
+    TypographyConfigurator,
+    WcagContrastChecker,
+    Blockquote,
+    BodyLG,
+    BodyMD,
+    BodySM,
+    BodyXS,
+    Caption,
+    DisplayJumbo,
+    DisplayLG,
+    DisplayMD,
+    DisplayXL,
+    DropCap,
+    Eyebrow,
+    Footnote,
+    HeadingH1,
+    HeadingH2,
+    HeadingH3,
+    HeadingH4,
+    HeadingH5,
+    HeadingH6,
+    HighlightMark,
+    InlineCodeSpan,
+    LabelLG,
+    LabelMD,
+    LabelSM,
+    LabelXS,
+    LegalFinePrint,
+    NumericTabular,
+    Overline,
+    PullQuote,
+    RunningText,
+    Tagline,
+    TitleLG,
+    TitleMD,
+    TitleSM,
+    TitleXS,
+    ClipboardManager,
+    ContentSlot,
+    DebounceHook,
+    DragSourcePrimitive,
+    DropTargetPrimitive,
+    ErrorBoundary,
+    FocusManager,
+    IdleDetector,
+    InfiniteLoaderEngine,
+    IntersectionObserverHook,
+    KeyboardShortcutListener,
+    MediaQueryHook,
+    MutationObserverHook,
+    NetworkDetector,
+    PointerNormalizer,
+    ResizeObserverHook,
+    ScrollPositionHook,
+    StateMachineProvider,
+    SuspenseBoundary,
+    ThrottleHook,
+    VirtualGridEngine,
+    VirtualListEngine,
+    LtkTest
 }
 
-export global Backend {
-    in property <string> app-name: "LTK";
-    in property <string> app-version: "1.0.0";
-    in property <string> app-description: "Lion Toolkit UI component library, Slint + Rust.";
-    in property <string> app-link: "https://github.com/lionxlover/ltk";
-    in property <string> system-font: "Inter";
-    in property <float> system-font-size: 14;
-    in property <float> device-pixel-ratio: 1.0;
-    in property <color> system-accent: #5B9DFA;
-}
-
-export component LtkWindow inherits Window {
-    title: Backend.app-name;
-    width: 900px;
-    height: 720px;
-    background: Theme.bg-base;
-
-    in-out property <bool> dark-mode <=> Theme.dark-mode;
-
-    callback theme-changed(bool);
-    callback accent-changed(color);
-    callback font-changed(string, float);
-
-    in-out property <int> current-tab: 0;
-    in-out property <bool> show-dialog: false;
-    in-out property <bool> show-about: false;
-    in-out property <bool> toast-visible: false;
-    in-out property <string> toast-message: "";
-
-    function showToast(message: string) {
-        root.toast-message = message;
-        root.toast-visible = true;
-        toast-auto-hide.start();
-    }
-
-    toast-auto-hide := Timer {
-        interval: 3000ms;
-        running: false;
-        triggered => { root.toast-visible = false; }
-    }
-
-    VerticalLayout {
-        padding: Theme.sp-6;
-        spacing: 0px;
-
-        HorizontalLayout {
-            spacing: Theme.sp-3;
-            alignment: start;
-            height: 48px;
-
-            BusyIndicator {
-                width: 22px;
-                height: 22px;
-            }
-
-            Text {
-                text: "LTK";
-                color: Theme.text-primary;
-                font-size: Theme.text-2xl;
-                font-weight: Theme.weight-bold;
-                font-family: Theme.font-display;
-                vertical-alignment: center;
-            }
-        }
-
-        Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-        HorizontalLayout {
-            spacing: Theme.sp-1;
-            height: Theme.button-height-md;
-
-            TabButton { text: "Buttons"; checked: root.current-tab == 0; clicked => { root.current-tab = 0; } close-visible: false; }
-            TabButton { text: "Inputs"; checked: root.current-tab == 1; clicked => { root.current-tab = 1; } close-visible: false; }
-            TabButton { text: "Feedback"; checked: root.current-tab == 2; clicked => { root.current-tab = 2; } close-visible: false; }
-            TabButton { text: "Data"; checked: root.current-tab == 3; clicked => { root.current-tab = 3; } close-visible: false; }
-            TabButton { text: "Navigation"; checked: root.current-tab == 4; clicked => { root.current-tab = 4; } close-visible: false; }
-            TabButton { text: "Forms"; checked: root.current-tab == 5; clicked => { root.current-tab = 5; } close-visible: false; }
-            TabButton { text: "Display"; checked: root.current-tab == 6; clicked => { root.current-tab = 6; } close-visible: false; }
-            TabButton { text: "Dialogs"; checked: root.current-tab == 7; clicked => { root.current-tab = 7; } close-visible: false; }
-            TabButton { text: "Colors"; checked: root.current-tab == 8; clicked => { root.current-tab = 8; } close-visible: false; }
-        }
-
-        Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-        Rectangle {
-            vertical-stretch: 1;
-            background: Theme.bg-surface;
-            border-radius: Theme.radius-card;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
-
-            // Tab 0: Buttons & Actions
-            if current-tab == 0: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "BUTTONS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    PrimaryButton { text: "Primary"; clicked => { root.showToast("Primary clicked"); } }
-                    PrimaryButton { text: "Flat"; clicked => { root.showToast("Flat clicked"); } }
-                    PrimaryButton { text: "Disabled"; enabled: false; }
-                    Rectangle { horizontal-stretch: 1; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "TOGGLE BUTTONS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    ToggleButton { text: "Bold"; }
-                    ToggleButton { text: "Italic"; }
-                    ToggleButton { text: "Active"; active: true; }
-                    ToggleButton { text: "Disabled"; enabled: false; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "CHIPS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Chip { text: "Design"; }
-                    Chip { text: "Code"; checked: true; }
-                    Chip { text: "Debug"; }
-                    Chip { text: "Disabled"; enabled: false; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "BADGES"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-4;
-                    alignment: start;
-
-                    Badge { text: "New"; }
-                    Badge { count: 5; }
-                    Badge { count: 999; }
-                    Badge { dot: true; }
-                    Badge { dot: true; badge-color: Theme.state-success; }
-                    Badge { text: "Error"; error: true; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "SEGMENTED CONTROL"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                SegmentedControl {
-                    width: 300px;
-                    segments: ["Day", "Week", "Month", "Year"];
-                }
-            }
-
-            // Tab 1: Inputs
-            if current-tab == 1: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "TEXT FIELDS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    FishTextField { placeholder: "Enter your name..."; width: 240px; }
-                    FishTextField { placeholder: "Email..."; text: "user@example.com"; width: 240px; }
-                    FishTextField { placeholder: "Disabled..."; width: 240px; enabled: false; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "SEARCH INPUT"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                SearchInput {
-                    width: 400px;
-                    placeholder: "Search components...";
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "TEXT AREA"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                TextArea {
-                    width: 400px;
-                    placeholder: "Type something multi-line...";
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "RADIO BUTTONS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                VerticalLayout {
-                    spacing: Theme.sp-2;
-
-                    RadioButton { text: "Option A"; checked: true; }
-                    RadioButton { text: "Option B"; }
-                    RadioButton { text: "Option C (disabled)"; enabled: false; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "SKELETON LOADING"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                VerticalLayout {
-                    spacing: Theme.sp-3;
-                    width: 300px;
-
-                    Skeleton { skeleton-height: 20px; }
-                    Skeleton { skeleton-height: 14px; }
-                    Skeleton { skeleton-height: 14px; }
-                }
-            }
-
-            // Tab 2: Feedback
-            if current-tab == 2: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "ALERTS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                VerticalLayout {
-                    spacing: Theme.sp-3;
-
-                    Alert { title: "Info"; text: "This is an informational alert message."; kind: "info"; }
-                    Alert { title: "Success"; text: "Operation completed successfully!"; kind: "success"; }
-                    Alert { title: "Warning"; text: "Please review before proceeding."; kind: "warning"; }
-                    Alert { title: "Error"; text: "Something went wrong. Please try again."; kind: "error"; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "PROGRESS BARS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                VerticalLayout {
-                    spacing: Theme.sp-3;
-
-                    ProgressBar { value: 75; width: 300px; }
-                    ProgressBar { value: 45; width: 300px; progress-color: Theme.state-success; }
-                    ProgressBar { value: 20; width: 300px; progress-color: Theme.state-error; }
-                    ProgressBar { indeterminate: true; width: 300px; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "DIVIDERS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Divider { label: "Section"; }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "BUSY INDICATOR"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-6;
-                    alignment: start;
-
-                    BusyIndicator { width: 24px; height: 24px; }
-                    BusyIndicator { width: 32px; height: 32px; }
-                    BusyIndicator { width: 48px; height: 48px; }
-                }
-            }
-
-            // Tab 3: Data Display
-            if current-tab == 3: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "STAT CARDS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    StatCard { label: "USERS"; value: "12,847"; subtitle: "+14.2%"; horizontal-stretch: 1; }
-                    StatCard { label: "REVENUE"; value: "$48.2K"; subtitle: "+8.1%"; stat-color: Theme.state-success; horizontal-stretch: 1; }
-                    StatCard { label: "ERRORS"; value: "23"; subtitle: "-5.4%"; stat-color: Theme.state-error; horizontal-stretch: 1; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "CARDS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    Card {
-                        horizontal-stretch: 1;
-                        height: 100px;
-                        VerticalLayout {
-                            padding: Theme.card-padding;
-                            spacing: Theme.sp-2;
-                            Text { text: "Basic Card"; color: Theme.text-primary; font-weight: Theme.weight-semibold; font-size: Theme.text-base; }
-                            Text { text: "Simple card with default styling."; color: Theme.text-secondary; font-size: Theme.text-sm; }
-                        }
-                    }
-
-                    Card {
-                        horizontal-stretch: 1;
-                        height: 100px;
-                        elevated: true;
-                        VerticalLayout {
-                            padding: Theme.card-padding;
-                            spacing: Theme.sp-2;
-                            Text { text: "Elevated Card"; color: Theme.text-primary; font-weight: Theme.weight-semibold; font-size: Theme.text-base; }
-                            Text { text: "Card with drop shadow."; color: Theme.text-secondary; font-size: Theme.text-sm; }
-                        }
-                    }
-
-                    Card {
-                        horizontal-stretch: 1;
-                        height: 100px;
-                        outlined: true;
-                        VerticalLayout {
-                            padding: Theme.card-padding;
-                            spacing: Theme.sp-2;
-                            Text { text: "Outlined Card"; color: Theme.text-primary; font-weight: Theme.weight-semibold; font-size: Theme.text-base; }
-                            Text { text: "Card with border outline."; color: Theme.text-secondary; font-size: Theme.text-sm; }
-                        }
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "AVATARS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-4;
-                    alignment: start;
-
-                    Avatar { fallback: "A"; avatar-size: 32px; status-color: Theme.state-success; }
-                    Avatar { fallback: "B"; avatar-size: 40px; status-color: Theme.state-warning; }
-                    Avatar { fallback: "C"; avatar-size: 48px; status-color: Theme.state-error; }
-                    Avatar { fallback: "JD"; avatar-size: 56px; }
-                }
-            }
-
-            // Tab 4: Navigation
-            if current-tab == 4: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "BREADCRUMB"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    height: 44px;
-                    background: Theme.bg-raised;
-                    border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-subtle;
-
-                    Breadcrumb {
-                        items: ["Home", "Components", "Navigation", "Breadcrumb"];
-                        active-index: -1;
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "SIDEBAR ITEMS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    height: 200px;
-                    background: Theme.bg-raised;
-                    border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-subtle;
-
-                    VerticalLayout {
-                        padding: Theme.sp-2;
-
-                        SidebarItem { text: "Dashboard"; icon: "◉"; active: true; }
-                        SidebarItem { text: "Components"; icon: "◇"; }
-                        SidebarItem { text: "Settings"; icon: "⚙"; }
-                        SidebarItem { text: "About"; icon: "ℹ"; }
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "DRAWER"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Text {
-                    text: "Drawer is a slide-out overlay panel. Use the Drawer component with open: true to display it.";
-                    color: Theme.text-secondary;
-                    font-size: Theme.text-sm;
-                    wrap: word-wrap;
-                }
-            }
-
-            // Tab 5: Forms
-            if current-tab == 5: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "SELECT DROPDOWN"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    Select {
-                        width: 240px;
-                        placeholder: "Choose a color...";
-                        options: ["Red", "Green", "Blue", "Yellow", "Purple"];
-                        current-index: 2;
-                    }
-
-                    Select {
-                        width: 240px;
-                        placeholder: "Disabled select";
-                        options: ["Option A", "Option B"];
-                        enabled: false;
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "TOGGLE GROUP"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                ToggleGroup {
-                    width: 350px;
-                    options: ["Day", "Week", "Month", "Year"];
-                    current-index: 1;
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "ACCORDION"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    background: Theme.bg-raised;
-                    border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-subtle;
-
-                    VerticalLayout {
-                        padding: Theme.sp-2;
-
-                        AccordionItem { title: "What is LTK?"; expanded: true; }
-                        AccordionItem { title: "How do I get started?"; expanded: false; }
-                        AccordionItem { title: "Can I customize the theme?"; expanded: false; }
-                    }
-                }
-            }
-
-            // Tab 6: Data Display
-            if current-tab == 6: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "TABLE (STRIPED + BORDERED)"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    height: 220px;
-                    background: transparent;
-
-                    Table {
-                        columns: ["Name", "Role", "Status"];
-                        striped: true;
-                        bordered: true;
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "LIST ITEMS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    height: 170px;
-                    background: Theme.bg-raised;
-                    border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-subtle;
-
-                    VerticalLayout {
-                        padding: Theme.sp-2;
-
-                        ListItem { title: "Dashboard"; subtitle: "Overview of your data"; icon: "◉"; trailing: "›"; }
-                        ListItem { title: "Components"; subtitle: "Browse the library"; icon: "◇"; trailing: "›"; }
-                        ListItem { title: "Settings"; subtitle: "Configure preferences"; icon: "⚙"; trailing: "›"; }
-                    }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "EMPTY STATE"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                Rectangle {
-                    height: 140px;
-                    background: Theme.bg-raised;
-                    border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-subtle;
-
-                    EmptyState {
-                        icon: "📂";
-                        title: "No files yet";
-                        description: "Create your first file to get started";
-                    }
-                }
-            }
-
-            // Tab 7: Dialogs
-            if current-tab == 7: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "DIALOG TRIGGERS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-3;
-
-                    PrimaryButton { text: "Show Dialog"; clicked => { root.show-dialog = true; } }
-                    PrimaryButton { text: "Show About"; clicked => { root.show-about = true; } }
-                    PrimaryButton { text: "Show Toast"; clicked => { root.showToast("Hello from LTK!"); } }
-                }
-            }
-
-            // Tab 8: Color Palette
-            if current-tab == 8: VerticalLayout {
-                padding: Theme.sp-6;
-                spacing: 0px;
-
-                SectionHeader { text: "ACCENT COLORS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.accent; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: #A78BFA; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: #F472B6; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: #34D399; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.swatch-orange; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "SURFACES"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.bg-base; border-width: 1px; border-color: Theme.border-subtle; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.bg-surface; border-width: 1px; border-color: Theme.border-subtle; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.bg-raised; border-width: 1px; border-color: Theme.border-subtle; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.bg-overlay; border-width: 1px; border-color: Theme.border-subtle; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "STATE COLORS"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.state-success; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.state-warning; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.state-error; }
-                    Rectangle { horizontal-stretch: 1; height: 48px; border-radius: Theme.radius-sm; background: Theme.state-info; }
-                }
-
-                Rectangle { height: Theme.section-lg; vertical-stretch: 0; }
-
-                SectionHeader { text: "TYPOGRAPHY SCALE"; }
-                Rectangle { height: Theme.sp-3; vertical-stretch: 0; }
-
-                VerticalLayout {
-                    spacing: Theme.sp-2;
-
-                    Text { text: "Display — Space Grotesk 24px"; font-family: Theme.font-display; font-size: Theme.text-3xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
-                    Text { text: "Heading — 18px SemiBold"; font-family: Theme.font-ui; font-size: Theme.text-xl; font-weight: Theme.weight-semibold; color: Theme.text-primary; }
-                    Text { text: "Body — 14px Regular"; font-family: Theme.font-ui; font-size: Theme.text-base; color: Theme.text-primary; }
-                    Text { text: "Caption — 12px"; font-family: Theme.font-ui; font-size: Theme.text-sm; color: Theme.text-secondary; }
-                    Text { text: "Label — 11px SemiBold tracking-wide"; font-family: Theme.font-ui; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; color: Theme.text-tertiary; letter-spacing: Theme.tracking-wide; }
-                }
-            }
-        }
-
-        Rectangle { height: Theme.sp-2; vertical-stretch: 0; }
-
-        HorizontalLayout {
-            height: 24px;
-            alignment: center;
-
-            Text {
-                text: Backend.app-name + " v" + Backend.app-version;
-                color: Theme.text-tertiary;
-                font-size: Theme.text-xs;
-                font-family: Theme.font-ui;
-                vertical-alignment: center;
-            }
-        }
-    }
-
-    Dialog {
-        x: (root.width - self.width) / 2;
-        y: (root.height - self.height) / 2;
-        title: "Confirm Action";
-        text: "Are you sure you want to proceed with this action?";
-        left-button-text: "Cancel";
-        right-button-text: "OK";
-        active: root.show-dialog;
-        left-button-clicked => { root.show-dialog = false; }
-        right-button-clicked => {
-            root.show-dialog = false;
-            root.showToast("Confirmed!");
-        }
-    }
-
-    AboutDialog {
-        x: (root.width - self.width) / 2;
-        y: (root.height - self.height) / 2;
-        name: "LTK";
-        description: "Lion Toolkit UI component library, Slint + Rust.";
-        link: "https://github.com/lionxlover/ltk";
-        active: root.show-about;
-        link-clicked => { root.show-about = false; }
-    }
-
-    Toast {
-        x: (root.width - self.width) / 2;
-        y: root.height - self.height - Theme.sp-6;
-        width: Math.min(root.width - Theme.sp-10, Theme.toast-width);
-        active: root.toast-visible;
-        popup-text: root.toast-message;
-        auto-hide-duration: 3000ms;
-    }
-}

@@ -10,17 +10,17 @@ export component SidebarContentPane inherits Rectangle {
 
     HorizontalLayout {
         Rectangle {
-            width: sidebar-collapsed ? 48 : sidebar-width;
+            width: sidebar-collapsed ? 48px : sidebar-width;
             background: Theme.bg-surface;
         }
 
         if show-divider: Rectangle {
             width: 1px;
-            background: Theme.border-default;
+            background: Theme.border-subtle;
         }
 
         Rectangle {
-            vertical-stretch: 1;
+            horizontal-stretch: 1;
             background: Theme.bg-base;
         }
     }

@@ -2,25 +2,31 @@ import { Theme } from "../core/Theme.slint";
 
 export component IconButtonCircle inherits Rectangle {
     in-out property <bool> enabled: true;
+    in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
+
+    callback clicked();
 
     width: 40px;
     height: 40px;
-    background: Theme.bg-raised;
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
     border-radius: 20px;
     border-width: 1px;
     border-color: Theme.border-base;
     horizontal-stretch: 0;
 
+    animate background { duration: Theme.dur-fast; }
+
     Image {
-        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
+        source: root.icon;
         width: 16px;
         height: 16px;
-        colorize: Theme.text-primary;
+        colorize: enabled ? Theme.text-primary : Theme.text-disabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

@@ -6,6 +6,13 @@ export component SpacerBox inherits Rectangle {
     in property <length> size: 16px;
     in property <bool> horizontal: false;
 
-    width: horizontal ? size : 100%;
-    height: horizontal ? 100% : size;
+    if horizontal: Rectangle {
+        width: root.size;
+        height: 100%;
+    }
+
+    if !horizontal: Rectangle {
+        width: 100%;
+        height: root.size;
+    }
 }

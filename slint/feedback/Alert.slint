@@ -21,16 +21,19 @@ export component Alert inherits Rectangle {
 
         // Icon
         if show-icon: Text {
+            y: (parent.height - self.height) / 2;
             text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "ℹ"));
             color: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
             font-size: Theme.text-lg;
             vertical-alignment: center;
+            horizontal-alignment: center;
             horizontal-stretch: 0;
         }
 
         // Content
         VerticalLayout {
             horizontal-stretch: 1;
+            alignment: center;
             spacing: Theme.sp-1;
 
             if title != "": Text {
@@ -55,6 +58,7 @@ export component Alert inherits Rectangle {
         Rectangle {
             width: 24px;
             height: 24px;
+            y: (parent.height - self.height) / 2;
             horizontal-stretch: 0;
             vertical-stretch: 0;
             background: transparent;
@@ -66,6 +70,7 @@ export component Alert inherits Rectangle {
                 color: Theme.text-tertiary;
                 font-size: Theme.text-sm;
                 vertical-alignment: center;
+                horizontal-alignment: center;
             }
 
             TouchArea {

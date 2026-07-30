@@ -5,10 +5,14 @@ export component GhostButton inherits Rectangle {
     in-out property <string> text: "Ghost";
     in-out property <bool> enabled: true;
 
-    background: transparent;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : transparent));
     border-radius: Theme.radius-md;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -17,19 +21,21 @@ export component GhostButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/ghost.svg");
             fa-size: 14px;
-            fa-color: Theme.text-secondary;
+            fa-color: enabled ? Theme.text-secondary : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: Theme.text-secondary;
+            color: enabled ? Theme.text-secondary : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

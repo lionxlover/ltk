@@ -1,9 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
-export component PortalTeleport2 inherits Rectangle {
+export component PortalTeleport inherits Rectangle {
     background: transparent;
 
     in property <bool> active: true;
     in property <length> target-x: 0;
     in property <length> target-y: 0;
 }
+
+export component PortalTeleport2 inherits PortalTeleport {}

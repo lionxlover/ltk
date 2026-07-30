@@ -1,6 +1,6 @@
 import { Theme } from "../core/Theme.slint";
 
-export component DualPanel extends Rectangle {
+export component DualPanel inherits Rectangle {
     background: transparent;
     clip: true;
 
@@ -14,7 +14,7 @@ export component DualPanel extends Rectangle {
     Rectangle {
         width: vertical ? parent.width : 4px;
         height: vertical ? 4px : parent.height;
-        background: Theme.border-default;
+        background: Theme.border-subtle;
     }
 
     Rectangle {

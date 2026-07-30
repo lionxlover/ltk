@@ -8,7 +8,7 @@ export component StripedProgress inherits Rectangle {
     in property <color> track-color: Theme.bg-overlay;
 
     height: 10px;
-    background: #00000000;
+    background: transparent;
 
     track-bg := Rectangle {
         border-radius: Theme.radius-full;
@@ -26,52 +26,47 @@ export component StripedProgress inherits Rectangle {
 
         stripe1 := Rectangle {
             x: -16px;
-            y: -4px;
+            y: 0;
             width: 6px;
-            height: parent.height + 8px;
-            background: rgba(255, 255, 255, 0.15);
-            rotation-angle: -45deg;
-            animate x { duration: 800ms; easing: Theme.ease-linear; loop-count: -1; }
+            height: parent.height;
+            background: rgba(255, 255, 255, 0.2);
+            animate x { duration: 800ms; iteration-count: -1; }
         }
 
         stripe2 := Rectangle {
             x: 4px;
-            y: -4px;
+            y: 0;
             width: 6px;
-            height: parent.height + 8px;
-            background: rgba(255, 255, 255, 0.15);
-            rotation-angle: -45deg;
-            animate x { duration: 800ms; easing: Theme.ease-linear; loop-count: -1; }
+            height: parent.height;
+            background: rgba(255, 255, 255, 0.2);
+            animate x { duration: 800ms; iteration-count: -1; }
         }
 
         stripe3 := Rectangle {
             x: 24px;
-            y: -4px;
+            y: 0;
             width: 6px;
-            height: parent.height + 8px;
-            background: rgba(255, 255, 255, 0.15);
-            rotation-angle: -45deg;
-            animate x { duration: 800ms; easing: Theme.ease-linear; loop-count: -1; }
+            height: parent.height;
+            background: rgba(255, 255, 255, 0.2);
+            animate x { duration: 800ms; iteration-count: -1; }
         }
 
         stripe4 := Rectangle {
             x: 44px;
-            y: -4px;
+            y: 0;
             width: 6px;
-            height: parent.height + 8px;
-            background: rgba(255, 255, 255, 0.15);
-            rotation-angle: -45deg;
-            animate x { duration: 800ms; easing: Theme.ease-linear; loop-count: -1; }
+            height: parent.height;
+            background: rgba(255, 255, 255, 0.2);
+            animate x { duration: 800ms; iteration-count: -1; }
         }
 
         stripe5 := Rectangle {
             x: 64px;
-            y: -4px;
+            y: 0;
             width: 6px;
-            height: parent.height + 8px;
-            background: rgba(255, 255, 255, 0.15);
-            rotation-angle: -45deg;
-            animate x { duration: 800ms; easing: Theme.ease-linear; loop-count: -1; }
+            height: parent.height;
+            background: rgba(255, 255, 255, 0.2);
+            animate x { duration: 800ms; iteration-count: -1; }
         }
     }
 }

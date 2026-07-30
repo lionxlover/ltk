@@ -5,10 +5,14 @@ export component WarningButton inherits Rectangle {
     in-out property <string> text: "Warning";
     in-out property <bool> enabled: true;
 
-    background: Theme.warning;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.warning.with-alpha(0.8) : (ta.has-hover ? Theme.warning.with-alpha(0.9) : Theme.warning));
     border-radius: Theme.radius-md;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -17,19 +21,21 @@ export component WarningButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/triangle-exclamation.svg");
             fa-size: 14px;
-            fa-color: #000000;
+            fa-color: enabled ? #000000 : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #000000;
+            color: enabled ? #000000 : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

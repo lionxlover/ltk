@@ -9,9 +9,9 @@ export component NestedMenuItem inherits Rectangle {
     callback submenu-hover();
 
     height: 32px;
-    background: item-ta.has-hover ? Theme.surface-hover : #00000000;
+    background: item-ta.has-hover ? Theme.surface-hover : transparent;
 
-    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         padding: Theme.sp-1;
@@ -43,16 +43,10 @@ export component NestedMenuItem inherits Rectangle {
                 root.activated();
             }
         }
-        entered => {
-            if (root.has-submenu) {
-                root.submenu-hover();
-            }
-        }
     }
 }
 
 export component NestedDropdownMenu inherits Rectangle {
-    visible: false;
     in property <[string]> items: [];
     in property <[string]> submenu-items: [];
     in-out property <bool> submenu-open: false;
@@ -62,7 +56,6 @@ export component NestedDropdownMenu inherits Rectangle {
 
     width: 220px;
     min-height: 40px;
-    visible: root.visible;
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
@@ -74,17 +67,17 @@ export component NestedDropdownMenu inherits Rectangle {
     drop-shadow-blur: Theme.elevation-2-blur;
     drop-shadow-color: Theme.elevation-2-color;
 
-    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; }
 
     VerticalLayout {
         padding: Theme.sp-1;
         spacing: 0px;
 
-        for itementry in root.items: NestedMenuItem {
+        for itementry[idx] in root.items: NestedMenuItem {
             label: itementry;
-            has-submenu: index == root.items.length - 1 && root.submenu-items.length > 0;
+            has-submenu: idx == root.items.length - 1 && root.submenu-items.length > 0;
             submenu-open: root.submenu-open;
-            activated => { root.item-clicked(index); }
+            activated => { root.item-clicked(idx); }
             submenu-hover => { root.submenu-open = true; }
         }
     }
@@ -109,11 +102,11 @@ export component NestedDropdownMenu inherits Rectangle {
             padding: Theme.sp-1;
             spacing: 0px;
 
-            for subentry in root.submenu-items: Rectangle {
+            for subentry[idx] in root.submenu-items: Rectangle {
                 height: 32px;
-                background: sub-ta.has-hover ? Theme.surface-hover : #00000000;
+                background: sub-ta.has-hover ? Theme.surface-hover : transparent;
 
-                animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+                animate background { duration: Theme.dur-fast; }
 
                 Text {
                     x: Theme.sp-3;
@@ -126,7 +119,7 @@ export component NestedDropdownMenu inherits Rectangle {
                 }
 
                 sub-ta := TouchArea {
-                    clicked => { root.submenu-item-clicked(index); }
+                    clicked => { root.submenu-item-clicked(idx); }
                 }
             }
         }

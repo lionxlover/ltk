@@ -87,11 +87,7 @@ fn main() {
                 let accent = tm.accent_color();
                 let backend = a.global::<Backend>();
                 let cur = backend.get_system_accent();
-                let r = (
-                    (cur.red() as f32 * 255.0) as u8,
-                    (cur.green() as f32 * 255.0) as u8,
-                    (cur.blue() as f32 * 255.0) as u8,
-                );
+                let r = (cur.red(), cur.green(), cur.blue());
                 if r != accent {
                     backend.set_system_accent(slint::Color::from_argb_u8(255, accent.0, accent.1, accent.2));
                     log::info!("D-Bus: accent -> rgb({},{},{})", accent.0, accent.1, accent.2);

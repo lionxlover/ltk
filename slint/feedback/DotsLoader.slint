@@ -4,40 +4,40 @@ export component DotsLoader inherits Rectangle {
     in property <length> size: 16px;
     in property <color> dot-color: Theme.accent;
 
-    width: size * 3px;
-    height: size * 1px;
-    background: #00000000;
+    width: size * 3;
+    height: size;
+    background: transparent;
 
     dot1 := Rectangle {
         x: 0px;
         y: (parent.height - self.height) / 2;
-        width: size * 1px;
-        height: size * 1px;
+        width: size;
+        height: size;
         border-radius: Theme.radius-full;
         background: dot-color;
         opacity: Math.mod(animation-tick() + 0ms, 1200ms) < 600ms ? 1.0 : 0.3;
-        animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        animate opacity { duration: 600ms; }
     }
 
     dot2 := Rectangle {
         x: parent.width * 0.33;
         y: (parent.height - self.height) / 2;
-        width: size * 1px;
-        height: size * 1px;
+        width: size;
+        height: size;
         border-radius: Theme.radius-full;
         background: dot-color;
         opacity: Math.mod(animation-tick() + 400ms, 1200ms) < 600ms ? 1.0 : 0.3;
-        animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        animate opacity { duration: 600ms; }
     }
 
     dot3 := Rectangle {
         x: parent.width * 0.66;
         y: (parent.height - self.height) / 2;
-        width: size * 1px;
-        height: size * 1px;
+        width: size;
+        height: size;
         border-radius: Theme.radius-full;
         background: dot-color;
         opacity: Math.mod(animation-tick() + 800ms, 1200ms) < 600ms ? 1.0 : 0.3;
-        animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+        animate opacity { duration: 600ms; }
     }
 }

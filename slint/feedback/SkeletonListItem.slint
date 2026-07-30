@@ -1,4 +1,6 @@
 import { Theme } from "../core/Theme.slint";
+import { SkeletonAvatar } from "./SkeletonAvatar.slint";
+import { SkeletonText } from "./SkeletonText.slint";
 
 export component SkeletonListItem inherits Rectangle {
     height: 56px;
@@ -7,7 +9,7 @@ export component SkeletonListItem inherits Rectangle {
         spacing: 12px;
         alignment: start;
 
-        SkeletonAvatar { size: 40; }
+        SkeletonAvatar { size: 40px; }
 
         VerticalLayout {
             spacing: 8px;

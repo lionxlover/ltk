@@ -29,10 +29,11 @@ export component SearchInput inherits Rectangle {
         color: Theme.text-tertiary;
         font-size: Theme.text-lg;
         vertical-alignment: center;
+        horizontal-alignment: center;
     }
 
     input := TextInput {
-        x: Theme.sp-3 * 2 + Theme.icon-md;
+        x: Theme.sp-3 + Theme.icon-md + Theme.sp-2;
         y: (parent.height - self.height) / 2;
         width: parent.width - self.x - (clear-btn.visible ? Theme.button-height-md : Theme.sp-3);
         height: self.preferred-height;
@@ -45,7 +46,7 @@ export component SearchInput inherits Rectangle {
     }
 
     placeholder-text := Text {
-        x: Theme.sp-3 * 2 + Theme.icon-md;
+        x: input.x;
         y: (parent.height - self.height) / 2;
         text: root.placeholder;
         color: Theme.text-tertiary;

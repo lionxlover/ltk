@@ -2,14 +2,12 @@ import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component ContextTooltip inherits Rectangle {
-    visible: false;
     in property <string> text: "";
 
     min-width: 60px;
     min-height: 28px;
-    visible: root.visible;
-    background: Theme.bg-elevated;
-    border-radius: Theme.radius-tooltip;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xs;
     border-width: 1px;
     border-color: Theme.border-subtle;
     opacity: root.visible ? 1 : 0;
@@ -19,17 +17,18 @@ export component ContextTooltip inherits Rectangle {
     drop-shadow-blur: Theme.elevation-1-blur;
     drop-shadow-color: Theme.elevation-1-color;
 
-    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         padding: Theme.sp-2;
-        spacing: Theme.sp-1-5;
+        spacing: Theme.sp-2;
         alignment: center;
 
         FaIcon {
             fa-size: 12px;
             fa-color: Theme.text-tertiary;
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-info.svg");
+            y: (parent.height - self.height) / 2;
         }
 
         if root.text != "": Text {

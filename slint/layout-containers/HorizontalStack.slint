@@ -5,10 +5,10 @@ export component HorizontalStack inherits Rectangle {
 
     in property <length> gap: 8px;
     in property <string> alignment: "start";
-    in property <length> padding: 0px;
+    in property <length> stack-padding: 0px;
 
     HorizontalLayout {
         spacing: gap;
-        padding: padding;
+        padding: stack-padding;
     }
 }

@@ -3,11 +3,16 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component SocialAuthFacebook inherits Rectangle {
     in-out property <string> text: "Continue with Facebook";
+    in-out property <bool> enabled: true;
 
-    background: #1877F2;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #1464cc : (ta.has-hover ? #166fe5 : #1877F2));
     border-radius: Theme.radius-md;
     height: 44px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -16,12 +21,13 @@ export component SocialAuthFacebook inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/facebook.svg");
             fa-size: 18px;
-            fa-color: #ffffff;
+            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #ffffff;
+            color: enabled ? #ffffff : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
             font-size: 14px;
             font-weight: Theme.weight-medium;
@@ -29,7 +35,8 @@ export component SocialAuthFacebook inherits Rectangle {
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

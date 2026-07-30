@@ -9,7 +9,7 @@ export component HamburgerButton inherits Rectangle {
     height: 36px;
     background: ta.pressed ? Theme.surface-pressed
         : ta.has-hover ? Theme.surface-hover
-        : #00000000;
+        : transparent;
     border-radius: Theme.radius-sm;
 
     animate background { duration: Theme.dur-fast; }
@@ -27,9 +27,7 @@ export component HamburgerButton inherits Rectangle {
             background: Theme.text-primary;
             border-radius: 1px;
 
-            rotate-angle: open ? 45deg : 0deg;
-            animate y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
-            animate rotate-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            animate y { duration: Theme.dur-normal; }
         }
 
         Rectangle {
@@ -50,9 +48,7 @@ export component HamburgerButton inherits Rectangle {
             background: Theme.text-primary;
             border-radius: 1px;
 
-            rotate-angle: open ? -45deg : 0deg;
-            animate y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
-            animate rotate-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            animate y { duration: Theme.dur-normal; }
         }
     }
 

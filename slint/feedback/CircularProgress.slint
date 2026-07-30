@@ -8,9 +8,9 @@ export component CircularProgress inherits Rectangle {
     in property <color> progress-color: Theme.accent;
     in property <color> track-color: Theme.bg-overlay;
 
-    width: size * 1px;
-    height: size * 1px;
-    background: #00000000;
+    width: root.size;
+    height: root.size;
+    background: transparent;
 
     Rectangle {
         width: parent.width;
@@ -18,7 +18,7 @@ export component CircularProgress inherits Rectangle {
         border-radius: Theme.radius-full;
         border-width: 4px;
         border-color: track-color;
-        background: #00000000;
+        background: transparent;
     }
 
     Rectangle {
@@ -27,7 +27,7 @@ export component CircularProgress inherits Rectangle {
         border-radius: Theme.radius-full;
         border-width: 4px;
         border-color: progress-color;
-        background: #00000000;
+        background: transparent;
         visible: value > 0;
     }
 

@@ -3,11 +3,16 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component SocialAuthGitHub inherits Rectangle {
     in-out property <string> text: "Continue with GitHub";
+    in-out property <bool> enabled: true;
 
-    background: #24292e;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #1b1f23 : (ta.has-hover ? #2c3137 : #24292e));
     border-radius: Theme.radius-md;
     height: 44px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -16,12 +21,13 @@ export component SocialAuthGitHub inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/github.svg");
             fa-size: 18px;
-            fa-color: #ffffff;
+            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #ffffff;
+            color: enabled ? #ffffff : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
             font-size: 14px;
             font-weight: Theme.weight-medium;
@@ -29,7 +35,8 @@ export component SocialAuthGitHub inherits Rectangle {
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

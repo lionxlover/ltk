@@ -1,5 +1,6 @@
 import { Theme } from "../core/Theme.slint";
-import { RoundImageButton } from "RoundImageButton.slint";
+import { TabButton } from "./TabButton.slint";
+import { IconButtonCircle } from "../buttons/IconButtonCircle.slint";
 
 export component TabBar inherits Rectangle {
     in property <[string]> tabs: [];
@@ -18,7 +19,7 @@ export component TabBar inherits Rectangle {
         y: 0;
         width: parent.width;
         height: parent.height;
-        spacing: Theme.spacing.small / 2;
+        spacing: Theme.sp-2;
 
         for tab[idx] in root.tabs: TabButton {
             horizontal-stretch: 1;
@@ -28,12 +29,11 @@ export component TabBar inherits Rectangle {
             close-clicked => { root.tab-close-clicked(idx); }
         }
 
-        if new-tab-visible: RoundImageButton {
-            horizontal-stretch: 0;
-            width: 31px;
-            height: 31px;
-            icon-margins: 2px;
-            source: @image-url("../src/images/light/add.svg");
+        if new-tab-visible: IconButtonCircle {
+            width: 32px;
+            height: 32px;
+            icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+            y: (parent.height - self.height) / 2;
             clicked => { root.new-tab-clicked(); }
         }
 

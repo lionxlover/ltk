@@ -1,29 +1,24 @@
 import { Theme } from "../core/Theme.slint";
 
 export component CommandPalette inherits Rectangle {
-    visible: false;
     in property <string> query: "";
     in property <[string]> results: [];
 
     callback closed();
     callback result-selected(int);
 
-    x: 0;
-    y: 0;
-    width: parent.width;
-    height: parent.height;
-    background: Theme.backdrop;
-    visible: root.visible;
+    width: 100%;
+    height: 100%;
+    background: Theme.bg-base.with-alpha(0.8);
 
     animate opacity { duration: Theme.dur-fast; }
-    opacity: visible ? 1 : 0;
 
     Rectangle {
         width: 560px;
         height: palette-content.preferred-height + Theme.sp-4;
         y: 80px;
         x: (parent.width - self.width) / 2;
-        background: Theme.bg-elevated;
+        background: Theme.bg-overlay;
         border-radius: Theme.radius-lg;
         border-width: 1px;
         border-color: Theme.border-subtle;
@@ -38,7 +33,7 @@ export component CommandPalette inherits Rectangle {
         HorizontalLayout {
             padding-left: Theme.sp-4;
             padding-right: Theme.sp-4;
-            height: Theme.input-height-lg;
+            height: Theme.button-height-lg;
             spacing: Theme.sp-2;
 
             Text {
@@ -50,14 +45,25 @@ export component CommandPalette inherits Rectangle {
                 horizontal-stretch: 0;
             }
 
-            TextInput {
-                text: root.query;
-                color: Theme.text-primary;
-                font-family: Theme.font-ui;
-                font-size: Theme.text-md;
-                vertical-alignment: center;
+            Rectangle {
                 horizontal-stretch: 1;
-                placeholder-text: "Type a command...";
+
+                if root.query == "": Text {
+                    text: "Type a command...";
+                    color: Theme.text-tertiary;
+                    font-size: Theme.text-base;
+                    vertical-alignment: center;
+                }
+
+                TextInput {
+                    text: root.query;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-base;
+                    vertical-alignment: center;
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
 
@@ -90,7 +96,7 @@ export component CommandPalette inherits Rectangle {
                 height: 36px;
                 background: res-ta.pressed ? Theme.surface-pressed
                     : res-ta.has-hover ? Theme.surface-hover
-                    : #00000000;
+                    : transparent;
                 border-radius: Theme.radius-sm;
 
                 HorizontalLayout {
@@ -120,9 +126,5 @@ export component CommandPalette inherits Rectangle {
                 }
             }
         }
-    }
-
-    ta := TouchArea {
-        clicked => { root.closed(); }
     }
 }

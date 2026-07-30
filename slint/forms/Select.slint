@@ -26,21 +26,23 @@ export component Select inherits Rectangle {
     selected-text := Text {
         x: Theme.input-padding-x;
         y: (parent.height - self.height) / 2;
+        width: parent.width - Theme.input-padding-x * 3 - chevron.preferred-width;
         text: current-index >= 0 && current-index < options.length
             ? options[current-index] : placeholder;
         color: current-index >= 0 ? Theme.text-primary : Theme.text-tertiary;
         font-family: Theme.font-ui;
         font-size: Theme.text-sm;
         vertical-alignment: center;
-        horizontal-stretch: 1;
+        overflow: elide;
     }
 
     chevron := Text {
+        x: parent.width - Theme.input-padding-x - self.width;
+        y: (parent.height - self.height) / 2;
         text: expanded ? "▴" : "▾";
         color: Theme.text-tertiary;
         font-size: Theme.text-sm;
         vertical-alignment: center;
-        horizontal-stretch: 0;
     }
 
     // Dropdown overlay

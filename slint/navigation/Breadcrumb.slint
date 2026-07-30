@@ -28,10 +28,15 @@ export component Breadcrumb inherits Rectangle {
                 horizontal-stretch: 0;
             }
 
-            TouchArea {
+            ta := TouchArea {
+                width: label.preferred-width + Theme.sp-2 * 2;
+                height: 28px;
+                y: (parent.height - self.height) / 2;
                 clicked => { root.item-clicked(i); }
 
                 bg := Rectangle {
+                    width: parent.width;
+                    height: parent.height;
                     border-radius: Theme.radius-sm;
                     background: ta.pressed ? Theme.surface-pressed
                         : ta.has-hover ? Theme.surface-hover
@@ -40,8 +45,8 @@ export component Breadcrumb inherits Rectangle {
                     animate background { duration: Theme.dur-fast; }
 
                     label := Text {
-                        x: Theme.sp-2;
-                        y: Theme.sp-1;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
                         text: item;
                         color: (root.active-index == i || (root.active-index == -1 && i == root.items.length - 1))
                             ? Theme.text-primary : Theme.text-secondary;
@@ -52,8 +57,6 @@ export component Breadcrumb inherits Rectangle {
                         vertical-alignment: center;
                     }
                 }
-
-                ta := TouchArea { }
             }
         }
     }

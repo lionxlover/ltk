@@ -26,6 +26,7 @@ export component ListItem inherits Rectangle {
         if icon != "": Rectangle {
             width: 36px;
             height: 36px;
+            y: (parent.height - self.height) / 2;
             horizontal-stretch: 0;
 
             icon-bg := Rectangle {
@@ -41,12 +42,14 @@ export component ListItem inherits Rectangle {
                     color: Theme.text-secondary;
                     font-size: Theme.text-lg;
                     vertical-alignment: center;
+                    horizontal-alignment: center;
                 }
             }
         }
 
         VerticalLayout {
             horizontal-stretch: 1;
+            alignment: center;
             spacing: Theme.sp-0-5;
 
             if title != "": Text {
@@ -73,11 +76,6 @@ export component ListItem inherits Rectangle {
             font-family: Theme.font-ui;
             font-size: Theme.text-sm;
             vertical-alignment: center;
-            horizontal-stretch: 0;
-        }
-
-        Rectangle {
-            width: 1px;
             horizontal-stretch: 0;
         }
     }

@@ -1,20 +1,18 @@
 import { Theme } from "../core/Theme.slint";
 
 export component MegaMenu inherits Rectangle {
-    visible: false;
-
     callback link-clicked(string);
 
     width: 560px;
-    height: visible ? menu-content.preferred-height + Theme.sp-4 : 0px;
-    background: Theme.bg-elevated;
+    height: self.visible ? menu-content.preferred-height + Theme.sp-4 : 0px;
+    background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
 
-    animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+    animate height { duration: Theme.dur-normal; }
     animate opacity { duration: Theme.dur-fast; }
-    opacity: visible ? 1 : 0;
+    opacity: self.visible ? 1 : 0;
 
     menu-content := VerticalLayout {
         padding: Theme.sp-4;
@@ -33,14 +31,13 @@ export component MegaMenu inherits Rectangle {
                     font-family: Theme.font-ui;
                     font-size: Theme.text-xs;
                     font-weight: Theme.weight-semibold;
-                    letter-spacing: Theme.tracking-wide;
                 }
 
                 for item in ["Dashboard", "Analytics", "Reports", "Settings"]: Rectangle {
                     height: 30px;
                     background: item-ta.pressed ? Theme.surface-pressed
                         : item-ta.has-hover ? Theme.surface-hover
-                        : #00000000;
+                        : transparent;
                     border-radius: Theme.radius-xs;
 
                     HorizontalLayout {
@@ -78,14 +75,13 @@ export component MegaMenu inherits Rectangle {
                     font-family: Theme.font-ui;
                     font-size: Theme.text-xs;
                     font-weight: Theme.weight-semibold;
-                    letter-spacing: Theme.tracking-wide;
                 }
 
                 for action in ["Create New", "Import Data", "Export Report", "Team Settings"]: Rectangle {
                     height: 30px;
                     background: act-ta.pressed ? Theme.surface-pressed
                         : act-ta.has-hover ? Theme.surface-hover
-                        : #00000000;
+                        : transparent;
                     border-radius: Theme.radius-xs;
 
                     HorizontalLayout {

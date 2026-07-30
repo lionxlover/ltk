@@ -3,14 +3,14 @@ import { Theme } from "../core/Theme.slint";
 export component MaxWidthContainer inherits Rectangle {
     background: transparent;
 
-    in property <length> max-width: 1200px;
+    in property <length> container-max-width: 1200px;
     in property <int> padding-x: 24;
 
     HorizontalLayout {
         alignment: center;
 
         Rectangle {
-            width: max-width;
+            width: Math.min(parent.width, root.container-max-width);
         }
     }
 }

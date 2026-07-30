@@ -1,25 +1,22 @@
 import { Theme } from "../core/Theme.slint";
 
 export component Tooltip inherits Rectangle {
-    visible: false;
     in property <string> text: "";
 
-    width: max(label.preferred-width + Theme.sp-4 * 2, 40px);
+    width: Math.max(label.preferred-width + Theme.sp-4 * 2, 40px);
     height: 28px;
-    visible: root.visible;
     background: transparent;
-    z-layer: 999;
 
     tip := Rectangle {
-        border-radius: Theme.radius-tooltip;
-        background: Theme.bg-elevated;
+        border-radius: Theme.radius-xs;
+        background: Theme.bg-overlay;
         border-width: 1px;
         border-color: Theme.border-subtle;
         drop-shadow-offset-y: 2px;
         drop-shadow-blur: 8px;
-        drop-shadow-color: Theme.border-default;
+        drop-shadow-color: Theme.elevation-1-color;
 
-        Text {
+        label := Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
             text: root.text;

@@ -5,7 +5,7 @@ export component IndeterminateProgress inherits Rectangle {
     in property <color> track-color: Theme.bg-overlay;
 
     height: 4px;
-    background: #00000000;
+    background: transparent;
 
     Rectangle {
         border-radius: Theme.radius-full;
@@ -19,6 +19,6 @@ export component IndeterminateProgress inherits Rectangle {
         height: parent.height;
         border-radius: Theme.radius-full;
         background: bar-color;
-        animate x { duration: 1400ms; easing: Theme.ease-in-out; loop-count: -1; }
+        animate x { duration: 1400ms; iteration-count: -1; }
     }
 }

@@ -54,12 +54,10 @@ import { Badge } from "Badge.slint";
 
 export component DataDisplayTest inherits Rectangle {
     background: Theme.bg-base;
-    width: 800px;
-    height: 700px;
 
-        Flickable {
-            width: 800px;
-            height: 700px;
+    Flickable {
+        width: parent.width;
+        height: parent.height;
             viewport-height: content.preferred-height;
 
         content := VerticalLayout {

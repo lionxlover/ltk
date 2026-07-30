@@ -2,23 +2,32 @@ import { Theme } from "../core/Theme.slint";
 
 export component FabMini inherits Rectangle {
     in-out property <string> icon: "plus";
+    in-out property <bool> enabled: true;
+
+    callback clicked();
 
     width: 40px;
     height: 40px;
-    background: Theme.accent;
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
     border-radius: 12px;
     horizontal-stretch: 0;
 
+    animate background { duration: Theme.dur-fast; }
+
     Image {
-        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+        source: icon == "pen" ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pen.svg")
+            : icon == "paperclip" ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paperclip.svg")
+            : icon == "camera" ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/camera.svg")
+            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
         width: 16px;
         height: 16px;
-        colorize: #ffffff;
+        colorize: enabled ? #ffffff : Theme.btn-disabled-text;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

@@ -1,14 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
 export component SimpleTooltip inherits Rectangle {
-    visible: false;
     in property <string> text: "";
 
     min-width: 40px;
     min-height: 28px;
-    visible: root.visible;
-    background: Theme.bg-elevated;
-    border-radius: Theme.radius-tooltip;
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xs;
     border-width: 1px;
     border-color: Theme.border-subtle;
     opacity: root.visible ? 1 : 0;
@@ -18,7 +16,7 @@ export component SimpleTooltip inherits Rectangle {
     drop-shadow-blur: Theme.elevation-1-blur;
     drop-shadow-color: Theme.elevation-1-color;
 
-    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; }
 
     Text {
         x: (parent.width - self.width) / 2;

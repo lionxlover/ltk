@@ -2,22 +2,20 @@ import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component FullScreenDialog inherits Rectangle {
-    visible: false;
     in property <string> title: "";
 
     callback close();
 
     width: 100%;
     height: 100%;
-    background: #00000000;
-    visible: root.visible;
+    background: transparent;
 
     Rectangle {
         width: 100%;
         height: 100%;
         background: Theme.bg-surface;
         opacity: root.visible ? 1 : 0;
-        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+        animate opacity { duration: Theme.dur-normal; }
 
         VerticalLayout {
             spacing: 0px;
@@ -25,9 +23,7 @@ export component FullScreenDialog inherits Rectangle {
             // Header bar
             Rectangle {
                 height: 52px;
-                background: Theme.bg-headerbar;
-                border-width: 0px;
-                border-radius: 0px;
+                background: Theme.bg-surface;
 
                 HorizontalLayout {
                     padding: Theme.sp-3;
@@ -43,7 +39,7 @@ export component FullScreenDialog inherits Rectangle {
                             border-radius: Theme.radius-sm;
                             background: back-ta.pressed ? Theme.surface-pressed
                                 : back-ta.has-hover ? Theme.surface-hover
-                                : #00000000;
+                                : transparent;
                         }
 
                         FaIcon {
@@ -82,7 +78,7 @@ export component FullScreenDialog inherits Rectangle {
                             border-radius: Theme.radius-sm;
                             background: close-ta.pressed ? Theme.surface-pressed
                                 : close-ta.has-hover ? Theme.surface-hover
-                                : #00000000;
+                                : transparent;
                         }
 
                         FaIcon {

@@ -5,12 +5,16 @@ export component OutlinedButton inherits Rectangle {
     in-out property <string> text: "Outlined";
     in-out property <bool> enabled: true;
 
-    background: transparent;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : transparent));
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -19,19 +23,21 @@ export component OutlinedButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pen-to-square.svg");
             fa-size: 14px;
-            fa-color: Theme.text-primary;
+            fa-color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: Theme.text-primary;
+            color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
             font-size: 14px;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

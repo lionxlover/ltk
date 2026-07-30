@@ -5,9 +5,9 @@ export component IndeterminateSpinner inherits Rectangle {
     in property <color> spinner-color: Theme.accent;
     in property <length> stroke-width: 3px;
 
-    width: size * 1px;
-    height: size * 1px;
-    background: #00000000;
+    width: root.size;
+    height: root.size;
+    background: transparent;
 
     Rectangle {
         width: parent.width;
@@ -15,7 +15,7 @@ export component IndeterminateSpinner inherits Rectangle {
         border-radius: Theme.radius-full;
         border-width: stroke-width;
         border-color: spinner-color.with-alpha(0.15);
-        background: #00000000;
+        background: transparent;
     }
 
     Rectangle {
@@ -24,7 +24,6 @@ export component IndeterminateSpinner inherits Rectangle {
         border-radius: Theme.radius-full;
         border-width: stroke-width;
         border-color: spinner-color;
-        background: #00000000;
-        transform-rotation: Math.mod(animation-tick(), 1s) / 1s * 360 * 1deg;
+        background: transparent;
     }
 }

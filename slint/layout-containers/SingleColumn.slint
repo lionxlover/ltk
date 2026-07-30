@@ -3,14 +3,14 @@ import { Theme } from "../core/Theme.slint";
 export component SingleColumn inherits Rectangle {
     background: transparent;
 
-    in property <length> max-width: 720px;
+    in property <length> column-max-width: 720px;
     in property <int> padding-px: 24;
 
     HorizontalLayout {
         alignment: center;
 
         Rectangle {
-            width: max-width;
+            width: Math.min(parent.width, root.column-max-width);
             background: transparent;
         }
     }

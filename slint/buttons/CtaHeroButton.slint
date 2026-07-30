@@ -3,11 +3,16 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component CtaHeroButton inherits Rectangle {
     in-out property <string> text: "Get Started";
+    in-out property <bool> enabled: true;
 
-    background: Theme.accent;
+    callback clicked();
+
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
     border-radius: Theme.radius-lg;
     height: 56px;
     horizontal-stretch: 1;
+
+    animate background { duration: Theme.dur-fast; }
 
     HorizontalLayout {
         alignment: center;
@@ -16,19 +21,21 @@ export component CtaHeroButton inherits Rectangle {
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/rocket.svg");
             fa-size: 20px;
-            fa-color: #ffffff;
+            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: #ffffff;
+            color: enabled ? #ffffff : Theme.btn-disabled-text;
             font-size: 18px;
             font-weight: Theme.weight-bold;
             vertical-alignment: center;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

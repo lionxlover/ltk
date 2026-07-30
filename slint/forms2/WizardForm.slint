@@ -1,6 +1,7 @@
 import { Theme } from "../core/Theme.slint";
+import { MultiStepForm } from "./MultiStepForm.slint";
 
-export component WizardForm extends MultiStepForm {
+export component WizardForm inherits MultiStepForm {
     in property <bool> branching: false;
     in property <int> branch-step: 1;
 }

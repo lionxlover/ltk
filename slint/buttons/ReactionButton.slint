@@ -4,6 +4,8 @@ export component ReactionButton inherits Rectangle {
     in-out property <int> count: 12;
     in-out property <bool> active: false;
 
+    callback clicked();
+
     height: 32px;
     background: root.active ? Theme.accent-subtle : Theme.bg-surface;
     border-radius: 16px;
@@ -11,15 +13,19 @@ export component ReactionButton inherits Rectangle {
     border-color: root.active ? Theme.accent : Theme.border-base;
     horizontal-stretch: 0;
 
+    animate background { duration: Theme.dur-fast; }
+
     HorizontalLayout {
         padding-left: 10px;
         padding-right: 10px;
         spacing: 6px;
+        alignment: center;
 
         Image {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg");
             width: 14px;
             height: 14px;
+            y: (parent.height - self.height) / 2;
             colorize: root.active ? Theme.accent : Theme.text-secondary;
         }
 
@@ -32,7 +38,10 @@ export component ReactionButton inherits Rectangle {
         }
     }
 
-    TouchArea {
-        clicked => { root.active = !root.active; }
+    ta := TouchArea {
+        clicked => {
+            root.active = !root.active;
+            root.clicked();
+        }
     }
 }

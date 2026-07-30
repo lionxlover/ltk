@@ -2,14 +2,19 @@ import { Theme } from "../core/Theme.slint";
 
 export component BackNavButton inherits Rectangle {
     in-out property <string> direction: "back";
+    in-out property <bool> enabled: true;
+
+    callback clicked();
 
     width: 40px;
     height: 40px;
-    background: Theme.bg-raised;
+    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-base;
     horizontal-stretch: 0;
+
+    animate background { duration: Theme.dur-fast; }
 
     Rectangle {
         width: 16px;
@@ -22,7 +27,7 @@ export component BackNavButton inherits Rectangle {
             width: 16px;
             height: 16px;
             visible: root.direction == "back";
-            colorize: Theme.text-primary;
+            colorize: enabled ? Theme.text-primary : Theme.btn-disabled-text;
         }
 
         Image {
@@ -30,11 +35,12 @@ export component BackNavButton inherits Rectangle {
             width: 16px;
             height: 16px;
             visible: root.direction != "back";
-            colorize: Theme.text-primary;
+            colorize: enabled ? Theme.text-primary : Theme.btn-disabled-text;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
     }
 }

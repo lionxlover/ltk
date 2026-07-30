@@ -1,14 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
 export component HoverCard inherits Rectangle {
-    visible: false;
     in property <string> title: "";
     in property <string> description: "";
 
     min-width: 240px;
-    max-width: 320px;
-    visible: root.visible;
-    background: Theme.bg-elevated;
+    background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
@@ -19,7 +16,7 @@ export component HoverCard inherits Rectangle {
     drop-shadow-blur: Theme.elevation-2-blur;
     drop-shadow-color: Theme.elevation-2-color;
 
-    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; }
 
     VerticalLayout {
         padding: Theme.sp-3;
