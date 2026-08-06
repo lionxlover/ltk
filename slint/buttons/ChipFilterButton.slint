@@ -94,8 +94,20 @@ export component ChipFilterButton inherits Rectangle {
                 height: 16px;
                 border-radius: 8px;
                 background: root.active ? Theme.accent : Theme.border-base;
-                padding-left: 5px;
-                padding-right: 5px;
+                HorizontalLayout {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    alignment: center;
+
+                    Text {
+                        text: root.badge-count > 99 ? "99+" : "\{root.badge-count}";
+                        color: root.active ? Theme.bg-surface : Theme.text-secondary;
+                        font-size: 10px;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                }
 
                 Text {
                     text: root.badge-count > 99 ? "99+" : "\{root.badge-count}";
