@@ -1,4 +1,20 @@
 // LTK Theme Global
+//
+// Single source of truth for every component in this library. Semantic
+// tokens below (bg-*, text-*, border-*, ...) are what components should
+// bind to; the primitive palette exists mainly to define those semantics
+// and for the rare case a component needs a raw hue.
+//
+// NOTE ON ARCHITECTURE: `design-tokens/ColorPrimitives.slint` defines the
+// same hue ramps (dash-case, e.g. `slate-50`) as a standalone token layer.
+// The primitives below are bound *from* that file instead of hardcoding a
+// second copy of the hex values, so the two can no longer drift apart. The
+// property names here keep their original underscore casing
+// (`slate_500`, not `slate-500`) for backward compatibility with existing
+// callers (see feedback/Snackbar.slint, media/LivestreamPill.slint, and the
+// chart components) — only the *source of the value* changed, not the API.
+import { ColorPrimitives } from "../design-tokens/ColorPrimitives.slint";
+import { TouchTarget } from "../design-tokens/TouchTarget.slint";
 
 export global Theme {
     // ═══════════════════════════════════════════
@@ -8,77 +24,82 @@ export global Theme {
 
     // ═══════════════════════════════════════════
     // PRIMITIVE PALETTES
+    // (sourced from design-tokens/ColorPrimitives.slint — see note above)
     // ═══════════════════════════════════════════
-    out property <color> slate_50: #f8fafc;
-    out property <color> slate_100: #f1f5f9;
-    out property <color> slate_200: #e2e8f0;
-    out property <color> slate_300: #cbd5e1;
-    out property <color> slate_400: #94a3b8;
-    out property <color> slate_500: #64748b;
-    out property <color> slate_600: #475569;
-    out property <color> slate_700: #334155;
-    out property <color> slate_800: #1e293b;
-    out property <color> slate_900: #0f172a;
+    out property <color> slate_50: ColorPrimitives.slate-50;
+    out property <color> slate_100: ColorPrimitives.slate-100;
+    out property <color> slate_200: ColorPrimitives.slate-200;
+    out property <color> slate_300: ColorPrimitives.slate-300;
+    out property <color> slate_400: ColorPrimitives.slate-400;
+    out property <color> slate_500: ColorPrimitives.slate-500;
+    out property <color> slate_600: ColorPrimitives.slate-600;
+    out property <color> slate_700: ColorPrimitives.slate-700;
+    out property <color> slate_800: ColorPrimitives.slate-800;
+    out property <color> slate_900: ColorPrimitives.slate-900;
+    out property <color> slate_950: ColorPrimitives.slate-950;
 
-    out property <color> blue_50: #eff6ff;
-    out property <color> blue_100: #dbeafe;
-    out property <color> blue_200: #bfdbfe;
-    out property <color> blue_300: #93c5fd;
-    out property <color> blue_400: #60a5fa;
-    out property <color> blue_500: #3b82f6;
-    out property <color> blue_600: #2563eb;
-    out property <color> blue_700: #1d4ed8;
-    out property <color> blue_800: #1e40af;
-    out property <color> blue_900: #1e3a8a;
+    out property <color> blue_50: ColorPrimitives.blue-50;
+    out property <color> blue_100: ColorPrimitives.blue-100;
+    out property <color> blue_200: ColorPrimitives.blue-200;
+    out property <color> blue_300: ColorPrimitives.blue-300;
+    out property <color> blue_400: ColorPrimitives.blue-400;
+    out property <color> blue_500: ColorPrimitives.blue-500;
+    out property <color> blue_600: ColorPrimitives.blue-600;
+    out property <color> blue_700: ColorPrimitives.blue-700;
+    out property <color> blue_800: ColorPrimitives.blue-800;
+    out property <color> blue_900: ColorPrimitives.blue-900;
 
-    out property <color> violet_50: #f5f3ff;
-    out property <color> violet_100: #ede9fe;
-    out property <color> violet_200: #ddd6fe;
-    out property <color> violet_300: #c4b5fd;
-    out property <color> violet_400: #a78bfa;
-    out property <color> violet_500: #8b5cf6;
-    out property <color> violet_600: #7c3aed;
-    out property <color> violet_700: #6d28d9;
-    out property <color> violet_800: #5b21b6;
-    out property <color> violet_900: #4c1d95;
+    out property <color> violet_50: ColorPrimitives.violet-50;
+    out property <color> violet_100: ColorPrimitives.violet-100;
+    out property <color> violet_200: ColorPrimitives.violet-200;
+    out property <color> violet_300: ColorPrimitives.violet-300;
+    out property <color> violet_400: ColorPrimitives.violet-400;
+    out property <color> violet_500: ColorPrimitives.violet-500;
+    out property <color> violet_600: ColorPrimitives.violet-600;
+    out property <color> violet_700: ColorPrimitives.violet-700;
+    out property <color> violet_800: ColorPrimitives.violet-800;
+    out property <color> violet_900: ColorPrimitives.violet-900;
 
-    out property <color> cyan_400: #22d3ee;
-    out property <color> cyan_500: #06b6d4;
-    out property <color> cyan_600: #0891b2;
+    out property <color> cyan_400: ColorPrimitives.cyan-400;
+    out property <color> cyan_500: ColorPrimitives.cyan-500;
+    out property <color> cyan_600: ColorPrimitives.cyan-600;
+    out property <color> cyan_700: ColorPrimitives.cyan-700;
 
-    out property <color> green_50: #f0fdf4;
-    out property <color> green_100: #dcfce7;
-    out property <color> green_200: #bbf7d0;
-    out property <color> green_300: #86efac;
-    out property <color> green_400: #4ade80;
-    out property <color> green_500: #22c55e;
-    out property <color> green_600: #16a34a;
-    out property <color> green_700: #15803d;
+    out property <color> green_50: ColorPrimitives.green-50;
+    out property <color> green_100: ColorPrimitives.green-100;
+    out property <color> green_200: ColorPrimitives.green-200;
+    out property <color> green_300: ColorPrimitives.green-300;
+    out property <color> green_400: ColorPrimitives.green-400;
+    out property <color> green_500: ColorPrimitives.green-500;
+    out property <color> green_600: ColorPrimitives.green-600;
+    out property <color> green_700: ColorPrimitives.green-700;
+    out property <color> green_800: ColorPrimitives.green-800;
 
-    out property <color> amber_50: #fffbeb;
-    out property <color> amber_100: #fef3c7;
-    out property <color> amber_200: #fde68a;
-    out property <color> amber_300: #fcd34d;
-    out property <color> amber_400: #fbbf24;
-    out property <color> amber_500: #f59e0b;
-    out property <color> amber_600: #d97706;
+    out property <color> amber_50: ColorPrimitives.amber-50;
+    out property <color> amber_100: ColorPrimitives.amber-100;
+    out property <color> amber_200: ColorPrimitives.amber-200;
+    out property <color> amber_300: ColorPrimitives.amber-300;
+    out property <color> amber_400: ColorPrimitives.amber-400;
+    out property <color> amber_500: ColorPrimitives.amber-500;
+    out property <color> amber_600: ColorPrimitives.amber-600;
 
-    out property <color> red_50: #fef2f2;
-    out property <color> red_100: #fee2e2;
-    out property <color> red_200: #fecaca;
-    out property <color> red_300: #fca5a5;
-    out property <color> red_400: #f87171;
-    out property <color> red_500: #ef4444;
-    out property <color> red_600: #dc2626;
-    out property <color> red_700: #b91c1c;
+    out property <color> red_50: ColorPrimitives.red-50;
+    out property <color> red_100: ColorPrimitives.red-100;
+    out property <color> red_200: ColorPrimitives.red-200;
+    out property <color> red_300: ColorPrimitives.red-300;
+    out property <color> red_400: ColorPrimitives.red-400;
+    out property <color> red_500: ColorPrimitives.red-500;
+    out property <color> red_600: ColorPrimitives.red-600;
+    out property <color> red_700: ColorPrimitives.red-700;
+    out property <color> red_800: ColorPrimitives.red-800;
 
-    out property <color> orange_400: #fb923c;
-    out property <color> orange_500: #f97316;
-    out property <color> orange_600: #ea580c;
+    out property <color> orange_400: ColorPrimitives.orange-400;
+    out property <color> orange_500: ColorPrimitives.orange-500;
+    out property <color> orange_600: ColorPrimitives.orange-600;
 
-    out property <color> pink_400: #f472b6;
-    out property <color> pink_500: #ec4899;
-    out property <color> pink_600: #db2777;
+    out property <color> pink_400: ColorPrimitives.pink-400;
+    out property <color> pink_500: ColorPrimitives.pink-500;
+    out property <color> pink_600: ColorPrimitives.pink-600;
 
     // ═══════════════════════════════════════════
     // ACCENT PALETTE
@@ -139,9 +160,28 @@ export global Theme {
     out property <color> text-tertiary: dark-mode ? #6B7280 : #94a3b8;
     out property <color> text-disabled: dark-mode ? #4B5563 : #9ca3af;
     out property <color> text-on-accent: #ffffff;
+    // Sibling on-* tokens for the other saturated button/badge backgrounds
+    // (error/success/warning). Several button components previously
+    // hardcoded raw #ffffff / #000000 for this instead of a Theme token —
+    // see buttons/PrimaryButton.slint etc. Warning intentionally resolves
+    // to a *dark* foreground: amber/yellow backgrounds fail WCAG contrast
+    // against white text, so pairing them with near-black text is the
+    // correct accessible choice, not an inconsistency to "fix" to white.
+    out property <color> text-on-error: #ffffff;
+    out property <color> text-on-success: #ffffff;
+    out property <color> text-on-warning: #1a1400;
     out property <color> text-inverse: dark-mode ? #0f172a : #f8fafc;
     out property <color> text-link: dark-mode ? #60a5fa : #2563eb;
     out property <color> text-placeholder: dark-mode ? #4B5563 : #9ca3af;
+
+    // Border widths — 477 call sites across this library currently
+    // hardcode `border-width: 1px` as a literal rather than a token; this
+    // scale gives new components (and this batch's button fixes) a named
+    // value instead of adding literal #478.
+    out property <length> border-width-hairline: 0.5px;
+    out property <length> border-width-thin: 1px;
+    out property <length> border-width-medium: 2px;
+    out property <length> border-width-thick: 3px;
 
     // Borders
     out property <color> border-subtle: dark-mode ? rgba(255, 255, 255, 0.06) : rgba(0, 0, 0, 0.06);
@@ -237,6 +277,26 @@ export global Theme {
     out property <length> radius-window: 12px;
     out property <length> radius-tooltip: 6px;
 
+    // Per-corner radius presets — for the specific components that are
+    // genuinely asymmetric (a rectangle attached flush to another edge
+    // should not round the corners on that edge). Bind these to Slint's
+    // border-top-left-radius / border-top-right-radius /
+    // border-bottom-left-radius / border-bottom-right-radius, not to the
+    // uniform `border-radius` shorthand.
+    //   - sheet: a bottom sheet / drawer that slides up from the screen
+    //     edge — top corners rounded, bottom corners flush with the edge.
+    //   - headerbar: a window title bar sitting inside a rounded window —
+    //     top corners match the window radius, bottom corners are flat
+    //     where it meets the content below.
+    //   - tab: the active tab of a tab strip sitting atop its panel — top
+    //     corners rounded, bottom corners flat where it meets the panel.
+    out property <length> radius-sheet-top: 20px;
+    out property <length> radius-sheet-bottom: 0px;
+    out property <length> radius-headerbar-top: 12px;
+    out property <length> radius-headerbar-bottom: 0px;
+    out property <length> radius-tab-top: 8px;
+    out property <length> radius-tab-bottom: 0px;
+
     // ═══════════════════════════════════════════
     // TYPOGRAPHY
     // ═══════════════════════════════════════════
@@ -324,11 +384,20 @@ export global Theme {
     out property <length> button-height-md: 36px;
     out property <length> button-height-lg: 42px;
     out property <length> button-padding-x: 14px;
+    out property <length> button-padding-y: 8px;
+    // WCAG / Apple HIG / Material minimum tappable target — sourced from
+    // design-tokens/TouchTarget.slint so this repo has one accessibility
+    // baseline instead of three unused, independently-guessed copies.
+    out property <length> button-min-width: TouchTarget.min-width;
+    out property <length> button-min-height: TouchTarget.min-height;
 
     out property <length> input-height-sm: 30px;
     out property <length> input-height-md: 36px;
     out property <length> input-height-lg: 42px;
     out property <length> input-padding-x: 12px;
+    out property <length> input-padding-y: 8px;
+    out property <length> input-min-width: 120px;
+    out property <length> input-max-width: 480px;
 
     out property <length> checkbox-size-sm: 14px;
     out property <length> checkbox-size-md: 16px;
@@ -346,10 +415,60 @@ export global Theme {
     out property <length> icon-lg: 20px;
     out property <length> icon-xl: 24px;
 
+    // Avatar sizes — a common component this library was missing a scale
+    // for even though checkboxes, toggles, and icons all had one.
+    out property <length> avatar-size-xs: 20px;
+    out property <length> avatar-size-sm: 28px;
+    out property <length> avatar-size-md: 36px;
+    out property <length> avatar-size-lg: 48px;
+    out property <length> avatar-size-xl: 64px;
+
     out property <length> toast-width: 360px;
+    out property <length> toast-min-width: 280px;
+    out property <length> toast-max-width: 420px;
+    // Split from the single `toast-padding` (kept below for compatibility):
+    // a toast pairs an icon + short text, so its horizontal inset is
+    // usually roomier than its vertical inset.
     out property <length> toast-padding: 14px;
+    out property <length> toast-padding-x: 14px;
+    out property <length> toast-padding-y: 10px;
 
     out property <length> card-padding: 16px;
+    out property <length> card-padding-x: 16px;
+    out property <length> card-padding-y: 16px;
+    out property <length> card-min-width: 160px;
+    out property <length> card-max-width: 420px;
+
+    // ═══════════════════════════════════════════
+    // SIZE CONSTRAINTS — min/max for resizable surfaces
+    // ═══════════════════════════════════════════
+    // A dialog should never shrink below a legible width nor grow to fill
+    // an ultrawide display; clamp both axes.
+    out property <length> dialog-min-width: 320px;
+    out property <length> dialog-max-width: 640px;
+    out property <length> dialog-min-height: 160px;
+    out property <length> dialog-max-height: 720px;
+
+    // A popover/menu/dropdown should size to its content but stay within
+    // sane bounds so a long menu scrolls instead of running off-screen.
+    out property <length> popover-min-width: 160px;
+    out property <length> popover-max-width: 320px;
+    out property <length> dropdown-max-height: 320px;
+
+    // A tooltip's whole purpose is to stay short; force-wrap past this.
+    out property <length> tooltip-max-width: 240px;
+
+    // A collapsible sidebar's usable range (below min it should auto-hide;
+    // above max it starts eating into content space).
+    out property <length> sidebar-min-width: 200px;
+    out property <length> sidebar-max-width: 360px;
+    out property <length> sidebar-collapsed-width: 56px;
+
+    // Body text readability: very long line lengths hurt reading speed,
+    // very narrow columns cause awkward wrapping — this is the classic
+    // ~65-75 characters-per-line guideline expressed as a layout width.
+    out property <length> content-min-width: 320px;
+    out property <length> content-max-width: 720px;
 
     // ═══════════════════════════════════════════
     // INTERACTIVE STATES

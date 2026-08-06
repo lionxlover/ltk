@@ -1,10 +1,30 @@
 import { Theme } from "Theme.slint";
 
+// A single monochrome Font Awesome-style glyph, recolored via `colorize`
+// so one SVG asset works in both light and dark mode (icons-and-theming.md).
 export component FaIcon inherits Image {
-    in property <length> fa-size: 16px;
+    in property <length> fa-size: Theme.icon-md;
     in property <color> fa-color: Theme.text-primary;
+    // Was previously impossible to render a disabled icon without the
+    // caller hand-rolling an opacity binding at every call site; expose
+    // it here once, using the same disabled-opacity token every other
+    // disableable control in this library already uses.
+    in property <bool> fa-disabled: false;
+    // Icons are almost always decorative (the adjacent label already
+    // conveys meaning to a screen reader), so the default here overrides
+    // Image's automatic `accessible-role: image` back to `none`. When an
+    // icon *is* the only description of the action (e.g. an icon-only
+    // button), set fa-label and it switches back to an announced image.
+    in property <string> fa-label: "";
 
     width: fa-size;
     height: fa-size;
     colorize: fa-color;
+    opacity: fa-disabled ? Theme.opacity-disabled : 1.0;
+    image-rendering: smooth;
+
+    accessible-role: fa-label == "" ? AccessibleRole.none : AccessibleRole.image;
+    accessible-label: fa-label;
+
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 }

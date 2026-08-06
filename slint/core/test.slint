@@ -1,8 +1,87 @@
-import { Theme } from "Theme.slint";
-import { Backend } from "Backend.slint";
+import { Theme } from "../core/Theme.slint";
+import { ColorPrimitives } from "ColorPrimitives.slint";
+import { SemanticBackground } from "SemanticBackground.slint";
+import { SemanticSurface } from "SemanticSurface.slint";
+import { SemanticText } from "SemanticText.slint";
+import { SemanticBorder } from "SemanticBorder.slint";
+import { SemanticAccent } from "SemanticAccent.slint";
+import { SemanticError } from "SemanticError.slint";
+import { SemanticWarning } from "SemanticWarning.slint";
+import { SemanticSuccess } from "SemanticSuccess.slint";
+import { SemanticInfo } from "SemanticInfo.slint";
+import { AlphaTokens } from "AlphaTokens.slint";
+import { TypographyFontFamily } from "TypographyFontFamily.slint";
+import { TypographyTypeScale } from "TypographyTypeScale.slint";
+import { TypographyFontWeight } from "TypographyFontWeight.slint";
+import { TypographyLineHeight } from "TypographyLineHeight.slint";
+import { TypographyLetterSpacing } from "TypographyLetterSpacing.slint";
+import { SpacingScale } from "SpacingScale.slint";
+import { ComponentSpacing } from "ComponentSpacing.slint";
+import { BorderRadius } from "BorderRadius.slint";
+import { BorderWidth } from "BorderWidth.slint";
+import { ShadowElevation } from "ShadowElevation.slint";
+import { GlowLuminance } from "GlowLuminance.slint";
+import { BackdropBlur } from "BackdropBlur.slint";
+import { ZIndex } from "ZIndex.slint";
+import { MotionDuration } from "MotionDuration.slint";
+import { MotionEasingBasic } from "MotionEasingBasic.slint";
+import { MotionEasingSpecial } from "MotionEasingSpecial.slint";
+import { SpringPresets } from "SpringPresets.slint";
+import { Breakpoints } from "Breakpoints.slint";
+import { GridColumns } from "GridColumns.slint";
+import { GridGutter } from "GridGutter.slint";
+import { GridMargin } from "GridMargin.slint";
+import { IconSize } from "IconSize.slint";
+import { TouchTarget } from "TouchTarget.slint";
+import { FocusRing } from "FocusRing.slint";
+import { OpacityScale } from "OpacityScale.slint";
 
-export component CoreTest inherits Rectangle {
+component SectionHeader inherits Rectangle {
+    in property <string> title: "";
+    height: 32px;
+    background: Theme.bg-overlay;
+    border-radius: Theme.radius-sm;
+    Text {
+        x: Theme.sp-3;
+        y: (parent.height - self.height) / 2;
+        text: title;
+        color: Theme.text-tertiary;
+        font-family: Theme.font-ui;
+        font-size: Theme.text-xs;
+        font-weight: Theme.weight-semibold;
+        vertical-alignment: center;
+    }
+}
+
+component ColorSwatch inherits Rectangle {
+    in property <color> sw: Theme.accent;
+    in property <string> label: "";
+    width: 52px;
+    height: 40px;
+    background: transparent;
+    VerticalLayout {
+        spacing: 2px;
+        Rectangle {
+            height: 24px;
+            border-radius: Theme.radius-xs;
+            background: sw;
+            border-width: 1px;
+            border-color: Theme.border-subtle;
+        }
+        Text {
+            text: label;
+            color: Theme.text-tertiary;
+            font-family: Theme.font-mono;
+            font-size: 9px;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+export component DesignTokensTest inherits Rectangle {
     background: Theme.bg-base;
+    width: 900px;
+    height: 3200px;
 
     Flickable {
         width: parent.width;
@@ -11,51 +90,340 @@ export component CoreTest inherits Rectangle {
 
         content := VerticalLayout {
             padding: Theme.sp-6;
-            spacing: Theme.sp-6;
+            spacing: Theme.sp-4;
 
             Text {
-                text: "Core — Test";
+                text: "Design Tokens \u{2014} 36 Files";
             color: Theme.text-primary;
             font-family: Theme.font-display;
             font-size: Theme.text-3xl;
             font-weight: Theme.weight-bold;
         }
 
-        Text { text: "Theme"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        HorizontalLayout { spacing: Theme.sp-3;
-            Rectangle { width: 120px; height: 48px; background: Theme.bg-surface; border-radius: Theme.radius-md; }
-            Rectangle { width: 120px; height: 48px; background: Theme.bg-raised; border-radius: Theme.radius-md; }
-            Rectangle { width: 120px; height: 48px; background: Theme.accent; border-radius: Theme.radius-md; }
-            Rectangle { width: 120px; height: 48px; background: Theme.error; border-radius: Theme.radius-md; }
-            Rectangle { width: 120px; height: 48px; background: Theme.success; border-radius: Theme.radius-md; }
+        // 01 COLOR PRIMITIVES
+        SectionHeader { title: "01 \u{2014} COLOR PRIMITIVES"; }
+        Text { text: "Slate 50\u{2013}900"; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-1;
+            ColorSwatch { sw: ColorPrimitives.slate-100; label: "100"; }
+            ColorSwatch { sw: ColorPrimitives.slate-200; label: "200"; }
+            ColorSwatch { sw: ColorPrimitives.slate-300; label: "300"; }
+            ColorSwatch { sw: ColorPrimitives.slate-400; label: "400"; }
+            ColorSwatch { sw: ColorPrimitives.slate-500; label: "500"; }
+            ColorSwatch { sw: ColorPrimitives.slate-600; label: "600"; }
+            ColorSwatch { sw: ColorPrimitives.slate-700; label: "700"; }
+            ColorSwatch { sw: ColorPrimitives.slate-800; label: "800"; }
+            ColorSwatch { sw: ColorPrimitives.slate-900; label: "900"; }
+        }
+        Text { text: "Blue 50\u{2013}900"; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-1;
+            ColorSwatch { sw: ColorPrimitives.blue-100; label: "100"; }
+            ColorSwatch { sw: ColorPrimitives.blue-200; label: "200"; }
+            ColorSwatch { sw: ColorPrimitives.blue-300; label: "300"; }
+            ColorSwatch { sw: ColorPrimitives.blue-400; label: "400"; }
+            ColorSwatch { sw: ColorPrimitives.blue-500; label: "500"; }
+            ColorSwatch { sw: ColorPrimitives.blue-600; label: "600"; }
+            ColorSwatch { sw: ColorPrimitives.blue-700; label: "700"; }
+        }
+        Text { text: "Green 50\u{2013}700"; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-1;
+            ColorSwatch { sw: ColorPrimitives.green-100; label: "100"; }
+            ColorSwatch { sw: ColorPrimitives.green-300; label: "300"; }
+            ColorSwatch { sw: ColorPrimitives.green-500; label: "500"; }
+            ColorSwatch { sw: ColorPrimitives.green-700; label: "700"; }
+        }
+        Text { text: "Red 50\u{2013}700"; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-1;
+            ColorSwatch { sw: ColorPrimitives.red-100; label: "100"; }
+            ColorSwatch { sw: ColorPrimitives.red-300; label: "300"; }
+            ColorSwatch { sw: ColorPrimitives.red-500; label: "500"; }
+            ColorSwatch { sw: ColorPrimitives.red-700; label: "700"; }
         }
 
-        Text { text: "Typography"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        VerticalLayout { spacing: Theme.sp-2;
-            Text { text: "Display — 48px bold"; color: Theme.text-primary; font-size: Theme.text-4xl; font-weight: Theme.weight-bold; font-family: Theme.font-display; }
-            Text { text: "Heading — 30px semibold"; color: Theme.text-primary; font-size: Theme.text-3xl; font-weight: Theme.weight-semibold; }
-            Text { text: "Body — 16px regular"; color: Theme.text-primary; font-size: Theme.text-base; }
-            Text { text: "Caption — 12px light"; color: Theme.text-tertiary; font-size: Theme.text-xs; font-weight: Theme.weight-light; }
-        }
-
-        Text { text: "Spacing"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        // 02-11 SEMANTIC
+        SectionHeader { title: "02 \u{2014} SEMANTIC: BACKGROUND"; }
         HorizontalLayout { spacing: Theme.sp-2;
-            Rectangle { width: 16px; height: 16px; background: Theme.accent; border-radius: Theme.radius-sm; }
-            Rectangle { width: 32px; height: 32px; background: Theme.accent; border-radius: Theme.radius-sm; }
-            Rectangle { width: 48px; height: 48px; background: Theme.accent; border-radius: Theme.radius-sm; }
-            Rectangle { width: 64px; height: 64px; background: Theme.accent; border-radius: Theme.radius-sm; }
+            ColorSwatch { sw: SemanticBackground.bg-base; label: "base"; }
+            ColorSwatch { sw: SemanticBackground.bg-surface; label: "surface"; }
+            ColorSwatch { sw: SemanticBackground.bg-raised; label: "raised"; }
+            ColorSwatch { sw: SemanticBackground.bg-overlay; label: "overlay"; }
         }
 
-        Text { text: "Backend"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        Text {
-            text: "App: " + Backend.app-name + " v" + Backend.app-version;
-            color: Theme.text-primary;
-            font-size: Theme.text-base;
+        SectionHeader { title: "03 \u{2014} SEMANTIC: SURFACE (3 TIERS)"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticSurface.surface-base; label: "base"; }
+            ColorSwatch { sw: SemanticSurface.surface-raised; label: "raised"; }
+            ColorSwatch { sw: SemanticSurface.surface-elevated; label: "elevated"; }
+            ColorSwatch { sw: SemanticSurface.surface-hover; label: "hover"; }
+            ColorSwatch { sw: SemanticSurface.surface-pressed; label: "pressed"; }
         }
-        Text {
-            text: "Dark mode: " + (Theme.dark-mode ? "Yes" : "No");
-            color: Theme.text-secondary;
-            font-size: Theme.text-sm;
+
+        SectionHeader { title: "04 \u{2014} SEMANTIC: TEXT"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticText.text-primary; label: "primary"; }
+            ColorSwatch { sw: SemanticText.text-secondary; label: "secondary"; }
+            ColorSwatch { sw: SemanticText.text-tertiary; label: "tertiary"; }
+            ColorSwatch { sw: SemanticText.text-disabled; label: "disabled"; }
+        }
+
+        SectionHeader { title: "05 \u{2014} SEMANTIC: BORDER"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticBorder.border-subtle; label: "subtle"; }
+            ColorSwatch { sw: SemanticBorder.border-base; label: "base"; }
+            ColorSwatch { sw: SemanticBorder.border-strong; label: "strong"; }
+            ColorSwatch { sw: SemanticBorder.border-focus; label: "focus"; }
+        }
+
+        SectionHeader { title: "06 \u{2014} SEMANTIC: ACCENT"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticAccent.accent; label: "accent"; }
+            ColorSwatch { sw: SemanticAccent.accent-subtle; label: "subtle"; }
+            ColorSwatch { sw: SemanticAccent.swatch-purple; label: "purple"; }
+            ColorSwatch { sw: SemanticAccent.swatch-green; label: "green"; }
+            ColorSwatch { sw: SemanticAccent.swatch-pink; label: "pink"; }
+        }
+
+        SectionHeader { title: "07 \u{2014} SEMANTIC: ERROR"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticError.error-300; label: "300"; }
+            ColorSwatch { sw: SemanticError.error-500; label: "500"; }
+            ColorSwatch { sw: SemanticError.error-surface; label: "surface"; }
+        }
+
+        SectionHeader { title: "08 \u{2014} SEMANTIC: WARNING"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticWarning.warning-300; label: "300"; }
+            ColorSwatch { sw: SemanticWarning.warning-500; label: "500"; }
+            ColorSwatch { sw: SemanticWarning.warning-surface; label: "surface"; }
+        }
+
+        SectionHeader { title: "09 \u{2014} SEMANTIC: SUCCESS"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticSuccess.success-300; label: "300"; }
+            ColorSwatch { sw: SemanticSuccess.success-500; label: "500"; }
+            ColorSwatch { sw: SemanticSuccess.success-surface; label: "surface"; }
+        }
+
+        SectionHeader { title: "10 \u{2014} SEMANTIC: INFO"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: SemanticInfo.info-300; label: "300"; }
+            ColorSwatch { sw: SemanticInfo.info-500; label: "500"; }
+            ColorSwatch { sw: SemanticInfo.info-surface; label: "surface"; }
+        }
+
+        SectionHeader { title: "11 \u{2014} ALPHA / TRANSPARENCY"; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            ColorSwatch { sw: AlphaTokens.scrim-light; label: "light"; }
+            ColorSwatch { sw: AlphaTokens.scrim-medium; label: "medium"; }
+            ColorSwatch { sw: AlphaTokens.scrim-heavy; label: "heavy"; }
+        }
+
+        // 12-16 TYPOGRAPHY
+        SectionHeader { title: "12 \u{2014} FONT FAMILY"; }
+        VerticalLayout { spacing: Theme.sp-2;
+            Text { text: "Sans \u{2014} Inter"; font-family: TypographyFontFamily.font-sans; color: Theme.text-primary; font-size: Theme.text-lg; }
+            Text { text: "Display \u{2014} Space Grotesk"; font-family: TypographyFontFamily.font-display; color: Theme.text-primary; font-size: Theme.text-lg; }
+            Text { text: "Mono \u{2014} JetBrains Mono"; font-family: TypographyFontFamily.font-mono; color: Theme.text-primary; font-size: Theme.text-lg; }
+        }
+
+        SectionHeader { title: "13 \u{2014} TYPE SCALE (10 steps)"; }
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "2xs (10px)"; font-size: TypographyTypeScale.text-2xs; color: Theme.text-primary; }
+            Text { text: "xs (11px)"; font-size: TypographyTypeScale.text-xs; color: Theme.text-primary; }
+            Text { text: "sm (12px)"; font-size: TypographyTypeScale.text-sm; color: Theme.text-primary; }
+            Text { text: "base (14px)"; font-size: TypographyTypeScale.text-base; color: Theme.text-primary; }
+            Text { text: "md (15px)"; font-size: TypographyTypeScale.text-md; color: Theme.text-primary; }
+            Text { text: "lg (16px)"; font-size: TypographyTypeScale.text-lg; color: Theme.text-primary; }
+            Text { text: "xl (18px)"; font-size: TypographyTypeScale.text-xl; color: Theme.text-primary; }
+            Text { text: "2xl (20px)"; font-size: TypographyTypeScale.text-2xl; color: Theme.text-primary; }
+            Text { text: "3xl (24px)"; font-size: TypographyTypeScale.text-3xl; color: Theme.text-primary; }
+            Text { text: "4xl (30px)"; font-size: TypographyTypeScale.text-4xl; color: Theme.text-primary; }
+        }
+
+        SectionHeader { title: "14 \u{2014} FONT WEIGHT"; }
+        VerticalLayout { spacing: Theme.sp-1;
+            Text { text: "Thin 100"; font-weight: TypographyFontWeight.weight-thin; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "Light 300"; font-weight: TypographyFontWeight.weight-light; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "Regular 400"; font-weight: TypographyFontWeight.weight-regular; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "Medium 500"; font-weight: TypographyFontWeight.weight-medium; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "SemiBold 600"; font-weight: TypographyFontWeight.weight-semibold; color: Theme.text-primary; font-size: Theme.text-base; }
+            Text { text: "Bold 700"; font-weight: TypographyFontWeight.weight-bold; color: Theme.text-primary; font-size: Theme.text-base; }
+        }
+
+        SectionHeader { title: "15 \u{2014} LINE HEIGHT"; }
+        Text { text: "9 steps: leading-none (1.0) \u{2192} leading-3 (3.0)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "16 \u{2014} LETTER SPACING"; }
+        Text { text: "tighter(-0.5px) \u{00B7} tight(-0.2px) \u{00B7} normal(0) \u{00B7} wide(0.3px) \u{00B7} wider(0.6px) \u{00B7} widest(1.2px)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        // 17-18 SPACING
+        SectionHeader { title: "17 \u{2014} SPACING SCALE (4px base, 0\u{2013}128)"; }
+        HorizontalLayout { spacing: Theme.sp-1; alignment: start;
+            for v in ["0","1","2","4","6","8","10","12","16","20","24","32"]: Rectangle {
+                width: 40px;
+                height: 32px;
+                border-radius: Theme.radius-xs;
+                background: Theme.accent-subtle;
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: v;
+                    color: Theme.accent;
+                    font-family: Theme.font-mono;
+                    font-size: Theme.text-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        SectionHeader { title: "18 \u{2014} COMPONENT SPACING (8px base)"; }
+        Text { text: "padding-xs(4) \u{2192} padding-2xl(32) \u{00B7} gutter-xs(4) \u{2192} gutter-xl(24) \u{00B7} section-sm(16) \u{2192} section-xl(48)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        // 19-20 BORDER
+        SectionHeader { title: "19 \u{2014} BORDER RADIUS (none \u{2192} full)"; }
+        // Previously this looped over label *strings* ("0","3","6",...) and
+        // bound every box to the same fixed Theme.radius-sm, so the row
+        // showed eight identically-rounded squares — the exact opposite of
+        // what a radius-scale reference is supposed to demonstrate. Each
+        // step below now binds its own radius token so the corners visibly
+        // progress from square to fully round.
+        HorizontalLayout { spacing: Theme.sp-2; alignment: start;
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-none; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "0"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-xs; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "3"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-sm; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "6"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-md; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "10"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-lg; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "14"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-xl; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "18"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-2xl; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "24"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+            Rectangle { width: 40px; height: 40px; border-radius: BorderRadius.radius-full; background: Theme.accent-subtle; border-width: 1px; border-color: Theme.border-subtle;
+                Text { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; text: "\u{221E}"; color: Theme.accent; font-family: Theme.font-mono; font-size: 10px; vertical-alignment: center; } }
+        }
+
+        SectionHeader { title: "20 \u{2014} BORDER WIDTH"; }
+        HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+            Rectangle { width: 80px; height: 40px; border-radius: Theme.radius-sm; background: Theme.bg-surface; border-width: BorderWidth.border-thin; border-color: Theme.border-strong; }
+            Rectangle { width: 80px; height: 40px; border-radius: Theme.radius-sm; background: Theme.bg-surface; border-width: BorderWidth.border-thick; border-color: Theme.border-strong; }
+            Rectangle { width: 80px; height: 40px; border-radius: Theme.radius-sm; background: Theme.bg-surface; border-width: BorderWidth.border-focus-ring; border-color: Theme.accent; }
+        }
+
+        // 21-24 EFFECTS
+        SectionHeader { title: "21 \u{2014} SHADOW / ELEVATION (0\u{2013}6)"; }
+        HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: ShadowElevation.shadow-1; drop-shadow-offset-y: ShadowElevation.shadow-1-y; drop-shadow-blur: ShadowElevation.shadow-1-blur; }
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: ShadowElevation.shadow-2; drop-shadow-offset-y: ShadowElevation.shadow-2-y; drop-shadow-blur: ShadowElevation.shadow-2-blur; }
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: ShadowElevation.shadow-3; drop-shadow-offset-y: ShadowElevation.shadow-3-y; drop-shadow-blur: ShadowElevation.shadow-3-blur; }
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: ShadowElevation.shadow-4; drop-shadow-offset-y: ShadowElevation.shadow-4-y; drop-shadow-blur: ShadowElevation.shadow-4-blur; }
+        }
+
+        SectionHeader { title: "22 \u{2014} GLOW / LUMINANCE"; }
+        HorizontalLayout { spacing: Theme.sp-2; alignment: start;
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: GlowLuminance.glow-accent; drop-shadow-blur: GlowLuminance.glow-blur-md; }
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: GlowLuminance.glow-success; drop-shadow-blur: GlowLuminance.glow-blur-md; }
+            Rectangle { width: 80px; height: 56px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                drop-shadow-color: GlowLuminance.glow-error; drop-shadow-blur: GlowLuminance.glow-blur-md; }
+        }
+
+        SectionHeader { title: "23 \u{2014} BACKDROP BLUR"; }
+        Text { text: "blur-none(0) \u{2192} blur-3xl(64px) \u{00B7} glass(24px) \u{00B7} frosted(16px) \u{00B7} heavy(40px)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "24 \u{2014} Z-INDEX LAYER STACK"; }
+        Text { text: "base(0) \u{2192} max(9999): raised, dropdown, sticky, header, overlay, modal, popover, toast, tooltip"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        // 25-28 MOTION
+        SectionHeader { title: "25 \u{2014} MOTION DURATION (5 tiers)"; }
+        Text { text: "instant(0ms) \u{2192} fastest(50ms) \u{2192} fast(150ms) \u{2192} normal(200ms) \u{2192} slow(300ms) \u{2192} slowest(500ms)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "26 \u{2014} EASING: STANDARD"; }
+        Text { text: "ease \u{00B7} ease-in \u{00B7} ease-out \u{00B7} ease-in-out \u{00B7} linear \u{00B7} standard \u{00B7} decelerate \u{00B7} accelerate"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "27 \u{2014} EASING: SPRING / BOUNCE"; }
+        Text { text: "spring \u{00B7} soft \u{00B7} bounce \u{00B7} overshoot \u{00B7} elastic \u{00B7} snap \u{00B7} snap-back"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "28 \u{2014} SPRING PRESETS"; }
+        Text { text: "stiff \u{00B7} default \u{00B7} gentle \u{00B7} wobbly \u{00B7} bouncy (fast/normal/slow durations)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        // 29-32 GRID
+        SectionHeader { title: "29 \u{2014} BREAKPOINTS"; }
+        Text { text: "xs(0) \u{00B7} sm(640) \u{00B7} md(768) \u{00B7} lg(1024) \u{00B7} xl(1280) \u{00B7} 2xl(1536)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "30 \u{2014} GRID COLUMNS"; }
+        Text { text: "1 through 12 columns"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "31 \u{2014} GRID GUTTER"; }
+        Text { text: "gutter-0(0) \u{2192} gutter-3xl(64px)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        SectionHeader { title: "32 \u{2014} GRID MARGIN"; }
+        Text { text: "margin-0(0) \u{2192} margin-4xl(128px)"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+
+        // 33-36 UTILITIES
+        SectionHeader { title: "33 \u{2014} ICON SIZE SCALE"; }
+        HorizontalLayout { spacing: Theme.sp-3; alignment: start;
+            for s in ["10","12","14","16","20","24","32","40","48"]: Rectangle {
+                width: 48px;
+                height: 48px;
+                border-radius: Theme.radius-sm;
+                background: Theme.accent-subtle;
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: s;
+                    color: Theme.accent;
+                    font-family: Theme.font-mono;
+                    font-size: 10px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        SectionHeader { title: "34 \u{2014} TOUCH TARGET MINIMUM"; }
+        Rectangle {
+            width: TouchTarget.min-width;
+            height: TouchTarget.min-height;
+            border-radius: Theme.radius-sm;
+            border-width: 2px;
+            border-color: Theme.accent;
+            background: Theme.accent-subtle;
+        }
+
+        SectionHeader { title: "35 \u{2014} FOCUS RING"; }
+        Rectangle {
+            width: 200px;
+            height: 36px;
+            border-radius: Theme.radius-sm;
+            background: Theme.bg-surface;
+            border-width: FocusRing.width;
+            border-color: FocusRing.color-strong;
+        }
+
+        SectionHeader { title: "36 \u{2014} OPACITY SCALE"; }
+        // Previously this looped over label *strings* and never bound
+        // `opacity` to anything, so every swatch rendered fully opaque —
+        // the scale it claimed to show was invisible. Slint has no
+        // string→float parsing, so rather than looping over string labels
+        // and hoping to convert them, loop over the actual OpacityScale
+        // float tokens directly and bind `opacity` to each one.
+        HorizontalLayout { spacing: Theme.sp-2; alignment: start;
+            for o in [OpacityScale.opacity-10, OpacityScale.opacity-20, OpacityScale.opacity-30,
+                      OpacityScale.opacity-50, OpacityScale.opacity-70, OpacityScale.opacity-90,
+                      OpacityScale.opacity-100]: Rectangle {
+                width: 48px;
+                height: 48px;
+                border-radius: Theme.radius-sm;
+                background: Theme.accent;
+                opacity: o;
+            }
         }
         }
     }

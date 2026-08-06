@@ -1,41 +1,204 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { ProgressSpinner } from "../progress/ProgressSpinner.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// PrimaryButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The library's default call-to-action button: solid accent-filled
+// background, white-on-accent text, one primary action per view. Use
+// SecondaryButton / OutlinedButton / GhostButton for anything that isn't
+// the single most important action on screen — a view with two "primary"
+// buttons fighting for attention is a visual-hierarchy bug, not a style
+// choice (see polish.md / graphic-design guidance on hierarchy).
+//
+// States covered: default, hover, pressed, focus (keyboard), disabled,
+// loading. Sizes: xs / sm / md (default) / lg, all pulled from Theme's
+// button-height-* scale so this button lines up with every dialog/toolbar
+// button already built against that scale (see overlays/ModalDialog.slint,
+// feedback/Dialog.slint, navigation/TabButton.slint, ...).
+//
+// Fixed in this revision:
+//  - Icon vertical alignment previously used a manual `y:` binding
+//    computed from the *icon's own* height while the sibling Text relied
+//    on the HorizontalLayout's automatic centering — two different
+//    alignment strategies for two elements on the same row, which is what
+//    produced the "icon sits a pixel or two off from the label" symptom.
+//    HorizontalLayout already centers non-stretching children on its
+//    cross axis; the override is removed so both children share one
+//    alignment authority.
+//  - Hardcoded `#ffffff` text/icon color replaced with the semantic
+//    `Theme.text-on-accent` token (already defined, just unused here).
+//  - Fixed `height: 40px` (not a value in Theme's height scale) replaced
+//    with `Theme.button-height-*`, matching the 36px "md" used everywhere
+//    else in the library.
+//  - Added: size variants, optional icon, loading state, keyboard
+//    activation (Enter/Space), visible focus ring, accessible role/label,
+//    pointer cursor on hover, and a min-width floor so the button never
+//    squeezes its label illegibly thin.
+//
+// Usage (Slint):
+//   PrimaryButton {
+//       text: "Save changes";
+//       size: "lg";
+//       enabled: form-is-valid;
+//       loading: save-in-progress;
+//       clicked => { root.save(); }
+//   }
+//
+// Usage (Rust, wiring a click through to host logic — see interop.md for
+// the general global-callback pattern this library follows elsewhere):
+//   ui.on_save_clicked(move || { /* persist form */ });
+//
+// A11y note: `text` doubles as the accessible label. If this button is
+// ever icon-only (`show-icon: true` with an empty `text`), set `text` to
+// a screen-reader-only description anyway — an unlabeled button is
+// unusable with assistive tech regardless of how clear its icon looks.
 export component PrimaryButton inherits Rectangle {
+    // ---- Content ------------------------------------------------------
     in-out property <string> text: "Primary";
+    in property <bool> show-icon: true;
+    in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+
+    // ---- Size -----------------------------------------------------------
+    // One of "xs" | "sm" | "md" | "lg". A plain string (rather than a
+    // shared `enum`) is used deliberately: an enum with the same name
+    // exported from several sibling button files would collide the
+    // moment a consumer imports more than one of them from
+    // buttons/export.slint.
+    in property <string> size: "md";
+
+    // ---- State ----------------------------------------------------------
     in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
-    border-radius: Theme.radius-md;
-    height: 40px;
+    // ---- Size → token mapping -------------------------------------------
+    pure function height-for(s: string) -> length {
+        s == "xs" ? Theme.button-height-xs :
+        s == "sm" ? Theme.button-height-sm :
+        s == "lg" ? Theme.button-height-lg :
+        Theme.button-height-md
+    }
+    pure function icon-size-for(s: string) -> length {
+        s == "xs" ? Theme.icon-sm :
+        s == "sm" ? Theme.icon-sm :
+        s == "lg" ? Theme.icon-lg :
+        Theme.icon-md
+    }
+    pure function font-size-for(s: string) -> length {
+        s == "xs" ? Theme.text-xs :
+        s == "sm" ? Theme.text-sm :
+        s == "lg" ? Theme.text-lg :
+        Theme.text-base
+    }
+    pure function padding-x-for(s: string) -> length {
+        s == "xs" ? Theme.sp-2 :
+        s == "sm" ? Theme.sp-3 :
+        s == "lg" ? Theme.sp-5 :
+        Theme.button-padding-x
+    }
+
+    // ---- Geometry ---------------------------------------------------------
+    height: height-for(size);
+    min-width: Theme.button-min-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
 
-    animate background { duration: Theme.dur-fast; }
+    // ---- Color / material ---------------------------------------------
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed
+            ? Theme.btn-primary-bg-pressed
+            : ta.has-hover
+                ? Theme.btn-primary-bg-hover
+                : Theme.accent;
 
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    // Subtle elevation cue on hover: a hint of the accent's own glow
+    // lifting the button toward the user, reinforcing that it's
+    // interactive before the pointer even presses down. Skipped while
+    // disabled/loading so it doesn't imply an action that won't fire.
+    drop-shadow-color: is-interactive && ta.has-hover ? Theme.accent-glow : transparent;
+    drop-shadow-blur: is-interactive && ta.has-hover ? Theme.elevation-2-blur : 0px;
+    drop-shadow-offset-y: is-interactive && ta.has-hover ? Theme.elevation-1-y : 0px;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate drop-shadow-blur { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+    animate drop-shadow-color { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+
+    // ---- Accessibility --------------------------------------------------
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+
+    // ---- Content row ------------------------------------------------------
     HorizontalLayout {
         alignment: center;
-        spacing: 8px;
+        spacing: Theme.sp-2;
+        padding-left: padding-x-for(root.size);
+        padding-right: padding-x-for(root.size);
 
-        FaIcon {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
-            fa-size: 14px;
-            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
-            y: (parent.height - self.height) / 2;
+        if show-icon && !loading: FaIcon {
+            source: root.icon;
+            fa-size: icon-size-for(root.size);
+            fa-color: is-interactive ? Theme.text-on-accent : Theme.btn-disabled-text;
+        }
+
+        if loading: ProgressSpinner {
+            spinner-size: icon-size-for(root.size);
+            stroke-width: 2px;
+            spinner-color: Theme.text-on-accent;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #ffffff : Theme.btn-disabled-text;
-            font-size: 14px;
+            color: is-interactive ? Theme.text-on-accent : Theme.btn-disabled-text;
+            font-size: font-size-for(root.size);
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
+            horizontal-alignment: center;
+            overflow: elide;
         }
     }
 
+    // ---- Pointer input ----------------------------------------------------
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    // ---- Keyboard input (Enter / Space activate, matching native
+    // button semantics on every desktop platform) --------------------------
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    // ---- Visible focus ring — only for keyboard focus, so a mouse click
+    // doesn't leave a ring lingering (matches native platform behavior). ---
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

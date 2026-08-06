@@ -10,8 +10,24 @@ export global Backend {
 
     // System theme info (set by Rust from D-Bus)
     in property <string> system-font: "Inter";
-    in property <float> system-font-size: 14;
+    // NOTE: this was previously typed <float> with a bare `14` default.
+    // Slint has no implicit float→length conversion (see gotchas.md:
+    // "Cannot convert float to length"), so any component binding
+    // `font-size: Backend.system-font-size` would have failed to compile.
+    // Fixed to <length> to match how every other font-size in this
+    // library (Theme.text-*) is typed.
+    in property <length> system-font-size: 14px;
     in property <float> device-pixel-ratio: 1.0;
+
+    // System accessibility settings (set by Rust from the XDG desktop
+    // portal / D-Bus, same source as system-font above). Host bindings
+    // typically wire these straight into
+    // accessibility/ReduceMotionToggle.active and
+    // accessibility/HighContrastToggle.active so the app starts already
+    // matching the user's OS-level preference instead of always
+    // defaulting to `false`.
+    in property <bool> reduce-motion: false;
+    in property <bool> high-contrast: false;
 
     // Accent color components (set by Rust)
     in property <color> system-accent: #5B9DFA;
