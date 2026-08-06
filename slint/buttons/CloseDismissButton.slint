@@ -21,9 +21,8 @@ import { FaIcon } from "../core/FaIcon.slint";
 export component CloseDismissButton inherits Rectangle {
     // --- Public API ---
     in property <bool> enabled: true;
-    // Screen-reader label. Override per instance ("Dismiss notification",
-    // "Close panel", ...) — a bare "Close" is the sane default.
-    in property <string> accessible-label: "Close";
+    // Custom property name avoids collision with built-in `accessible-label`
+    in property <string> accessibility-label: "Close";
 
     callback clicked();
 
@@ -49,7 +48,7 @@ export component CloseDismissButton inherits Rectangle {
     animate border-color { duration: Theme.dur-fast; easing: Theme.ease-out; }
 
     accessible-role: button;
-    accessible-label: root.accessible-label;
+    accessible-label: root.accessibility-label;
     accessible-action-default => { if (root.enabled) { root.clicked(); } }
 
     FaIcon {
