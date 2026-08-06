@@ -14,7 +14,7 @@ export component ChipFilterButton inherits Rectangle {
     in property <length> custom-height: 32px;
 
     // Callbacks
-    callback toggled(bool active);
+    callback toggled(active: bool);
     callback removed();
 
     // --- Private Visual States & Dimensions ---
@@ -30,7 +30,7 @@ export component ChipFilterButton inherits Rectangle {
     border-width: root.is-focused ? 2px : 1px;
 
     // Adaptive Background and Border logic matching original Theme API
-    background: !root.enabled ? Theme.bg-disabled :
+    background: !root.enabled ? Theme.btn-disabled-bg :
                 root.active ? (
                     root.is-pressed ? Theme.accent-subtle.darker(5%) :
                     root.has-hover ? Theme.accent-subtle.darker(2%) : Theme.accent-subtle
