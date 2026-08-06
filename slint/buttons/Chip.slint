@@ -1,0 +1,148 @@
+import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
+
+export component ChipFilterButton inherits Rectangle {
+    // --- Public API Properties ---
+    in-out property <string> text: "Filter";
+    in-out property <bool> active: true;
+    in property <bool> enabled: true;
+    
+    // Extensions & Variants
+    in property <bool> removable: false;
+    in property <bool> show-icon: true;
+    in property <int> badge-count: -1; // Set >= 0 to enable counter badge
+    in property <length> custom-height: 32px;
+
+    // Callbacks
+    callback toggled(bool active);
+    callback removed();
+
+    // --- Private Visual States & Dimensions ---
+    private property <bool> has-hover: touch.has-hover;
+    private property <bool> is-pressed: touch.pressed;
+    private property <bool> is-focused: focus-scope.has-focus;
+
+    // --- Component Styling ---
+    height: root.custom-height;
+    horizontal-stretch: 0;
+    clip: true;
+    border-radius: root.height / 2;
+    border-width: root.is-focused ? 2px : 1px;
+
+    // Adaptive Background and Border logic matching original Theme API
+    background: !root.enabled ? Theme.bg-disabled :
+                root.active ? (
+                    root.is-pressed ? Theme.accent-subtle.darker(5%) :
+                    root.has-hover ? Theme.accent-subtle.darker(2%) : Theme.accent-subtle
+                ) : (
+                    root.is-pressed ? Theme.bg-surface.darker(5%) :
+                    root.has-hover ? Theme.bg-surface.darker(2%) : Theme.bg-surface
+                );
+
+    border-color: !root.enabled ? Theme.border-base :
+                  root.is-focused ? Theme.accent :
+                  root.active ? Theme.accent :
+                  root.has-hover ? Theme.border-base.darker(10%) : Theme.border-base;
+
+    // Smooth Hardware-Accelerated Transitions
+    animate background { duration: 150ms; easing: ease-out; }
+    animate border-color { duration: 150ms; easing: ease-out; }
+
+    // Keyboard & Focus Handler
+    focus-scope := FocusScope {
+        enabled: root.enabled;
+
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.active = !root.active;
+                root.toggled(root.active);
+                return accept;
+            }
+            return reject;
+        }
+
+        // Layout Pipeline
+        HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            alignment: center;
+            spacing: 6px;
+
+            // Animated Active Checkmark Icon
+            if (root.show-icon && root.active) : FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+                fa-size: 10px;
+                fa-color: !root.enabled ? Theme.text-disabled : Theme.accent;
+                vertical-alignment: center;
+                y: (parent.height - self.height) / 2;
+            }
+
+            // Primary Text Label
+            Text {
+                text: root.text;
+                color: !root.enabled ? Theme.text-disabled :
+                       root.active ? Theme.accent : Theme.text-secondary;
+                font-size: 13px;
+                font-weight: root.active ? Theme.weight-semibold : Theme.weight-medium;
+                vertical-alignment: center;
+
+                animate color { duration: 120ms; easing: ease-in-out; }
+            }
+
+            // Optional Badge Counter
+            if (root.badge-count >= 0) : Rectangle {
+                height: 16px;
+                border-radius: 8px;
+                background: root.active ? Theme.accent : Theme.border-base;
+                padding-left: 5px;
+                padding-right: 5px;
+
+                Text {
+                    text: root.badge-count > 99 ? "99+" : "\{root.badge-count}";
+                    color: root.active ? #ffffff : Theme.text-secondary;
+                    font-size: 10px;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+            }
+
+            // Optional Close/Remove Button Target
+            if (root.removable) : Rectangle {
+                width: 14px;
+                height: 14px;
+                border-radius: 7px;
+                background: remove-touch.has-hover ? Theme.border-base : transparent;
+
+                animate background { duration: 100ms; easing: ease; }
+
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+                    fa-size: 8px;
+                    fa-color: remove-touch.has-hover ? Theme.text-primary : Theme.text-secondary;
+                    vertical-alignment: center;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                remove-touch := TouchArea {
+                    enabled: root.enabled;
+                    clicked => { root.removed(); }
+                }
+            }
+        }
+
+        // Primary Surface Touch Handler
+        touch := TouchArea {
+            enabled: root.enabled;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    focus-scope.focus();
+                }
+            }
+            clicked => {
+                root.active = !root.active;
+                root.toggled(root.active);
+            }
+        }
+    }
+}
