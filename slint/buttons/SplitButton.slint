@@ -38,7 +38,7 @@ export component SplitButton inherits Rectangle {
     private property <bool> main-focused: main-focus-scope.has-focus;
     private property <bool> dropdown-focused: dropdown-focus-scope.has-focus;
 
-    height: Theme.button-height;
+    height: Theme.button-height-md;
     horizontal-stretch: 1;
 
     // --- Main action segment ---
@@ -74,6 +74,7 @@ export component SplitButton inherits Rectangle {
                 source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/floppy-disk.svg");
                 fa-size: Theme.icon-sm;
                 fa-color: root.enabled ? #ffffff : Theme.btn-disabled-text;
+                y: (parent.height - self.height) / 2;
             }
 
             Text {
@@ -143,7 +144,8 @@ export component SplitButton inherits Rectangle {
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
-            fa-size: Theme.icon-xs;
+            vertical-alignment: center;
+            fa-size: Theme.icon-sm;
             fa-color: root.enabled ? #ffffff : Theme.btn-disabled-text;
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
