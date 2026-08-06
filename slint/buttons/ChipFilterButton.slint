@@ -74,6 +74,7 @@ export component ChipFilterButton inherits Rectangle {
                 fa-size: 10px;
                 fa-color: !root.enabled ? Theme.accent.transparentize(0.5) : Theme.accent;
                 vertical-alignment: center;
+                y: (parent.height - self.height) / 2;
             }
 
             // Primary Text Label
