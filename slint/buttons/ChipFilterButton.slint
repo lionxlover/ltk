@@ -3,11 +3,12 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component ChipFilterButton inherits Rectangle {
     in-out property <string> text: "Filter";
-    in-out property <bool> active: false;
+    in-out property <bool> active: true;
 
     background: root.active ? Theme.accent-subtle : Theme.bg-surface;
     border-radius: 16px;
     border-width: 1px;
+    clip: true;
     border-color: root.active ? Theme.accent : Theme.border-base;
     height: 32px;
     horizontal-stretch: 0;
@@ -20,6 +21,8 @@ export component ChipFilterButton inherits Rectangle {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
             fa-size: 10px;
             fa-color: root.active ? Theme.accent : transparent;
+            vertical-alignment: center;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
@@ -32,6 +35,7 @@ export component ChipFilterButton inherits Rectangle {
     }
 
     TouchArea {
+        enabled: true;
         clicked => { root.active = !root.active; }
     }
 }
