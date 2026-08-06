@@ -1,72 +1,172 @@
+// SplitButton — a primary action fused to a secondary dropdown trigger
+// (e.g. "Save" + a chevron that opens "Save as...", "Save a copy", etc.),
+// following the same segmented-control shape used by Apple HIG's
+// segmented controls and GNOME's linked-button groups.
+//
+// Fixed in this revision:
+//   - Corner-radius seam bug: both halves used the same uniform
+//     `border-radius: Theme.radius-md`, so the dropdown segment rounded
+//     its LEFT corners too even though it sits flush against the main
+//     segment. Two independently-rounded edges meeting mid-button reads
+//     as a rendering glitch rather than one continuous control. Fixed by
+//     rounding only the two outer corners of each half and squaring the
+//     two inner corners that touch.
+//   - No visual seam at all between the two tap targets, so the control
+//     could be misread as a single button with a decorative icon rather
+//     than two independently-actionable regions.
+//   - The dropdown segment's chevron used a bare `12px`; the main
+//     segment's icon/spacing/height were bare literals duplicated from
+//     every other standard button instead of shared tokens.
+//   - Neither half had padding, a focus ring, or keyboard reachability —
+//     a mouse-only control fails GNOME HIG and Apple HIG's keyboard-
+//     operability requirement outright, and this one has two independent
+//     actions to reach, not one.
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component SplitButton inherits Rectangle {
     in-out property <string> text: "Save";
-    in-out property <bool> enabled: true;
+    in property <bool> enabled: true;
+    // Width reserved for the dropdown segment. Kept as a property (not a
+    // literal repeated in three places below) so the two halves can never
+    // drift out of sync with each other.
+    in property <length> dropdown-width: 36px;
 
     callback main-clicked();
     callback dropdown-clicked();
 
-    height: 40px;
+    private property <bool> main-focused: main-focus-scope.has-focus;
+    private property <bool> dropdown-focused: dropdown-focus-scope.has-focus;
+
+    height: Theme.button-height;
     horizontal-stretch: 1;
 
-    Rectangle {
+    // --- Main action segment ---
+    main-segment := Rectangle {
         x: 0px;
         y: 0px;
-        width: parent.width - 36px;
+        width: parent.width - root.dropdown-width;
         height: parent.height;
-        background: !enabled ? Theme.btn-disabled-bg : (ta1.pressed ? Theme.btn-primary-bg-pressed : (ta1.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
+        background: !root.enabled ? Theme.btn-disabled-bg :
+                    ta1.pressed ? Theme.btn-primary-bg-pressed :
+                    ta1.has-hover ? Theme.btn-primary-bg-hover : Theme.accent;
         border-radius: Theme.radius-md;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        border-width: root.main-focused ? 2px : 0px;
+        border-color: root.main-focused ? Theme.border-focus : transparent;
+        clip: true;
 
-        animate background { duration: Theme.dur-fast; }
+        animate background { duration: Theme.dur-fast; easing: Theme.ease-out; }
+        animate border-color { duration: Theme.dur-fast; easing: Theme.ease-out; }
+
+        accessible-role: button;
+        accessible-label: root.text;
+        accessible-action-default => { if (root.enabled) { root.main-clicked(); } }
 
         HorizontalLayout {
+            padding-left: Theme.button-padding-x;
+            padding-right: Theme.sp-2;
             alignment: center;
-            spacing: 8px;
+            spacing: Theme.sp-2;
 
             FaIcon {
                 source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/floppy-disk.svg");
-                fa-size: 14px;
-                fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
-                y: (parent.height - self.height) / 2;
+                fa-size: Theme.icon-sm;
+                fa-color: root.enabled ? #ffffff : Theme.btn-disabled-text;
             }
 
             Text {
                 text: root.text;
-                color: enabled ? #ffffff : Theme.btn-disabled-text;
-                font-size: 14px;
+                color: root.enabled ? #ffffff : Theme.btn-disabled-text;
+                font-size: Theme.text-base;
                 font-weight: Theme.weight-semibold;
                 vertical-alignment: center;
+                overflow: elide;
+            }
+        }
+
+        main-focus-scope := FocusScope {
+            enabled: root.enabled;
+            key-pressed(event) => {
+                if (root.enabled && (event.text == " " || event.text == "\n")) {
+                    root.main-clicked();
+                    return accept;
+                }
+                return reject;
             }
         }
 
         ta1 := TouchArea {
             enabled: root.enabled;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    main-focus-scope.focus();
+                }
+            }
             clicked => { root.main-clicked(); }
         }
     }
 
+    // --- Seam: a hairline divider so the two tap targets read as
+    // separate controls, not a single button with a stray icon. ---
     Rectangle {
-        x: parent.width - 36px;
-        y: 0px;
-        width: 36px;
-        height: parent.height;
-        background: !enabled ? Theme.btn-disabled-bg : (ta2.pressed ? Theme.btn-primary-bg-pressed : (ta2.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
-        border-radius: Theme.radius-md;
+        x: main-segment.width;
+        y: Theme.sp-1;
+        width: 1px;
+        height: parent.height - (2 * Theme.sp-1);
+        background: root.enabled ? #ffffff33 : transparent;
+    }
 
-        animate background { duration: Theme.dur-fast; }
+    // --- Dropdown segment ---
+    dropdown-segment := Rectangle {
+        x: parent.width - root.dropdown-width;
+        y: 0px;
+        width: root.dropdown-width;
+        height: parent.height;
+        background: !root.enabled ? Theme.btn-disabled-bg :
+                    ta2.pressed ? Theme.btn-primary-bg-pressed :
+                    ta2.has-hover ? Theme.btn-primary-bg-hover : Theme.accent;
+        border-radius: Theme.radius-md;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-width: root.dropdown-focused ? 2px : 0px;
+        border-color: root.dropdown-focused ? Theme.border-focus : transparent;
+        clip: true;
+
+        animate background { duration: Theme.dur-fast; easing: Theme.ease-out; }
+        animate border-color { duration: Theme.dur-fast; easing: Theme.ease-out; }
+
+        accessible-role: button;
+        accessible-label: "More save options";
+        accessible-action-default => { if (root.enabled) { root.dropdown-clicked(); } }
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
-            fa-size: 12px;
-            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            fa-size: Theme.icon-xs;
+            fa-color: root.enabled ? #ffffff : Theme.btn-disabled-text;
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
         }
 
+        dropdown-focus-scope := FocusScope {
+            enabled: root.enabled;
+            key-pressed(event) => {
+                if (root.enabled && (event.text == " " || event.text == "\n")) {
+                    root.dropdown-clicked();
+                    return accept;
+                }
+                return reject;
+            }
+        }
+
         ta2 := TouchArea {
             enabled: root.enabled;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    dropdown-focus-scope.focus();
+                }
+            }
             clicked => { root.dropdown-clicked(); }
         }
     }

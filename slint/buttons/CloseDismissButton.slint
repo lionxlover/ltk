@@ -1,24 +1,84 @@
+// CloseDismissButton — a small, circular icon-only control for dismissing
+// toasts, sheets, chips, and dialogs.
+//
+// Fixed in this revision:
+//   - Had zero hover/pressed feedback (flat `Theme.bg-raised` always) while
+//     every sibling button in this library darkens/lightens on interaction.
+//     Violated the toolkit's own stated principle: "every user action
+//     receives immediate visual confirmation" (guidelines.md, 1.1-III).
+//   - Not keyboard-reachable at all (no FocusScope) and had no
+//     accessible-role/label, so screen readers announced nothing and
+//     keyboard-only users could not dismiss anything this control guards.
+//     Both Apple HIG and GNOME HIG treat full keyboard operability and a
+//     visible focus indicator as a hard requirement for any control that
+//     performs a destructive/dismissing action.
+//   - `enabled` was declared but never wired into appearance or hit-testing.
+//   - Icon size (14px) and hit-target size (28px) were bare literals with
+//     no traceability to the design system's icon-sm token.
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component CloseDismissButton inherits Rectangle {
-    in-out property <bool> enabled: true;
+    // --- Public API ---
+    in property <bool> enabled: true;
+    // Screen-reader label. Override per instance ("Dismiss notification",
+    // "Close panel", ...) — a bare "Close" is the sane default.
+    in property <string> accessible-label: "Close";
+
+    callback clicked();
+
+    // --- Private interaction state ---
+    private property <bool> is-hovered: touch.has-hover;
+    private property <bool> is-pressed: touch.pressed;
+    private property <bool> is-focused: focus-scope.has-focus;
 
     width: 28px;
     height: 28px;
-    background: Theme.bg-raised;
-    border-radius: 14px;
+    border-radius: self.height / 2;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    border-width: root.is-focused ? 2px : 0px;
+    border-color: root.is-focused ? Theme.border-focus : transparent;
+
+    background: !root.enabled ? Theme.btn-disabled-bg :
+                root.is-pressed ? Theme.surface-pressed :
+                root.is-hovered ? Theme.surface-hover : Theme.bg-raised;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-out; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-out; }
+
+    accessible-role: button;
+    accessible-label: root.accessible-label;
+    accessible-action-default => { if (root.enabled) { root.clicked(); } }
 
     FaIcon {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
-        fa-size: 14px;
-        fa-color: Theme.text-tertiary;
+        fa-size: Theme.icon-sm;
+        fa-color: root.enabled ? Theme.text-tertiary : Theme.text-disabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { }
+    focus-scope := FocusScope {
+        enabled: root.enabled;
+
+        key-pressed(event) => {
+            if (root.enabled && (event.text == " " || event.text == "\n")) {
+                root.clicked();
+                return accept;
+            }
+            return reject;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        pointer-event(event) => {
+            if (event.kind == PointerEventKind.down) {
+                focus-scope.focus();
+            }
+        }
+        clicked => { root.clicked(); }
     }
 }
