@@ -91,12 +91,16 @@ export component WarningButton inherits Rectangle {
             source: root.icon;
             fa-size: icon-size-for(root.size);
             fa-color: is-interactive ? Theme.text-on-warning : Theme.btn-disabled-text;
+            // See PrimaryButton.slint's header: HorizontalLayout does
+            // not auto-center an Image-derived child, only Text.
+            y: (parent.height - self.height) / 2;
         }
 
         if loading: ProgressSpinner {
             spinner-size: icon-size-for(root.size);
             stroke-width: 2px;
             spinner-color: Theme.text-on-warning;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {

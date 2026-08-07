@@ -149,12 +149,20 @@ export component PrimaryButton inherits Rectangle {
             source: root.icon;
             fa-size: icon-size-for(root.size);
             fa-color: is-interactive ? Theme.text-on-accent : Theme.btn-disabled-text;
+            // HorizontalLayout centers a Text child on the cross-axis by
+            // default but does not do the same for an Image-derived
+            // child — confirmed empirically, contrary to what the
+            // fill-vs-preferred-size docs implied. Explicit centering
+            // needed here so the icon lines up with the label instead of
+            // rendering pinned toward the top of the row.
+            y: (parent.height - self.height) / 2;
         }
 
         if loading: ProgressSpinner {
             spinner-size: icon-size-for(root.size);
             stroke-width: 2px;
             spinner-color: Theme.text-on-accent;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {
