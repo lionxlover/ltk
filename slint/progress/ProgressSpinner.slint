@@ -59,7 +59,7 @@ export component ProgressSpinner inherits Rectangle {
     accessible-role: progress-indicator;
     accessible-label: "Loading";
 
-    // 1. Background Dim Track Ring
+    // 1. Static Dim Backing Track
     Rectangle {
         width: parent.width;
         height: parent.height;
@@ -69,12 +69,12 @@ export component ProgressSpinner inherits Rectangle {
         background: transparent;
     }
 
-    // 2. Spinning Vector Ring Arc (Pure Slint Path — zero child element nesting)
-    Path {
+    // 2. Animated Spinner Image (rotation-angle is fully supported on Image)
+    Image {
         width: parent.width;
         height: parent.height;
-        stroke: root.spinner-color;
-        stroke-width: root.stroke-width;
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-notch.svg");
+        colorize: root.spinner-color;
 
         property <angle> spin-angle: 0deg;
         rotation-angle: spin-angle;
@@ -88,17 +88,5 @@ export component ProgressSpinner inherits Rectangle {
         }
 
         init => { spin-angle = 360deg; }
-
-        // Top-arc segment curve
-        MoveTo {
-            x: parent.width / 2;
-            y: 0px;
-        }
-        ArcTo {
-            x: parent.width;
-            y: parent.height / 2;
-            radius-x: parent.width / 2;
-            radius-y: parent.height / 2;
-        }
     }
 }
