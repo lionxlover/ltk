@@ -1,42 +1,124 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { ProgressSpinner } from "../progress/ProgressSpinner.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SocialAuthTwitter
+// ═════════════════════════════════════════════════════════════════════════
+//
+// "Continue with X" — solid black, matching X's current (post-rebrand)
+// auth button styling.
+//
+// Fixed in this revision:
+//  - REAL BRAND BUG: the label already said "Continue with X" but the
+//    icon rendered `brands/twitter.svg` — the old bird logo — while this
+//    exact repo already bundles the correct `brands/x-twitter.svg` glyph,
+//    just unused. Switched to it, so the icon now matches the text.
+//  - The component name stays `SocialAuthTwitter` rather than being
+//    renamed to `SocialAuthX`: it's re-exported from ltk.slint, and
+//    renaming an exported component is a breaking change for anyone
+//    already depending on it. If this library does a deliberate major
+//    version bump, renaming the export (with the old name kept as a
+//    deprecated alias for one release) would be the cleaner long-term
+//    fix — flagging it here rather than doing it silently mid-batch.
+//  - Same defects as every other SocialAuth* sibling — see
+//    SocialAuthGoogle.slint for the full write-up: added accessible
+//    role/label, keyboard activation, focus ring, pointer cursor,
+//    loading state, and min/max width.
 export component SocialAuthTwitter inherits Rectangle {
     in-out property <string> text: "Continue with X";
     in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #1c1c1e : (ta.has-hover ? #2c2c2e : #000000));
-    border-radius: Theme.radius-md;
-    height: 44px;
-    horizontal-stretch: 1;
+    property <color> x-surface: #000000;
+    property <color> x-surface-hover: #2c2c2e;
+    property <color> x-surface-pressed: #1c1c1e;
 
-    animate background { duration: Theme.dur-fast; }
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? x-surface-pressed
+        : ta.has-hover ? x-surface-hover
+        : x-surface;
+    border-radius: Theme.radius-md;
+
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 12px;
+        spacing: Theme.sp-3;
+        padding-left: Theme.button-padding-x;
+        padding-right: Theme.button-padding-x;
 
-        FaIcon {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/twitter.svg");
+        if !loading: FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/x-twitter.svg");
             fa-size: 18px;
-            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            fa-color: is-interactive ? #ffffff : Theme.btn-disabled-text;
+            fa-disabled: !is-interactive;
+            y: (parent.height - self.height) / 2;
+        }
+
+        if loading: ProgressSpinner {
+            spinner-size: 18px;
+            stroke-width: 2px;
+            spinner-color: #ffffff;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #ffffff : Theme.btn-disabled-text;
+            color: is-interactive ? #ffffff : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
-            font-size: 14px;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,47 +1,118 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// ReactionButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A reaction pill with a live count (thumbs-up, applause, etc.) — Slack/
+// GitHub-style reactions on a comment or message.
+//
+// Usage:
+//   ReactionButton { count: reaction.count; active: reaction.by-me; clicked => { root.toggle-reaction(); } }
+//
+// Fixed in this revision:
+//  - No `enabled` property existed at all, and the TouchArea had no
+//    `enabled:` binding — this control could never be disabled (e.g.
+//    while a reaction request is in flight, or on a locked thread).
+//  - Raw `Image` with hand-set `colorize` replaced with `FaIcon`.
+//  - No accessible role/label/checked state, keyboard activation, or
+//    focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - No min/max width or a locked height.
+//  - Bare literals (14px, 6px, 12px) replaced with Theme's icon/spacing/
+//    text tokens.
+//  - `text: root.count;` (an int bound directly to Text.text) is valid
+//    Slint — int converts implicitly to string — so left as-is rather
+//    than "fixed" into something it didn't need to be.
 export component ReactionButton inherits Rectangle {
     in-out property <int> count: 12;
     in-out property <bool> active: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
     height: 32px;
-    background: root.active ? Theme.accent-subtle : Theme.bg-surface;
-    border-radius: 16px;
-    border-width: 1px;
-    border-color: root.active ? Theme.accent : Theme.border-base;
+    min-height: 32px;
+    max-height: 32px;
+    min-width: 56px;
+    max-width: 160px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-full;
+    border-width: Theme.border-width-thin;
+    border-color: !enabled ? Theme.border-subtle : (root.active ? Theme.accent : Theme.border-base);
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : root.active ? Theme.accent-subtle
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-surface;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: "\{root.count} reactions" + (root.active ? ", reacted by you" : "");
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.active;
 
     HorizontalLayout {
-        padding-left: 10px;
-        padding-right: 10px;
-        spacing: 6px;
+        padding-left: Theme.sp-2-5;
+        padding-right: Theme.sp-2-5;
+        spacing: Theme.sp-1-5;
         alignment: center;
 
-        Image {
+        FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg");
-            width: 14px;
-            height: 14px;
+            fa-size: Theme.icon-sm;
+            fa-color: !enabled ? Theme.btn-disabled-text : (root.active ? Theme.accent : Theme.text-secondary);
+            fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
-            colorize: root.active ? Theme.accent : Theme.text-secondary;
         }
 
         Text {
             text: root.count;
-            color: root.active ? Theme.accent : Theme.text-secondary;
-            font-size: 12px;
+            color: !enabled ? Theme.btn-disabled-text : (root.active ? Theme.accent : Theme.text-secondary);
+            font-size: Theme.text-sm;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
         }
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
             root.active = !root.active;
             root.clicked();
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.active = !root.active;
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

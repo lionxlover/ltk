@@ -1,44 +1,118 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// DropdownButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A single button that opens a menu/dropdown (as opposed to SplitButton,
+// which fuses an independent primary action alongside the dropdown
+// trigger). This component only opens the menu — see overlays/ for the
+// popup/menu content itself, per events-and-overlays.md's guidance to use
+// PopupWindow or a manual overlay anchored to this button.
+//
+// Usage:
+//   DropdownButton { text: "Sort by"; clicked => { root.open-sort-menu(); } }
+//
+// Fixed in this revision:
+//  - No accessible role/label — announced nothing to a screen reader.
+//    Added `accessible-expanded` (via the `expanded` prop) so assistive
+//    tech can tell whether the menu it opens is currently showing, which
+//    is exactly what a combobox/dropdown trigger role needs to expose.
+//  - No keyboard activation or focus ring.
+//  - Bare `14px`/`16px`/`12px` literals throughout instead of Theme's
+//    text/icon scale.
+//  - No min/max width, no locked height.
 export component DropdownButton inherits Rectangle {
     in-out property <string> text: "Options";
     in-out property <bool> enabled: true;
+    // Whether the menu this button controls is currently open — purely
+    // informational for the chevron's flip and the accessible-expanded
+    // state; this component doesn't render the menu itself (see header).
+    in property <bool> expanded: false;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: Theme.border-base;
-    height: 40px;
+    height: Theme.button-height-md;
+    min-height: Theme.button-height-md;
+    max-height: Theme.button-height-md;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: expanded ? Theme.accent : Theme.border-base;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.combobox;
+    accessible-label: root.text;
+    accessible-expandable: true;
+    accessible-expanded: root.expanded;
 
     HorizontalLayout {
-        padding-left: 16px;
-        padding-right: 12px;
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-3;
+        spacing: Theme.sp-2;
 
         Text {
             text: root.text;
             color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
-            font-size: 14px;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
             horizontal-stretch: 1;
+            overflow: elide;
         }
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
-            fa-size: 12px;
+            fa-size: Theme.icon-sm;
             fa-color: enabled ? Theme.text-tertiary : Theme.btn-disabled-text;
+            fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
+            rotation-angle: expanded ? 180deg : 0deg;
+            rotation-origin-x: self.width / 2;
+            rotation-origin-y: self.height / 2;
+            animate rotation-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
         }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " " || event.text == Key.DownArrow) {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

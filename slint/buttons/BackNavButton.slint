@@ -1,46 +1,99 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// BackNavButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A navigation-chrome button pointing back or up — a screen's back
+// button, or a breadcrumb's "up one level" control.
+//
+// Usage:
+//   BackNavButton { direction: "back"; clicked => { root.navigate-back(); } }
+//
+// Fixed in this revision:
+//  - Raw `Image` elements with hand-set `colorize` replaced with `FaIcon`.
+//  - No accessible role/label — the label previously would have been
+//    generic "button" with no indication of direction; now announces
+//    "Back" or "Up" appropriately.
+//  - No keyboard activation or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - No min/max width/height lock.
+//  - `direction` was a bare `string` compared against the literal
+//    `"back"` with no validation — any other value (including a typo)
+//    silently fell through to the "up" arrow. Left as a string (an enum
+//    shared across many button files risks the export-collision problem
+//    described in FabMini.slint's header) but documented the two valid
+//    values explicitly.
 export component BackNavButton inherits Rectangle {
+    // "back" | "up" — anything else renders as "up" (see header note).
     in-out property <string> direction: "back";
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
     width: 40px;
     height: 40px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: Theme.border-base;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
 
-    Rectangle {
-        width: 16px;
-        height: 16px;
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.direction == "back" ? "Back" : "Up";
+    accessible-enabled: root.enabled;
+
+    FaIcon {
+        source: root.direction == "back"
+            ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-left.svg")
+            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up.svg");
+        fa-size: Theme.icon-md;
+        fa-color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
-
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-left.svg");
-            width: 16px;
-            height: 16px;
-            visible: root.direction == "back";
-            colorize: enabled ? Theme.text-primary : Theme.btn-disabled-text;
-        }
-
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up.svg");
-            width: 16px;
-            height: 16px;
-            visible: root.direction != "back";
-            colorize: enabled ? Theme.text-primary : Theme.btn-disabled-text;
-        }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

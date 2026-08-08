@@ -1,44 +1,135 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { ProgressSpinner } from "../progress/ProgressSpinner.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SocialAuthGoogle
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Google's "Continue with Google" button. Colors are Google's own brand
+// spec (white surface, #dadce0 border, #4285F4 logo blue, #3c4043 text) —
+// intentionally *not* pulled from Theme, since a brand mark has to render
+// identically regardless of the host app's light/dark mode or accent
+// color; that's the whole point of a recognizable third-party auth
+// button. They're pulled out as named `property`s below instead of
+// staying as inline hex literals, so the brand spec reads as an
+// intentional, documented decision rather than unexplained magic numbers
+// scattered through bindings.
+//
+// Usage:
+//   SocialAuthGoogle { clicked => { root.sign-in-with-google(); } }
+//
+// Fixed in this revision:
+//  - No accessible role/label — a screen reader previously announced
+//    nothing but "button".
+//  - No keyboard activation (Enter/Space) or visible focus ring — this
+//    button was mouse/touch-only.
+//  - No `mouse-cursor: pointer` on hover.
+//  - No `loading` state for the network round-trip an OAuth redirect
+//    actually takes.
+//  - No min/max width — full-bleed inside whatever container without a
+//    ceiling. Added Theme.button-max-width/min-width to match every
+//    other button in this library.
 export component SocialAuthGoogle inherits Rectangle {
     in-out property <string> text: "Continue with Google";
     in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #f1f3f4 : (ta.has-hover ? #f8f9fa : #ffffff));
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: #dadce0;
-    height: 44px;
-    horizontal-stretch: 1;
+    // Google brand spec — see header note.
+    property <color> google-surface: #ffffff;
+    property <color> google-surface-hover: #f8f9fa;
+    property <color> google-surface-pressed: #f1f3f4;
+    property <color> google-border: #dadce0;
+    property <color> google-text: #3c4043;
+    property <color> google-blue: #4285F4;
 
-    animate background { duration: Theme.dur-fast; }
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? google-surface-pressed
+        : ta.has-hover ? google-surface-hover
+        : google-surface;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: is-interactive ? google-border : Theme.border-subtle;
+
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 12px;
+        spacing: Theme.sp-3;
+        padding-left: Theme.button-padding-x;
+        padding-right: Theme.button-padding-x;
 
-        FaIcon {
+        if !loading: FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/google.svg");
             fa-size: 18px;
-            fa-color: #4285F4;
+            fa-color: google-blue;
+            fa-disabled: !is-interactive;
+            y: (parent.height - self.height) / 2;
+        }
+
+        if loading: ProgressSpinner {
+            spinner-size: 18px;
+            stroke-width: 2px;
+            spinner-color: google-text;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #3c4043 : Theme.btn-disabled-text;
+            color: is-interactive ? google-text : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
-            font-size: 14px;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

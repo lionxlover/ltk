@@ -1,42 +1,117 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { ProgressSpinner } from "../progress/ProgressSpinner.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SocialAuthGitHub
+// ═════════════════════════════════════════════════════════════════════════
+//
+// GitHub's "Continue with GitHub" button — GitHub's own near-black
+// (#24292e), the color used across their own auth screens (see
+// SocialAuthGoogle.slint's header for why brand colors stay literal).
+//
+// Usage:
+//   SocialAuthGitHub { clicked => { root.sign-in-with-github(); } }
+//
+// Fixed in this revision (identical defects to every SocialAuth* sibling
+// — see SocialAuthGoogle.slint for the full write-up): added accessible
+// role/label, keyboard activation, focus ring, pointer cursor, loading
+// state, and min/max width.
 export component SocialAuthGitHub inherits Rectangle {
     in-out property <string> text: "Continue with GitHub";
     in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? #1b1f23 : (ta.has-hover ? #2c3137 : #24292e));
-    border-radius: Theme.radius-md;
-    height: 44px;
-    horizontal-stretch: 1;
+    // GitHub brand spec.
+    property <color> github-surface: #24292e;
+    property <color> github-surface-hover: #2c3137;
+    property <color> github-surface-pressed: #1b1f23;
 
-    animate background { duration: Theme.dur-fast; }
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? github-surface-pressed
+        : ta.has-hover ? github-surface-hover
+        : github-surface;
+    border-radius: Theme.radius-md;
+
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 12px;
+        spacing: Theme.sp-3;
+        padding-left: Theme.button-padding-x;
+        padding-right: Theme.button-padding-x;
 
-        FaIcon {
+        if !loading: FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/github.svg");
             fa-size: 18px;
-            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            fa-color: is-interactive ? #ffffff : Theme.btn-disabled-text;
+            fa-disabled: !is-interactive;
+            y: (parent.height - self.height) / 2;
+        }
+
+        if loading: ProgressSpinner {
+            spinner-size: 18px;
+            stroke-width: 2px;
+            spinner-color: #ffffff;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #ffffff : Theme.btn-disabled-text;
+            color: is-interactive ? #ffffff : Theme.btn-disabled-text;
             font-family: Theme.font-ui;
-            font-size: 14px;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

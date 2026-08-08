@@ -1,49 +1,117 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// CopyButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Copies something (a code snippet, a link, an API key) and confirms it
+// with a brief icon swap to a checkmark.
+//
+// Usage:
+//   CopyButton { clicked => { root.copy-to-clipboard(); } }
+//   // Host resets `copied` back to false after a couple seconds, e.g.
+//   // via a Rust-side slint::Timer (see interop.md) — this component
+//   // intentionally doesn't run its own auto-reset timer so the host
+//   // controls timing consistently across every copy button in the app.
+//
+// Fixed in this revision:
+//  - LOGIC BUG: clicking toggled `copied` (`root.copied = !root.copied`)
+//    instead of setting it true. A second click while still showing the
+//    checkmark flipped it back to the copy icon even though the action
+//    "copy" was performed again — the visual state didn't track the
+//    actual fact ("something was just copied"), it tracked click parity.
+//  - Raw `Image` elements with hand-set `colorize` replaced with the
+//    shared `FaIcon`, matching the rest of this library and picking up
+//    its disabled-opacity handling for free.
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - No min/max width/height lock.
+//  - Icon swap was an instant `visible` toggle with no transition —
+//    added a cross-fade so the confirmation reads as *feedback* rather
+//    than a flicker.
 export component CopyButton inherits Rectangle {
     in-out property <bool> copied: false;
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
     width: 32px;
     height: 32px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
-    border-radius: Theme.radius-sm;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-sm;
+    border-width: Theme.border-width-thin;
+    border-color: Theme.border-base;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
 
-    Rectangle {
-        width: 14px;
-        height: 14px;
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.copied ? "Copied" : "Copy to clipboard";
+    accessible-enabled: root.enabled;
+
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg");
+        fa-size: Theme.icon-sm;
+        fa-color: enabled ? Theme.text-tertiary : Theme.btn-disabled-text;
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+        opacity: root.copied ? 0 : 1;
+        animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
 
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg");
-            width: 14px;
-            height: 14px;
-            visible: !root.copied;
-            colorize: enabled ? Theme.text-tertiary : Theme.btn-disabled-text;
-        }
-
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
-            width: 14px;
-            height: 14px;
-            visible: root.copied;
-            colorize: Theme.state-success;
-        }
+    FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+        fa-size: Theme.icon-sm;
+        fa-color: Theme.state-success;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        opacity: root.copied ? 1 : 0;
+        animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
-            root.copied = !root.copied;
+            root.copied = true;
             root.clicked();
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.copied = true;
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

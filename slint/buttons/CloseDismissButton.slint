@@ -15,6 +15,14 @@
 //   - `enabled` was declared but never wired into appearance or hit-testing.
 //   - Icon size (14px) and hit-target size (28px) were bare literals with
 //     no traceability to the design system's icon-sm token.
+//   - SEVERE BUG: `is-hovered`, `is-pressed`, and `is-focused` were each
+//     declared as `private property <bool> ...: true;` — a hardcoded
+//     constant, never bound to `touch.has-hover` / `touch.pressed` /
+//     `focus-scope.has-focus`. The button therefore rendered as
+//     permanently hovered, pressed, *and* focused at all times,
+//     regardless of actual pointer or keyboard state — which is exactly
+//     the persistent blue ring visible around every Close/Dismiss button
+//     in the rendered preview. Wired all three to their real sources.
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
@@ -26,13 +34,18 @@ export component CloseDismissButton inherits Rectangle {
 
     callback clicked();
 
-    // --- Private interaction state ---
-    private property <bool> is-hovered: true;
-    private property <bool> is-pressed: true;
-    private property <bool> is-focused: true;
+    // --- Private interaction state — now actually wired to the real
+    // pointer/keyboard sources below instead of being hardcoded `true`. ---
+    private property <bool> is-hovered: touch.has-hover;
+    private property <bool> is-pressed: touch.pressed;
+    private property <bool> is-focused: focus-scope.has-focus;
 
     width: 28px;
     height: 28px;
+    min-width: 28px;
+    max-width: 28px;
+    min-height: 28px;
+    max-height: 28px;
     border-radius: self.height / 2;
     horizontal-stretch: 0;
     vertical-stretch: 0;
@@ -49,6 +62,7 @@ export component CloseDismissButton inherits Rectangle {
 
     accessible-role: button;
     accessible-label: root.accessibility-label;
+    accessible-enabled: root.enabled;
     accessible-action-default => { if (root.enabled) { root.clicked(); } }
 
     FaIcon {
@@ -73,6 +87,7 @@ export component CloseDismissButton inherits Rectangle {
 
     touch := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         pointer-event(event) => {
             if (event.kind == PointerEventKind.down) {
                 focus-scope.focus();

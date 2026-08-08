@@ -389,6 +389,12 @@ export global Theme {
     // design-tokens/TouchTarget.slint so this repo has one accessibility
     // baseline instead of three unused, independently-guessed copies.
     out property <length> button-min-width: TouchTarget.min-width;
+    // A button using horizontal-stretch: 1 inside a wide parent layout
+    // (a full-width toolbar, a dialog footer on an ultrawide monitor)
+    // would otherwise grow to fill however much space is available —
+    // visually absurd past a certain point. This caps it; the button
+    // still centers its label rather than stretching the text itself.
+    out property <length> button-max-width: 480px;
     out property <length> button-min-height: TouchTarget.min-height;
 
     out property <length> input-height-sm: 30px;

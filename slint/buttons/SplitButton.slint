@@ -21,6 +21,12 @@
 //     a mouse-only control fails GNOME HIG and Apple HIG's keyboard-
 //     operability requirement outright, and this one has two independent
 //     actions to reach, not one.
+//   - Enter-key detection used `event.text == "\n"`; standardized to the
+//     documented `Key.Return` constant (confirmed against Slint's Key
+//     namespace reference — non-printable keys are meant to be matched
+//     via the named Key.* constants, not hand-written escape sequences).
+//   - height had no min/max lock — added, matching every other button in
+//     this library, so a cramped parent can't compress it shorter.
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
@@ -39,7 +45,12 @@ export component SplitButton inherits Rectangle {
     private property <bool> dropdown-focused: dropdown-focus-scope.has-focus;
 
     height: Theme.button-height-md;
+    min-height: Theme.button-height-md;
+    max-height: Theme.button-height-md;
     horizontal-stretch: 1;
+    // Wider floor than Theme.button-min-width (44px): this control packs
+    // two independent tap targets plus a label, so it needs more room
+    // before either segment becomes unusably cramped.
     min-width: 150px;
     max-width: 450px;
 
@@ -64,6 +75,7 @@ export component SplitButton inherits Rectangle {
 
         accessible-role: button;
         accessible-label: root.text;
+        accessible-enabled: root.enabled;
         accessible-action-default => { if (root.enabled) { root.main-clicked(); } }
 
         HorizontalLayout {
@@ -92,7 +104,7 @@ export component SplitButton inherits Rectangle {
         main-focus-scope := FocusScope {
             enabled: root.enabled;
             key-pressed(event) => {
-                if (root.enabled && (event.text == " " || event.text == "\n")) {
+                if (root.enabled && (event.text == " " || event.text == Key.Return)) {
                     root.main-clicked();
                     return accept;
                 }
@@ -142,6 +154,7 @@ export component SplitButton inherits Rectangle {
 
         accessible-role: button;
         accessible-label: "More save options";
+        accessible-enabled: root.enabled;
         accessible-action-default => { if (root.enabled) { root.dropdown-clicked(); } }
 
         FaIcon {
@@ -156,7 +169,7 @@ export component SplitButton inherits Rectangle {
         dropdown-focus-scope := FocusScope {
             enabled: root.enabled;
             key-pressed(event) => {
-                if (root.enabled && (event.text == " " || event.text == "\n")) {
+                if (root.enabled && (event.text == " " || event.text == Key.Return)) {
                     root.dropdown-clicked();
                     return accept;
                 }

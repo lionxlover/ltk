@@ -1,23 +1,98 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// BookmarkButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Save/unsave toggle for articles, listings, or search results.
+//
+// Usage:
+//   BookmarkButton { saved: item.is-saved; toggled(s) => { root.set-saved(item.id, s); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no callback of any kind was declared — the internal
+//    `saved` flag flipped visually on click, but nothing ever told the
+//    host app to persist that change anywhere. It looked functional and
+//    did nothing beyond redraw itself.
+//  - No `enabled`/disabled state.
+//  - No accessible role/label/checked state, keyboard activation, or
+//    focus ring.
+//  - No `mouse-cursor: pointer`, no press/hover feedback at all (the
+//    background was a flat, always-transparent Rectangle).
+//  - No animation on the saved/unsaved color change or the click itself.
+//  - No min/max width/height lock.
 export component BookmarkButton inherits Rectangle {
     in-out property <bool> saved: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback toggled(bool);
 
     width: 32px;
     height: 32px;
-    background: transparent;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-sm;
+
+    background: !enabled
+        ? transparent
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : transparent;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.saved ? "Remove bookmark" : "Add bookmark";
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.saved;
 
     FaIcon {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/bookmark.svg");
-        fa-size: 18px;
-        fa-color: root.saved ? Theme.warning : Theme.text-tertiary;
+        fa-size: Theme.icon-lg;
+        fa-color: !enabled ? Theme.btn-disabled-text : (root.saved ? Theme.warning : Theme.text-tertiary);
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+        animate fa-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
-    TouchArea {
-        clicked => { root.saved = !root.saved; }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.saved = !root.saved;
+            root.toggled(root.saved);
+        }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.saved = !root.saved;
+                root.toggled(root.saved);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,29 +1,134 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// Fab (Floating Action Button)
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The single primary action floating above page content, conventionally
+// anchored to a screen corner (bottom-right on most platforms). There
+// should be at most one Fab visible at a time — see FabExtended for a
+// labeled variant and FabMini for a smaller, secondary-action size used in
+// a "speed dial" cluster around a main Fab.
+//
+// Usage:
+//   Fab {
+//       icon: @image-url("plus.svg");
+//       label: "Compose";
+//       clicked => { root.compose(); }
+//   }
+//
+// Fixed in this revision:
+//  - Icon was hardcoded to always be the plus glyph with no way to
+//    override it — every consumer that wanted a different Fab action
+//    (e.g. a camera Fab) would have had to fork this file. Exposed `icon`.
+//  - Raw `Image` + hardcoded `#ffffff` colorize replaced with `FaIcon` +
+//    `Theme.text-on-accent`.
+//  - No accessible label at all (icon-only, so nothing for a screen
+//    reader) — added `label` + `accessible-role`.
+//  - `border-radius: 16px` was an unexplained magic number; kept the same
+//    16px value (Material Design's own FAB spec) but pulled it out as a
+//    named, commented constant so it reads as an intentional design
+//    decision rather than a stray literal.
+//  - Added: loading state, keyboard activation, focus ring, pointer
+//    cursor, hover elevation (a FAB is meant to visually float above the
+//    page — it had no shadow at all before, so it didn't actually look
+//    "raised").
 export component Fab inherits Rectangle {
+    in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+    in property <string> label: "";
+
     in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
+    // Material Design's floating-action-button corner radius; intentionally
+    // not on the generic Theme.radius-* scale since a FAB is a distinct,
+    // fixed-spec component rather than a general rounded-rectangle.
+    property <length> fab-radius: 16px;
+
     width: 56px;
     height: 56px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
-    border-radius: 16px;
+    // 56px is Material Design's fixed FAB spec, not a size variant to
+    // scale — left exactly as-is per that spec; min/max just lock it
+    // against a cramped parent shrinking it (see IconButtonCircle.slint).
+    min-width: 56px;
+    max-width: 56px;
+    min-height: 56px;
+    max-height: 56px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: fab-radius;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
 
-    Image {
-        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
-        width: 24px;
-        height: 24px;
-        colorize: enabled ? #ffffff : Theme.btn-disabled-text;
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    // A FAB floats above the page — give it a real elevation shadow at
+    // rest, not just on hover, so it visually separates from the content
+    // beneath it (per polish.md's guidance on using Theme's elevation
+    // tokens rather than leaving raised surfaces perfectly flat).
+    drop-shadow-color: is-interactive ? Theme.shadow-sm : transparent;
+    drop-shadow-blur: is-interactive ? (ta.has-hover ? Theme.elevation-3-blur : Theme.elevation-2-blur) : 0px;
+    drop-shadow-offset-y: is-interactive ? (ta.has-hover ? Theme.elevation-3-y : Theme.elevation-2-y) : 0px;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate drop-shadow-blur { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+    animate drop-shadow-offset-y { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.label;
+
+    if !loading: FaIcon {
+        source: root.icon;
+        fa-size: Theme.icon-xl;
+        fa-color: Theme.text-on-accent;
+        fa-disabled: !is-interactive;
+    }
+
+    if loading: Rectangle {
+        width: Theme.icon-xl;
+        height: Theme.icon-xl;
+        border-radius: Theme.radius-full;
+        border-width: Theme.border-width-medium;
+        border-color: Theme.text-on-accent;
+        background: transparent;
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.fab-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,40 +1,100 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// MuteUnmuteButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Toggles audio mute in a media/call player.
+//
+// Usage:
+//   MuteUnmuteButton { muted: call.is-muted; toggled(m) => { root.set-muted(m); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no callback was declared — the muted icon swapped
+//    visually on click but nothing told the host to actually mute audio.
+//  - Raw `Image` elements with hand-toggled `visible` replaced with a
+//    single `FaIcon` whose `source` switches directly — simpler and
+//    avoids two overlapping elements.
+//  - No `enabled` state, no hover/pressed feedback.
+//  - No accessible role/label/checked state, keyboard activation, or
+//    focus ring.
+//  - No `mouse-cursor: pointer`, no min/max width/height lock.
 export component MuteUnmuteButton inherits Rectangle {
     in-out property <bool> muted: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback toggled(bool);
 
     width: 40px;
     height: 40px;
-    background: Theme.bg-raised;
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: root.muted ? Theme.error : Theme.border-base;
 
-    Rectangle {
-        width: 16px;
-        height: 16px;
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.muted ? "Unmute" : "Mute";
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.muted;
+
+    FaIcon {
+        source: root.muted
+            ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-xmark.svg")
+            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-high.svg");
+        fa-size: Theme.icon-md;
+        fa-color: !enabled ? Theme.btn-disabled-text : (root.muted ? Theme.error : Theme.text-primary);
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+    }
 
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-high.svg");
-            width: 16px;
-            height: 16px;
-            visible: !root.muted;
-            colorize: Theme.text-primary;
-        }
-
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-xmark.svg");
-            width: 16px;
-            height: 16px;
-            visible: root.muted;
-            colorize: Theme.text-primary;
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.muted = !root.muted;
+            root.toggled(root.muted);
         }
     }
 
-    TouchArea {
-        clicked => { root.muted = !root.muted; }
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.muted = !root.muted;
+                root.toggled(root.muted);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

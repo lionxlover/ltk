@@ -1,37 +1,155 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// LongPressButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A press-and-hold confirmation button for actions that shouldn't fire on
+// an accidental tap (leave a group, reset a device) — friction as a
+// feature, the same category as buttons/SwipeToConfirm.slint.
+//
+// Usage:
+//   LongPressButton { text: "Hold to leave group"; confirmed => { root.leave(); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: despite being named and labeled "Hold to confirm",
+//    the implementation had no hold/timing logic whatsoever — its
+//    TouchArea just toggled a boolean on an ordinary tap
+//    (`clicked => { root.pressed = !root.pressed; }`). It looked like a
+//    friction-adding confirmation control and behaved like a plain
+//    button, defeating the entire point of using this component over
+//    PrimaryButton for a risky action.
+//  - Implemented an actual press-and-hold gesture: a `Timer` (verified
+//    against Slint 1.8's Timer element docs) ticks every 16ms while
+//    `TouchArea.pressed` is true, advancing `hold-progress` from 0 to 1
+//    over `hold-duration`; a `changed pressed` callback (verified against
+//    Slint's property-change-callback docs) resets progress to 0 both at
+//    the start of a fresh press and on an early release, so letting go
+//    before the hold completes correctly cancels it rather than banking
+//    partial progress.
+//  - The fill amount is now rendered as a real progress bar behind the
+//    label (clipped to the button's rounded corners), not just a binary
+//    background-color flip — the user can see how much longer they need
+//    to hold, which is the entire UX point of this pattern.
+//  - No callback existed for the *cancelled* case (early release) at
+//    all — added alongside `confirmed`.
+//  - No accessible role/label conveying the hold requirement, no
+//    `mouse-cursor`, no min/max width/height lock.
 export component LongPressButton inherits Rectangle {
     in-out property <string> text: "Hold to confirm";
-    in-out property <bool> pressed: false;
+    in-out property <bool> enabled: true;
+    in property <duration> hold-duration: 1200ms;
+    out property <float> hold-progress: 0.0;
+    out property <bool> has-focus: fs.has-focus;
 
-    background: root.pressed ? Theme.success : Theme.bg-raised;
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: root.pressed ? Theme.success : Theme.border-base;
-    height: 40px;
+    callback confirmed();
+    callback cancelled();
+
+    height: Theme.button-height-md;
+    min-height: Theme.button-height-md;
+    max-height: Theme.button-height-md;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: root.hold-progress > 0 ? Theme.success : Theme.border-base;
+    background: Theme.bg-raised;
+    clip: true;
+
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text + ", press and hold to confirm";
+    accessible-enabled: root.enabled;
+
+    // Fill sweeps left-to-right as the hold progresses — clipped to the
+    // root's rounded corners via `clip: true` above.
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: parent.width * root.hold-progress;
+        height: parent.height;
+        background: Theme.success;
+    }
 
     HorizontalLayout {
         alignment: center;
-        spacing: 8px;
+        spacing: Theme.sp-2;
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/hand-pointer.svg");
-            fa-size: 14px;
-            fa-color: root.pressed ? #ffffff : Theme.text-primary;
+            fa-size: Theme.icon-sm;
+            fa-color: root.hold-progress > 0.5 ? Theme.text-on-accent : Theme.text-primary;
+            fa-disabled: !enabled;
+            y: (parent.height - self.height) / 2;
+            animate fa-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
         }
 
         Text {
-            text: root.pressed ? "Done" : root.text;
-            color: root.pressed ? #ffffff : Theme.text-primary;
-            font-size: 14px;
+            text: root.hold-progress >= 1.0 ? "Done" : root.text;
+            color: root.hold-progress > 0.5 ? Theme.text-on-accent : Theme.text-primary;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
+            overflow: elide;
+            animate color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
         }
     }
 
-    TouchArea {
-        clicked => { root.pressed = !root.pressed; }
+    hold-timer := Timer {
+        interval: 16ms;
+        running: root.enabled && ta.pressed && root.hold-progress < 1.0;
+        triggered => {
+            root.hold-progress = min(1.0, root.hold-progress + (16ms / root.hold-duration));
+            if (root.hold-progress >= 1.0) {
+                root.confirmed();
+            }
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        changed pressed => {
+            if (self.pressed) {
+                root.hold-progress = 0.0;
+            } else if (root.hold-progress < 1.0) {
+                if (root.hold-progress > 0.0) {
+                    root.cancelled();
+                }
+                root.hold-progress = 0.0;
+            }
+        }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            // Keyboard users get an immediate confirm on Space/Enter
+            // rather than being forced to hold a key down — a held key
+            // repeat is not a reliable or accessible substitute for a
+            // pointer hold gesture.
+            if (event.text == Key.Return || event.text == " ") {
+                root.hold-progress = 1.0;
+                root.confirmed();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

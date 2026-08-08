@@ -1,23 +1,98 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// LikeHeartButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Like/favorite toggle for posts, comments, or products.
+//
+// Usage:
+//   LikeHeartButton { liked: post.is-liked; toggled(l) => { root.set-liked(post.id, l); } }
+//
+// Fixed in this revision (identical defects to BookmarkButton.slint — see
+// that file's header for the full write-up): added the missing callback,
+// enabled state, accessible role/label/checked, keyboard activation,
+// focus ring, pointer cursor, and color-change animation.
 export component LikeHeartButton inherits Rectangle {
     in-out property <bool> liked: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback toggled(bool);
+
+    // "Heart red" — deliberately a warmer, more saturated red than
+    // Theme.error, the same way the SocialAuth* brand colors stay
+    // literal rather than pulling from Theme: a "liked" heart is meant
+    // to read as an affectionate accent, not as an error/danger signal,
+    // so it shouldn't move if Theme.error's hue ever gets retuned for
+    // destructive-action contrast reasons.
+    property <color> heart-red: #E63950;
 
     width: 32px;
     height: 32px;
-    background: transparent;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-sm;
+
+    background: !enabled
+        ? transparent
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : transparent;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.liked ? "Unlike" : "Like";
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.liked;
 
     FaIcon {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
-        fa-size: 18px;
-        fa-color: root.liked ? #E63950 : Theme.text-tertiary;
+        fa-size: Theme.icon-lg;
+        fa-color: !enabled ? Theme.btn-disabled-text : (root.liked ? heart-red : Theme.text-tertiary);
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+        animate fa-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
-    TouchArea {
-        clicked => { root.liked = !root.liked; }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.liked = !root.liked;
+            root.toggled(root.liked);
+        }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.liked = !root.liked;
+                root.toggled(root.liked);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

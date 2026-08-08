@@ -1,16 +1,110 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { Fab } from "Fab.slint";
 import { FabMini } from "FabMini.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SpeedDial
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A main Fab that fans out a small stack of FabMini secondary actions when
+// tapped — the pattern Fab.slint's own doc comment describes but that this
+// file didn't actually implement.
+//
+// Usage:
+//   SpeedDial {
+//       edit-clicked => { root.edit(); }
+//       attach-clicked => { root.attach(); }
+//       camera-clicked => { root.take-photo(); }
+//       add-clicked => { root.add-blank(); }
+//   }
+//
+// Fixed in this revision:
+//  - `FabMini { icon: "pen"; }` etc. passed plain strings that FabMini
+//    matched against a hardcoded 4-name ladder; now that FabMini takes a
+//    real `image` (see FabMini.slint's own header), updated every call
+//    site here to pass an actual `@image-url(...)`.
+//  - There was previously no way for a host to know *which* mini button
+//    was pressed — none of the four FabMini instances had their
+//    `clicked` callback connected to anything, so the whole component was
+//    non-functional beyond rendering. Added four named callbacks, one per
+//    action, each wired through.
+//  - The mini buttons were permanently visible in a static stack, not
+//    actually "dialing" out from anywhere — added the `open` state, a
+//    main Fab trigger that toggles it (rotating its icon between + and
+//    ×), and a fade/slide-in transition on the stack.
+//  - Each FabMini previously had no accessible label (icon-only, so nil
+//    text for a screen reader) — added one per action.
 export component SpeedDial inherits Rectangle {
+    in-out property <bool> open: false;
+    in-out property <bool> enabled: true;
+
+    callback edit-clicked();
+    callback attach-clicked();
+    callback camera-clicked();
+    callback add-clicked();
+
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    width: 56px;
+    // Fixed height accommodates the closed state (just the main Fab);
+    // the mini stack overlays above it rather than pushing layout, so
+    // opening the dial never reflows sibling content.
+    height: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    min-height: 56px;
+    max-height: 56px;
 
-    VerticalLayout {
-        spacing: 12px;
+    if open: VerticalLayout {
+        x: 0;
+        y: -(4 * 48px);
+        spacing: Theme.sp-3;
+        alignment: end;
 
-        FabMini { icon: "pen"; }
-        FabMini { icon: "paperclip"; }
-        FabMini { icon: "camera"; }
-        FabMini { icon: "plus"; }
+        FabMini {
+            icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pen.svg");
+            label: "Edit";
+            enabled: root.enabled;
+            clicked => { root.edit-clicked(); root.open = false; }
+        }
+        FabMini {
+            icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paperclip.svg");
+            label: "Attach file";
+            enabled: root.enabled;
+            clicked => { root.attach-clicked(); root.open = false; }
+        }
+        FabMini {
+            icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/camera.svg");
+            label: "Take photo";
+            enabled: root.enabled;
+            clicked => { root.camera-clicked(); root.open = false; }
+        }
+        FabMini {
+            icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+            label: "Add blank item";
+            enabled: root.enabled;
+            clicked => { root.add-clicked(); root.open = false; }
+        }
+    }
+
+    // NOTE: dismissing on an outside click would need access to the
+    // actual top-level Window (see events-and-overlays.md's overlay-
+    // dismiss pattern) which this embeddable component doesn't have —
+    // that's a job for a real overlay host in the overlays/ category, not
+    // something to fake here with an oversized guessed-size TouchArea.
+    // For now the dial closes via: pressing an action, or tapping the
+    // main Fab again.
+
+    Fab {
+        icon: root.open
+            ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg")
+            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+        label: root.open ? "Close quick actions" : "Open quick actions";
+        enabled: root.enabled;
+        clicked => { root.open = !root.open; }
+
+        animate rotation-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+        rotation-angle: root.open ? 45deg : 0deg;
     }
 }

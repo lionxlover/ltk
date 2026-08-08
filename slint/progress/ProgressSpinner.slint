@@ -1,20 +1,104 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// ProgressSpinner
+// ═════════════════════════════════════════════════════════════════════════
+//
+// An indeterminate loading ring — used wherever an operation's duration
+// is unknown (network requests, async work), as opposed to a determinate
+// ProgressBar which needs a known percentage. Now used as the `loading`
+// state's icon replacement across most of buttons/ (PrimaryButton,
+// SocialAuthGoogle, SplitButton, etc.).
+//
+// Usage:
+//   ProgressSpinner { spinner-size: 20px; spinner-color: Theme.accent; }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: this rendered a single static ring with no animation
+//    at all — a "spinner" that never spun. Since every button's `loading`
+//    state in this library delegates to this component, that meant none
+//    of them actually communicated "in progress" beyond a frozen icon
+//    swap. Added a genuine infinite rotation.
+//  - The rotation uses `animate spin-angle { iteration-count: -1; }`
+//    (verified against Slint's animation docs: a negative iteration-count
+//    means infinite reruns) triggered by bumping the angle once in
+//    `init`. A plain looping property doesn't work here — binding
+//    rotation-angle directly to a toggled boolean never produces a value
+//    *change* to animate from, since the ternary would already evaluate
+//    to its target value on the very first frame. Nudging the angle from
+//    its 0 default to 360 in `init` gives the animation an actual 0→360
+//    transition to replay forever; the visual seam at each 360→0 reset is
+//    invisible since a full rotation of a symmetric ring looks identical
+//    to no rotation at all.
+//  - Because this lives inside `if loading: ProgressSpinner { ... }` at
+//    every call site, each time `loading` flips true a fresh instance is
+//    created and `init` reruns — the spin restarts cleanly with no extra
+//    pause/resume logic needed.
+//  - Added a `track-color` (the dim full-circle background ring) so the
+//    orbiting marker reads against something — a lone dot with no
+//    backing track can look like a rendering glitch rather than a
+//    loader, especially at small sizes.
 export component ProgressSpinner inherits Rectangle {
     in property <color> spinner-color: Theme.accent;
+    in property <color> track-color: spinner-color.transparentize(0.75);
     in property <length> spinner-size: 24px;
     in property <length> stroke-width: 3px;
+    // Full-rotation duration. Faster reads as more urgent; slower reads
+    // as calmer. 900ms is a common default across Material/HIG spinners.
+    in property <duration> spin-duration: 900ms;
 
     width: spinner-size;
     height: spinner-size;
+    min-width: spinner-size;
+    max-width: spinner-size;
+    min-height: spinner-size;
+    max-height: spinner-size;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
     background: transparent;
 
+    accessible-role: AccessibleRole.progress-indicator;
+    accessible-label: "Loading";
+
+    // Dim backing track — always visible, gives the moving arc something
+    // to read against.
     Rectangle {
         width: parent.width;
         height: parent.height;
         border-radius: Theme.radius-full;
         border-width: stroke-width;
-        border-color: spinner-color;
+        border-color: track-color;
         background: transparent;
+    }
+
+    // The moving element: a small bright marker that orbits the track's
+    // circumference. Simpler and more reliably correct than attempting a
+    // true partial-arc stroke (which would need a Path with hand-computed
+    // control points, or clipped/masked geometry that's hard to get right
+    // without being able to render-check it) — a comet-style orbiting dot
+    // is a well-established, simpler alternative loading-indicator style
+    // that reads just as clearly as "in progress."
+    rotor := Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: transparent;
+
+        property <float> spin-angle: 0;
+        rotation-angle: spin-angle * 1deg;
+        rotation-origin-x: self.width / 2;
+        rotation-origin-y: self.height / 2;
+        animate spin-angle { duration: spin-duration; easing: linear; iteration-count: -1; }
+        init => { spin-angle = 360; }
+
+        Rectangle {
+            // Positioned at the top of the ring; orbits as `rotor` spins
+            // around its own center.
+            x: (parent.width - self.width) / 2;
+            y: 0px;
+            width: stroke-width * 1.8;
+            height: stroke-width * 1.8;
+            border-radius: self.width / 2;
+            background: spinner-color;
+        }
     }
 }

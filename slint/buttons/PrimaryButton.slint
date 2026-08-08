@@ -105,7 +105,17 @@ export component PrimaryButton inherits Rectangle {
 
     // ---- Geometry ---------------------------------------------------------
     height: height-for(size);
+    // Locked floor + ceiling around the size-variant height. `height` is
+    // already an unconditional binding (and vertical-stretch is 0, so a
+    // parent layout shouldn't try to stretch it), but min/max-height
+    // guard against a cramped parent *compressing* this button shorter
+    // than its size variant intends — e.g. a HorizontalLayout with more
+    // buttons than horizontal space will shrink children before it
+    // overflows, and min-height is what stops that shrink here.
+    min-height: height-for(size);
+    max-height: height-for(size);
     min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
     vertical-stretch: 0;
     border-radius: Theme.radius-md;

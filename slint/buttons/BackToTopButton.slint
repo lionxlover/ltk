@@ -1,24 +1,103 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// BackToTopButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A floating circular button that appears after scrolling and jumps the
+// view back to the top — the host typically gates this behind a
+// `visible: scroll-position > threshold` binding at the call site.
+//
+// Usage:
+//   BackToTopButton { clicked => { root.scroll-to-top(); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no `callback clicked()` was declared, and the
+//    TouchArea's handler was empty (`clicked => { }`) — clicking this
+//    button did nothing observable to a host app. It rendered as a
+//    plausible, functional-looking control that actually went nowhere.
+//  - No `enabled` state, no hover/pressed feedback at all (flat
+//    `Theme.bg-raised` regardless of interaction).
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - Hardcoded `border-radius: 24px` (exactly half of the hardcoded 48px
+//    width) — see IconButtonCircle.slint's identical note: switched to
+//    `Theme.radius-full` so it stays a true circle regardless of size
+//    overrides instead of silently breaking if width/height are changed.
+//  - No min/max width/height lock.
+//  - No elevation/shadow despite being a floating overlay control — see
+//    Fab.slint's identical note on why a floating button needs a real
+//    elevation shadow to read as "floating" rather than flat-on-page.
 export component BackToTopButton inherits Rectangle {
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback clicked();
+
     width: 48px;
     height: 48px;
-    background: Theme.bg-raised;
-    border-radius: 24px;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-full;
+    border-width: Theme.border-width-thin;
+    border-color: Theme.border-base;
+
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
+
+    drop-shadow-color: enabled ? Theme.shadow-sm : transparent;
+    drop-shadow-blur: enabled ? Theme.elevation-2-blur : 0px;
+    drop-shadow-offset-y: enabled ? Theme.elevation-2-y : 0px;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: "Back to top";
+    accessible-enabled: root.enabled;
 
     FaIcon {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up.svg");
-        fa-size: 18px;
-        fa-color: Theme.text-primary;
+        fa-size: Theme.icon-lg;
+        fa-color: enabled ? Theme.text-primary : Theme.btn-disabled-text;
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

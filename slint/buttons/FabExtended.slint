@@ -1,43 +1,111 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FabExtended
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The labeled variant of buttons/Fab.slint — used when the FAB's action
+// isn't obvious from an icon alone, or when introducing the pattern to a
+// new user for the first time (many apps show the extended form on
+// first load, then collapse to the icon-only Fab on scroll).
+//
+// Usage:
+//   FabExtended { text: "New item"; clicked => { root.create-item(); } }
+//
+// Fixed in this revision:
+//  - Raw `Image` with hand-set `colorize` replaced with `FaIcon`.
+//  - Hardcoded `#ffffff` replaced with `Theme.text-on-accent`.
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - No min/max width/height lock (height is fixed at Fab's 56px spec —
+//    left exactly as-is per that spec, min/max just lock it against a
+//    cramped parent shrinking it, same as Fab.slint).
+//  - Bare `20px`/`10px`/`15px` literals replaced with Theme's icon/
+//    spacing/text tokens where a matching token exists.
 export component FabExtended inherits Rectangle {
     in-out property <string> text: "New item";
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
     height: 56px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
-    border-radius: 16px;
+    min-height: 56px;
+    max-height: 56px;
+    min-width: 120px;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: 16px;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
+
+    drop-shadow-color: enabled ? Theme.shadow-sm : transparent;
+    drop-shadow-blur: enabled ? (ta.has-hover ? Theme.elevation-3-blur : Theme.elevation-2-blur) : 0px;
+    drop-shadow-offset-y: enabled ? (ta.has-hover ? Theme.elevation-3-y : Theme.elevation-2-y) : 0px;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate drop-shadow-blur { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
 
     HorizontalLayout {
-        padding-left: 20px;
-        padding-right: 20px;
-        spacing: 10px;
+        padding-left: Theme.sp-5;
+        padding-right: Theme.sp-5;
+        spacing: Theme.sp-2-5;
 
-        Image {
+        FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
-            width: 20px;
-            height: 20px;
+            fa-size: Theme.icon-lg;
+            fa-color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
-            colorize: enabled ? #ffffff : Theme.btn-disabled-text;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #ffffff : Theme.btn-disabled-text;
-            font-size: 15px;
+            color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            font-size: Theme.text-md;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
             horizontal-stretch: 1;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

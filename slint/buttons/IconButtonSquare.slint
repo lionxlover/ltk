@@ -1,32 +1,123 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// IconButtonSquare
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The square-cornered sibling of IconButtonCircle — toolbar icon buttons,
+// grid-aligned action rows, anywhere a rounded-rectangle reads better than
+// a full circle sitting next to other square-ish controls.
+//
+// Usage:
+//   IconButtonSquare {
+//       icon: @image-url("plus.svg");
+//       label: "Add item";
+//       clicked => { root.add(); }
+//   }
+//
+// Fixed in this revision (identical defects to IconButtonCircle.slint —
+// see that file's header for the full write-up):
+//  - Raw `Image` + manual colorize replaced with the shared `FaIcon`.
+//  - Redundant manual `x`/`y` icon centering removed (an unbound
+//    non-layout child already centers itself by default).
+//  - No accessible label at all previously — added `label` +
+//    `accessible-role`, since an icon-only button with nothing for a
+//    screen reader to announce is not usable with assistive tech.
+//  - Added: size variants, loading, keyboard activation, focus ring,
+//    pointer cursor.
 export component IconButtonSquare inherits Rectangle {
-    in-out property <bool> enabled: true;
     in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plus.svg");
+    in property <string> label: "";
+    in property <string> size: "md"; // "xs" | "sm" | "md" | "lg"
+
+    in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    width: 40px;
-    height: 40px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    pure function box-size-for(s: string) -> length {
+        s == "xs" ? Theme.button-height-xs :
+        s == "sm" ? Theme.button-height-sm :
+        s == "lg" ? Theme.button-height-lg :
+        Theme.button-height-md
+    }
+    pure function icon-size-for(s: string) -> length {
+        s == "xs" ? Theme.icon-sm : s == "sm" ? Theme.icon-sm : s == "lg" ? Theme.icon-lg : Theme.icon-md
+    }
+
+    width: box-size-for(size);
+    height: box-size-for(size);
+    // Fixed-size by design — see IconButtonCircle.slint's identical note.
+    min-width: box-size-for(size);
+    max-width: box-size-for(size);
+    min-height: box-size-for(size);
+    max-height: box-size-for(size);
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: is-interactive ? (ta.has-hover ? Theme.border-strong : Theme.border-base) : Theme.border-subtle;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
 
-    Image {
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.label;
+
+    if !loading: FaIcon {
         source: root.icon;
-        width: 16px;
-        height: 16px;
-        colorize: enabled ? Theme.text-primary : Theme.text-disabled;
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
+        fa-size: icon-size-for(root.size);
+        fa-color: Theme.text-primary;
+        fa-disabled: !is-interactive;
+    }
+
+    if loading: Rectangle {
+        width: icon-size-for(root.size);
+        height: icon-size-for(root.size);
+        border-radius: Theme.radius-full;
+        border-width: Theme.border-width-medium;
+        border-color: Theme.text-secondary;
+        background: transparent;
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

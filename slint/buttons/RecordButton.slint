@@ -1,26 +1,138 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// RecordButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// Start/stop recording control (voice memo, screen capture, video call
+// recording indicator).
+//
+// Usage:
+//   RecordButton { recording: capture.is-recording; toggled(r) => { root.set-recording(r); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no callback was declared — clicking flipped the
+//    visual state with no way for a host to actually start/stop
+//    recording.
+//  - Icon color was hardcoded `#ffffff` unconditionally, including in
+//    the non-recording state against a light `Theme.bg-raised`
+//    background — on a light theme this made the icon nearly invisible
+//    against its own background (white-on-near-white). Colors are now
+//    conditional on state, matching every other button in this library.
+//  - No `enabled` state, no hover/pressed feedback in the non-recording
+//    state.
+//  - No accessible role/label/checked state, keyboard activation, or
+//    focus ring.
+//  - No `mouse-cursor: pointer`, no min/max width/height lock.
+//  - Added a subtle pulse animation while recording — a static red dot
+//    doesn't read as "actively recording" the way a gentle pulse does;
+//    this is the one place in this batch where an ongoing (not just
+//    state-transition) animation is genuinely warranted, since the whole
+//    point of this control is signaling an ongoing background process.
 export component RecordButton inherits Rectangle {
     in-out property <bool> recording: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback toggled(bool);
 
     width: 48px;
     height: 48px;
-    background: root.recording ? Theme.error : Theme.bg-raised;
-    border-radius: 24px;
-    border-width: 2px;
-    border-color: root.recording ? Theme.error : Theme.border-base;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-full;
+    border-width: Theme.border-width-medium;
+    border-color: root.recording ? Theme.error : Theme.border-base;
 
-    FaIcon {
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : root.recording ? Theme.error
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.recording ? "Stop recording" : "Start recording";
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.recording;
+
+    // Static icon shown while idle (not recording).
+    if !root.recording: FaIcon {
         source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle.svg");
-        fa-size: 16px;
-        fa-color: #ffffff;
+        fa-size: Theme.icon-md;
+        fa-color: enabled ? Theme.error : Theme.btn-disabled-text;
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }
 
-    TouchArea {
-        clicked => { root.recording = !root.recording; }
+    // While recording: a wrapper Rectangle (not the FaIcon directly — a
+    // custom property can only be declared on a builtin element like
+    // Rectangle, not appended onto an imported component's own
+    // instantiation) that only exists for as long as `recording` is
+    // true. Because it's conditionally mounted, `init` re-fires fresh
+    // every time recording starts, and the animation is torn down
+    // cleanly the instant recording stops — no lingering loop, no need
+    // to conditionally branch `iteration-count` at all. Same underlying
+    // technique as ProgressSpinner.slint's rotation.
+    if root.recording: Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: Theme.icon-md;
+        height: Theme.icon-md;
+        background: transparent;
+
+        property <float> pulse-opacity: 1.0;
+        animate pulse-opacity { duration: 700ms; easing: Theme.ease-in-out; iteration-count: -1; }
+        init => { pulse-opacity = 0.35; }
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle.svg");
+            fa-size: Theme.icon-md;
+            fa-color: Theme.text-on-error;
+            opacity: parent.pulse-opacity;
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.recording = !root.recording;
+            root.toggled(root.recording);
+        }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.recording = !root.recording;
+                root.toggled(root.recording);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,49 +1,116 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// ToggleButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A two-state button (ON/OFF) that manages its own `active` state
+// internally — a Wi-Fi/Bluetooth-style hardware toggle rendered as a
+// button, distinct from selection-controls/'s Switch (which is the
+// small pill-shaped iOS/Android-style toggle for settings rows).
+//
+// Usage:
+//   ToggleButton { text: "Wi-Fi"; active: wifi-enabled; clicked => { root.toggle-wifi(); } }
+//
+// Fixed in this revision:
+//  - No accessible role/label/checked state — a toggle is exactly the
+//    kind of control assistive tech needs to announce as "on"/"off", and
+//    previously announced nothing beyond generic "button". Slint's
+//    accessible-checkable/accessible-checked properties exist precisely
+//    for this.
+//  - No keyboard activation or focus ring.
+//  - No min/max width or a locked height.
 export component ToggleButton inherits Rectangle {
     in-out property <string> text: "Toggle";
     in-out property <bool> active: false;
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (active ? Theme.accent : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised)));
-    border-radius: Theme.radius-md;
-    border-width: 1px;
-    border-color: root.active ? Theme.accent : Theme.border-base;
-    height: 40px;
+    height: Theme.button-height-md;
+    min-height: Theme.button-height-md;
+    max-height: Theme.button-height-md;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+    border-width: Theme.border-width-thin;
+    border-color: root.active ? Theme.accent : Theme.border-base;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : active ? Theme.accent
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+    accessible-checkable: true;
+    accessible-checked: root.active;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 8px;
+        spacing: Theme.sp-2;
+        padding-left: Theme.button-padding-x;
+        padding-right: Theme.button-padding-x;
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/power-off.svg");
-            fa-size: 14px;
-            fa-color: !enabled ? Theme.btn-disabled-text : (root.active ? #ffffff : Theme.text-primary);
+            fa-size: Theme.icon-sm;
+            fa-color: !enabled ? Theme.btn-disabled-text : (root.active ? Theme.text-on-accent : Theme.text-primary);
+            fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: !enabled ? Theme.btn-disabled-text : (root.active ? #ffffff : Theme.text-primary);
-            font-size: 14px;
+            color: !enabled ? Theme.btn-disabled-text : (root.active ? Theme.text-on-accent : Theme.text-primary);
+            font-size: Theme.text-base;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
             if (root.enabled) {
                 root.active = !root.active;
                 root.clicked();
             }
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.active = !root.active;
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

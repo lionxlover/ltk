@@ -1,32 +1,142 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// IconButtonCircle
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A circular, icon-only button — favorite/like toggles, avatar action
+// overlays, toolbar icon actions where a label would be redundant next to
+// an obviously-labeled icon (e.g. a trash icon in a list row).
+//
+// Because there is no visible text, `label` is not optional decoration —
+// without it a screen reader announces nothing at all for this control.
+// Usage:
+//   IconButtonCircle {
+//       icon: @image-url("heart.svg");
+//       label: "Add to favorites";
+//       clicked => { root.toggle-favorite(); }
+//   }
+//
+// Fixed in this revision:
+//  - Used a raw `Image` with manually-set `colorize` instead of the
+//    shared `core/FaIcon.slint` component this whole library otherwise
+//    standardizes on — meant this button couldn't get FaIcon's
+//    disabled-opacity or accessibility handling for free, and any future
+//    change to icon rendering (e.g. a new colorize scheme) would silently
+//    skip this file. Switched to FaIcon.
+//  - `border-radius: 20px` was hardcoded to exactly half of a hardcoded
+//    40px width — resizing this button via `width`/`height` overrides
+//    would silently stop producing a true circle. Switched to
+//    `Theme.radius-full` (9999px), which always clips to a full circle
+//    regardless of the element's actual size.
+//  - The manual `x`/`y` centering on the icon was redundant: outside a
+//    layout, an element with no explicit `x`/`y` is already centered in
+//    its parent by default (language-and-layout.md) — removed the
+//    unnecessary override.
+//  - No accessible label at all previously (a plain, unlabeled `Image`) —
+//    an icon-only control with zero accessible text is a hard a11y
+//    failure, not just a nice-to-have. Added `label` + accessible-role.
+//  - Added: size variants, loading, keyboard activation, focus ring,
+//    pointer cursor, semantic icon color that now correctly dims with
+//    the button's own disabled state via FaIcon's `fa-disabled`.
 export component IconButtonCircle inherits Rectangle {
-    in-out property <bool> enabled: true;
     in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg");
+    in property <string> label: "";
+    in property <string> size: "md"; // "xs" | "sm" | "md" | "lg"
+
+    in-out property <bool> enabled: true;
+    in property <bool> loading: false;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    width: 40px;
-    height: 40px;
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised));
-    border-radius: 20px;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    pure function box-size-for(s: string) -> length {
+        s == "xs" ? Theme.button-height-xs :
+        s == "sm" ? Theme.button-height-sm :
+        s == "lg" ? Theme.button-height-lg :
+        Theme.button-height-md
+    }
+    pure function icon-size-for(s: string) -> length {
+        s == "xs" ? Theme.icon-sm : s == "sm" ? Theme.icon-sm : s == "lg" ? Theme.icon-lg : Theme.icon-md
+    }
+
+    width: box-size-for(size);
+    height: box-size-for(size);
+    // A circular icon button is fixed-size by design (its whole point is
+    // to be a small, consistent tap target) — horizontal/vertical-stretch
+    // are already 0 so no layout should try to grow it, but min/max lock
+    // it against being *shrunk* by a cramped parent the same way the
+    // text buttons are (see PrimaryButton.slint's header for the general
+    // rationale).
+    min-width: box-size-for(size);
+    max-width: box-size-for(size);
+    min-height: box-size-for(size);
+    max-height: box-size-for(size);
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-full;
+    border-width: Theme.border-width-thin;
+    border-color: is-interactive ? (ta.has-hover ? Theme.border-strong : Theme.border-base) : Theme.border-subtle;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !is-interactive
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : Theme.bg-raised;
 
-    Image {
+    opacity: loading ? Theme.opacity-hover : 1.0;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.label;
+
+    if !loading: FaIcon {
         source: root.icon;
-        width: 16px;
-        height: 16px;
-        colorize: enabled ? Theme.text-primary : Theme.text-disabled;
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
+        fa-size: icon-size-for(root.size);
+        fa-color: Theme.text-primary;
+        fa-disabled: !is-interactive;
+    }
+
+    if loading: Rectangle {
+        width: icon-size-for(root.size);
+        height: icon-size-for(root.size);
+        border-radius: Theme.radius-full;
+        border-width: Theme.border-width-medium;
+        border-color: Theme.text-secondary;
+        background: transparent;
     }
 
     ta := TouchArea {
-        enabled: root.enabled;
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

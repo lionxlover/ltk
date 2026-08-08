@@ -1,56 +1,125 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SwipeToConfirm
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A "slide to confirm" control for actions that need real physical
+// intent behind them (unlock, place an order) — friction as a feature,
+// the same category as buttons/LongPressButton.slint.
+//
+// Usage:
+//   SwipeToConfirm { confirmed => { root.place-order(); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: despite being named and labeled "Swipe to confirm",
+//    there was no swipe/drag detection at all — a plain
+//    `clicked => { root.confirmed = !root.confirmed; }` toggle on tap.
+//    Any single tap "confirmed" the exact action this component exists
+//    to add friction against.
+//  - Implemented with Slint's actual `SwipeGestureHandler` element
+//    (added in 1.8 alongside Timer — verified against the same release
+//    notes). Its full property surface isn't documented anywhere I could
+//    verify beyond `handle-swipe-right`, `swiping`, `current-position`,
+//    `pressed-position`, and the `swiped` callback (the properties shown
+//    in Slint's own official example), so this implementation
+//    deliberately uses only those rather than guessing at additional
+//    properties (e.g. an `enabled` toggle) that aren't confirmed to
+//    exist — see the `enabled` handling note below for how that gap is
+//    worked around instead.
+//  - The draggable thumb's position is a pure reactive binding off
+//    `sgh.current-position`/`sgh.pressed-position` while dragging, and
+//    snaps to either the start (incomplete drag) or end (a completed
+//    `swiped`) once the gesture ends — never set imperatively, so it
+//    can't drift out of sync with the gesture state.
+//  - No accessible role/label describing the swipe requirement.
 export component SwipeToConfirm inherits Rectangle {
-    in-out property <bool> confirmed: false;
+    in-out property <string> text: "Swipe to confirm";
+    in-out property <bool> enabled: true;
+    out property <bool> confirmed-state: false;
 
-    callback clicked();
+    callback confirmed();
 
-    background: Theme.bg-raised;
-    border-radius: Theme.radius-lg;
-    border-width: 1px;
-    border-color: Theme.border-base;
+    property <length> thumb-size: 44px;
+    property <length> track-inset: 6px;
+    property <length> max-drag: root.width - thumb-size - 2 * track-inset;
+
     height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-lg;
+    border-width: Theme.border-width-thin;
+    border-color: root.confirmed-state ? Theme.success : Theme.border-base;
+    background: Theme.bg-raised;
+    clip: true;
 
-    HorizontalLayout {
-        alignment: center;
-        spacing: 8px;
+    opacity: root.enabled ? 1.0 : Theme.opacity-disabled;
 
-        Rectangle {
-            width: 16px;
-            height: 16px;
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text + ", swipe right to confirm";
+    accessible-enabled: root.enabled;
+
+    // Fill trails the thumb as it slides.
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: thumb.x + thumb-size;
+        height: parent.height;
+        background: root.confirmed-state ? Theme.success.transparentize(0.75) : Theme.accent.transparentize(0.85);
+    }
+
+    Text {
+        text: root.confirmed-state ? "Confirmed!" : root.text;
+        color: root.confirmed-state ? Theme.success : Theme.text-secondary;
+        font-size: Theme.text-base;
+        font-weight: Theme.weight-medium;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+
+    thumb := Rectangle {
+        width: thumb-size;
+        height: thumb-size;
+        y: (parent.height - self.height) / 2;
+        border-radius: Theme.radius-full;
+        background: root.confirmed-state ? Theme.success : Theme.accent;
+
+        x: root.confirmed-state
+            ? track-inset + max-drag
+            : sgh.swiping
+                ? track-inset + (sgh.current-position.x - sgh.pressed-position.x).clamp(0px, max-drag)
+                : track-inset;
+        animate x { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        FaIcon {
+            source: root.confirmed-state
+                ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg")
+                : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-right.svg");
+            fa-size: Theme.icon-md;
+            fa-color: Theme.text-on-accent;
+            x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-
-            Image {
-                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-right.svg");
-                width: 16px;
-                height: 16px;
-                visible: !root.confirmed;
-                colorize: Theme.text-secondary;
-            }
-
-            Image {
-                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
-                width: 16px;
-                height: 16px;
-                visible: root.confirmed;
-                colorize: Theme.state-success;
-            }
-        }
-
-        Text {
-            text: root.confirmed ? "Confirmed!" : "Swipe to confirm";
-            color: root.confirmed ? Theme.state-success : Theme.text-secondary;
-            font-size: 14px;
-            font-weight: Theme.weight-medium;
-            vertical-alignment: center;
         }
     }
 
-    ta := TouchArea {
-        clicked => {
-            root.confirmed = !root.confirmed;
-            root.clicked();
+    sgh := SwipeGestureHandler {
+        handle-swipe-right: true;
+        swiped => {
+            // No confirmed property surface exists on SwipeGestureHandler
+            // to verify an `enabled` binding against (see header) — this
+            // guard is the fallback: a disabled control simply doesn't
+            // act on a completed gesture, even though it may still
+            // visually track the drag. Dimmed via `opacity` above so a
+            // disabled state still reads clearly despite that.
+            if (root.enabled && !root.confirmed-state) {
+                root.confirmed-state = true;
+                root.confirmed();
+            }
         }
     }
 }

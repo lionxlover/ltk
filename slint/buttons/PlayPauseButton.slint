@@ -1,38 +1,99 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// PlayPauseButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The primary transport control for a media player.
+//
+// Usage:
+//   PlayPauseButton { playing: player.is-playing; toggled(p) => { root.set-playing(p); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no callback was declared — the play/pause icon
+//    swapped visually but nothing told a host to actually start or stop
+//    playback.
+//  - Raw `Image` elements with hand-toggled `visible` replaced with a
+//    single `FaIcon` whose `source` switches directly.
+//  - No `enabled` state, no hover/pressed feedback at all (flat
+//    `Theme.accent` regardless of interaction).
+//  - Hardcoded `#ffffff` replaced with `Theme.text-on-accent`.
+//  - No accessible role/label/checked state, keyboard activation, or
+//    focus ring.
+//  - No `mouse-cursor: pointer`, no min/max width/height lock.
 export component PlayPauseButton inherits Rectangle {
     in-out property <bool> playing: false;
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback toggled(bool);
 
     width: 48px;
     height: 48px;
-    background: Theme.accent;
-    border-radius: 24px;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
     horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-full;
 
-    Rectangle {
-        width: 20px;
-        height: 20px;
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.playing ? "Pause" : "Play";
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.playing;
+
+    FaIcon {
+        source: root.playing
+            ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg")
+            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+        fa-size: Theme.icon-lg;
+        fa-color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+        fa-disabled: !enabled;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+    }
 
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
-            width: 20px;
-            height: 20px;
-            visible: !root.playing;
-            colorize: #ffffff;
-        }
-
-        Image {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg");
-            width: 20px;
-            height: 20px;
-            visible: root.playing;
-            colorize: #ffffff;
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.playing = !root.playing;
+            root.toggled(root.playing);
         }
     }
 
-    TouchArea {
-        clicked => { root.playing = !root.playing; }
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.playing = !root.playing;
+                root.toggled(root.playing);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

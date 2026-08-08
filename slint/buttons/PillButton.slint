@@ -1,25 +1,111 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// PillButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A fully-rounded, compact action button — "Save"/"Cancel" pairs in a
+// dialog footer, tag-style actions in a dense toolbar.
+//
+// Usage:
+//   PillButton { text: "Save"; clicked => { root.save(); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no `callback clicked()` was declared at all, and the
+//    TouchArea's handler was empty (`clicked => { }`) — this button had
+//    no way to ever notify a host app that it was pressed. It rendered
+//    and did nothing else.
+//  - No `enabled`/disabled state whatsoever — always fully interactive.
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No hover/pressed visual feedback — the background was a flat,
+//    unconditional `Theme.accent` regardless of pointer state.
+//  - Hardcoded `#ffffff` text color replaced with `Theme.text-on-accent`.
+//  - The manual `x`/`y` centering on the Text was actually fine (Text is
+//    the one element HorizontalLayout does auto-center — see
+//    PrimaryButton.slint's header) but this component didn't use a
+//    layout at all, so kept the equivalent explicit centering since
+//    that's required outside a layout for anything with non-default
+//    positioning needs (here: adding padding without a layout element).
 export component PillButton inherits Rectangle {
     in-out property <string> text: "Pill";
+    in property <bool> show-icon: false;
+    in property <image> icon: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/check.svg");
+    in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
-    background: Theme.accent;
-    border-radius: 20px;
+    callback clicked();
+
     height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    min-width: 64px;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 0;
+    border-radius: Theme.radius-full;
 
-    Text {
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
-        text: root.text;
-        color: #ffffff;
-        font-size: 13px;
-        font-weight: Theme.weight-semibold;
-        vertical-alignment: center;
-        horizontal-alignment: center;
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.sp-2;
+        padding-left: Theme.sp-4;
+        padding-right: Theme.sp-4;
+
+        if show-icon: FaIcon {
+            source: root.icon;
+            fa-size: Theme.icon-sm;
+            fa-color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            fa-disabled: !enabled;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Text {
+            text: root.text;
+            color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            font-size: Theme.text-sm;
+            font-weight: Theme.weight-semibold;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

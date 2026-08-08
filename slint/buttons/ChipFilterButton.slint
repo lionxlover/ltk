@@ -45,15 +45,26 @@ export component ChipFilterButton inherits Rectangle {
                   root.has-hover ? Theme.border-base.darker(10%) : Theme.border-base;
 
     // Smooth Hardware-Accelerated Transitions
-    animate background { duration: 150ms; easing: ease-out; }
-    animate border-color { duration: 150ms; easing: ease-out; }
+    animate background { duration: 150ms; easing: Theme.ease-out; }
+    animate border-color { duration: 150ms; easing: Theme.ease-out; }
+
+    // Accessibility: a filter chip is fundamentally a toggle (its whole
+    // job is tracking an on/off "active" state), so it gets the same
+    // checkable/checked treatment as ToggleButton.slint rather than a
+    // plain button role, which previously announced nothing about
+    // whether a given filter was currently applied.
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.removable ? root.text + ", removable" : root.text;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.active;
 
     // Keyboard & Focus Handler
     focus-scope := FocusScope {
         enabled: root.enabled;
 
         key-pressed(event) => {
-            if (event.text == " " || event.text == "\n") {
+            if (event.text == " " || event.text == Key.Return) {
                 root.active = !root.active;
                 root.toggled(root.active);
                 return accept;
@@ -86,10 +97,18 @@ export component ChipFilterButton inherits Rectangle {
                 font-weight: Theme.weight-medium;
                 vertical-alignment: center;
 
-                animate color { duration: 120ms; easing: ease-in-out; }
+                animate color { duration: 120ms; easing: Theme.ease-in-out; }
             }
 
             // Optional Badge Counter
+            // BUG FIX: this block previously rendered the exact same
+            // badge-count Text twice — once correctly inside the
+            // HorizontalLayout below, and a second stray copy directly
+            // inside this Rectangle with no position binding, which
+            // would auto-center and sit directly on top of the first
+            // (see language-and-layout.md: "an element with implicit
+            // size and no x/y is centered in its parent"). Removed the
+            // duplicate.
             if (root.badge-count >= 0) : Rectangle {
                 height: 16px;
                 border-radius: 8px;
@@ -108,15 +127,6 @@ export component ChipFilterButton inherits Rectangle {
                         horizontal-alignment: center;
                     }
                 }
-
-                Text {
-                    text: root.badge-count > 99 ? "99+" : "\{root.badge-count}";
-                    color: root.active ? Theme.bg-surface : Theme.text-secondary;
-                    font-size: 10px;
-                    font-weight: Theme.weight-medium;
-                    vertical-alignment: center;
-                    horizontal-alignment: center;
-                }
             }
 
             // Optional Close/Remove Button Target
@@ -126,7 +136,7 @@ export component ChipFilterButton inherits Rectangle {
                 border-radius: 7px;
                 background: remove-touch.has-hover ? Theme.border-base : transparent;
 
-                animate background { duration: 100ms; easing: ease; }
+                animate background { duration: 100ms; easing: Theme.ease-standard; }
 
                 FaIcon {
                     source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");

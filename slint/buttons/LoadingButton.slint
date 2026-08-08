@@ -1,37 +1,122 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
+import { ProgressSpinner } from "../progress/ProgressSpinner.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// LoadingButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A button that shows its own busy state inline rather than through a
+// separate overlay — submit a form, keep the button in place, swap its
+// content to a spinner, then to a completion state, without the layout
+// jumping around it.
+//
+// Usage:
+//   LoadingButton {
+//       text: "Save changes";
+//       loading: save-in-flight;
+//       clicked => { root.retry-or-dismiss(); }
+//   }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no `callback clicked()` was declared, and the
+//    TouchArea's handler was empty (`clicked => { }`) — there was no way
+//    for a host to ever learn this button was pressed, in either state.
+//    Now `enabled` locks out clicks *while* loading (prevents double-
+//    submitting the same action) but the button becomes clickable again
+//    once `loading` goes false, e.g. to dismiss a "Done" confirmation or
+//    retry after failure — the host decides what `clicked` means for
+//    each state.
+//  - The spinner icon was a static (non-rotating) `spinner.svg` image —
+//    see ProgressSpinner.slint's header for the connected fix: that
+//    shared component didn't animate at all until this revision, so
+//    every "loading" button in this library was showing a frozen icon.
+//    Switched from the static image to ProgressSpinner, which now
+//    genuinely spins.
+//  - No `enabled`/disabled visual treatment distinct from the loading
+//    dimming — added the same disabled-background handling every other
+//    button in this library uses.
+//  - Hardcoded `#ffffff` replaced with `Theme.text-on-accent`.
+//  - No accessible role/label, keyboard activation, or focus ring.
 export component LoadingButton inherits Rectangle {
-    in-out property <string> text: "Loading...";
+    in-out property <string> text: "Save changes";
+    in property <string> done-text: "Done";
     in-out property <bool> loading: true;
     in-out property <bool> enabled: true;
+    out property <bool> is-interactive: enabled && !loading;
+    out property <bool> has-focus: fs.has-focus;
 
-    background: Theme.accent;
-    border-radius: Theme.radius-md;
-    height: 40px;
+    callback clicked();
+
+    height: Theme.button-height-md;
+    min-height: Theme.button-height-md;
+    max-height: Theme.button-height-md;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-md;
+
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.loading ? "Loading, " + root.text : (root.text == root.done-text ? root.done-text : root.text);
 
     HorizontalLayout {
         alignment: center;
-        spacing: 8px;
+        spacing: Theme.sp-2;
+        padding-left: Theme.button-padding-x;
+        padding-right: Theme.button-padding-x;
 
-        FaIcon {
-            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/spinner.svg");
-            fa-size: 14px;
-            fa-color: #ffffff;
+        if loading: ProgressSpinner {
+            spinner-size: Theme.icon-sm;
+            stroke-width: 2px;
+            spinner-color: Theme.text-on-accent;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
-            text: root.loading ? root.text : "Done";
-            color: #ffffff;
-            font-size: 14px;
+            text: root.loading ? root.text : root.done-text;
+            color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            font-size: Theme.text-base;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.is-interactive;
+        mouse-cursor: root.is-interactive ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.is-interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

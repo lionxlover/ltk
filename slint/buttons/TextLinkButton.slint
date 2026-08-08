@@ -1,34 +1,120 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// TextLinkButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The lowest-emphasis interactive text in the library — an inline "Learn
+// more" or "Terms apply" link, styled like a hyperlink rather than a
+// button.
+//
+// Usage:
+//   TextLinkButton { text: "Learn more"; clicked => { root.open-docs(); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG: no callback was declared, and the TouchArea's
+//    handler was empty (`clicked => { }`) — this rendered as a link and
+//    did nothing when clicked.
+//  - `enabled` was declared but never referenced anywhere in the file —
+//    a dead property that looked configurable and silently did nothing.
+//    Wired into color, hit-testing, and accessibility.
+//  - No hover feedback at all — a link with no visual response to a
+//    pointer hovering over it reads as broken, not calm.
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - Bare `6px`/`14px`/`11px` literals replaced with Theme's spacing/
+//    text/icon tokens.
 export component TextLinkButton inherits Rectangle {
     in-out property <string> text: "Learn more";
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
+
+    callback clicked();
 
     background: transparent;
     height: 32px;
-    horizontal-stretch: 1;
+    min-height: 32px;
+    max-height: 32px;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 6px;
+        spacing: Theme.sp-1-5;
 
-        Text {
-            text: root.text;
-            color: Theme.text-link;
-            font-size: 14px;
-            font-weight: Theme.weight-medium;
-            vertical-alignment: center;
+        VerticalLayout {
+            alignment: center;
+            spacing: 1px;
+            horizontal-stretch: 0;
+
+            Text {
+                text: root.text;
+                color: !enabled
+                    ? Theme.btn-disabled-text
+                    : ta.has-hover ? Theme.text-link.darker(15%) : Theme.text-link;
+                font-size: Theme.text-base;
+                font-weight: Theme.weight-medium;
+                horizontal-alignment: center;
+                animate color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+            }
+
+            // A manual underline bar rather than a font-level text-
+            // decoration property: Slint's own Text element reference
+            // (verified) lists color/font-family/font-size/font-weight/
+            // horizontal-alignment/vertical-alignment/letter-spacing/wrap
+            // — no underline or text-decoration property exists to bind
+            // to, so the conventional "this is a link" hover affordance
+            // has to be built as its own thin Rectangle instead.
+            Rectangle {
+                height: 1px;
+                background: enabled ? Theme.text-link.darker(15%) : transparent;
+                opacity: enabled && ta.has-hover ? 1.0 : 0.0;
+                animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+            }
         }
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up-right-from-square.svg");
             fa-size: 11px;
-            fa-color: Theme.text-link;
+            fa-color: !enabled
+                ? Theme.btn-disabled-text
+                : ta.has-hover ? Theme.text-link.darker(15%) : Theme.text-link;
+            fa-disabled: !enabled;
+            y: (parent.height - self.height) / 2;
         }
     }
 
-    TouchArea {
-        clicked => { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-sm;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

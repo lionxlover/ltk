@@ -1,41 +1,111 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// CtaHeroButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// The large, high-emphasis call-to-action for a landing page or empty
+// state — bigger and bolder than PrimaryButton, meant for exactly one
+// per screen (a hero section's "Get Started").
+//
+// Usage:
+//   CtaHeroButton { text: "Get Started"; clicked => { root.start-onboarding(); } }
+//
+// Fixed in this revision:
+//  - Hardcoded `#ffffff` replaced with `Theme.text-on-accent`.
+//  - No accessible role/label, keyboard activation, or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - No min/max width/height lock.
+//  - Bare `12px`/`20px`/`18px` literals replaced with Theme's spacing/
+//    icon/text tokens.
+//  - No hover elevation despite being the highest-emphasis button in the
+//    library — added the same glow treatment PrimaryButton.slint uses,
+//    scaled up slightly to match this button's larger size.
 export component CtaHeroButton inherits Rectangle {
     in-out property <string> text: "Get Started";
     in-out property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    background: !enabled ? Theme.btn-disabled-bg : (ta.pressed ? Theme.btn-primary-bg-pressed : (ta.has-hover ? Theme.btn-primary-bg-hover : Theme.accent));
-    border-radius: Theme.radius-lg;
     height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    min-width: Theme.button-min-width;
+    max-width: Theme.button-max-width;
     horizontal-stretch: 1;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-lg;
 
-    animate background { duration: Theme.dur-fast; }
+    background: !enabled
+        ? Theme.btn-disabled-bg
+        : ta.pressed ? Theme.btn-primary-bg-pressed
+        : ta.has-hover ? Theme.btn-primary-bg-hover
+        : Theme.accent;
+
+    drop-shadow-color: enabled && ta.has-hover ? Theme.accent-glow : transparent;
+    drop-shadow-blur: enabled && ta.has-hover ? Theme.elevation-3-blur : 0px;
+    drop-shadow-offset-y: enabled && ta.has-hover ? Theme.elevation-2-y : 0px;
+
+    animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    animate drop-shadow-blur { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+    animate drop-shadow-color { duration: Theme.dur-normal; easing: Theme.ease-soft; }
+
+    accessible-role: AccessibleRole.button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
 
     HorizontalLayout {
         alignment: center;
-        spacing: 12px;
+        spacing: Theme.sp-3;
+        padding-left: Theme.sp-6;
+        padding-right: Theme.sp-6;
 
         FaIcon {
             source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/rocket.svg");
-            fa-size: 20px;
-            fa-color: enabled ? #ffffff : Theme.btn-disabled-text;
+            fa-size: Theme.icon-lg;
+            fa-color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
         }
 
         Text {
             text: root.text;
-            color: enabled ? #ffffff : Theme.btn-disabled-text;
-            font-size: 18px;
+            color: enabled ? Theme.text-on-accent : Theme.btn-disabled-text;
+            font-size: Theme.text-xl;
             font-weight: Theme.weight-bold;
             vertical-alignment: center;
+            overflow: elide;
         }
     }
 
     ta := TouchArea {
         enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: parent.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }
