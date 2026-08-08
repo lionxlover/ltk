@@ -59,7 +59,7 @@ export component ProgressSpinner inherits Rectangle {
     accessible-role: progress-indicator;
     accessible-label: "Loading";
 
-    // Dim backing track
+    // 1. Background Dim Track Ring
     Rectangle {
         width: parent.width;
         height: parent.height;
@@ -69,32 +69,36 @@ export component ProgressSpinner inherits Rectangle {
         background: transparent;
     }
 
-    // Path element supports rotation-angle natively in Slint
-    rotor := Path {
+    // 2. Spinning Vector Ring Arc (Pure Slint Path — zero child element nesting)
+    Path {
         width: parent.width;
         height: parent.height;
+        stroke: root.spinner-color;
+        stroke-width: root.stroke-width;
 
         property <angle> spin-angle: 0deg;
         rotation-angle: spin-angle;
         rotation-origin-x: self.width / 2;
         rotation-origin-y: self.height / 2;
 
-        animate spin-angle { 
-            duration: root.spin-duration; 
-            easing: linear; 
-            iteration-count: -1; 
+        animate spin-angle {
+            duration: root.spin-duration;
+            easing: linear;
+            iteration-count: -1;
         }
 
         init => { spin-angle = 360deg; }
 
-        // Orbiting dot
-        Rectangle {
-            x: (parent.width - self.width) / 2;
+        // Top-arc segment curve
+        MoveTo {
+            x: parent.width / 2;
             y: 0px;
-            width: root.stroke-width * 1.8;
-            height: root.stroke-width * 1.8;
-            border-radius: self.width / 2;
-            background: root.spinner-color;
+        }
+        ArcTo {
+            x: parent.width;
+            y: parent.height / 2;
+            radius-x: parent.width / 2;
+            radius-y: parent.height / 2;
         }
     }
 }
