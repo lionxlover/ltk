@@ -52,15 +52,16 @@ export component GhostButton inherits Rectangle {
     }
 
     height: height-for(size);
-    // Locked floor + ceiling around the size-variant height. `height` is
-    // already an unconditional binding (and vertical-stretch is 0, so a
-    // parent layout shouldn't try to stretch it), but min/max-height
-    // guard against a cramped parent *compressing* this button shorter
-    // than its size variant intends — e.g. a HorizontalLayout with more
-    // buttons than horizontal space will shrink children before it
-    // overflows, and min-height is what stops that shrink here.
-    min-height: height-for(size);
-    max-height: height-for(size);
+    // NOTE: an earlier revision also set min-height/max-height here
+    // to the same expression as height, meaning to guard against a
+    // cramped parent compressing this button shorter than its size
+    // variant intends. That's not how Slint works: `height` is itself
+    // an alias that sets min-height AND max-height internally
+    // (confirmed against slint-ui/slint discussion #6287), so binding
+    // them again on top of it is two bindings for the same underlying
+    // constraint — a real "Cannot specify both 'height' and
+    // 'min-height'" compile error, not redundancy. `height` alone
+    // already fully locks the value against being shrunk.
     min-width: Theme.button-min-width;
     max-width: Theme.button-max-width;
     horizontal-stretch: 1;

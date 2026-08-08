@@ -53,12 +53,11 @@ export component Fab inherits Rectangle {
     width: 56px;
     height: 56px;
     // 56px is Material Design's fixed FAB spec, not a size variant to
-    // scale — left exactly as-is per that spec; min/max just lock it
-    // against a cramped parent shrinking it (see IconButtonCircle.slint).
-    min-width: 56px;
-    max-width: 56px;
-    min-height: 56px;
-    max-height: 56px;
+    // scale — left exactly as-is per that spec. See
+    // IconButtonCircle.slint's note on why this doesn't also carry
+    // separate min-width/max-width/min-height/max-height bindings: width/
+    // height already alias to their own min/max internally in Slint, so
+    // that would be a real compile error, not redundant safety.
     horizontal-stretch: 0;
     vertical-stretch: 0;
     border-radius: fab-radius;

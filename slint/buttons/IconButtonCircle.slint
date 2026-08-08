@@ -66,14 +66,15 @@ export component IconButtonCircle inherits Rectangle {
     height: box-size-for(size);
     // A circular icon button is fixed-size by design (its whole point is
     // to be a small, consistent tap target) — horizontal/vertical-stretch
-    // are already 0 so no layout should try to grow it, but min/max lock
-    // it against being *shrunk* by a cramped parent the same way the
-    // text buttons are (see PrimaryButton.slint's header for the general
-    // rationale).
-    min-width: box-size-for(size);
-    max-width: box-size-for(size);
-    min-height: box-size-for(size);
-    max-height: box-size-for(size);
+    // are already 0 so no layout should try to grow it. NOTE: an earlier
+    // revision also added min-width/max-width/min-height/max-height set
+    // to this same box-size-for(size) expression, meaning to additionally
+    // guard against a cramped parent shrinking it. That doesn't work in
+    // Slint: width/height are themselves aliases that already set their
+    // min/max internally (confirmed against slint-ui/slint discussion
+    // #6287), so binding min/max again on top is two bindings for the
+    // same constraint — a real "Cannot specify both" compile error, not
+    // redundancy. width/height alone already fully lock the size.
     horizontal-stretch: 0;
     vertical-stretch: 0;
     border-radius: Theme.radius-full;
