@@ -38,13 +38,12 @@ import { Theme } from "../core/Theme.slint";
 //    orbiting marker reads against something — a lone dot with no
 //    backing track can look like a rendering glitch rather than a
 //    loader, especially at small sizes.
+
 export component ProgressSpinner inherits Rectangle {
     in property <color> spinner-color: Theme.accent;
     in property <color> track-color: spinner-color.transparentize(0.75);
     in property <length> spinner-size: 24px;
     in property <length> stroke-width: 3px;
-    // Full-rotation duration. Faster reads as more urgent; slower reads
-    // as calmer. 900ms is a common default across Material/HIG spinners.
     in property <duration> spin-duration: 900ms;
 
     width: spinner-size;
@@ -57,48 +56,45 @@ export component ProgressSpinner inherits Rectangle {
     vertical-stretch: 0;
     background: transparent;
 
-    accessible-role: AccessibleRole.progress-indicator;
+    accessible-role: progress-indicator;
     accessible-label: "Loading";
 
-    // Dim backing track — always visible, gives the moving arc something
-    // to read against.
+    // Dim backing track
     Rectangle {
         width: parent.width;
         height: parent.height;
         border-radius: Theme.radius-full;
-        border-width: stroke-width;
-        border-color: track-color;
+        border-width: root.stroke-width;
+        border-color: root.track-color;
         background: transparent;
     }
 
-    // The moving element: a small bright marker that orbits the track's
-    // circumference. Simpler and more reliably correct than attempting a
-    // true partial-arc stroke (which would need a Path with hand-computed
-    // control points, or clipped/masked geometry that's hard to get right
-    // without being able to render-check it) — a comet-style orbiting dot
-    // is a well-established, simpler alternative loading-indicator style
-    // that reads just as clearly as "in progress."
-    rotor := Rectangle {
+    // Rotating container using Path (supports rotation-angle natively)
+    Path {
         width: parent.width;
         height: parent.height;
-        background: transparent;
 
-        property <float> spin-angle: 0;
-        rotation-angle: spin-angle * 1deg;
+        property <angle> spin-angle: 0deg;
+        rotation-angle: spin-angle;
         rotation-origin-x: self.width / 2;
         rotation-origin-y: self.height / 2;
-        animate spin-angle { duration: spin-duration; easing: linear; iteration-count: -1; }
-        init => { spin-angle = 360; }
 
+        animate spin-angle { 
+            duration: root.spin-duration; 
+            easing: linear; 
+            iteration-count: -1; 
+        }
+
+        init => { spin-angle = 360deg; }
+
+        // Orbiting dot positioned at top center
         Rectangle {
-            // Positioned at the top of the ring; orbits as `rotor` spins
-            // around its own center.
             x: (parent.width - self.width) / 2;
             y: 0px;
-            width: stroke-width * 1.8;
-            height: stroke-width * 1.8;
+            width: root.stroke-width * 1.8;
+            height: root.stroke-width * 1.8;
             border-radius: self.width / 2;
-            background: spinner-color;
+            background: root.spinner-color;
         }
     }
 }
