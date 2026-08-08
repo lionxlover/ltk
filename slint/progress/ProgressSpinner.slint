@@ -38,55 +38,82 @@ import { Theme } from "../core/Theme.slint";
 //    orbiting marker reads against something — a lone dot with no
 //    backing track can look like a rendering glitch rather than a
 //    loader, especially at small sizes.
-
+//  - CORRECTION (this file was already wrong once): the rotation
+//    initially used `rotation-angle`/`rotation-origin-x/y`, which a web
+//    search seemed to confirm but the actual Slint compiler rejected
+//    outright ("Unknown property rotation-angle"). Those names come from
+//    a 2022 GitHub issue that *proposed* them; the properties that
+//    actually shipped, per Slint's official "Common Properties" docs and
+//    this project's own bundled gotchas.md (which explicitly lists them
+//    for exactly this reason), are `transform-rotation` /
+//    `transform-scale` / `transform-origin` — general common properties
+//    on every visual item, defaulting to rotating around the element's
+//    own center, so no separate origin properties are needed here at all.
+//    Lesson applied: the project's bundled skill docs and a real
+//    compiler both outrank a generic web search.
+//  - Per Slint's docs, transforms aren't available under the software
+//    renderer backend — if this library ever targets
+//    `SLINT_BACKEND=winit-software`, this spinner's rotation (not its
+//    static track ring) won't render there.
 export component ProgressSpinner inherits Rectangle {
     in property <color> spinner-color: Theme.accent;
     in property <color> track-color: spinner-color.transparentize(0.75);
     in property <length> spinner-size: 24px;
     in property <length> stroke-width: 3px;
+    // Full-rotation duration. Faster reads as more urgent; slower reads
+    // as calmer. 900ms is a common default across Material/HIG spinners.
     in property <duration> spin-duration: 900ms;
 
-    width: root.spinner-size;
-    height: root.spinner-size;
-    min-width: root.spinner-size;
-    max-width: root.spinner-size;
-    min-height: root.spinner-size;
-    max-height: root.spinner-size;
+    width: spinner-size;
+    height: spinner-size;
+    min-width: spinner-size;
+    max-width: spinner-size;
+    min-height: spinner-size;
+    max-height: spinner-size;
     horizontal-stretch: 0;
     vertical-stretch: 0;
     background: transparent;
 
-    accessible-role: progress-indicator;
+    accessible-role: AccessibleRole.progress-indicator;
     accessible-label: "Loading";
 
-    // 1. Static Dim Backing Track
+    // Dim backing track — always visible, gives the moving arc something
+    // to read against.
     Rectangle {
         width: parent.width;
         height: parent.height;
         border-radius: Theme.radius-full;
-        border-width: root.stroke-width;
-        border-color: root.track-color;
+        border-width: stroke-width;
+        border-color: track-color;
         background: transparent;
     }
 
-    // 2. Animated Spinner Image (rotation-angle is fully supported on Image)
-    Image {
+    // The moving element: a small bright marker that orbits the track's
+    // circumference. Simpler and more reliably correct than attempting a
+    // true partial-arc stroke (which would need a Path with hand-computed
+    // control points, or clipped/masked geometry that's hard to get right
+    // without being able to render-check it) — a comet-style orbiting dot
+    // is a well-established, simpler alternative loading-indicator style
+    // that reads just as clearly as "in progress."
+    rotor := Rectangle {
         width: parent.width;
         height: parent.height;
-        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-notch.svg");
-        colorize: root.spinner-color;
+        background: transparent;
 
-        property <angle> spin-angle: 0deg;
-        rotation-angle: spin-angle;
-        rotation-origin-x: self.width / 2;
-        rotation-origin-y: self.height / 2;
+        property <float> spin-angle: 0;
+        transform-rotation: spin-angle * 1deg;
+        animate spin-angle { duration: spin-duration; easing: linear; iteration-count: -1; }
+        init => { spin-angle = 360; }
 
-        animate spin-angle {
-            duration: root.spin-duration;
-            easing: linear;
-            iteration-count: -1;
+        Rectangle {
+            // Positioned at the top of the ring; orbits as `rotor` spins
+            // around its own center.
+            x: (parent.width - self.width) / 2;
+            y: 0px;
+            width: stroke-width * 1.8;
+            height: stroke-width * 1.8;
+            border-radius: self.width / 2;
+            background: spinner-color;
         }
-
-        init => { spin-angle = 360deg; }
     }
 }

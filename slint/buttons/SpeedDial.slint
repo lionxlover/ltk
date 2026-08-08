@@ -104,7 +104,12 @@ export component SpeedDial inherits Rectangle {
         enabled: root.enabled;
         clicked => { root.open = !root.open; }
 
-        animate rotation-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
-        rotation-angle: root.open ? 45deg : 0deg;
+        // CORRECTION: was `rotation-angle`, which the real compiler
+        // rejected ("Unknown property") — see ProgressSpinner.slint's
+        // header for the full story. Correct name is
+        // `transform-rotation`, confirmed against both Slint's official
+        // docs and this project's own bundled gotchas.md.
+        animate transform-rotation { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+        transform-rotation: root.open ? 45deg : 0deg;
     }
 }

@@ -80,10 +80,14 @@ export component DropdownButton inherits Rectangle {
             fa-color: enabled ? Theme.text-tertiary : Theme.btn-disabled-text;
             fa-disabled: !enabled;
             y: (parent.height - self.height) / 2;
-            rotation-angle: expanded ? 180deg : 0deg;
-            rotation-origin-x: self.width / 2;
-            rotation-origin-y: self.height / 2;
-            animate rotation-angle { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+            // CORRECTION: was `rotation-angle`/`rotation-origin-x/y`,
+            // which the real compiler rejected ("Unknown property") —
+            // see progress/ProgressSpinner.slint's header for the full
+            // story. Correct name is `transform-rotation`, which already
+            // defaults to rotating around the element's own center, so
+            // the two origin lines this used to need are gone too.
+            transform-rotation: expanded ? 180deg : 0deg;
+            animate transform-rotation { duration: Theme.dur-normal; easing: Theme.ease-standard; }
         }
     }
 
