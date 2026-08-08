@@ -38,7 +38,10 @@ export component ReactionButton inherits Rectangle {
     max-width: 160px;
     horizontal-stretch: 0;
     vertical-stretch: 0;
-    border-radius: Theme.radius-full;
+    // FIXED: was `Theme.radius-full` — rendered as a full ellipse on
+    // this elongated chip shape rather than a proper pill. See
+    // PillButton.slint's identical note for the full explanation.
+    border-radius: self.height / 2;
     border-width: Theme.border-width-thin;
     border-color: !enabled ? Theme.border-subtle : (root.active ? Theme.accent : Theme.border-base);
 
@@ -108,7 +111,7 @@ export component ReactionButton inherits Rectangle {
         y: -Theme.focus-ring-offset;
         width: parent.width + 2 * Theme.focus-ring-offset;
         height: parent.height + 2 * Theme.focus-ring-offset;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         border-width: Theme.focus-ring-width;
         border-color: Theme.focus-ring;
         background: transparent;

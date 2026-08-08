@@ -40,7 +40,16 @@ export component PillButton inherits Rectangle {
     min-width: 64px;
     max-width: Theme.button-max-width;
     horizontal-stretch: 0;
-    border-radius: Theme.radius-full;
+    // FIXED: was `Theme.radius-full` (9999px) — on a genuinely square
+    // element (like IconButtonCircle) an oversized radius correctly
+    // clamps to a circle, but on this elongated, wider-than-tall shape
+    // it rendered as a full ellipse (curved on every side) rather than
+    // a proper pill/stadium (flat top and bottom, rounded ends only) —
+    // confirmed visually against the real rendered preview. Using the
+    // exact `self.height / 2` instead guarantees the correct stadium
+    // shape by construction, since it can never exceed what the box's
+    // own height allows.
+    border-radius: self.height / 2;
 
     background: !enabled
         ? Theme.btn-disabled-bg
@@ -101,7 +110,9 @@ export component PillButton inherits Rectangle {
         y: -Theme.focus-ring-offset;
         width: parent.width + 2 * Theme.focus-ring-offset;
         height: parent.height + 2 * Theme.focus-ring-offset;
-        border-radius: Theme.radius-full;
+        // Same fix as the root shape above — self.height/2 instead of
+        // Theme.radius-full, so the ring matches the pill it outlines.
+        border-radius: self.height / 2;
         border-width: Theme.focus-ring-width;
         border-color: Theme.focus-ring;
         background: transparent;
