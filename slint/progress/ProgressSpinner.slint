@@ -46,12 +46,12 @@ export component ProgressSpinner inherits Rectangle {
     in property <length> stroke-width: 3px;
     in property <duration> spin-duration: 900ms;
 
-    width: spinner-size;
-    height: spinner-size;
-    min-width: spinner-size;
-    max-width: spinner-size;
-    min-height: spinner-size;
-    max-height: spinner-size;
+    width: root.spinner-size;
+    height: root.spinner-size;
+    min-width: root.spinner-size;
+    max-width: root.spinner-size;
+    min-height: root.spinner-size;
+    max-height: root.spinner-size;
     horizontal-stretch: 0;
     vertical-stretch: 0;
     background: transparent;
@@ -69,8 +69,8 @@ export component ProgressSpinner inherits Rectangle {
         background: transparent;
     }
 
-    // Rotating container using Path (supports rotation-angle natively)
-    Path {
+    // Path element supports rotation-angle natively in Slint
+    rotor := Path {
         width: parent.width;
         height: parent.height;
 
@@ -87,7 +87,7 @@ export component ProgressSpinner inherits Rectangle {
 
         init => { spin-angle = 360deg; }
 
-        // Orbiting dot positioned at top center
+        // Orbiting dot
         Rectangle {
             x: (parent.width - self.width) / 2;
             y: 0px;
