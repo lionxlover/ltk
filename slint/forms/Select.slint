@@ -22,14 +22,17 @@ import { FaIcon } from "../core/FaIcon.slint";
 //    elements docs, with a complete working example matching this
 //    exact show()/close() pattern) — as of Slint 1.9, popups are
 //    automatically placed within the window to avoid being clipped.
-//  - Deliberately set `close-on-click: false` and drive every open/close
-//    transition through this component's own explicit `expanded` flag
-//    and `popup.show()`/`popup.close()` calls, rather than the newer
-//    `close-policy: close-on-click-outside` auto-dismiss. That auto-
-//    dismiss would close the popup without notifying this component,
-//    desyncing `expanded` (and therefore the chevron rotation and
-//    border-color styling) from the popup's real state, and I found no
-//    confirmed callback for "popup was auto-closed" to resync against.
+//  - Deliberately set `close-policy: PopupClosePolicy.no-auto-close`
+//    (the modern replacement for the deprecated boolean
+//    `close-on-click: false` — same behavior, current API) and drive
+//    every open/close transition through this component's own explicit
+//    `expanded` flag and `popup.show()`/`popup.close()` calls, rather
+//    than `close-policy: close-on-click-outside` auto-dismiss. That
+//    auto-dismiss would close the popup without notifying this
+//    component, desyncing `expanded` (and therefore the chevron
+//    rotation and border-color styling) from the popup's real state,
+//    and I found no confirmed callback for "popup was auto-closed" to
+//    resync against.
 //    Losing click-outside-to-dismiss is the honest tradeoff for that.
 //  - `border-color` used an `if (cond) { A } else { B }` block as a
 //    property value — every other binding in this whole pass uses the
@@ -117,7 +120,14 @@ export component Select inherits Rectangle {
         y: root.height + Theme.sp-1;
         width: root.width;
         height: min(root.options.length * 32px + Theme.sp-2 * 2, 200px);
-        close-on-click: false;
+        // CORRECTION: was `close-on-click: false;` — Slint's real
+        // compiler flagged it as deprecated (a warning, not a hard
+        // error). Slint 1.9 replaced the old boolean `close-on-click`
+        // with the `close-policy` enum; `close-on-click: false` maps
+        // exactly to `PopupClosePolicy.no-auto-close` per Slint's own
+        // documented migration mapping, so this is a like-for-like swap
+        // with identical behavior, not a design change.
+        close-policy: PopupClosePolicy.no-auto-close;
 
         Rectangle {
             background: Theme.bg-elevated;
