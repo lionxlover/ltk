@@ -1,8 +1,46 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// AccordionItem
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A single expandable/collapsible section — a header row that toggles a
+// content area below it.
+//
+// Usage:
+//   AccordionItem {
+//       title: "Shipping details";
+//       expanded: section-open;
+//       toggle => { root.section-open = !root.section-open; }
+//       Text { text: "Content goes here — anything placed inside the
+//              AccordionItem instantiation block renders here."; wrap: word-wrap; }
+//   }
+//
+// Fixed in this revision:
+//  - SEVERE BUG, the most consequential in this file: the content area
+//    was a named `content-layout := VerticalLayout { }` with no children
+//    and no `@children` forwarding — this project's own SKILL.md
+//    documents `@children` as exactly the mechanism for "forward
+//    whatever the caller puts inside this component's instantiation
+//    block." Without it, there was no way for any caller to ever put
+//    anything inside the expandable area at all: the toggle and expand/
+//    collapse animation both worked, but the content region was
+//    permanently, unconditionally empty regardless of what a caller
+//    tried to place inside `AccordionItem { ... }`. Added `@children`.
+//  - No `enabled` property, and the header's TouchArea had no
+//    `enabled:` binding.
+//  - The expand/collapse chevron swapped between "▾"/"›" glyphs instead
+//    of using this library's FaIcon convention with a single rotating
+//    icon (matching Select.slint's/DropdownButton.slint's approach).
+//  - No accessible role/expanded state (`accessible-expandable`/
+//    `accessible-expanded`, the same confirmed-real properties used in
+//    Select.slint) or keyboard activation on the header.
 export component AccordionItem inherits Rectangle {
     in property <string> title: "";
     in property <bool> expanded: false;
+    in property <bool> enabled: true;
+    out property <bool> has-focus: header-fs.has-focus;
 
     callback toggle();
 
@@ -12,12 +50,20 @@ export component AccordionItem inherits Rectangle {
         // Header
         Rectangle {
             height: 44px;
-            background: header-ta.pressed ? Theme.surface-pressed
+            background: !enabled ? transparent
+                : header-ta.pressed ? Theme.surface-pressed
                 : header-ta.has-hover ? Theme.surface-hover
                 : transparent;
             border-radius: Theme.radius-sm;
+            opacity: enabled ? 1.0 : Theme.opacity-disabled;
 
-            animate background { duration: Theme.dur-fast; }
+            animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+            accessible-role: AccessibleRole.button;
+            accessible-label: root.title;
+            accessible-enabled: root.enabled;
+            accessible-expandable: true;
+            accessible-expanded: root.expanded;
 
             HorizontalLayout {
                 padding-left: Theme.sp-3;
@@ -27,7 +73,7 @@ export component AccordionItem inherits Rectangle {
 
                 Text {
                     text: root.title;
-                    color: Theme.text-primary;
+                    color: enabled ? Theme.text-primary : Theme.text-disabled;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-sm;
                     font-weight: Theme.weight-medium;
@@ -35,28 +81,59 @@ export component AccordionItem inherits Rectangle {
                     horizontal-stretch: 1;
                 }
 
-                Text {
-                    text: root.expanded ? "▾" : "›";
-                    color: Theme.text-tertiary;
-                    font-size: Theme.text-sm;
-                    vertical-alignment: center;
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-right.svg");
+                    fa-size: Theme.icon-sm;
+                    fa-color: Theme.text-tertiary;
+                    fa-disabled: !enabled;
+                    y: (parent.height - self.height) / 2;
                     horizontal-stretch: 0;
+                    transform-rotation: root.expanded ? 90deg : 0deg;
+                    animate transform-rotation { duration: Theme.dur-normal; easing: Theme.ease-standard; }
                 }
             }
 
             header-ta := TouchArea {
+                enabled: root.enabled;
+                mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
                 clicked => { root.toggle(); }
+            }
+
+            header-fs := FocusScope {
+                enabled: root.enabled;
+                key-pressed(event) => {
+                    if (event.text == Key.Return || event.text == " ") {
+                        root.toggle();
+                        accept
+                    } else {
+                        reject
+                    }
+                }
+            }
+
+            if header-fs.has-focus: Rectangle {
+                x: -Theme.focus-ring-offset;
+                y: -Theme.focus-ring-offset;
+                width: parent.width + 2 * Theme.focus-ring-offset;
+                height: parent.height + 2 * Theme.focus-ring-offset;
+                border-radius: parent.border-radius + Theme.focus-ring-offset;
+                border-width: Theme.focus-ring-width;
+                border-color: Theme.focus-ring;
+                background: transparent;
             }
         }
 
-        // Content
+        // Content — @children forwards whatever the caller places inside
+        // the AccordionItem instantiation block. This was entirely
+        // missing before (see header note); without it, nothing a
+        // caller wrote inside `AccordionItem { ... }` could ever appear.
         if expanded: VerticalLayout {
             padding-left: Theme.sp-3;
             padding-right: Theme.sp-3;
             padding-bottom: Theme.sp-3;
             spacing: Theme.sp-2;
 
-            content-layout := VerticalLayout { }
+            @children
         }
     }
 }

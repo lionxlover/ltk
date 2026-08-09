@@ -1,32 +1,97 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// Select
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A single-choice dropdown.
+//
+// Usage:
+//   Select { options: ["Small", "Medium", "Large"]; current-index: size-idx; changed(i) => { root.size-idx = i; } }
+//
+// Fixed in this revision:
+//  - ARCHITECTURAL BUG: the dropdown panel was a plain Rectangle nested
+//    directly inside Select, positioned with `y: parent.height + ...`.
+//    This project's own events-and-overlays.md is explicit that a
+//    popover needs to render at the top-level Window to avoid being
+//    clipped by an ancestor's `clip: true` or drawn underneath later
+//    siblings (which render on top per gotchas.md's z-order rule) — a
+//    nested Rectangle can't do either. Rebuilt on Slint's actual
+//    `PopupWindow` element (confirmed against Slint's own builtin-
+//    elements docs, with a complete working example matching this
+//    exact show()/close() pattern) — as of Slint 1.9, popups are
+//    automatically placed within the window to avoid being clipped.
+//  - Deliberately set `close-on-click: false` and drive every open/close
+//    transition through this component's own explicit `expanded` flag
+//    and `popup.show()`/`popup.close()` calls, rather than the newer
+//    `close-policy: close-on-click-outside` auto-dismiss. That auto-
+//    dismiss would close the popup without notifying this component,
+//    desyncing `expanded` (and therefore the chevron rotation and
+//    border-color styling) from the popup's real state, and I found no
+//    confirmed callback for "popup was auto-closed" to resync against.
+//    Losing click-outside-to-dismiss is the honest tradeoff for that.
+//  - `border-color` used an `if (cond) { A } else { B }` block as a
+//    property value — every other binding in this whole pass uses the
+//    ternary form, and I couldn't confirm block-if is valid as a
+//    *value-producing expression* (only as imperative statements inside
+//    callbacks, and separately that a plain `{ expr }` block can be a
+//    property value — not that the two combine). Switched to the
+//    confirmed-safe ternary.
+//  - The per-option TouchArea inside the dropdown had no `enabled:`
+//    binding — options remained clickable even while the whole Select
+//    was disabled.
+//  - The chevron used a raw "▴"/"▾" glyph instead of this library's
+//    FaIcon convention, and swapped glyphs instead of rotating — now a
+//    single icon that rotates via `transform-rotation` (the correct
+//    general-purpose rotation property — not `rotation-angle`, which is
+//    Image-only; see progress/ProgressSpinner.slint's header for that
+//    whole story).
+//  - No accessible roles at all: added `AccessibleRole.combobox` with
+//    expandable/expanded state on the trigger, and `AccessibleRole.list`
+//    / `AccessibleRole.list-item` on the dropdown and its rows.
+//  - Keyboard: Enter/Space opens (confirmed safe — this fires before
+//    the popup exists, while the outer FocusScope definitely still has
+//    focus). Did NOT add Escape-to-close or arrow-key navigation *while
+//    open*: whether this component's own FocusScope still receives key
+//    events once the PopupWindow is showing isn't something I could
+//    confirm, and guessing at unverified focus-routing behavior is
+//    exactly the kind of mistake this pass has been trying to eliminate.
+//    Each option remains reachable and selectable by mouse; a follow-up
+//    pass with a live compiler to test against would be the right way
+//    to add verified in-popup keyboard support.
 export component Select inherits Rectangle {
     in property <string> placeholder: "Select...";
     in property <[string]> options: [];
     in-out property <int> current-index: -1;
     in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback changed(int);
+
+    property <bool> expanded: false;
 
     height: Theme.input-height-md;
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
 
+    accessible-role: AccessibleRole.combobox;
+    accessible-label: current-index >= 0 && current-index < options.length ? options[current-index] : placeholder;
+    accessible-enabled: root.enabled;
+    accessible-expandable: true;
+    accessible-expanded: root.expanded;
+
     bg := Rectangle {
         border-radius: Theme.radius-input;
-        border-width: 1px;
-        border-color: {
-            if (ta.has-hover || expanded) && enabled { Theme.border-strong }
-            else { Theme.border-base }
-        }
+        border-width: Theme.border-width-thin;
+        border-color: (ta.has-hover || root.expanded) && enabled ? Theme.border-strong : Theme.border-base;
         background: enabled ? Theme.bg-surface : Theme.btn-disabled-bg;
-
-        animate border-color { duration: Theme.dur-fast; }
+        animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
     selected-text := Text {
         x: Theme.input-padding-x;
         y: (parent.height - self.height) / 2;
-        width: parent.width - Theme.input-padding-x * 3 - chevron.preferred-width;
+        width: parent.width - Theme.input-padding-x * 3 - Theme.icon-sm;
         text: current-index >= 0 && current-index < options.length
             ? options[current-index] : placeholder;
         color: current-index >= 0 ? Theme.text-primary : Theme.text-tertiary;
@@ -36,61 +101,73 @@ export component Select inherits Rectangle {
         overflow: elide;
     }
 
-    chevron := Text {
+    chevron := FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
+        fa-size: Theme.icon-sm;
+        fa-color: Theme.text-tertiary;
+        fa-disabled: !enabled;
         x: parent.width - Theme.input-padding-x - self.width;
         y: (parent.height - self.height) / 2;
-        text: expanded ? "▴" : "▾";
-        color: Theme.text-tertiary;
-        font-size: Theme.text-sm;
-        vertical-alignment: center;
+        transform-rotation: root.expanded ? 180deg : 0deg;
+        animate transform-rotation { duration: Theme.dur-normal; easing: Theme.ease-standard; }
     }
 
-    // Dropdown overlay
-    in-out property <bool> expanded: false;
+    popup := PopupWindow {
+        x: 0;
+        y: root.height + Theme.sp-1;
+        width: root.width;
+        height: min(root.options.length * 32px + Theme.sp-2 * 2, 200px);
+        close-on-click: false;
 
-    dropdown := Rectangle {
-        y: parent.height + Theme.sp-1;
-        width: parent.width;
-        height: min(options.length * 32px + Theme.sp-2 * 2, 200px);
-        background: Theme.bg-elevated;
-        border-radius: Theme.radius-input;
-        border-width: 1px;
-        border-color: Theme.border-base;
-        clip: true;
-        visible: root.expanded;
+        Rectangle {
+            background: Theme.bg-elevated;
+            border-radius: Theme.radius-input;
+            border-width: Theme.border-width-thin;
+            border-color: Theme.border-base;
+            clip: true;
 
-        drop-shadow-offset-y: 4px;
-        drop-shadow-blur: 12px;
-        drop-shadow-color: Theme.border-default;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-blur: 12px;
+            drop-shadow-color: Theme.border-default;
 
-        VerticalLayout {
-            padding: Theme.sp-1;
+            accessible-role: AccessibleRole.list;
 
-            for opt[i] in root.options: Rectangle {
-                height: 32px;
-                background: option-ta.pressed ? Theme.surface-pressed
-                    : option-ta.has-hover ? Theme.surface-hover
-                    : i == root.current-index ? Theme.accent-subtle
-                    : transparent;
-                border-radius: Theme.radius-xs;
+            VerticalLayout {
+                padding: Theme.sp-1;
 
-                Text {
-                    x: Theme.sp-3;
-                    y: (parent.height - self.height) / 2;
-                    text: opt;
-                    color: i == root.current-index ? Theme.accent : Theme.text-primary;
-                    font-family: Theme.font-ui;
-                    font-size: Theme.text-sm;
-                    font-weight: i == root.current-index ? Theme.weight-medium : Theme.weight-regular;
-                    vertical-alignment: center;
-                    horizontal-stretch: 1;
-                }
+                for opt[i] in root.options: Rectangle {
+                    height: 32px;
+                    background: option-ta.pressed ? Theme.surface-pressed
+                        : option-ta.has-hover ? Theme.surface-hover
+                        : i == root.current-index ? Theme.accent-subtle
+                        : transparent;
+                    border-radius: Theme.radius-xs;
 
-                option-ta := TouchArea {
-                    clicked => {
-                        root.current-index = i;
-                        root.expanded = false;
-                        root.changed(i);
+                    accessible-role: AccessibleRole.list-item;
+                    accessible-label: opt;
+                    accessible-checked: i == root.current-index;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: opt;
+                        color: i == root.current-index ? Theme.accent : Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: i == root.current-index ? Theme.weight-medium : Theme.weight-regular;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+
+                    option-ta := TouchArea {
+                        enabled: root.enabled;
+                        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+                        clicked => {
+                            root.current-index = i;
+                            root.expanded = false;
+                            root.changed(i);
+                            popup.close();
+                        }
                     }
                 }
             }
@@ -98,8 +175,43 @@ export component Select inherits Rectangle {
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
-            if enabled { root.expanded = !root.expanded; }
+            root.expanded = !root.expanded;
+            if (root.expanded) {
+                popup.show();
+            } else {
+                popup.close();
+            }
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.expanded = !root.expanded;
+                if (root.expanded) {
+                    popup.show();
+                } else {
+                    popup.close();
+                }
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus && !root.expanded: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: bg.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,17 +1,52 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// ToggleGroup
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A row of mutually-exclusive toggle buttons, each highlighted solid
+// when active — a simpler visual treatment than
+// inputs/SegmentedControl.slint's sliding-indicator style, for contexts
+// that want a flatter look. Functionally the same single-select-among-N
+// pattern.
+//
+// Usage:
+//   ToggleGroup { options: ["List", "Grid"]; current-index: view; changed(i) => { root.view = i; } }
+//
+// Fixed in this revision:
+//  - RISKY ARCHITECTURE: the for-loop element was itself a TouchArea
+//    (holding the real `clicked` handler) with a second, completely
+//    empty, overlapping `TouchArea` (`ta2`) nested inside it purely so
+//    the visual Rectangle could read `ta2.pressed`/`ta2.has-hover` — two
+//    stacked TouchAreas over the same region, one handling the click and
+//    a different one (on top, by z-order) tracking hover/press state.
+//    Every other component built or fixed in this pass uses exactly one
+//    TouchArea per interactive region, deriving its own visuals from
+//    that same TouchArea — simplified to match, removing the ambiguity
+//    of which of two overlapping TouchAreas actually receives a given
+//    pointer event.
+//  - No `enabled` property existed at all.
+//  - No accessible roles (this is structurally a tab list, same as
+//    SegmentedControl.slint — matched that precedent), keyboard
+//    navigation, or focus ring.
 export component ToggleGroup inherits Rectangle {
     in property <[string]> options: [];
     in-out property <int> current-index: 0;
+    in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback changed(int);
 
     height: 32px;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.tab-list;
+    accessible-enabled: root.enabled;
 
     bg := Rectangle {
         border-radius: Theme.radius-button;
         background: Theme.bg-overlay;
-        border-width: 1px;
+        border-width: Theme.border-width-thin;
         border-color: Theme.border-subtle;
     }
 
@@ -19,35 +54,69 @@ export component ToggleGroup inherits Rectangle {
         padding: 2px;
         spacing: 2px;
 
-        for opt[i] in root.options: TouchArea {
+        for opt[i] in root.options: Rectangle {
             horizontal-stretch: 1;
-            clicked => {
-                root.current-index = i;
-                root.changed(i);
+            border-radius: Theme.radius-sm;
+            background: root.current-index == i ? Theme.accent
+                : item-ta.pressed ? Theme.surface-pressed
+                : item-ta.has-hover ? Theme.surface-hover
+                : transparent;
+            animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+
+            accessible-role: AccessibleRole.tab;
+            accessible-label: opt;
+            accessible-enabled: root.enabled;
+            accessible-checked: root.current-index == i;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: opt;
+                color: root.current-index == i ? Theme.on-accent : Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: root.current-index == i ? Theme.weight-semibold : Theme.weight-regular;
+                horizontal-alignment: center;
+                vertical-alignment: center;
             }
 
-            Rectangle {
-                border-radius: Theme.radius-sm;
-                background: root.current-index == i ? Theme.accent
-                    : ta2.pressed ? Theme.surface-pressed
-                    : ta2.has-hover ? Theme.surface-hover
-                    : transparent;
-                animate background { duration: Theme.dur-fast; }
-
-                Text {
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    text: opt;
-                    color: root.current-index == i ? Theme.on-accent : Theme.text-secondary;
-                    font-family: Theme.font-ui;
-                    font-size: Theme.text-sm;
-                    font-weight: root.current-index == i ? Theme.weight-semibold : Theme.weight-regular;
-                    vertical-alignment: center;
-                    horizontal-alignment: center;
+            item-ta := TouchArea {
+                enabled: root.enabled;
+                mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+                clicked => {
+                    root.current-index = i;
+                    root.changed(i);
+                    fs.focus();
                 }
             }
-
-            ta2 := TouchArea { }
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.RightArrow && root.current-index < options.length - 1) {
+                root.current-index += 1;
+                root.changed(root.current-index);
+                accept
+            } else if (event.text == Key.LeftArrow && root.current-index > 0) {
+                root.current-index -= 1;
+                root.changed(root.current-index);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: bg.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

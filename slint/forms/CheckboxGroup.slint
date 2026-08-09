@@ -1,19 +1,78 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// CheckboxGroup
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A vertical list of independently-checkable options ("select all that
+// apply"). Unlike a single FishCheckBox (inputs/FishCheckBox.slint),
+// which owns and self-toggles its own boolean, this component does NOT
+// mutate its own `checked-items` array — see the header note below for
+// why, and how to wire it up.
+//
+// Usage (host reassigns the whole array on each change — see note below
+// for why this is the correct pattern here, not a workaround):
+//   CheckboxGroup {
+//       options: ["Email", "SMS", "Push"];
+//       checked-items: notification-prefs;
+//       changed(i, state) => {
+//           root.notification-prefs[i] = state; // in the host language
+//           // then re-set: checkbox-group.checked_items = notification_prefs;
+//       }
+//   }
+//
+// Fixed in this revision:
+//  - LIKELY SEVERE BUG: the click handler wrote directly to an array
+//    index — `root.checked-items[i] = !root.checked-items[i];`. Slint's
+//    own language reference documents `array[index]` specifically as a
+//    *retrieval* syntax ("Individual elements of an array can be
+//    retrieved using..."), and separately documents that array
+//    properties are meant to be changed by *reassigning the whole
+//    array*, not mutated in place (confirmed both in the language
+//    reference and the Node.js bindings docs, where `.push()` on a
+//    model property explicitly "does not work, because it operates on a
+//    copy" and "re-assigning works" is the documented fix). Nothing in
+//    Slint's own documentation confirms index *assignment* is supported
+//    at all. Rather than ship a core interaction built on an unverified
+//    (and probably unsupported) operation, this now reports the
+//    intended change via `changed(index, new-state)` and lets the host
+//    own the actual array mutation and reassignment — which is also
+//    exactly the architecture this project's own interop.md describes
+//    ("Keep logic and the source of truth in the host language").
+//  - SEVERE BUG (same class found throughout this pass): no `enabled`
+//    property existed, and no TouchArea had an `enabled:` binding.
+//  - No accessible role/checked state per item, keyboard activation
+//    (Space toggles), or focus ring — every option was mouse-only.
+//  - No `mouse-cursor: pointer`.
+//  - Fixed-height 28px rows with no touch-target floor — raised to the
+//    same `Theme.button-min-height` accessibility floor used throughout
+//    inputs/ and buttons/.
 export component CheckboxGroup inherits Rectangle {
     in property <[string]> options: [];
-    in-out property <[bool]> checked-items: [];
+    in property <[bool]> checked-items: [];
+    in property <bool> enabled: true;
 
     callback changed(int, bool);
 
+    pure function is-checked(i: int) -> bool {
+        i < checked-items.length && checked-items[i]
+    }
+
     background: transparent;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
 
     VerticalLayout {
         spacing: Theme.sp-2;
 
         for opt[i] in root.options: Rectangle {
-            height: 28px;
+            height: Theme.button-min-height;
             background: transparent;
+
+            accessible-role: AccessibleRole.checkbox;
+            accessible-label: opt;
+            accessible-enabled: root.enabled;
+            accessible-checkable: true;
+            accessible-checked: is-checked(i);
 
             HorizontalLayout {
                 spacing: Theme.sp-2;
@@ -22,40 +81,65 @@ export component CheckboxGroup inherits Rectangle {
                 Rectangle {
                     width: 16px;
                     height: 16px;
+                    y: (parent.height - self.height) / 2;
                     horizontal-stretch: 0;
                     border-radius: Theme.radius-xs;
                     border-width: 1.5px;
-                    border-color: i < root.checked-items.length && root.checked-items[i]
-                        ? Theme.accent : Theme.border-strong;
-                    background: i < root.checked-items.length && root.checked-items[i]
-                        ? Theme.accent : transparent;
+                    border-color: !enabled ? Theme.text-disabled : (is-checked(i) ? Theme.accent : Theme.border-strong);
+                    background: (is-checked(i) && enabled) ? Theme.accent : transparent;
+                    animate background { duration: Theme.dur-faster; easing: Theme.ease-spring; }
+                    animate border-color { duration: Theme.dur-faster; easing: Theme.ease-spring; }
 
-                    if i < root.checked-items.length && root.checked-items[i]: Text {
+                    if is-checked(i): Text {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                         text: "✓";
                         color: Theme.on-accent;
                         font-size: Theme.text-xs;
+                        font-weight: Theme.weight-bold;
                         vertical-alignment: center;
                     }
                 }
 
                 Text {
                     text: opt;
-                    color: Theme.text-primary;
+                    color: enabled ? Theme.text-primary : Theme.text-disabled;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-sm;
                     vertical-alignment: center;
                 }
             }
 
-            TouchArea {
+            item-ta := TouchArea {
+                enabled: root.enabled;
+                mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
                 clicked => {
-                    if i < root.checked-items.length {
-                        root.checked-items[i] = !root.checked-items[i];
-                        root.changed(i, root.checked-items[i]);
+                    item-fs.focus();
+                    root.changed(i, !is-checked(i));
+                }
+            }
+
+            item-fs := FocusScope {
+                enabled: root.enabled;
+                key-pressed(event) => {
+                    if (event.text == " ") {
+                        root.changed(i, !is-checked(i));
+                        accept
+                    } else {
+                        reject
                     }
                 }
+            }
+
+            if item-fs.has-focus: Rectangle {
+                x: -Theme.focus-ring-offset;
+                y: -Theme.focus-ring-offset;
+                width: parent.width + 2 * Theme.focus-ring-offset;
+                height: parent.height + 2 * Theme.focus-ring-offset;
+                border-radius: Theme.radius-sm;
+                border-width: Theme.focus-ring-width;
+                border-color: Theme.focus-ring;
+                background: transparent;
             }
         }
     }
