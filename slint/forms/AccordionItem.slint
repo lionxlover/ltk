@@ -127,13 +127,35 @@ export component AccordionItem inherits Rectangle {
         // the AccordionItem instantiation block. This was entirely
         // missing before (see header note); without it, nothing a
         // caller wrote inside `AccordionItem { ... }` could ever appear.
-        if expanded: VerticalLayout {
-            padding-left: Theme.sp-3;
-            padding-right: Theme.sp-3;
-            padding-bottom: Theme.sp-3;
-            spacing: Theme.sp-2;
+        //
+        // CORRECTION: an earlier revision wrapped this in `if expanded:
+        // VerticalLayout { @children }` — the real compiler rejected it
+        // ("The @children placeholder..."), and it turns out that's a
+        // genuine, documented current limitation, not a mistake in how
+        // I used it: slint-ui/slint issue #6354, "Support for
+        // conditional children wrappers," is an open feature request
+        // showing this exact pattern as unsupported. `@children` has to
+        // live in an element that's unconditionally instantiated.
+        // Fixed by keeping the wrapper always present and animating its
+        // height to 0 when collapsed (clipped so the hidden content
+        // doesn't render past that bound) instead of conditionally
+        // mounting it — which, as a bonus, gives a real smooth expand/
+        // collapse animation that the `if`-based version could never
+        // have had anyway, since `if` mounts and unmounts instantly.
+        content-clip := Rectangle {
+            clip: true;
+            height: root.expanded ? content-inner.preferred-height : 0px;
+            background: transparent;
+            animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
-            @children
+            content-inner := VerticalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+                padding-bottom: Theme.sp-3;
+                spacing: Theme.sp-2;
+
+                @children
+            }
         }
     }
 }
