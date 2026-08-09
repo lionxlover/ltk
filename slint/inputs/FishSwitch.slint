@@ -1,15 +1,53 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FishSwitch
+// ═════════════════════════════════════════════════════════════════════════
+//
+// An iOS/Android-style on/off switch with an optional inline label.
+//
+// Usage:
+//   FishSwitch { text: "Notifications"; checked: prefs.notify; toggled(v) => { root.set-notify(v); } }
+//
+// Fixed in this revision:
+//  - SEVERE BUG (same class as FishCheckBox.slint — see that file's
+//    header for the full write-up): the TouchArea had no `enabled:`
+//    binding — a visually dimmed, "disabled" switch remained fully
+//    clickable.
+//  - The tappable area was exactly the visual track (30px tall) — below
+//    the ~44px minimum tap target guidance wired into
+//    Theme.button-min-height. Track/thumb visuals stay exactly the same
+//    size; the invisible hit region around them is now taller.
+//  - No accessible role/label/checked state, keyboard activation (Space
+//    toggles, matching every native switch), or focus ring.
+//  - No `mouse-cursor: pointer`.
+//  - The hardcoded handle colors (`#E8EAED` dark mode / `#FFFFFF` light
+//    mode) are deliberately *not* pulled from Theme.bg-surface — see the
+//    inline comment where they're declared for why.
 export component FishSwitch inherits Rectangle {
     in-out property <bool> checked: false;
     in property <string> text: "";
     in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback toggled(bool);
 
+    // A switch thumb is conventionally a neutral, near-white color in
+    // both light and dark mode (skeuomorphic realism, matching iOS) —
+    // not Theme.bg-surface, which would go near-black in dark mode and
+    // make the thumb nearly invisible against a dark track.
+    property <color> thumb-on-color: Theme.dark-mode ? #E8EAED : #FFFFFF;
+    property <color> thumb-off-color: Theme.text-tertiary;
+
     width: Theme.toggle-width + (text != "" ? Theme.sp-3 + label.preferred-width : 0px);
-    height: Theme.toggle-height + Theme.sp-2;
+    height: max(Theme.button-min-height, Theme.toggle-height + Theme.sp-2);
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.switch;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
 
     track := Rectangle {
         x: 0;
@@ -33,7 +71,7 @@ export component FishSwitch inherits Rectangle {
         width: Theme.toggle-thumb;
         height: Theme.toggle-thumb;
         border-radius: self.height / 2;
-        background: enabled ? (Theme.dark-mode ? #E8EAED : #FFFFFF) : Theme.text-tertiary;
+        background: enabled ? thumb-on-color : thumb-off-color;
         opacity: ta.pressed ? Theme.opacity-pressed : 1.0;
 
         animate opacity { duration: Theme.dur-faster; easing: Theme.ease-standard; }
@@ -49,7 +87,7 @@ export component FishSwitch inherits Rectangle {
         x: Theme.toggle-width + Theme.sp-3;
         y: (parent.height - self.height) / 2;
         text: root.text;
-        color: Theme.text-primary;
+        color: enabled ? Theme.text-primary : Theme.text-disabled;
         font-family: Theme.font-ui;
         font-size: Theme.text-base;
         vertical-alignment: center;
@@ -58,9 +96,35 @@ export component FishSwitch inherits Rectangle {
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
             root.checked = !root.checked;
             root.toggled(root.checked);
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == " ") {
+                root.checked = !root.checked;
+                root.toggled(root.checked);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: track.x - Theme.focus-ring-offset;
+        y: track.y - Theme.focus-ring-offset;
+        width: track.width + 2 * Theme.focus-ring-offset;
+        height: track.height + 2 * Theme.focus-ring-offset;
+        border-radius: track.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

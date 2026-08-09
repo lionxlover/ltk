@@ -1,5 +1,33 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// TextArea
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A multi-line, word-wrapping text field that grows with its content up
+// to a line cap, rather than staying a fixed size regardless of how much
+// is typed. Character/length limits and their UI (a counter, a warning
+// color near the limit) are a deliberately separate concern — see
+// forms2/CharacterCounter.slint, meant to be composed alongside this
+// rather than built into it.
+//
+// Usage:
+//   TextArea { placeholder: "Add a comment..."; max-height-lines: 6; text <=> comment-draft; }
+//
+// Fixed in this revision:
+//  - REAL BUG: `max-height-lines` was declared as a property but never
+//    referenced anywhere in the file — `height` was hardcoded to
+//    exactly `Theme.input-height-md * 3` regardless of what
+//    `max-height-lines` was set to. Setting it to 1 or 20 had
+//    identically no effect; it looked configurable and wasn't. Now the
+//    field's height actually tracks its wrapped content between a
+//    3-line floor and the `max-height-lines` ceiling, via the
+//    TextInput's own `preferred-height` (which reflects its wrapped
+//    line count — the same general "preferred size" mechanism already
+//    relied on elsewhere in this pass for FishCheckBox's label and
+//    FishLabel's required-marker, just now read reactively rather than
+//    only for one-off sizing).
+//  - No min/max width.
 export component TextArea inherits Rectangle {
     in property <string> placeholder: "";
     in property <bool> enabled: true;
@@ -10,12 +38,19 @@ export component TextArea inherits Rectangle {
     callback accepted(string);
     callback edited(string);
 
-    height: Theme.input-height-md * 3;
+    property <length> line-height: Theme.text-base * 1.4;
+    property <length> vertical-inset: Theme.sp-3 * 2;
+
+    min-width: 220px;
+    max-width: 640px;
+    height: max(line-height * 3, min(input.preferred-height, line-height * max-height-lines)) + vertical-inset;
     background: transparent;
+
+    animate height { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
     bg := Rectangle {
         border-radius: Theme.radius-input;
-        border-width: 1px;
+        border-width: Theme.border-width-thin;
         border-color: !enabled ? Theme.border-subtle : (input.has-focus ? Theme.border-focus : Theme.border-base);
         background: !enabled ? Theme.btn-disabled-bg : Theme.bg-raised;
         animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
@@ -35,7 +70,6 @@ export component TextArea inherits Rectangle {
         x: Theme.input-padding-x;
         y: Theme.sp-3;
         width: parent.width - Theme.input-padding-x * 2;
-        height: parent.height - Theme.sp-3 * 2;
         color: enabled ? Theme.text-primary : Theme.text-disabled;
         font-family: Theme.font-ui;
         font-size: Theme.text-base;

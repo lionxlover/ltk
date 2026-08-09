@@ -1,5 +1,55 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// NumberInput
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A numeric field with +/- stepper buttons.
+//
+// Usage:
+//   NumberInput { value: quantity; min-value: 1; max-value: 99; changed(v) => { root.set-quantity(v); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL GAP: despite being named NumberInput, the value display
+//    was a plain, non-editable `Text` — the *only* way to change the
+//    value was clicking the tiny +/- buttons one step at a time; there
+//    was no way to type a number directly. Replaced with an editable
+//    `TextInput` (`input-type: decimal`, confirmed against real
+//    slint-ui/slint usage — the enum is limited to text/password/number/
+//    decimal, no `search`-style extras). Deliberately does NOT bind
+//    `text` reactively to `"\{root.value}"`: a persistent reactive
+//    binding on an *editable* in-out property would re-derive `text` on
+//    every dependency change while the user is mid-keystroke, fighting
+//    their typing. Instead `text` is only ever set imperatively — once
+//    on creation, and again whenever a value is committed (Enter, focus
+//    lost, or a stepper press) — the same safe pattern already used for
+//    per-digit tracking in PinInput.slint.
+//  - Committing a typed value uses the confirmed real string methods
+//    `.is-float()` (validate before parsing) and `.to-float()` — both
+//    listed in Slint's own primitive-types reference. Invalid text
+//    (empty, non-numeric) is simply discarded back to the last valid
+//    value rather than guessed at.
+//  - The two completely empty `TouchArea { }` — this file's `ta` — was
+//    dead weight with no purpose. Kept `ta`'s existing use for the whole
+//    control's hover-highlighted border, and gave it an actual
+//    focus-forwarding role on click since the field is now editable.
+//  - The increment button's outer corners were square (`border-radius:
+//    0px`), poking past the container's own rounded corners at the
+//    control's right edge. Matched to the container radius on just the
+//    two outer corners via `border-top-right-radius`/
+//    `border-bottom-right-radius` (confirmed real per-corner properties)
+//    instead of rounding all four corners, which would have put a
+//    rounded notch in the middle of the control instead.
+//  - No accessible role/value (`AccessibleRole.spinbox` plus
+//    `accessible-value-minimum/-maximum/-value`, confirmed real), or
+//    `mouse-cursor: pointer` on the stepper buttons.
+//  - Considered Up/Down-arrow keyboard stepping but left it out: it
+//    would need a FocusScope wrapping the now-focusable `num-input`
+//    TextInput, and whether such a wrapping FocusScope actually
+//    receives arrow-key events while the nested TextInput itself holds
+//    real keyboard focus isn't something I could confirm one way or the
+//    other — shipping unverified event-routing behavior seemed worse
+//    than leaving a documented gap for a follow-up pass.
 export component NumberInput inherits Rectangle {
     in property <string> placeholder: "0";
     in-out property <float> value: 0;
@@ -7,29 +57,57 @@ export component NumberInput inherits Rectangle {
     in property <float> max-value: 100;
     in property <float> step: 1;
     in property <bool> enabled: true;
+    out property <bool> has-focus: num-input.has-focus;
 
     callback changed(float);
 
     height: Theme.input-height-md;
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
 
+    accessible-role: AccessibleRole.spinbox;
+    accessible-value-minimum: min-value;
+    accessible-value-maximum: max-value;
+    accessible-value: value;
+    accessible-enabled: root.enabled;
+
     bg := Rectangle {
         border-radius: Theme.radius-input;
-        border-width: 1px;
-        border-color: ta.has-hover && enabled ? Theme.border-strong : Theme.border-base;
+        border-width: Theme.border-width-thin;
+        border-color: (ta.has-hover || num-input.has-focus) && enabled ? Theme.border-strong : Theme.border-base;
         background: enabled ? Theme.bg-surface : Theme.btn-disabled-bg;
-        animate border-color { duration: Theme.dur-fast; }
+        animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
-    value-text := Text {
+    num-input := TextInput {
         x: Theme.input-padding-x;
         y: (parent.height - self.height) / 2;
-        text: root.value;
-        color: Theme.text-primary;
+        width: parent.width - 60px - Theme.input-padding-x;
+        height: self.preferred-height;
+        input-type: decimal;
+        color: enabled ? Theme.text-primary : Theme.text-disabled;
         font-family: Theme.font-ui;
         font-size: Theme.text-sm;
         vertical-alignment: center;
-        horizontal-stretch: 1;
+        enabled: root.enabled;
+
+        init => { self.text = "\{root.value}"; }
+
+        accepted => {
+            if (self.text.is-float()) {
+                root.value = self.text.to-float().clamp(root.min-value, root.max-value);
+                root.changed(root.value);
+            }
+            self.text = "\{root.value}";
+        }
+        changed has-focus => {
+            if (!self.has-focus) {
+                if (self.text.is-float()) {
+                    root.value = self.text.to-float().clamp(root.min-value, root.max-value);
+                    root.changed(root.value);
+                }
+                self.text = "\{root.value}";
+            }
+        }
     }
 
     // Decrement
@@ -39,21 +117,22 @@ export component NumberInput inherits Rectangle {
         height: parent.height;
         background: dec-ta.pressed ? Theme.surface-pressed
             : dec-ta.has-hover ? Theme.surface-hover : transparent;
-        border-radius: 0px;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
             text: "−";
-            color: Theme.text-secondary;
+            color: enabled ? Theme.text-secondary : Theme.text-disabled;
             font-size: Theme.text-lg;
             vertical-alignment: center;
         }
 
         dec-ta := TouchArea {
             enabled: root.enabled;
+            mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
             clicked => {
-                root.value = Math.max(root.min-value, root.value - root.step);
+                root.value = max(root.min-value, root.value - root.step);
+                num-input.text = "\{root.value}";
                 root.changed(root.value);
             }
         }
@@ -68,32 +147,39 @@ export component NumberInput inherits Rectangle {
         background: Theme.border-subtle;
     }
 
-    // Increment
+    // Increment — outer two corners matched to the container's own
+    // radius (see header note) so they don't poke past it.
     Rectangle {
         x: parent.width - 30px;
         width: 30px;
         height: parent.height;
         background: inc-ta.pressed ? Theme.surface-pressed
             : inc-ta.has-hover ? Theme.surface-hover : transparent;
-        border-radius: 0px;
+        border-top-right-radius: bg.border-radius;
+        border-bottom-right-radius: bg.border-radius;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
             text: "+";
-            color: Theme.text-secondary;
+            color: enabled ? Theme.text-secondary : Theme.text-disabled;
             font-size: Theme.text-lg;
             vertical-alignment: center;
         }
 
         inc-ta := TouchArea {
             enabled: root.enabled;
+            mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
             clicked => {
-                root.value = Math.min(root.max-value, root.value + root.step);
+                root.value = min(root.max-value, root.value + root.step);
+                num-input.text = "\{root.value}";
                 root.changed(root.value);
             }
         }
     }
 
-    ta := TouchArea { }
+    ta := TouchArea {
+        enabled: root.enabled;
+        clicked => { num-input.focus(); }
+    }
 }

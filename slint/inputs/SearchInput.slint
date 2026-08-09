@@ -1,5 +1,38 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SearchInput
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A text field with a leading search icon and a trailing clear ("×")
+// button that appears once there's text to clear.
+//
+// Usage:
+//   SearchInput { placeholder: "Search products..."; accepted(q) => { root.search(q); } }
+//
+// Fixed in this revision:
+//  - SEVERE BUG: the clear button's TouchArea had no `enabled:` binding
+//    — a "disabled" search field's clear button remained fully
+//    clickable (same bug class found throughout this pass).
+//  - The clear button had an explicit `x:` but no `y:` at all. Outside a
+//    layout, an unbound x *and* y together default to centering — but
+//    with only one axis explicitly set, relying on whatever Slint does
+//    for the other axis by default isn't something this project's docs
+//    actually specify, so it was a real ambiguity, not a safe
+//    convention. Set explicitly.
+//  - The search icon and clear button used raw Unicode glyphs ("⌕",
+//    "✕") instead of this library's established FaIcon pattern — every
+//    other icon in this library is a proper FontAwesome SVG asset;
+//    Unicode symbol glyphs render inconsistently across fonts/platforms
+//    and don't match that visual language.
+//  - Checked whether `input-type: search` exists for a more semantic
+//    mobile keyboard hint (the HTML equivalent) — it doesn't; Slint's
+//    InputType enum is limited to text/password/number/decimal
+//    (confirmed against multiple real slint-ui/slint issues/
+//    discussions), so left at the default.
+//  - No `max-width` alongside the existing `min-width: 200px` — could
+//    stretch arbitrarily wide in a full-width container.
 export component SearchInput inherits Rectangle {
     in property <string> placeholder: "Search...";
     in property <bool> enabled: true;
@@ -10,26 +43,25 @@ export component SearchInput inherits Rectangle {
     callback cleared();
 
     min-width: 200px;
+    max-width: 640px;
     height: Theme.input-height-md;
     background: transparent;
 
     bg := Rectangle {
         border-radius: Theme.radius-button;
-        border-width: 1px;
+        border-width: Theme.border-width-thin;
         border-color: !enabled ? Theme.border-subtle : (input.has-focus ? Theme.border-focus : Theme.border-base);
         background: !enabled ? Theme.btn-disabled-bg : Theme.bg-raised;
         animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
     }
 
-    // Search icon
-    search-icon := Text {
+    search-icon := FaIcon {
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+        fa-size: Theme.icon-md;
+        fa-color: Theme.text-tertiary;
+        fa-disabled: !enabled;
         x: Theme.sp-3;
         y: (parent.height - self.height) / 2;
-        text: "⌕";
-        color: Theme.text-tertiary;
-        font-size: Theme.text-lg;
-        vertical-alignment: center;
-        horizontal-alignment: center;
     }
 
     input := TextInput {
@@ -56,24 +88,29 @@ export component SearchInput inherits Rectangle {
         vertical-alignment: center;
     }
 
-    // Clear button
     clear-btn := Rectangle {
         x: parent.width - Theme.button-height-md;
+        y: (parent.height - self.height) / 2;
         width: Theme.button-height-md;
         height: Theme.button-height-md;
-        visible: input.text != "";
+        visible: input.text != "" && enabled;
         background: transparent;
 
-        Text {
+        accessible-role: AccessibleRole.button;
+        accessible-label: "Clear search";
+        accessible-enabled: root.enabled;
+
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/xmark.svg");
+            fa-size: Theme.icon-sm;
+            fa-color: Theme.text-tertiary;
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "✕";
-            color: Theme.text-tertiary;
-            font-size: Theme.text-sm;
-            vertical-alignment: center;
         }
 
         TouchArea {
+            enabled: root.enabled;
+            mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
             clicked => {
                 input.text = "";
                 root.cleared();

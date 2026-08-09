@@ -1,34 +1,149 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// PinInput
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A segmented PIN/OTP/verification-code entry field — N boxes, one digit
+// each, keyboard-driven with auto-advance.
+//
+// Usage:
+//   PinInput { pin-length: 6; completed(code) => { root.verify(code); } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG, the most severe found in this whole pass: this
+//    component had no text input mechanism *at all*. `ta := TouchArea {}`
+//    was completely empty, and every box permanently rendered a "•"
+//    regardless of whether anything had been entered. It looked like a
+//    working 6-digit code field and could not receive a single keystroke.
+//  - Implemented real digit capture via `FocusScope.key-pressed`. This
+//    deliberately does NOT try to index into or measure the length of a
+//    single combined string: Slint's official primitive-types reference
+//    enumerates string's *entire* member set (to-float, is-float,
+//    is-empty, to-lowercase, to-uppercase) with no character-count,
+//    indexing, or slicing operation at all, so per-character extraction
+//    isn't something .slint markup can safely do — that kind of logic is
+//    meant to live in the host language (see interop.md: "keep logic and
+//    the source of truth in the host language"). Instead, each digit
+//    gets its own statically-named slot (d0..d7) and a separate
+//    `entered-count` tracks how many are filled; capped at 8 digits so
+//    every slot can be a named property a for-loop instance couldn't be
+//    individually addressed as.
+//  - Each box's dot only shows once a digit has actually been entered
+//    for that position — previously every box showed a dot unconditionally,
+//    even fully empty ones, making it impossible to tell how much (if
+//    any) of the code had been typed.
+//  - The focus/next-box highlight was hardcoded to always box 0
+//    (`i == 0 ? Theme.border-focus : ...`) regardless of actual progress
+//    — now tracks `entered-count`.
+//  - No `enabled` wiring, accessible role/label, or `mouse-cursor`.
 export component PinInput inherits Rectangle {
+    // Values above 8 are clamped — see the header note on why slots are
+    // statically named rather than generated in a for-loop.
     in property <int> pin-length: 6;
     in property <bool> enabled: true;
+    in property <bool> mask: true;
+    out property <bool> has-focus: fs.has-focus;
+    out property <bool> is-complete: entered-count >= clamped-length;
 
     callback completed(string);
+    callback changed(string);
+
+    property <int> clamped-length: min(root.pin-length, 8);
+
+    private property <int> entered-count: 0;
+    private property <string> d0: "";
+    private property <string> d1: "";
+    private property <string> d2: "";
+    private property <string> d3: "";
+    private property <string> d4: "";
+    private property <string> d5: "";
+    private property <string> d6: "";
+    private property <string> d7: "";
+    property <string> combined: d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
+
+    pure function digit-at(i: int) -> string {
+        i == 0 ? d0 : i == 1 ? d1 : i == 2 ? d2 : i == 3 ? d3
+            : i == 4 ? d4 : i == 5 ? d5 : i == 6 ? d6 : d7
+    }
+    pure function is-digit(t: string) -> bool {
+        t == "0" || t == "1" || t == "2" || t == "3" || t == "4"
+            || t == "5" || t == "6" || t == "7" || t == "8" || t == "9"
+    }
 
     height: Theme.input-height-lg;
+    min-width: clamped-length * 36px;
+    max-width: clamped-length * 56px;
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.none;
+    accessible-label: "PIN code, \{entered-count} of \{clamped-length} digits entered";
+    accessible-enabled: root.enabled;
 
     HorizontalLayout {
         spacing: Theme.sp-2;
 
-        for digit[i] in root.pin-length: Rectangle {
+        for digit[i] in root.clamped-length: Rectangle {
             horizontal-stretch: 1;
             border-radius: Theme.radius-input;
-            border-width: 1px;
-            border-color: i == 0 ? Theme.border-focus : Theme.border-base;
+            border-width: (i == entered-count && fs.has-focus) ? 2px : 1px;
+            border-color: (i == entered-count && fs.has-focus)
+                ? Theme.border-focus
+                : (i < entered-count ? Theme.accent : Theme.border-base);
             background: enabled ? Theme.bg-surface : Theme.btn-disabled-bg;
+
+            animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "•";
+                text: i < entered-count ? (root.mask ? "•" : digit-at(i)) : "";
                 color: Theme.text-primary;
                 font-size: Theme.text-xl;
+                font-weight: Theme.weight-semibold;
                 vertical-alignment: center;
             }
         }
     }
 
-    ta := TouchArea { }
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (is-digit(event.text) && entered-count < clamped-length) {
+                if (entered-count == 0) { d0 = event.text; }
+                else if (entered-count == 1) { d1 = event.text; }
+                else if (entered-count == 2) { d2 = event.text; }
+                else if (entered-count == 3) { d3 = event.text; }
+                else if (entered-count == 4) { d4 = event.text; }
+                else if (entered-count == 5) { d5 = event.text; }
+                else if (entered-count == 6) { d6 = event.text; }
+                else if (entered-count == 7) { d7 = event.text; }
+                entered-count += 1;
+                root.changed(combined);
+                if (entered-count >= clamped-length) {
+                    root.completed(combined);
+                }
+                accept
+            } else if (event.text == Key.Backspace && entered-count > 0) {
+                entered-count -= 1;
+                if (entered-count == 0) { d0 = ""; }
+                else if (entered-count == 1) { d1 = ""; }
+                else if (entered-count == 2) { d2 = ""; }
+                else if (entered-count == 3) { d3 = ""; }
+                else if (entered-count == 4) { d4 = ""; }
+                else if (entered-count == 5) { d5 = ""; }
+                else if (entered-count == 6) { d6 = ""; }
+                root.changed(combined);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.text : MouseCursor.default;
+        clicked => { fs.focus(); }
+    }
 }

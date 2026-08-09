@@ -1,16 +1,57 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// RadioButton
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A single radio item. Mutual exclusivity across a group is intentionally
+// NOT this component's job — it just renders a checkable circle and
+// reports `clicked()`; a parent RadioGroup (or plain host logic) is
+// expected to set `checked`/`selected` on every item in the group in
+// response, the same pattern used by every native radio-group
+// implementation. That's why `clicked` doesn't self-toggle `checked`
+// the way FishCheckBox.slint's own click handler does — a standalone
+// checkbox has no group to coordinate with, a radio item does.
+//
+// Usage:
+//   for option in options: RadioButton {
+//       text: option.label;
+//       checked: option.id == root.selected-id;
+//       clicked => { root.selected-id = option.id; }
+//   }
+//
+// Fixed in this revision:
+//  - SEVERE BUG (same class as FishCheckBox.slint/FishSwitch.slint): the
+//    TouchArea had no `enabled:` binding — a visually dimmed, "disabled"
+//    radio item remained fully clickable.
+//  - No keyboard activation or focus ring at all.
+//  - No `mouse-cursor: pointer`.
+//  - No accessible role/checked state.
+//  - `checked` and `selected` (and `text`/`label`) are dual aliased
+//    properties, each defaulting to read the other — kept as-is rather
+//    than removed (an external caller may already depend on either
+//    name), but documented: prefer `checked`/`text`, since `selected`/
+//    `label` exist only as the alias.
 export component RadioButton inherits Rectangle {
+    // Prefer `text` — `label` is a compatibility alias.
     in-out property <string> text: "";
     in-out property <string> label: text;
+    // Prefer `checked` — `selected` is a compatibility alias.
     in-out property <bool> checked: false;
     in-out property <bool> selected: checked;
     in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback clicked();
 
-    height: Theme.button-height-md;
+    height: max(Theme.button-min-height, Theme.button-height-md);
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.radio-button;
+    accessible-label: text != "" ? text : label;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.checked || root.selected;
 
     HorizontalLayout {
         spacing: Theme.sp-2;
@@ -27,6 +68,8 @@ export component RadioButton inherits Rectangle {
             border-width: 2px;
             border-color: !enabled ? Theme.text-disabled : ((checked || selected) ? Theme.accent : (ta.has-hover ? Theme.border-strong : Theme.border-base));
             background: ((checked || selected) && enabled) ? Theme.accent-subtle : #00000000;
+
+            animate border-color { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
             if (checked || selected): Rectangle {
                 width: 8px;
@@ -51,6 +94,31 @@ export component RadioButton inherits Rectangle {
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => { root.clicked(); }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: (parent.height - 18px - 2 * Theme.focus-ring-offset) / 2;
+        width: 18px + 2 * Theme.focus-ring-offset;
+        height: 18px + 2 * Theme.focus-ring-offset;
+        border-radius: Theme.radius-full;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

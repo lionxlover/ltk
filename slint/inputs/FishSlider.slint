@@ -1,5 +1,42 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FishSlider
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A draggable value slider, horizontal or vertical.
+//
+// Usage:
+//   FishSlider { minimum: 0; maximum: 100; value: volume; changed(v) => { root.set-volume(v); } }
+//
+// Fixed in this revision:
+//  - SUBTLE BUG: value tracking used `self.pressed-x`/`self.pressed-y` —
+//    real TouchArea properties (verified against Slint's own C++ docs
+//    and a working example in slint-ui/slint discussion #4473) but the
+//    wrong ones for this job: they're a snapshot of where the pointer
+//    was at the *start* of the press, frozen for the whole gesture, not
+//    a live-updating position. The handle would jump once to the
+//    initial press point and then stop following the pointer for the
+//    rest of the drag. Switched to `mouse-x`/`mouse-y`, which do update
+//    continuously (confirmed in this project's own events-and-
+//    overlays.md).
+//  - Used a bare `clamp(expr, lo, hi)` function call — this project's
+//    own gotchas.md lists `clamp` only under confirmed *methods*
+//    (`x.clamp(lo, hi)`), never as a bare function alongside floor/max.
+//    Switched to the confirmed method form.
+//  - Only handled `moved`, which — per Slint's own docs — only fires
+//    once the pointer is already moving while pressed. A plain tap on
+//    the track (press, release, no drag) produced no `moved` event at
+//    all, so clicking anywhere on the track to jump the handle there
+//    (standard slider behavior) didn't work. Added a `pointer-event`
+//    handler for the initial `down` too.
+//  - SEVERE BUG (same class found throughout buttons/ and inputs/): the
+//    TouchArea had no `enabled:` binding — a "disabled" slider remained
+//    fully draggable.
+//  - No accessible role, `accessible-value-minimum/-maximum/-value`
+//    (real properties — verified alongside accessible-checkable earlier
+//    in this pass), keyboard arrow-key support, or focus ring — a
+//    slider that can't be operated by keyboard fails WCAG outright.
 export component FishSlider inherits Rectangle {
     in property <float> minimum: 0;
     in property <float> maximum: 100;
@@ -7,65 +44,129 @@ export component FishSlider inherits Rectangle {
     in property <bool> enabled: true;
     in property <bool> horizontal: true;
     in property <length> track-height: 5px;
+    // How much one arrow-key press moves `value` — defaults to 1% of
+    // the range so Home-to-End takes a reasonable ~100 key presses.
+    in property <float> step: (maximum - minimum) / 100;
+    out property <bool> has-focus: fs.has-focus;
 
     callback changed(float);
 
+    property <color> handle-fill: Theme.dark-mode ? #E8EAED : #FFFFFF;
+    property <color> handle-border: Theme.dark-mode ? rgba(255, 255, 255, 0.15) : rgba(0, 0, 0, 0.12);
+
+    pure function fraction() -> float {
+        (root.value - root.minimum) / (root.maximum - root.minimum)
+    }
+    pure function value-from-fraction(f: float) -> float {
+        (root.minimum + f * (root.maximum - root.minimum)).clamp(root.minimum, root.maximum)
+    }
+
     background: transparent;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.slider;
+    accessible-value-minimum: minimum;
+    accessible-value-maximum: maximum;
+    accessible-value: value;
+    accessible-enabled: root.enabled;
 
     track-bg := Rectangle {
         x: horizontal ? 0 : (parent.width - self.width) / 2;
         y: horizontal ? (parent.height - self.height) / 2 : 0;
         width: horizontal ? parent.width : track-height;
         height: horizontal ? track-height : parent.height;
-        border-radius: self.width / 2;
+        border-radius: self.height / 2;
         background: Theme.toggle-track-off;
     }
 
     filled-track := Rectangle {
         x: track-bg.x;
         y: track-bg.y;
-        width: horizontal ? (value - minimum) / (maximum - minimum) * track-bg.width : track-height;
-        height: horizontal ? track-height : (value - minimum) / (maximum - minimum) * track-bg.height;
-        border-radius: self.width / 2;
-        background: Theme.accent;
+        width: horizontal ? fraction() * track-bg.width : track-height;
+        height: horizontal ? track-height : fraction() * track-bg.height;
+        border-radius: self.height / 2;
+        background: enabled ? Theme.accent : Theme.text-disabled;
     }
 
     handle := Rectangle {
         x: horizontal
-            ? track-bg.x + (value - minimum) / (maximum - minimum) * (track-bg.width - self.width)
+            ? track-bg.x + fraction() * (track-bg.width - self.width)
             : (parent.width - self.width) / 2;
         y: horizontal
             ? (parent.height - self.height) / 2
-            : track-bg.y + (value - minimum) / (maximum - minimum) * (track-bg.height - self.height);
+            : track-bg.y + fraction() * (track-bg.height - self.height);
         width: 22px;
         height: 22px;
         border-radius: self.height / 2;
-        background: Theme.dark-mode ? #E8EAED : #FFFFFF;
-        border-width: 1px;
-        border-color: Theme.dark-mode ? rgba(255, 255, 255, 0.15) : rgba(0, 0, 0, 0.12);
+        background: enabled ? handle-fill : Theme.text-disabled;
+        border-width: Theme.border-width-thin;
+        border-color: handle-border;
 
         drop-shadow-offset-x: 0px;
         drop-shadow-offset-y: 0px;
         drop-shadow-blur: 8px;
         drop-shadow-color: ta.pressed ? rgba(0, 0, 0, 0.25) : rgba(0, 0, 0, 0.15);
+
+        animate drop-shadow-blur { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: handle.x - Theme.focus-ring-offset;
+        y: handle.y - Theme.focus-ring-offset;
+        width: handle.width + 2 * Theme.focus-ring-offset;
+        height: handle.height + 2 * Theme.focus-ring-offset;
+        border-radius: self.height / 2;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 
     ta := TouchArea {
-        moved => {
-            if (horizontal) {
-                root.value = clamp(
-                    root.minimum + (self.pressed-x / track-bg.width) * (root.maximum - root.minimum),
-                    root.minimum,
-                    root.maximum
-                );
-            } else {
-                root.value = clamp(
-                    root.minimum + (self.pressed-y / track-bg.height) * (root.maximum - root.minimum),
-                    root.minimum,
-                    root.maximum
-                );
+        enabled: root.enabled;
+        mouse-cursor: !root.enabled
+            ? MouseCursor.default
+            : (ta.pressed ? MouseCursor.grabbing : MouseCursor.grab);
+
+        pointer-event(event) => {
+            if (event.kind == PointerEventKind.down) {
+                fs.focus();
+                root.value = horizontal
+                    ? value-from-fraction(self.mouse-x / track-bg.width)
+                    : value-from-fraction(self.mouse-y / track-bg.height);
+                root.changed(root.value);
             }
+        }
+
+        moved => {
+            root.value = horizontal
+                ? value-from-fraction(self.mouse-x / track-bg.width)
+                : value-from-fraction(self.mouse-y / track-bg.height);
             root.changed(root.value);
+        }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.RightArrow || event.text == Key.UpArrow) {
+                root.value = (root.value + root.step).clamp(root.minimum, root.maximum);
+                root.changed(root.value);
+                accept
+            } else if (event.text == Key.LeftArrow || event.text == Key.DownArrow) {
+                root.value = (root.value - root.step).clamp(root.minimum, root.maximum);
+                root.changed(root.value);
+                accept
+            } else if (event.text == Key.Home) {
+                root.value = root.minimum;
+                root.changed(root.value);
+                accept
+            } else if (event.text == Key.End) {
+                root.value = root.maximum;
+                root.changed(root.value);
+                accept
+            } else {
+                reject
+            }
         }
     }
 }

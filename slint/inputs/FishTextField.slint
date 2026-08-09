@@ -1,19 +1,49 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FishTextField
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A single-line text field with a placeholder.
+//
+// Usage:
+//   FishTextField { placeholder: "Email address"; text <=> form.email; accepted(t) => { root.submit(); } }
+//
+// Fixed in this revision:
+//  - LIKELY BUG: `input.text` was bound with a plain one-way expression
+//    (`text: root.text;`) rather than a two-way `<=>` binding. A plain
+//    binding keeps re-deriving `input.text` from `root.text`, which
+//    never itself changes as the user types — this is the same risk
+//    identified and deliberately avoided in NumberInput.slint's header,
+//    and this file's own siblings (TextArea.slint, SearchInput.slint)
+//    both correctly use `text <=> input.text;` for this exact need.
+//    Switched to match them.
+//  - `has-focus` was `in-out` while being driven by an internal
+//    binding (`input.has-focus`) — an external caller setting it would
+//    silently conflict with that binding. Every other file in this pass
+//    exposes an internally-driven focus flag as `out`, not `in-out`;
+//    matched that convention here too.
+//  - No upper bound alongside the existing computed minimum — folded a
+//    480px cap directly into the `width` expression itself
+//    (`min(480px, max(220px, ...))`) rather than adding a separate
+//    `max-width` binding, since `width` already implicitly sets both
+//    min-width and max-width internally in Slint — a second explicit
+//    max-width binding on top would be the exact "Cannot specify both"
+//    conflict found and fixed across 43 files earlier in this pass.
 export component FishTextField inherits Rectangle {
-    in-out property <string> text: "";
+    in-out property <string> text <=> input.text;
     in property <string> placeholder: "";
     in property <bool> enabled: true;
-    in-out property <bool> has-focus: input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     callback edited(string);
     callback accepted(string);
 
-    width: max(220px, placeholder-label.preferred-width + Theme.input-height-md);
+    width: min(480px, max(220px, placeholder-label.preferred-width + Theme.input-height-md));
     height: Theme.input-height-md;
     border-radius: Theme.radius-input;
     background: Theme.bg-raised;
-    border-width: 1px;
+    border-width: Theme.border-width-thin;
     border-color: has-focus ? Theme.border-focus : Theme.border-default;
 
     animate border-color { duration: Theme.dur-fastest; easing: Theme.ease-standard; }
@@ -33,7 +63,6 @@ export component FishTextField inherits Rectangle {
         x: Theme.input-padding-x;
         y: (parent.height - self.height) / 2;
         width: parent.width - Theme.input-padding-x * 2;
-        text: root.text;
         color: enabled ? Theme.text-primary : Theme.text-disabled;
         font-family: Theme.font-ui;
         font-size: Theme.text-base;

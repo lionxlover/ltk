@@ -1,9 +1,54 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FishLabel
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A form-field label, styled consistently across every input in this
+// folder. Deliberately stays small — a label has almost nothing to
+// configure beyond text, emphasis, a disabled dim, and a "required"
+// marker, and inventing properties beyond that would be padding, not
+// polish.
+//
+// Usage:
+//   FishLabel { text: "Email address"; required: true; }
+//
+// Fixed in this revision:
+//  - An earlier draft tried to append " *" onto `required` by writing
+//    `text: required ? self.text + " *" : self.text;` — a binding loop
+//    (text depending on its own current value), exactly the pattern
+//    debugging-and-mcp.md warns about, and it would also have silently
+//    broken the inherited `text` property for every external caller of
+//    this library (renaming it was considered and rejected for the same
+//    reason). Fixed by keeping `text` completely untouched — still the
+//    plain inherited Text property, unrenamed — and rendering the
+//    required-marker as a small appended sibling Text instead.
+//  - No way to mark a field as required at all previously — every real
+//    form needs this, and every FishTextField/SearchInput/etc. call site
+//    would otherwise have had to hand-roll its own "*" text
+//    concatenation inconsistently.
+//  - No `weight` control — a label sitting directly above a field
+//    usually wants more emphasis (semibold) than an inline description
+//    label; both are common enough to warrant a property rather than
+//    forcing every call site to override font-weight itself.
 export component FishLabel inherits Text {
     in property <bool> enabled: true;
-    color: Theme.text-primary;
+    in property <bool> required: false;
+    in property <int> weight: Theme.weight-medium;
+
+    color: enabled ? Theme.text-primary : Theme.text-disabled;
     font-family: Theme.font-ui;
     font-size: Theme.text-base;
+    font-weight: weight;
     opacity: self.enabled ? 1 : Theme.opacity-disabled;
+
+    if required: Text {
+        text: " *";
+        color: enabled ? Theme.error : Theme.text-disabled;
+        font-family: parent.font-family;
+        font-size: parent.font-size;
+        font-weight: parent.font-weight;
+        x: parent.preferred-width;
+        y: 0;
+    }
 }

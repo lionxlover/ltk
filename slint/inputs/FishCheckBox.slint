@@ -1,15 +1,46 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// FishCheckBox
+// ═════════════════════════════════════════════════════════════════════════
+//
+// A checkbox with an inline label.
+//
+// Usage:
+//   FishCheckBox { text: "Accept terms"; checked: form.accepted; toggled(c) => { root.set-accepted(c); } }
+//
+// Fixed in this revision:
+//  - SEVERE BUG: the TouchArea had no `enabled:` binding at all — the
+//    control dimmed via `opacity` when `enabled: false`, but remained
+//    fully clickable underneath. A visually "disabled" checkbox could
+//    still be toggled by clicking it.
+//  - The tappable area was exactly the 16px visual indicator plus the
+//    label's own text bounds — well under the ~44px minimum tap target
+//    (WCAG / Apple HIG / Material guidance, the same `TouchTarget.min-*`
+//    tokens wired into Theme.button-min-height). The visual indicator
+//    stays 16px (that's the correct *look* for a checkbox), but the
+//    TouchArea and FocusScope now cover a taller invisible hit region
+//    centered on it, matching how a real checkbox row behaves.
+//  - No accessible role/label/checked state, keyboard activation
+//    (Space toggles, matching every native checkbox), or focus ring.
+//  - No `mouse-cursor: pointer`.
 export component FishCheckBox inherits Rectangle {
     in-out property <bool> checked: false;
     in property <string> text: "";
     in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback toggled(bool);
 
     width: indicator.width + Theme.sp-3 + label.preferred-width;
-    height: max(indicator.height, label.preferred-height);
+    height: max(Theme.button-min-height, max(indicator.height, label.preferred-height));
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.checkbox;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
 
     indicator := Rectangle {
         x: 0;
@@ -50,9 +81,35 @@ export component FishCheckBox inherits Rectangle {
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
         clicked => {
             root.checked = !root.checked;
             root.toggled(root.checked);
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == " ") {
+                root.checked = !root.checked;
+                root.toggled(root.checked);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: indicator.x - Theme.focus-ring-offset;
+        y: indicator.y - Theme.focus-ring-offset;
+        width: indicator.width + 2 * Theme.focus-ring-offset;
+        height: indicator.height + 2 * Theme.focus-ring-offset;
+        border-radius: indicator.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }

@@ -1,24 +1,70 @@
 import { Theme } from "../core/Theme.slint";
 
+// ═════════════════════════════════════════════════════════════════════════
+// SegmentedControl
+// ═════════════════════════════════════════════════════════════════════════
+//
+// An iOS-style segmented picker — a single selection among a small set of
+// options, rendered as a sliding highlight over a row of labels.
+//
+// Usage:
+//   SegmentedControl { segments: ["Day", "Week", "Month"]; current-index: view-mode; segment-changed(i) => { root.view-mode = i; } }
+//
+// Fixed in this revision:
+//  - STRUCTURAL BUG, the most severe in this file: the sliding
+//    `indicator`'s x/width were bound to `ta-touch.x`/`ta-touch.width`,
+//    where `ta-touch` was a completely empty `TouchArea { }` with no
+//    properties set at all. Outside a layout, TouchArea fills its
+//    parent by default, so `ta-touch.x` was always 0 and
+//    `ta-touch.width` was always the *entire* control's width — the
+//    "sliding" indicator permanently covered the whole control and
+//    never actually tracked the selected segment. Fixed by computing
+//    the indicator's position and width arithmetically from
+//    `current-index` and `segments.length` (confirmed real via Slint's
+//    own array-type docs) instead — segments are evenly distributed
+//    (`horizontal-stretch: 1` each), so this is exact, and it sidesteps
+//    the deeper issue that a `for`-loop instance's own geometry isn't
+//    individually addressable from outside the loop at all.
+//  - `bg2`, the per-segment background Rectangle, was permanently
+//    `background: transparent` — inert decoration with no actual
+//    purpose. Repurposed to show real hover feedback on unselected
+//    segments.
+//  - No `enabled` property existed at all — nothing in this control
+//    could be disabled.
+//  - No accessible roles (this is structurally a tab list — one
+//    `AccessibleRole.tab` per segment inside an `AccessibleRole.tab-list`
+//    container, both confirmed real enum values), keyboard navigation
+//    (arrow keys moving the selection, matching how a native tab list
+//    behaves), or focus ring.
 export component SegmentedControl inherits Rectangle {
     in property <[string]> segments: [];
     in-out property <int> current-index: 0;
+    in property <bool> enabled: true;
+    out property <bool> has-focus: fs.has-focus;
 
     callback segment-changed(int);
 
+    pure function segment-width() -> length {
+        (root.width - 4px) / max(1, segments.length)
+    }
+
     height: 32px;
+    min-width: 120px;
+    opacity: enabled ? 1.0 : Theme.opacity-disabled;
+
+    accessible-role: AccessibleRole.tab-list;
+    accessible-enabled: root.enabled;
 
     bg := Rectangle {
         border-radius: Theme.radius-button;
         background: Theme.bg-overlay;
-        border-width: 1px;
+        border-width: Theme.border-width-thin;
         border-color: Theme.border-subtle;
     }
 
-    // Indicator
     indicator := Rectangle {
-        x: ta-touch.x;
-        width: ta-touch.width;
+        x: 2px + root.current-index * segment-width();
+        width: segment-width();
         height: parent.height - 4px;
         y: 2px;
         border-radius: Theme.radius-sm;
@@ -26,9 +72,8 @@ export component SegmentedControl inherits Rectangle {
         drop-shadow-offset-y: 1px;
         drop-shadow-blur: 4px;
         drop-shadow-color: Theme.border-default;
+        animate x { duration: Theme.dur-medium; easing: Theme.ease-soft; }
     }
-
-    ta-touch := TouchArea { }
 
     HorizontalLayout {
         padding: 2px;
@@ -36,21 +81,35 @@ export component SegmentedControl inherits Rectangle {
 
         for seg[i] in root.segments: TouchArea {
             horizontal-stretch: 1;
+            enabled: root.enabled;
+            mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+
+            accessible-role: AccessibleRole.tab;
+            accessible-label: seg;
+            accessible-enabled: root.enabled;
+            accessible-checked: root.current-index == i;
+
             clicked => {
                 root.current-index = i;
                 root.segment-changed(i);
+                fs.focus();
             }
 
             bg2 := Rectangle {
                 border-radius: Theme.radius-sm;
-                background: transparent;
+                // Was permanently transparent — now gives real hover
+                // feedback on unselected segments (the selected one
+                // already reads as "active" via the sliding indicator
+                // above, so it doesn't need its own hover tint too).
+                background: (parent.has-hover && root.current-index != i) ? Theme.hover-overlay : transparent;
+                animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
             }
 
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
                 text: seg;
-                color: root.current-index == i ? Theme.text-primary : Theme.text-tertiary;
+                color: !root.enabled ? Theme.text-disabled : (root.current-index == i ? Theme.text-primary : Theme.text-tertiary);
                 font-family: Theme.font-ui;
                 font-size: Theme.text-sm;
                 font-weight: root.current-index == i ? Theme.weight-semibold : Theme.weight-regular;
@@ -58,5 +117,33 @@ export component SegmentedControl inherits Rectangle {
                 vertical-alignment: center;
             }
         }
+    }
+
+    fs := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.RightArrow && root.current-index < segments.length - 1) {
+                root.current-index += 1;
+                root.segment-changed(root.current-index);
+                accept
+            } else if (event.text == Key.LeftArrow && root.current-index > 0) {
+                root.current-index -= 1;
+                root.segment-changed(root.current-index);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    if fs.has-focus: Rectangle {
+        x: -Theme.focus-ring-offset;
+        y: -Theme.focus-ring-offset;
+        width: parent.width + 2 * Theme.focus-ring-offset;
+        height: parent.height + 2 * Theme.focus-ring-offset;
+        border-radius: bg.border-radius + Theme.focus-ring-offset;
+        border-width: Theme.focus-ring-width;
+        border-color: Theme.focus-ring;
+        background: transparent;
     }
 }
