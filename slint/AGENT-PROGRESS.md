@@ -316,6 +316,22 @@ support deriving in both directions, that's actually two different
 components (or one property left for the host to set explicitly), not one
 component with reciprocal formulas.
 
+## Post-delivery fix: `mouse-cursor` set on a `Rectangle`, not a `TouchArea`
+
+The person's VS Code Slint Preview caught a real compile error after the
+`layout-containers.zip` handoff: `ResizablePanelGroup.slint`, Ln 31 —
+`Unknown property mouse-cursor`. I had set `mouse-cursor:` directly on the
+`divider` `Rectangle` (invalid — that property only exists on
+`TouchArea`), then compounded it by having the nested `TouchArea` read it
+back via `parent.mouse-cursor` (also invalid, same reason). Fixed by
+moving the ternary directly onto the `TouchArea`'s own `mouse-cursor:`
+binding. Repo-wide scan (every `mouse-cursor:` binding site plus every
+`parent.<TouchArea-only-prop>` read, across all previously-"done"
+categories too, not just this batch) found this was the only instance —
+documented as a new entry in `SLINT-GOTCHAS-DISCOVERED.md` so it isn't
+repeated in later batches. `layout-containers.zip` has been re-packaged
+with the fix.
+
 ## Mistakes I made and had to correct (so they aren't repeated)
 
 - Removed a working manual `y:` icon-centering fix in the very first

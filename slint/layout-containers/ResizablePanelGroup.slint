@@ -28,10 +28,9 @@ export component ResizablePanelGroup inherits Rectangle {
         width: horizontal ? 4px : parent.width;
         height: horizontal ? parent.height : 4px;
         background: Theme.border-default;
-        mouse-cursor: horizontal ? MouseCursor.ew-resize : MouseCursor.ns-resize;
 
         TouchArea {
-            mouse-cursor: parent.mouse-cursor;
+            mouse-cursor: horizontal ? MouseCursor.ew-resize : MouseCursor.ns-resize;
             moved => {
                 root.split-percent = horizontal
                     ? max(10, min(90, (self.mouse-x + divider.x) / root.width * 100))
