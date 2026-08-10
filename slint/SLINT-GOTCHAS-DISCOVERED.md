@@ -364,6 +364,47 @@ height: use-width ? (parent.width / 1px * ratio-denominator / ratio-numerator) *
 
 ---
 
+### `parent` doesn't exist when a component is the top-level/root element
+
+```slint
+// WRONG — fine when nested inside something, but a real runtime error
+// ("Cannot access id 'parent'") when this exported component is itself
+// the top-level element — e.g. previewed standalone in Slint Preview, or
+// instantiated directly as a window's content
+export component AspectRatioBox inherits Rectangle {
+    height: use-width ? (...) : parent.height;   // <- fails at root
+}
+```
+Caught live via the person's Slint Preview (Problems panel: `Cannot
+access id 'parent'`, Ln 28). Every exported component in a library like
+this one is a *candidate* top-level element — the Preview tool loads
+"the last exported" component from a file as the window root (per this
+project's own `debugging-and-mcp.md`), and any consuming app could
+likewise drop one of these components straight into a `Window`. `parent`
+is only guaranteed to exist for elements that are actually nested inside
+something. A `parent.foo` reference written directly in the *root*
+component's own bindings breaks the moment that component has no
+enclosing element — which, for anything meant to be reusable/exported,
+is a real, expected use case, not a corner case.
+
+Nested children referencing `parent.foo` are unaffected — inside a child
+element, `parent` resolves to the *root* component itself (which always
+exists once the component is instantiated), not to whatever contains the
+whole component. The risk is specific to `parent.*` written directly on
+the root element's own top-level bindings.
+
+```slint
+// RIGHT — an explicit `in property` fallback has no dependency on
+// anything existing outside the component, and (being a distinct,
+// unrelated property) can't become self-referential either
+export component AspectRatioBox inherits Rectangle {
+    in property <length> fallback-height: 200px;
+    height: use-width ? (...) : fallback-height;
+}
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

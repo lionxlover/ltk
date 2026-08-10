@@ -166,6 +166,26 @@ def check_self_referential_dimension(path):
     return findings
 ```
 
+```python
+# root-level `parent` scanner — flags any `parent.` reference written
+# directly in the root component's own bindings (brace depth 1, i.e. not
+# inside a nested child element). Added after AspectRatioBox failed with
+# "Cannot access id 'parent'" in Slint Preview: an exported component is a
+# candidate top-level element (Preview loads "the last exported" component
+# as the window root), and `parent` only exists once something actually
+# encloses it. `parent.foo` inside a *nested child* is fine — there it
+# resolves to the root component itself, which always exists.
+import glob
+def check_root_level_parent(path):
+    depth, findings = 0, []
+    for i, l in enumerate(open(path, encoding='utf-8').read().split('\n')):
+        stripped = l.strip()
+        if not stripped.startswith('//') and 'parent.' in l and depth == 1:
+            findings.append((i + 1, stripped))
+        depth += l.count('{') - l.count('}')
+    return findings
+```
+
 ## Notable bugs fixed (the ones worth remembering the *shape* of)
 
 - **Structural/non-functional**: `PillButton`, `LoadingButton`,
@@ -352,6 +372,21 @@ only real instance (one other hit, `Select.slint`'s popup
 `Select` component, a different element from the `PopupWindow` whose
 `width` is being set, so it's a normal cross-element binding, not a
 self-reference).
+
+**Second correction (also from the Slint Preview, same file):** the
+`parent.height` fallback above still failed at runtime — `Cannot access
+id 'parent'` — because `AspectRatioBox` is the file's only export, so
+Slint Preview loads it as the *top-level* window content, where it has no
+`parent` at all. Any exported, reusable component is a candidate
+top-level element, not just something that will always be nested inside a
+host layout. Fixed by replacing the `parent.height` fallback with an
+explicit `in property <length> fallback-height: 200px;` — a property with
+no dependency on anything existing outside the component, and (being an
+unrelated, distinct property) immune to the earlier self-reference bug
+too. Swept the whole batch for the same shape (a `parent.*` reference
+written directly in the *root* component's own bindings, as opposed to
+inside a nested child element, where `parent` safely resolves to the root
+component instead) — no other instances found.
 
 ## Post-delivery fix: `mouse-cursor` set on a `Rectangle`, not a `TouchArea`
 

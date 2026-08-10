@@ -7,6 +7,14 @@ export component AspectRatioBox inherits Rectangle {
     in property <int> ratio-numerator: 16;
     in property <int> ratio-denominator: 9;
     in property <bool> use-width: true;
+    // Used only for the unimplemented `use-width: false` branch below.
+    // `parent.height` was tried as a fallback, but `parent` doesn't exist
+    // when this component is the top-level/root element (e.g. previewed
+    // standalone in Slint Preview, or used directly as a window's
+    // content) — "Cannot access id 'parent'" is a real error there, not
+    // just a missing-parent edge case. An explicit `in property` has no
+    // such requirement and can never be self-referential either.
+    in property <length> fallback-height: 200px;
 
     // Only `height` is ever bound here — never `width` too. Having both
     // `width` and `height` reciprocally reference each other (even inside
@@ -24,8 +32,7 @@ export component AspectRatioBox inherits Rectangle {
     // The `height` binding must never read `self.height` either — that's
     // the exact same binding-loop shape (a property depending on itself),
     // just self-referential instead of cross-referential with `width`.
-    // The unimplemented branch falls back to `parent.height` instead.
-    height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px : parent.height;
+    height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px : fallback-height;
 
     @children
 }
