@@ -46,7 +46,7 @@ import { WeekCalendar } from "WeekCalendar.slint";
 import { DayAgendaCalendar } from "DayAgendaCalendar.slint";
 import { EmptyState } from "EmptyState.slint";
 import { ListItem } from "ListItem.slint";
-import { TimelineItem } from "Timeline.slint";
+import { TimelineItem, Timeline } from "Timeline.slint";
 import { Kbd } from "Kbd.slint";
 import { CodeBlock } from "CodeBlock.slint";
 import { StatCard } from "StatCard.slint";
@@ -198,10 +198,12 @@ export component DataDisplayTest inherits Rectangle {
 
         Text { text: "Timeline (vertical)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
-            VerticalLayout { padding: Theme.sp-3; spacing: Theme.sp-1;
-                TimelineItem { title: "Project created"; description: "Initial setup"; time: "2h ago"; completed: true; }
-                TimelineItem { title: "Components added"; description: "15 components"; time: "1h ago"; completed: true; }
-                TimelineItem { title: "Testing"; description: "Running tests"; time: "Now"; active: true; }
+            Flickable { width: parent.width; height: parent.height; viewport-height: tl.preferred-height;
+                tl := Timeline { vertical: true;
+                    TimelineItem { title: "Project created"; description: "Initial setup"; time: "2h ago"; completed: true; }
+                    TimelineItem { title: "Components added"; description: "15 components"; time: "1h ago"; completed: true; }
+                    TimelineItem { title: "Testing"; description: "Running tests"; time: "Now"; active: true; }
+                }
             }
         }
 

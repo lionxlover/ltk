@@ -61,7 +61,7 @@ export component AvatarList inherits Rectangle {
                     }
 
                     Text {
-                        text: root.subtitles[idx];
+                        text: idx < root.subtitles.length ? root.subtitles[idx] : "";
                         color: Theme.text-secondary;
                         font-family: Theme.font-ui;
                         font-size: Theme.text-xs;

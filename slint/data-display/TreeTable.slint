@@ -5,6 +5,8 @@ export component TreeTable inherits Rectangle {
     in property <int> row-count: 0;
     in property <[int]> depths: [];
 
+    callback row-clicked(int);
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
     border-width: 1px;
@@ -85,7 +87,9 @@ export component TreeTable inherits Rectangle {
                     }
                 }
 
-                row-ta := TouchArea {}
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(rowidx); }
+                }
             }
         }
     }

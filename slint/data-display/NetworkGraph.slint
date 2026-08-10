@@ -1,6 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
 export component NetworkGraph inherits Rectangle {
+    // This is a fixed 4-node diamond topology (A-B, A-C, C-D, B-D), not a
+    // general graph renderer — `node-count` only documents that fixed
+    // shape; changing it doesn't add or remove nodes, since laying out an
+    // arbitrary N-node graph (force-directed or otherwise) is real
+    // algorithmic work outside the scope of this component. `demo-labels`
+    // is wired to the 4 fixed node positions below.
     in property <int> node-count: 4;
 
     background: Theme.bg-surface;
@@ -58,7 +64,7 @@ export component NetworkGraph inherits Rectangle {
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "A";
+            text: root.demo-labels.length > 0 ? root.demo-labels[0] : "A";
             color: #ffffff;
             font-family: Theme.font-ui;
             font-size: Theme.text-base;
@@ -81,7 +87,7 @@ export component NetworkGraph inherits Rectangle {
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "B";
+            text: root.demo-labels.length > 1 ? root.demo-labels[1] : "B";
             color: Theme.text-secondary;
             font-family: Theme.font-ui;
             font-size: Theme.text-base;
@@ -104,7 +110,7 @@ export component NetworkGraph inherits Rectangle {
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "C";
+            text: root.demo-labels.length > 2 ? root.demo-labels[2] : "C";
             color: Theme.text-secondary;
             font-family: Theme.font-ui;
             font-size: Theme.text-base;
@@ -127,7 +133,7 @@ export component NetworkGraph inherits Rectangle {
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "D";
+            text: root.demo-labels.length > 3 ? root.demo-labels[3] : "D";
             color: Theme.text-secondary;
             font-family: Theme.font-ui;
             font-size: Theme.text-base;

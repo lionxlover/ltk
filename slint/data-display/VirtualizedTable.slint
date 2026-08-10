@@ -6,6 +6,8 @@ export component VirtualizedTable inherits Rectangle {
     in property <int> visible-start: 0;
     in property <int> visible-count: 20;
 
+    callback row-clicked(int);
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
     border-width: 1px;
@@ -82,7 +84,9 @@ export component VirtualizedTable inherits Rectangle {
                     }
                 }
 
-                row-ta := TouchArea {}
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(root.visible-start + rowidx); }
+                }
             }
         }
     }

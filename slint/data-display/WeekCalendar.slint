@@ -30,7 +30,11 @@ export component WeekCalendar inherits Rectangle {
                 horizontal-stretch: 1;
                 height: 32px;
                 border-radius: Theme.radius-sm;
-                background: hdr_idx == root.selected-day ? Theme.accent : #00000000;
+                background: hdr_idx == root.selected-day ? Theme.accent
+                    : hdr-ta.has-hover ? Theme.surface-hover
+                    : #00000000;
+
+                animate background { duration: Theme.dur-fast; }
 
                 Text {
                     text: root.day-headers[hdr_idx];
@@ -41,6 +45,11 @@ export component WeekCalendar inherits Rectangle {
                     horizontal-alignment: center;
                     vertical-alignment: center;
                     letter-spacing: Theme.tracking-wide;
+                }
+
+                hdr-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.selected-day = hdr_idx; }
                 }
             }
         }

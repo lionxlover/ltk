@@ -54,7 +54,9 @@ export component TrailingActionList inherits Rectangle {
                         Text {
                             x: (parent.width - self.width) / 2;
                             y: (parent.height - self.height) / 2;
-                            text: root.trailing-icons[idx];
+                            // Bounds-checked: `trailing-icons` might be
+                            // shorter than `titles` (the loop-driving array).
+                            text: idx < root.trailing-icons.length ? root.trailing-icons[idx] : "";
                             color: Theme.text-tertiary;
                             font-size: Theme.text-lg;
                             vertical-alignment: center;

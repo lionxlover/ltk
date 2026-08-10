@@ -12,9 +12,11 @@ export component GroupedList inherits Rectangle {
 
     VerticalLayout {
         for section[si] in root.sections: Rectangle {
-            height: items-per-section[si] > 0
-                ? 32px + items-per-section[si] * 40px
-                : 32px;
+            // Bounds-checked: `items-per-section` might be shorter than
+            // `sections` if the host hasn't populated it yet.
+            property <int> section-count: si < root.items-per-section.length ? root.items-per-section[si] : 0;
+
+            height: 32px + section-count * 40px;
 
             VerticalLayout {
                 Rectangle {
@@ -38,8 +40,12 @@ export component GroupedList inherits Rectangle {
                     }
                 }
 
-                Rectangle {
-                    height: items-per-section[si] * 40px;
+                // Previously this whole section body was a single
+                // Rectangle sized to fit N items but rendering only one
+                // non-repeating "Item N" row — the individual items
+                // within a section were never actually instantiated.
+                for item_idx in section-count: Rectangle {
+                    height: 40px;
                     background: item-ta.pressed ? Theme.surface-pressed
                         : item-ta.has-hover ? Theme.surface-hover
                         : #00000000;
@@ -52,7 +58,7 @@ export component GroupedList inherits Rectangle {
                         alignment: start;
 
                         Text {
-                            text: "Item " + (si + 1);
+                            text: "Item \{item_idx + 1}";
                             color: Theme.text-primary;
                             font-family: Theme.font-ui;
                             font-size: Theme.text-sm;
@@ -61,7 +67,7 @@ export component GroupedList inherits Rectangle {
                     }
 
                     item-ta := TouchArea {
-                        clicked => { root.item-clicked(si, 0); }
+                        clicked => { root.item-clicked(si, item_idx); }
                     }
                 }
             }

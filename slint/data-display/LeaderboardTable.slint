@@ -4,6 +4,8 @@ export component LeaderboardTable inherits Rectangle {
     in property <int> row-count: 8;
     in property <int> highlight-rank: 3;
 
+    callback row-clicked(int);
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
     border-width: 1px;
@@ -98,7 +100,9 @@ export component LeaderboardTable inherits Rectangle {
                 }
             }
 
-            row-ta := TouchArea {}
+            row-ta := TouchArea {
+                clicked => { root.row-clicked(rowidx); }
+            }
         }
     }
 }

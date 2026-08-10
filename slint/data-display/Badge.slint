@@ -24,14 +24,20 @@ export component Badge inherits Rectangle {
     if !dot && (text != "" || count >= 0): Rectangle {
         min-width: max(label.preferred-width + Theme.sp-2 * 2, 20px);
         height: 18px;
-        border-radius: Theme.radius-full;
+        // `radius-full` only clamps to a circle on a *square* element (see
+        // SLINT-GOTCHAS-DISCOVERED.md) — this is a dynamic-width pill, so
+        // it needs the exact self.height/2 stadium shape instead.
+        border-radius: self.height / 2;
         background: error ? Theme.state-error : badge-color;
         horizontal-stretch: 0;
 
         label := Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: root.count >= 0 ? (root.count > 99 ? "99+" : root.count) : root.text;
+            // Both ternary arms must resolve to `string` — wrap the bare
+            // `int` in string interpolation rather than relying on an
+            // implicit int->string conversion inside the ternary.
+            text: root.count >= 0 ? (root.count > 99 ? "99+" : "\{root.count}") : root.text;
             color: Theme.text-on-accent;
             font-family: Theme.font-ui;
             font-size: Theme.text-xs;

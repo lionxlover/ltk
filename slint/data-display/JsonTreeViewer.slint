@@ -1,7 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
 export component JsonTreeViewer inherits Rectangle {
+    // Previously declared but never consulted anywhere in the body — the
+    // tree was 4 fully hardcoded rows regardless of this property's value.
     in property <int> item-count: 4;
+    in property <[string]> demo-keys: ["name", "version", "debug", "tags"];
+    in property <[string]> demo-values: ["\"LTK\"", "1.0", "false", "[…]"];
+    in property <[brush]> demo-value-colors: [Theme.green-600, Theme.amber-600, Theme.red-600, Theme.text-tertiary];
+    // Marks a row as a collapsed array/object (shows a "▶" disclosure
+    // triangle before the key instead of the usual blank gutter).
+    in property <[bool]> demo-collapsed: [false, false, false, true];
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
@@ -63,103 +71,12 @@ export component JsonTreeViewer inherits Rectangle {
                     }
                 }
 
-                // "name" key — string value
-                HorizontalLayout {
+                for key[idx] in root.item-count: HorizontalLayout {
                     padding-left: Theme.sp-5;
                     spacing: 0;
 
                     Text {
-                        text: "\"name\"";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.accent;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: ": ";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.text-primary;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "\"LTK\"";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.green-600;
-                        vertical-alignment: center;
-                    }
-                }
-
-                // "version" key — number value
-                HorizontalLayout {
-                    padding-left: Theme.sp-5;
-                    spacing: 0;
-
-                    Text {
-                        text: "\"version\"";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.accent;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: ": ";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.text-primary;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "1.0";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.amber-600;
-                        vertical-alignment: center;
-                    }
-                }
-
-                // "debug" key — boolean value
-                HorizontalLayout {
-                    padding-left: Theme.sp-5;
-                    spacing: 0;
-
-                    Text {
-                        text: "\"debug\"";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.accent;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: ": ";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.text-primary;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "false";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.red-600;
-                        vertical-alignment: center;
-                    }
-                }
-
-                // "tags" key — array (collapsed indicator)
-                HorizontalLayout {
-                    padding-left: Theme.sp-5;
-                    spacing: 0;
-
-                    Text {
-                        text: "▶ ";
+                        text: idx < root.demo-collapsed.length && root.demo-collapsed[idx] ? "▶ " : "";
                         font-family: Theme.font-mono;
                         font-size: Theme.text-sm;
                         color: Theme.text-tertiary;
@@ -167,7 +84,7 @@ export component JsonTreeViewer inherits Rectangle {
                     }
 
                     Text {
-                        text: "\"tags\"";
+                        text: idx < root.demo-keys.length ? "\"\{root.demo-keys[idx]}\"" : "";
                         font-family: Theme.font-mono;
                         font-size: Theme.text-sm;
                         color: Theme.accent;
@@ -183,10 +100,10 @@ export component JsonTreeViewer inherits Rectangle {
                     }
 
                     Text {
-                        text: "[…]";
+                        text: idx < root.demo-values.length ? root.demo-values[idx] : "";
                         font-family: Theme.font-mono;
                         font-size: Theme.text-sm;
-                        color: Theme.text-tertiary;
+                        color: idx < root.demo-value-colors.length ? root.demo-value-colors[idx] : Theme.text-primary;
                         vertical-alignment: center;
                     }
                 }

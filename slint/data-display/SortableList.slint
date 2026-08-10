@@ -4,6 +4,7 @@ export component SortableList inherits Rectangle {
     in property <[string]> items: [];
 
     callback reorder-request(int, int);
+    callback item-clicked(int);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-sm;
@@ -54,7 +55,11 @@ export component SortableList inherits Rectangle {
             }
 
             row-ta := TouchArea {
-                clicked => { root.reorder-request(idx, idx); }
+                // Previously called `reorder-request(idx, idx)` here — a
+                // no-op self-reorder left over from copy-pasting the
+                // handle's handler. Reordering is the drag handle's job;
+                // tapping the row body selects the item instead.
+                clicked => { root.item-clicked(idx); }
             }
         }
     }

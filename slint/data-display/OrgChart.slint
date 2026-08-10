@@ -1,6 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
 export component OrgChart inherits Rectangle {
+    // Fixed 3-node CEO/VP-Eng/VP-Design topology, not a general org-chart
+    // renderer — `item-count`/`demo-levels` don't add or remove nodes;
+    // laying out an arbitrary N-node tree is real algorithmic work
+    // outside the scope of this component. `demo-titles`/`demo-colors`
+    // are wired to the 3 fixed node positions below.
     in property <int> item-count: 3;
 
     background: Theme.bg-surface;
@@ -19,14 +24,14 @@ export component OrgChart inherits Rectangle {
         width: 100px;
         height: 40px;
         border-radius: Theme.radius-md;
-        background: Theme.accent;
+        background: root.demo-colors.length > 0 ? root.demo-colors[0] : Theme.accent;
         border-width: 1px;
-        border-color: Theme.accent;
+        border-color: root.demo-colors.length > 0 ? root.demo-colors[0] : Theme.accent;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "CEO";
+            text: root.demo-titles.length > 0 ? root.demo-titles[0] : "CEO";
             color: #ffffff;
             font-family: Theme.font-ui;
             font-size: Theme.text-sm;
@@ -62,27 +67,18 @@ export component OrgChart inherits Rectangle {
         border-radius: Theme.radius-md;
         background: Theme.bg-surface;
         border-width: 1px;
-        border-color: Theme.green-500;
+        border-color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green-500;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "VP Eng";
-            color: Theme.green-500;
+            text: root.demo-titles.length > 1 ? root.demo-titles[1] : "VP Eng";
+            color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green-500;
             font-family: Theme.font-ui;
             font-size: Theme.text-sm;
             font-weight: Theme.weight-semibold;
             vertical-alignment: center;
         }
-    }
-
-    // Vertical line from connector to VP Eng
-    Rectangle {
-        x: (parent.width - 140px) / 2 + 50px - 1px;
-        y: 80px;
-        width: 2px;
-        height: 0px;
-        background: Theme.border-subtle;
     }
 
     // VP Design Node
@@ -94,13 +90,13 @@ export component OrgChart inherits Rectangle {
         border-radius: Theme.radius-md;
         background: Theme.bg-surface;
         border-width: 1px;
-        border-color: #CD7F32;
+        border-color: root.demo-colors.length > 2 ? root.demo-colors[2] : #CD7F32;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: "VP Design";
-            color: #CD7F32;
+            text: root.demo-titles.length > 2 ? root.demo-titles[2] : "VP Design";
+            color: root.demo-colors.length > 2 ? root.demo-colors[2] : #CD7F32;
             font-family: Theme.font-ui;
             font-size: Theme.text-sm;
             font-weight: Theme.weight-semibold;

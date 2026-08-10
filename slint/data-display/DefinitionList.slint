@@ -30,7 +30,7 @@ export component DefinitionList inherits Rectangle {
                 }
 
                 Text {
-                    text: root.values[idx];
+                    text: idx < root.values.length ? root.values[idx] : "";
                     color: Theme.text-secondary;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-sm;

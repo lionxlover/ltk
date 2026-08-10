@@ -5,6 +5,8 @@ export component VirtualizedList inherits Rectangle {
     in property <int> visible-start: 0;
     in property <int> visible-count: 20;
 
+    callback item-clicked(int);
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     clip: true;
@@ -76,7 +78,9 @@ export component VirtualizedList inherits Rectangle {
                 }
             }
 
-            row-ta := TouchArea { }
+            row-ta := TouchArea {
+                clicked => { root.item-clicked(root.visible-start + idx); }
+            }
         }
 
         if root.has-scroll-down: Rectangle {

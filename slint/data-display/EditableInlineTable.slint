@@ -3,6 +3,13 @@ import { Theme } from "../core/Theme.slint";
 export component EditableInlineTable inherits Rectangle {
     in property <[string]> columns: [];
     in property <int> row-count: 0;
+    // Flat, row-major: cell-values[row * columns.length + col] — same
+    // indexing scheme already used by FeatureComparisonMatrix/
+    // PriceComparisonTable in this batch for their `matrix` property.
+    in property <[string]> cell-values: [];
+
+    callback cell-edited(int, int, string);
+    callback row-clicked(int);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
@@ -56,27 +63,31 @@ export component EditableInlineTable inherits Rectangle {
                             height: 28px;
                             border-radius: Theme.radius-sm;
                             border-width: 1px;
-                            border-color: cell-ta.has-hover ? Theme.accent : transparent;
+                            border-color: cell-input.has-focus ? Theme.accent : transparent;
 
                             animate border-color { duration: Theme.dur-fast; }
 
-                            Text {
+                            cell-input := TextInput {
                                 x: Theme.sp-2;
                                 y: (parent.height - self.height) / 2;
-                                text: "Row \{rowidx + 1} — \{col}";
+                                width: parent.width - Theme.sp-4;
+                                text: (rowidx * root.columns.length + i) < root.cell-values.length
+                                    ? root.cell-values[rowidx * root.columns.length + i]
+                                    : "";
                                 color: Theme.text-primary;
                                 font-family: Theme.font-ui;
                                 font-size: Theme.text-sm;
-                                vertical-alignment: center;
-                                horizontal-stretch: 1;
+                                edited => {
+                                    root.cell-edited(rowidx, i, self.text);
+                                }
                             }
-
-                            cell-ta := TouchArea {}
                         }
                     }
                 }
 
-                row-ta := TouchArea {}
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(rowidx); }
+                }
             }
         }
     }

@@ -12,11 +12,12 @@ re-discovering things the hard way.
 | `buttons/` | 42 | ✅ Done, verified | `buttons.zip` |
 | `inputs/` | 11 | ✅ Done, verified | `inputs.zip` |
 | `forms/` | 4 | ✅ Done, verified | `forms.zip` |
-| `layout-containers/` | 52 | ✅ Done, pending VS Code Problems-panel check | `layout-containers.zip` |
-| everything else | ~721 | ⬜ Not started | — |
+| `layout-containers/` | 52 | ✅ Done, verified via VS Code Problems panel (3 rounds of fixes) | `layout-containers.zip` |
+| `data-display/` | 60 | ✅ Done, pending VS Code Problems-panel check | `data-display.zip` |
+| everything else | ~661 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`data-display` (58), `text-input` (45), `charts` (43), `cards` (39),
+`text-input` (45), `charts` (43), `cards` (39),
 `navigation` (39), `feedback` (36), `typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
@@ -387,6 +388,121 @@ too. Swept the whole batch for the same shape (a `parent.*` reference
 written directly in the *root* component's own bindings, as opposed to
 inside a nested child element, where `parent` safely resolves to the root
 component instead) — no other instances found.
+
+## `data-display/` batch — findings
+
+The dominant systemic bug here was different from (but parallel to)
+`layout-containers/`'s missing-`@children` epidemic: **10 empty
+`TouchArea {}` elements across 8 files** (`EditableInlineTable`,
+`FrozenColumnTable`, `LeaderboardTable`, `SortableDataTable`, `TreeTable`,
+`VirtualizedList`, `VirtualizedTable`, plus `MonthCalendar`'s nav arrows).
+Every one of them had hover/press background styling wired up
+(`row-ta.pressed ? ... : row-ta.has-hover ? ... : transparent`), which
+*implies* the row is clickable, but no `clicked =>` handler and — in most
+cases — no callback even declared on the component. Visually these looked
+completely functional (rows highlight on hover, darken on press) while
+doing nothing at all on click. Fixed by adding a `row-clicked`/
+`item-clicked` callback to each and wiring it, using absolute indices
+(`visible-start + idx`) for the two virtualized components since their
+loop index is relative to the visible window, not the full dataset.
+
+**Bigger structural bugs, one per file, each worth remembering the shape
+of:**
+
+- **`EditableInlineTable`** — named for inline editing, had *zero* editing
+  capability: empty cell `TouchArea`s, no `TextInput`, no property to read
+  edited values back from, no callback. Rebuilt with a real `TextInput`
+  per cell and a `cell-edited(row, col, value)` callback, using the same
+  flat row-major indexing (`row * columns.length + col`) already
+  established by `FeatureComparisonMatrix`/`PriceComparisonTable` in this
+  same batch for their `matrix` property — reused an existing pattern
+  instead of inventing a new one.
+- **`GroupedList`** — a whole section's items were never actually looped.
+  The section body was a single `Rectangle` sized to fit N items
+  (`height: items-per-section[si] * 40px`) but contained exactly one
+  non-repeating "Item {si+1}" row (using the *section* index, not an item
+  index) and one `TouchArea` covering the whole area reporting item index
+  `0` regardless of where it was clicked. Fixed with a real nested `for
+  item_idx in section-count` loop, correct per-item click reporting via
+  `item-clicked(si, item_idx)`, and a bounds check on `items-per-section`
+  against `sections` (they could legitimately be different lengths if the
+  host hasn't populated both yet).
+- **`SortableList`** — the row body's `TouchArea` called
+  `reorder-request(idx, idx)`, a no-op self-reorder — almost certainly a
+  copy-paste of the drag handle's `reorder-request(idx, idx + 1)` with the
+  `+ 1` dropped. Replaced with a distinct `item-clicked` callback so the
+  row body does something coherent (select) instead of a meaningless
+  reorder-to-self.
+- **`Timeline`** — same disease as `layout-containers/`'s worst offenders:
+  a container component with a `vertical` orientation property and *no
+  layout element or `@children` at all*. Nothing placed inside it could
+  ever render. Strong independent evidence this was broken: this
+  category's own `test.slint` didn't use `Timeline` to demonstrate
+  `TimelineItem` — it manually reimplemented Timeline's own job
+  (`VerticalLayout { padding: ...; TimelineItem { ... } }`) inline as a
+  workaround. Fixed using the same "commit to one axis, document the
+  single-`@children` limitation, point to the sibling `HorizontalTimeline`
+  for the other axis" pattern established for `FlexContainer`/
+  `SnapScrollContainer` last batch, and updated `test.slint` to actually
+  exercise the real component instead of working around it.
+- **`MonthCalendar`** — three separate gaps in one file: the ◀/▶
+  month-navigation arrows were empty `TouchArea`s (added `previous-month`/
+  `next-month` callbacks — actually recomputing the visible month is the
+  host's job, this component only tracks a static day grid); day cells had
+  *no* `TouchArea` at all despite `selected-day` being `in-out` (implying
+  the user should be able to click a day) — added click-to-select; and a
+  `day-val > 0 ? day-val : ""` ternary mixed an `int` arm with a `string`
+  arm (see the note on this below).
+- **`WeekCalendar`** — day-column headers were pure display despite
+  `selected-day` being `in-out` — added click-to-select with hover
+  feedback, mirroring the fix pattern used for `MonthCalendar`.
+- **`NetworkGraph` / `OrgChart` / `TerminalOutput` / `JsonTreeViewer`** —
+  all four declared configuration properties (`node-count`, `item-count`,
+  `demo-titles`, `demo-labels`, …) that the component body never
+  consulted at all — a fixed number of hardcoded nodes/rows regardless of
+  what was passed in. Genuine N-node graph/org-chart auto-layout is real
+  algorithmic work outside the scope of a bug-fix pass, so `NetworkGraph`
+  and `OrgChart` were wired to use their declared label/title/color arrays
+  *within* their existing fixed topology (documented as a fixed topology,
+  not a general graph renderer) rather than attempting arbitrary-N
+  layout. `TerminalOutput` and `JsonTreeViewer` had no fixed-topology
+  excuse (they're just row lists), so both were converted to genuinely
+  loop over `demo-*` arrays, matching the pattern already established by
+  `ActivityFeed`/`GanttTimeline`/`LogViewer` elsewhere in this same
+  category. Also deleted a dead 0-height "connector" `Rectangle` in
+  `OrgChart` left over from a decoration that was never actually visible.
+- **Unbounded secondary-array indexing**: `LeadingIconList`,
+  `TrailingActionList`, `TwoLineList`, `AvatarList`, `DefinitionList` all
+  drive their `for` loop off one array (`titles`, `keys`, …) but then index
+  a *second*, independently-sized array (`icons`, `values`, …) with the
+  same loop index and no bounds check — safe only if the caller happens to
+  keep both arrays the same length, which nothing enforces. Added the same
+  `idx < root.other-array.length ? root.other-array[idx] : ""` guard
+  already used correctly elsewhere in this category (e.g. `ActivityFeed`,
+  `ChatMessageThread`). Cross-checked `GanttTimeline` and
+  `PriceComparisonTable`, which looked similar in an automated scan but
+  turned out to already have the guard in a form the regex didn't
+  recognize (a wrapping `if i < ...length:` instead of an inline ternary).
+
+## Note on `int`/`string` ternary mismatches (unconfirmed, fixed defensively)
+
+Two spots (`Badge`, `MonthCalendar`) had a ternary where one arm was a bare
+`int` (`root.count`, `day-val`) and the other was a `string` literal
+(`"99+"`, `""`), assigned directly to a `text:` property. This project's
+own `buttons/ReactionButton.slint` already established as *confirmed*
+that a bare `int` assigned **directly** to `text:` is valid Slint (int
+converts implicitly to string). But a ternary is a different type-checking
+context — both arms need to unify to one type before the assignment ever
+happens, and that's not the same guarantee as the direct-assignment case.
+Rather than assume implicit conversion also reaches inside a ternary arm
+(unconfirmed either way, no compiler access to check), both were wrapped
+in string interpolation (`"\{day-val}"`), which is unambiguously valid
+regardless of the answer. Two further instances of the identical shape
+were spotted in already-shipped, out-of-scope categories —
+`navigation/NavBadge.slint:54` and `indicators/NumericBadge.slint:16` —
+noted here rather than fixed now, since those categories haven't come up
+in the rotation yet; worth a quick check when `navigation`/`indicators`
+are reached.
 
 ## Post-delivery fix: `mouse-cursor` set on a `Rectangle`, not a `TouchArea`
 

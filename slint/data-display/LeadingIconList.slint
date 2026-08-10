@@ -35,7 +35,9 @@ export component LeadingIconList inherits Rectangle {
                     Text {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
-                        text: root.icons[idx];
+                        // Bounds-checked: `icons` might be shorter than
+                        // `titles` (the array actually driving the loop).
+                        text: idx < root.icons.length ? root.icons[idx] : "";
                         color: Theme.text-secondary;
                         font-size: Theme.text-lg;
                         vertical-alignment: center;

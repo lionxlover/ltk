@@ -41,7 +41,7 @@ export component TwoLineList inherits Rectangle {
                     }
 
                     Text {
-                        text: root.subtitles[idx];
+                        text: idx < root.subtitles.length ? root.subtitles[idx] : "";
                         color: Theme.text-secondary;
                         font-family: Theme.font-ui;
                         font-size: Theme.text-sm;
@@ -50,7 +50,7 @@ export component TwoLineList inherits Rectangle {
                 }
 
                 Text {
-                    text: root.metas[idx];
+                    text: idx < root.metas.length ? root.metas[idx] : "";
                     color: Theme.text-tertiary;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-sm;

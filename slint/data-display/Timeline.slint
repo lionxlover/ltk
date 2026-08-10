@@ -5,6 +5,20 @@ export component Timeline inherits Rectangle {
 
     background: transparent;
     horizontal-stretch: 1;
+
+    // Previously had no layout element or `@children` at all — nothing
+    // placed inside this wrapper (e.g. a run of TimelineItem instances)
+    // could ever appear. `@children` must be unconditional and can only
+    // be written once per component, so — same limitation documented for
+    // FlexContainer/SnapScrollContainer in layout-containers/ — it can't
+    // dynamically switch between a VerticalLayout and a HorizontalLayout
+    // based on `vertical` at runtime. This commits to vertical (matching
+    // the default); for a horizontal timeline use HorizontalTimeline.slint
+    // instead, which is already built for that case.
+    VerticalLayout {
+        spacing: 0;
+        @children
+    }
 }
 
 export component TimelineItem inherits Rectangle {

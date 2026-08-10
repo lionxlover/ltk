@@ -3,6 +3,10 @@ import { Theme } from "../core/Theme.slint";
 export component TerminalOutput inherits Rectangle {
     in property <string> prompt-text: "$";
 
+    // Each command is followed by its output line, indexed 1:1.
+    in property <[string]> demo-commands: ["ls -la", "cargo build"];
+    in property <[string]> demo-outputs: ["total 48", "Finished dev profile [unoptimized + debuginfo]"];
+
     background: Theme.dark-mode ? #0D1117 : #1a1a2e;
     border-radius: Theme.radius-card;
     clip: true;
@@ -50,85 +54,46 @@ export component TerminalOutput inherits Rectangle {
                 padding: 0;
                 spacing: Theme.sp-0-5;
 
-                // Line 1: command
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
+                for cmd[idx] in root.demo-commands: VerticalLayout {
+                    spacing: Theme.sp-0-5;
 
-                    Text {
-                        text: root.prompt-text;
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.green-500;
-                        vertical-alignment: center;
+                    HorizontalLayout {
+                        spacing: Theme.sp-2;
+
+                        Text {
+                            text: root.prompt-text;
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: Theme.green-500;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: cmd;
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: #F1F2F5;
+                            vertical-alignment: center;
+                        }
                     }
 
-                    Text {
-                        text: "ls -la";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: #F1F2F5;
-                        vertical-alignment: center;
-                    }
-                }
+                    if idx < root.demo-outputs.length: HorizontalLayout {
+                        spacing: Theme.sp-2;
 
-                // Line 2: output
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
+                        Text {
+                            text: "      ";
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                        }
 
-                    Text {
-                        text: "      ";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "total 48";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: #9CA3AF;
-                        vertical-alignment: center;
-                    }
-                }
-
-                // Line 3: command
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Text {
-                        text: root.prompt-text;
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: Theme.green-500;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "cargo build";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: #F1F2F5;
-                        vertical-alignment: center;
-                    }
-                }
-
-                // Line 4: output
-                HorizontalLayout {
-                    spacing: Theme.sp-2;
-
-                    Text {
-                        text: "      ";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        vertical-alignment: center;
-                    }
-
-                    Text {
-                        text: "Finished dev profile [unoptimized + debuginfo]";
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        color: #9CA3AF;
-                        vertical-alignment: center;
+                        Text {
+                            text: root.demo-outputs[idx];
+                            font-family: Theme.font-mono;
+                            font-size: Theme.text-sm;
+                            color: #9CA3AF;
+                            vertical-alignment: center;
+                        }
                     }
                 }
             }

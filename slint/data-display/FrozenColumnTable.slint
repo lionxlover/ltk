@@ -4,6 +4,8 @@ export component FrozenColumnTable inherits Rectangle {
     in property <[string]> columns: [];
     in property <int> row-count: 0;
 
+    callback row-clicked(int);
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
     border-width: 1px;
@@ -81,7 +83,9 @@ export component FrozenColumnTable inherits Rectangle {
                     }
                 }
 
-                row-ta := TouchArea {}
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(rowidx); }
+                }
             }
         }
     }

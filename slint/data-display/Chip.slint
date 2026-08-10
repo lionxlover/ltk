@@ -13,7 +13,9 @@ export component Chip inherits Rectangle {
     opacity: enabled ? 1.0 : Theme.opacity-disabled;
 
     bg := Rectangle {
-        border-radius: Theme.radius-full;
+        // Dynamic-width pill (min-width from label + fixed height) — not
+        // square, so `radius-full` wouldn't clamp to a flat-sided stadium.
+        border-radius: self.height / 2;
         border-width: 1px;
         border-color: !enabled ? Theme.border-subtle : (checked ? chip-accent : Theme.border-base);
         background: !enabled ? Theme.btn-disabled-bg : (checked ? chip-accent.with-alpha(0.15) : (ta.pressed ? Theme.surface-pressed : (ta.has-hover ? Theme.surface-hover : Theme.bg-raised)));

@@ -7,6 +7,7 @@ export component SortableDataTable inherits Rectangle {
     in property <bool> sort-ascending: true;
 
     callback column-clicked(int);
+    callback row-clicked(int);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-card;
@@ -85,7 +86,9 @@ export component SortableDataTable inherits Rectangle {
                     }
                 }
 
-                row-ta := TouchArea {}
+                row-ta := TouchArea {
+                    clicked => { root.row-clicked(rowidx); }
+                }
             }
         }
     }
