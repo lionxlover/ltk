@@ -20,7 +20,7 @@ export component FrozenColumnTable inherits Rectangle {
             HorizontalLayout {
                 for col[i] in root.columns: Rectangle {
                     horizontal-stretch: i == 0 ? 0 : 1;
-                    width: i == 0 ? 120px : 0px;
+                    preferred-width: i == 0 ? 120px : 0px;
 
                     if i > 0: Rectangle {
                         width: 1px;
@@ -59,7 +59,7 @@ export component FrozenColumnTable inherits Rectangle {
                 HorizontalLayout {
                     for col[i] in root.columns: Rectangle {
                         horizontal-stretch: i == 0 ? 0 : 1;
-                        width: i == 0 ? 120px : 0px;
+                        preferred-width: i == 0 ? 120px : 0px;
 
                         if i > 0: Rectangle {
                             width: 1px;

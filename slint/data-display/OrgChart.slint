@@ -60,7 +60,12 @@ export component OrgChart inherits Rectangle {
 
     // VP Eng Node
     Rectangle {
-        x: (parent.width - 140px) / 2;
+        // Was `(parent.width - 140px) / 2` — that's the connector line's
+        // own half-width, not accounting for this box's own 100px width,
+        // so it sat 50px too far right and overlapped VP Design by 10px
+        // (confirmed by the person's Slint Preview screenshot showing the
+        // two boxes touching/overlapping with no gap).
+        x: (parent.width - 240px) / 2;
         y: 80px;
         width: 100px;
         height: 40px;

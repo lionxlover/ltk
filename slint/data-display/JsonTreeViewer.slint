@@ -52,6 +52,7 @@ export component JsonTreeViewer inherits Rectangle {
                 // Root opening brace
                 HorizontalLayout {
                     spacing: 0;
+                    alignment: start;
 
                     Text {
                         text: "▼ ";
@@ -74,6 +75,12 @@ export component JsonTreeViewer inherits Rectangle {
                 for key[idx] in root.item-count: HorizontalLayout {
                     padding-left: Theme.sp-5;
                     spacing: 0;
+                    // Without this, the row's Text children spread apart
+                    // across the full row width instead of packing
+                    // tightly like inline JSON syntax (confirmed via the
+                    // person's Slint Preview screenshot — key/colon/value
+                    // rendered far apart from each other in every row).
+                    alignment: start;
 
                     Text {
                         text: idx < root.demo-collapsed.length && root.demo-collapsed[idx] ? "▶ " : "";
@@ -111,6 +118,7 @@ export component JsonTreeViewer inherits Rectangle {
                 // Root closing brace
                 HorizontalLayout {
                     spacing: 0;
+                    alignment: start;
 
                     Text {
                         text: "}";

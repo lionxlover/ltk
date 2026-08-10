@@ -504,6 +504,69 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Post-delivery fixes from visual review of the Slint Preview screenshots (`data-display.zip`)
+
+The person shared screenshots of the whole rendered `test.slint`. Since
+this batch compiled with 0 errors/0 warnings, these were all things a
+compiler can't catch — genuine visual/layout bugs only visible by
+actually looking at the render, which is exactly why this project's own
+skill workflow says "never declare UI work done without looking at a
+render." Three real bugs found this way:
+
+- **`FrozenColumnTable` — columns overlapping into garbled/doubled
+  text.** Pre-existing in the file before I touched it (I'd only added
+  the `row-clicked` callback, not touched the column layout). Root cause:
+  `width: i == 0 ? 120px : 0px;` sat on the *same* Rectangle as
+  `horizontal-stretch: i == 0 ? 0 : 1;`. Per this project's own documented
+  gotcha, `width: X` always also sets `min-width`/`max-width` to `X`
+  internally — so for every non-first column, `width: 0px` clamped
+  min-width=max-width=0, which pins that column to exactly zero width
+  *regardless* of what `horizontal-stretch` says (stretch only
+  redistributes space within the min/max bounds, and here those bounds
+  were both zero). Since the inner `Text` wasn't clipped and used explicit
+  `x:` positioning, every non-first column's content collapsed to the same
+  x-position and rendered on top of its neighbors — exactly the
+  overlapping/doubled text visible in the screenshot. Fixed by swapping
+  `width:` for `preferred-width:` on the ternary — a distinct property
+  that doesn't alias min/max, so it cooperates with `horizontal-stretch`
+  instead of fighting it (this is in fact the correct, idiomatic Slint
+  mechanism for a "one fixed column + N stretchy columns" layout). Scanned
+  the rest of the batch for the same `width: cond ? X : 0px` +
+  `horizontal-stretch` combination on one element — two other hits
+  (`GanttTimeline`, `TreeTable`) turned out to be safe: one has no
+  `horizontal-stretch` at all (absolutely positioned, not layout-managed),
+  the other uses `horizontal-stretch: 0` (compatible with a width
+  binding, not fighting it).
+- **`OrgChart` — VP Eng and VP Design boxes overlapping by 10px.**
+  Pre-existing in the hardcoded positions I didn't touch (I only wired
+  `demo-titles`/`demo-colors` into the existing layout). VP Eng's
+  `x: (parent.width - 140px) / 2` was reusing the horizontal connector
+  line's own half-width instead of accounting for VP Eng's *own* 100px
+  box width, leaving it 50px too far right. Confirmed by the arithmetic
+  (VP Eng's right edge worked out to `(W+60)/2`, VP Design's left edge to
+  `(W+40)/2` — a 10px overlap) before touching the code. Fixed by changing
+  the divisor so VP Eng's box width is accounted for
+  (`(parent.width - 240px) / 2`), which also happens to make both boxes'
+  centers land exactly under the horizontal connector's two endpoints —
+  clean tree geometry, not just "no longer overlapping."
+- **`JsonTreeViewer` — key/colon/value spread across the full row width**
+  instead of packing together like inline JSON syntax. This one *was*
+  introduced by me: the header row's `HorizontalLayout` had an explicit
+  `alignment: start;` (copied from an established pattern elsewhere in
+  this batch), but I forgot to add the same line to the actual per-row
+  loop and the opening/closing-brace rows when I rewrote this component.
+  Added `alignment: start;` to all three. I don't have full certainty on
+  *why* the default spread the items apart in this specific case — a
+  side-by-side comparison with `DiffViewer`'s structurally similar
+  (multiple `Text` siblings, no explicit width) row, which renders tight
+  with no `alignment` set at all, means "HorizontalLayout defaults to
+  spreading children apart" isn't a safe general rule to state — but
+  `alignment: start` is unambiguously the correct, standard mechanism for
+  forcing tight left-packing regardless of the underlying cause, so the
+  fix is safe to ship even without having fully isolated the mechanism.
+  Repo-wide scan for other `HorizontalLayout`s with 2+ `Text` children and
+  no `alignment` set anywhere in the block found no further instances.
+
 ## Post-delivery fix: `mouse-cursor` set on a `Rectangle`, not a `TouchArea`
 
 The person's VS Code Slint Preview caught a real compile error after the

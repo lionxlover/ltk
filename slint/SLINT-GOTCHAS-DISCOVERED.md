@@ -405,6 +405,40 @@ export component AspectRatioBox inherits Rectangle {
 
 ---
 
+### `width: cond ? X : 0px` fighting `horizontal-stretch` on the same element
+
+```slint
+// WRONG — visually confirmed via VS Code Slint Preview: non-first columns
+// collapse to zero width and their Text content renders on top of each
+// other (garbled/doubled-looking text), regardless of horizontal-stretch
+Rectangle {
+    horizontal-stretch: i == 0 ? 0 : 1;
+    width: i == 0 ? 120px : 0px;   // <- the 0px arm is the problem
+}
+```
+This is the width/min-max aliasing gotcha above in a less obvious shape:
+`width: 0px` still sets `min-width` and `max-width` to `0px` even when
+`0px` is meant as a "don't care, let stretch decide" placeholder for the
+non-fixed columns. Once min-width=max-width=0, `horizontal-stretch: 1`
+has no room to redistribute into — the element is clamped to exactly zero
+width no matter its stretch factor. Any `Text`/content inside that
+zero-width element that uses explicit `x:` positioning (rather than being
+laid out) isn't clipped by default, so it still renders — just at the same
+collapsed x-position as every sibling column, overlapping them all.
+
+```slint
+// RIGHT — preferred-width is a distinct property that does NOT alias
+// min-width/max-width, so it cooperates with horizontal-stretch instead
+// of fighting it. This is the correct, idiomatic mechanism for "one fixed
+// column + N stretchy columns" in a single HorizontalLayout.
+Rectangle {
+    horizontal-stretch: i == 0 ? 0 : 1;
+    preferred-width: i == 0 ? 120px : 0px;
+}
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`
