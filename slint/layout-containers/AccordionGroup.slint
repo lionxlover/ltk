@@ -5,9 +5,14 @@ export component AccordionGroup inherits Rectangle {
     clip: true;
 
     in property <bool> allow-multiple: false;
+    // Note: enforcing single-open behavior across items requires host-side
+    // coordination — Slint can't introspect @children to close siblings
+    // automatically. Bind each AccordionItem's `expanded` from the host and
+    // react to `toggled` to close the others when allow-multiple is false.
 
     VerticalLayout {
         spacing: 2px;
+        @children
     }
 }
 
@@ -20,36 +25,58 @@ export component AccordionItem inherits Rectangle {
 
     in property <string> title: "";
     in-out property <bool> expanded: false;
+    in property <length> content-height: 160px;
 
-    height: expanded ? 160px : 40px;
+    callback toggled(bool);
 
-    Rectangle {
-        height: 40px;
-        border-radius: Theme.radius-md;
+    height: 40px + (expanded ? content-height : 0px);
+    animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
-        HorizontalLayout {
-            padding-left: Theme.sp-4;
-            padding-right: Theme.sp-4;
+    VerticalLayout {
+        Rectangle {
+            height: 40px;
 
-            Text {
-                text: title;
-                font-size: Theme.text-sm;
-                font-weight: Theme.weight-medium;
-                color: Theme.text-primary;
-                y: (parent.height - self.height) / 2;
-                vertical-stretch: 1;
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: title;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: Theme.text-primary;
+                    y: (parent.height - self.height) / 2;
+                    vertical-stretch: 1;
+                }
+
+                Text {
+                    text: expanded ? "▾" : "▸";
+                    font-size: 12px;
+                    color: Theme.text-tertiary;
+                    y: (parent.height - self.height) / 2;
+                }
             }
 
-            Text {
-                text: expanded ? "▾" : "▸";
-                font-size: 12px;
-                color: Theme.text-tertiary;
-                y: (parent.height - self.height) / 2;
+            TouchArea {
+                clicked => {
+                    root.expanded = !root.expanded;
+                    root.toggled(root.expanded);
+                }
             }
         }
 
-        TouchArea {
-            clicked => { root.expanded = !root.expanded; }
+        // Content wrapper stays unconditionally instantiated (a `@children`
+        // placeholder cannot live inside an `if`) and animates its own
+        // height so the outer root's height animation stays in sync.
+        Rectangle {
+            clip: true;
+            height: expanded ? content-height : 0px;
+            animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+            VerticalLayout {
+                padding: Theme.sp-3;
+                @children
+            }
         }
     }
 }

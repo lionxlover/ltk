@@ -1,5 +1,10 @@
 import { Theme } from "../core/Theme.slint";
 
+// True masonry packing needs each item's rendered height to balance
+// columns, and Slint gives no way to introspect the size of opaque
+// @children up front. This falls back to a uniform GridLayout — regular
+// rows/columns, not uneven-height packing — which is an honest reduced
+// version rather than a fake masonry effect.
 export component MasonryGrid inherits Rectangle {
     background: transparent;
     clip: true;
@@ -8,14 +13,10 @@ export component MasonryGrid inherits Rectangle {
     in property <length> gap: 12px;
     in property <length> item-min-height: 120px;
 
-    // Simulated masonry using fixed column layout
-    HorizontalLayout {
-        spacing: gap;
-
-        for col_idx[ci] in columns: VerticalLayout {
-            vertical-stretch: 1;
+    Flickable {
+        GridLayout {
             spacing: gap;
-            width: parent.width / columns - gap;
+            @children
         }
     }
 }

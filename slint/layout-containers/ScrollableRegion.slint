@@ -6,9 +6,16 @@ export component ScrollableRegion inherits Rectangle {
 
     in property <bool> horizontal-scroll: false;
     in property <bool> vertical-scroll: true;
-    in property <int> scroll-step: 20;
+    in property <length> scroll-step: 20px;
 
+    // The Flickable previously had no content element at all — nothing
+    // placed "inside" it could ever appear or be scrolled to.
     Flickable {
-        viewport-width: horizontal-scroll ? 1600px : parent.width;
+        viewport-width: horizontal-scroll ? content.preferred-width : parent.width;
+        viewport-height: vertical-scroll ? content.preferred-height : parent.height;
+
+        content := VerticalLayout {
+            @children
+        }
     }
 }

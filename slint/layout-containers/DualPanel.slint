@@ -7,17 +7,34 @@ export component DualPanel inherits Rectangle {
     in property <int> sash-position: 50;
     in property <bool> vertical: false;
 
+    // Only one @children slot is possible per component, so the fixed pane
+    // is structural chrome and the stretch pane carries the content. A
+    // single set of elements (sized with ternaries) is used instead of two
+    // mutually-exclusive Horizontal/VerticalLayouts, so @children keeps
+    // rendering regardless of `vertical` — a `visible: false` branch would
+    // silently hide whichever copy held @children.
     Rectangle {
+        x: 0; y: 0;
+        width: vertical ? parent.width : parent.width * sash-position / 100;
+        height: vertical ? parent.height * sash-position / 100 : parent.height;
         background: Theme.bg-surface;
     }
 
     Rectangle {
+        x: vertical ? 0px : parent.width * sash-position / 100;
+        y: vertical ? parent.height * sash-position / 100 : 0px;
         width: vertical ? parent.width : 4px;
         height: vertical ? 4px : parent.height;
         background: Theme.border-subtle;
     }
 
     Rectangle {
+        x: vertical ? 0px : parent.width * sash-position / 100 + 4px;
+        y: vertical ? parent.height * sash-position / 100 + 4px : 0px;
+        width: vertical ? parent.width : parent.width - (parent.width * sash-position / 100) - 4px;
+        height: vertical ? parent.height - (parent.height * sash-position / 100) - 4px : parent.height;
         background: Theme.bg-base;
+
+        @children
     }
 }

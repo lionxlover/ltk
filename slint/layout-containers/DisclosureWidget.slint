@@ -5,37 +5,54 @@ export component DisclosureWidget inherits Rectangle {
 
     in property <string> label: "";
     in-out property <bool> open: false;
+    in property <length> content-height: 80px;
+
+    callback toggled(bool);
 
     VerticalLayout {
         spacing: 4px;
 
-        HorizontalLayout {
-            spacing: Theme.sp-2;
+        Rectangle {
+            height: 20px;
 
-            Text {
-                text: open ? "▾" : "▸";
-                font-size: 12px;
-                color: Theme.text-tertiary;
-                y: 2px;
+            HorizontalLayout {
+                spacing: Theme.sp-2;
+
+                Text {
+                    text: open ? "▾" : "▸";
+                    font-size: 12px;
+                    color: Theme.text-tertiary;
+                    y: 2px;
+                }
+
+                Text {
+                    text: label;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-medium;
+                    color: Theme.text-primary;
+                    y: 2px;
+                }
             }
 
-            Text {
-                text: label;
-                font-size: Theme.text-sm;
-                font-weight: Theme.weight-medium;
-                color: Theme.text-primary;
-                y: 2px;
+            TouchArea {
+                clicked => {
+                    root.open = !root.open;
+                    root.toggled(root.open);
+                }
             }
         }
 
-        if open: Rectangle {
-            height: 80px;
-            background: transparent;
-            padding-left: 20px;
-        }
-    }
+        // `@children` can't live inside `if open: ...` — keep this wrapper
+        // unconditional and animate its height to 0 instead.
+        Rectangle {
+            clip: true;
+            height: open ? content-height : 0px;
+            animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
-    TouchArea {
-        clicked => { root.open = !root.open; }
+            VerticalLayout {
+                padding-left: 20px;
+                @children
+            }
+        }
     }
 }

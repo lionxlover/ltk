@@ -8,13 +8,9 @@ export component TileGrid inherits Rectangle {
     in property <bool> uniform: true;
 
     Flickable {
-        HorizontalLayout {
+        GridLayout {
             spacing: gap;
-
-            for col_idx[ci] in columns: VerticalLayout {
-                vertical-stretch: 1;
-                spacing: gap;
-            }
+            @children
         }
     }
 }

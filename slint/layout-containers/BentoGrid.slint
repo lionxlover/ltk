@@ -7,12 +7,14 @@ export component BentoGrid inherits Rectangle {
     in property <int> columns: 4;
     in property <int> rows: 3;
 
+    // Real GridLayout: children declare their own `row`/`col`/`rowspan`/
+    // `colspan` (that's how bento-style uneven tiles are placed in Slint —
+    // there's no automatic packing algorithm, so the host positions each
+    // tile explicitly).
     Flickable {
-        VerticalLayout {
+        GridLayout {
             spacing: gap;
-            HorizontalLayout { spacing: gap; }
-            HorizontalLayout { spacing: gap; }
-            HorizontalLayout { spacing: gap; }
+            @children
         }
     }
 }

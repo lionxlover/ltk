@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Per-step content has the same fundamental limitation as any multi-slot
+// component: a single @children placeholder can't be routed to a
+// different pane per step index. This exposes ONE content region that
+// always shows whatever was passed in; switching steps changes
+// `current-step` for the host to react to (e.g. via a `for`/`if` over its
+// own model keyed on `current-step`), but doesn't by itself swap the
+// displayed content.
 export component WizardWrapper inherits Rectangle {
     background: transparent;
 
@@ -10,6 +17,9 @@ export component WizardWrapper inherits Rectangle {
     in property <bool> show-back: true;
     in property <bool> show-next: true;
     in property <bool> show-finish: false;
+
+    callback step-changed(int);
+    callback finished();
 
     VerticalLayout {
         spacing: Theme.sp-4;
@@ -43,6 +53,7 @@ export component WizardWrapper inherits Rectangle {
         // Content area
         Rectangle {
             vertical-stretch: 1;
+            @children
         }
 
         // Navigation buttons
@@ -67,7 +78,13 @@ export component WizardWrapper inherits Rectangle {
                 }
 
                 TouchArea {
-                    clicked => { if current-step > 0 { current-step -= 1; } }
+                    enabled: current-step > 0;
+                    clicked => {
+                        if current-step > 0 {
+                            current-step -= 1;
+                            root.step-changed(current-step);
+                        }
+                    }
                 }
             }
 
@@ -87,7 +104,13 @@ export component WizardWrapper inherits Rectangle {
                 }
 
                 TouchArea {
-                    clicked => { if current-step < total-steps - 1 { current-step += 1; } }
+                    enabled: current-step < total-steps - 1;
+                    clicked => {
+                        if current-step < total-steps - 1 {
+                            current-step += 1;
+                            root.step-changed(current-step);
+                        }
+                    }
                 }
             }
 
@@ -104,6 +127,10 @@ export component WizardWrapper inherits Rectangle {
                     color: #ffffff;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    clicked => { root.finished(); }
                 }
             }
         }

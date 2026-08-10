@@ -1,20 +1,21 @@
 import { Theme } from "../core/Theme.slint";
 
+// A single @children placeholder must be unconditional (see gotchas.md /
+// SLINT-GOTCHAS-DISCOVERED.md — `if cond: Element { @children }` is a real
+// compile error, and it can only be written once per component regardless
+// of conditionals). That rules out genuinely switching the same @children
+// between a HorizontalLayout and a VerticalLayout at runtime. This
+// component therefore commits to one axis (horizontal, matching its
+// default) — use the dedicated `VerticalStack` component for a vertical
+// flow instead of toggling `horizontal` here.
 export component FlexContainer inherits Rectangle {
     background: transparent;
 
-    in property <bool> horizontal: true;
     in property <length> gap: 8px;
-    in property <bool> wrap: true;
     in property <string> alignment: "start";
 
     HorizontalLayout {
-        visible: horizontal;
         spacing: gap;
-    }
-
-    VerticalLayout {
-        visible: !horizontal;
-        spacing: gap;
+        @children
     }
 }

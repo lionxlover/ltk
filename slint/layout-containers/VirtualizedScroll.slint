@@ -1,5 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
+// True virtualization (only rendering rows currently in the viewport)
+// needs a data model plus a per-row template — that's fundamentally
+// different from accepting opaque `@children`, which forces every child to
+// exist whether visible or not, defeating the point of virtualizing at all.
+// This component only reserves the correct scrollable range
+// (`total-items * item-height`); for genuine virtualization use Slint's
+// `ListView` (std-widgets.slint) driven by a real model, per this
+// project's own debugging-and-mcp.md guidance ("use ListView for long
+// lists — it virtualizes, while `for` inside a ScrollView instantiates
+// every row").
 export component VirtualizedScroll inherits Rectangle {
     background: transparent;
     clip: true;
@@ -10,5 +20,9 @@ export component VirtualizedScroll inherits Rectangle {
 
     Flickable {
         viewport-height: total-items * item-height;
+
+        VerticalLayout {
+            @children
+        }
     }
 }

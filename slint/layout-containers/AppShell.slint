@@ -24,9 +24,14 @@ export component AppShell inherits Rectangle {
                 Rectangle { width: 1px; height: parent.height; x: parent.width - 1px; background: Theme.border-default; }
             }
 
+            // Main content area. Only one @children placeholder is allowed
+            // per component, so this is the sole content slot AppShell
+            // exposes — the topbar/sidebar/statusbar remain chrome-only.
             Rectangle {
                 vertical-stretch: 1;
                 background: Theme.bg-base;
+
+                @children
             }
         }
 

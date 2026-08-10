@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same limitation as MasonryGrid: true waterfall/masonry packing needs
+// each item's rendered height up front to balance columns, which Slint
+// can't get from opaque @children. This falls back to a uniform
+// GridLayout (regular rows/columns) rather than faking uneven packing.
 export component WaterfallLayout inherits Rectangle {
     background: transparent;
     clip: true;
@@ -8,13 +12,9 @@ export component WaterfallLayout inherits Rectangle {
     in property <length> gap: 12px;
 
     Flickable {
-        HorizontalLayout {
+        GridLayout {
             spacing: gap;
-
-            for col_idx[ci] in columns: VerticalLayout {
-                vertical-stretch: 1;
-                spacing: gap;
-            }
+            @children
         }
     }
 }

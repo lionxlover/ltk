@@ -8,6 +8,7 @@ export component ColumnGrid inherits Rectangle {
 
     HorizontalLayout {
         spacing: gutter;
+        @children
     }
 }
 
@@ -15,4 +16,6 @@ export component GridColumn inherits Rectangle {
     in property <int> span: 1;
     background: transparent;
     horizontal-stretch: span;
+
+    @children
 }

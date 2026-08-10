@@ -7,6 +7,8 @@ export component TwoColumn inherits Rectangle {
     in property <length> left-width: 240px;
     in property <length> gap: 0px;
 
+    // Only one @children slot is possible per component — the right
+    // column carries content; the left column is chrome-only.
     HorizontalLayout {
         spacing: gap;
 
@@ -18,6 +20,7 @@ export component TwoColumn inherits Rectangle {
         Rectangle {
             vertical-stretch: 1;
             background: transparent;
+            @children
         }
     }
 }

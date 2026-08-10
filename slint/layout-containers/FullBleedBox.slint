@@ -2,6 +2,7 @@ import { Theme } from "../core/Theme.slint";
 
 export component FullBleedBox inherits Rectangle {
     background: transparent;
+    clip: true;
 
     in property <length> bleed: 24px;
 
@@ -9,5 +10,7 @@ export component FullBleedBox inherits Rectangle {
         x: -root.bleed;
         width: parent.width + (root.bleed * 2);
         height: parent.height;
+
+        @children
     }
 }

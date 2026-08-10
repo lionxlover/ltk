@@ -1,11 +1,23 @@
 import { Theme } from "../core/Theme.slint";
 
+// A real cross-tree portal (rendering children at a different point in the
+// tree, e.g. document.body in the DOM) has no equivalent in Slint — there
+// is no runtime reparenting API. `PopupWindow` is the closest built-in
+// mechanism for content that must escape local `clip`/z-order, but it's a
+// genuinely different element (see events-and-overlays.md / gotchas.md),
+// not a drop-in replacement for arbitrary teleportation. This component is
+// left as a locally-gated wrapper: `active` only controls whether its own
+// @children are visible in place, it does not move them anywhere. The
+// wrapper stays unconditionally instantiated (`@children` can't live
+// inside `if cond: Element {}`) and toggles `visible` instead.
 export component PortalTeleport inherits Rectangle {
     background: transparent;
 
-    in property <bool> active: false;
+    in property <bool> active: true;
     in property <string> target-id: "";
 
-    // Renders children in a separate visual layer
-    // (Simulated via overlay positioning in Slint)
+    VerticalLayout {
+        visible: active;
+        @children
+    }
 }

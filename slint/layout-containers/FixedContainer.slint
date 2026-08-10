@@ -1,10 +1,33 @@
 import { Theme } from "../core/Theme.slint";
 
+// Positions its content at a fixed corner/edge of the parent, independent
+// of normal document flow — e.g. a floating action button or badge.
 export component FixedContainer inherits Rectangle {
     background: transparent;
 
-    in property <string> position: "top-right";
+    in property <string> position: "top-right"; // top-left, top-right, bottom-left, bottom-right, center
     in property <length> offset-x: 16px;
     in property <length> offset-y: 16px;
     in property <int> z-index: 100;
+
+    // Rectangle default-fills its parent (containers fill by default in
+    // Slint) — that's exactly what we want here so this component can be
+    // dropped anywhere and still cover the area it's meant to float over.
+    z: z-index;
+
+    Rectangle {
+        width: content.preferred-width;
+        height: content.preferred-height;
+
+        x: position == "top-left" || position == "bottom-left" ? offset-x
+            : position == "center" ? (parent.width - self.width) / 2
+            : parent.width - self.width - offset-x;
+        y: position == "top-left" || position == "top-right" ? offset-y
+            : position == "center" ? (parent.height - self.height) / 2
+            : parent.height - self.height - offset-y;
+
+        content := VerticalLayout {
+            @children
+        }
+    }
 }

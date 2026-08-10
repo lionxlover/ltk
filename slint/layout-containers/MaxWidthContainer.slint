@@ -4,13 +4,19 @@ export component MaxWidthContainer inherits Rectangle {
     background: transparent;
 
     in property <length> container-max-width: 1200px;
-    in property <int> padding-x: 24;
+    in property <length> container-padding-x: 24px;
 
     HorizontalLayout {
         alignment: center;
 
         Rectangle {
             width: Math.min(parent.width, root.container-max-width);
+
+            HorizontalLayout {
+                padding-left: root.container-padding-x;
+                padding-right: root.container-padding-x;
+                @children
+            }
         }
     }
 }

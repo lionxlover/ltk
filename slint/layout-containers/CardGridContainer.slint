@@ -7,9 +7,12 @@ export component CardGridContainer inherits Rectangle {
     in property <length> gap: 16px;
     in property <length> min-card-width: 280px;
 
+    // Uniform grid: children fill in row-major order via `row`/`col`, or
+    // simply omit them and let GridLayout auto-flow left-to-right/top-down.
     Flickable {
-        VerticalLayout {
+        GridLayout {
             spacing: gap;
+            @children
         }
     }
 }

@@ -6,25 +6,48 @@ export component ResizablePanelGroup inherits Rectangle {
 
     in property <bool> horizontal: true;
     in property <int> panel-count: 2;
+    in-out property <int> split-percent: 50;
 
-    HorizontalLayout {
-        visible: horizontal;
-        spacing: 0;
+    callback split-changed(int);
 
-        Rectangle {
-            vertical-stretch: 1;
-            background: Theme.bg-surface;
+    // Only one @children slot is possible per component — the second
+    // (stretch) pane carries content; the first pane is chrome-only.
+    // A single set of elements (sized with ternaries) is used instead of
+    // mutually-exclusive Horizontal/VerticalLayouts so @children keeps
+    // rendering regardless of orientation.
+    Rectangle {
+        x: 0; y: 0;
+        width: horizontal ? parent.width * split-percent / 100 : parent.width;
+        height: horizontal ? parent.height : parent.height * split-percent / 100;
+        background: Theme.bg-surface;
+    }
+
+    divider := Rectangle {
+        x: horizontal ? parent.width * split-percent / 100 : 0px;
+        y: horizontal ? 0px : parent.height * split-percent / 100;
+        width: horizontal ? 4px : parent.width;
+        height: horizontal ? parent.height : 4px;
+        background: Theme.border-default;
+        mouse-cursor: horizontal ? MouseCursor.ew-resize : MouseCursor.ns-resize;
+
+        TouchArea {
+            mouse-cursor: parent.mouse-cursor;
+            moved => {
+                root.split-percent = horizontal
+                    ? max(10, min(90, (self.mouse-x + divider.x) / root.width * 100))
+                    : max(10, min(90, (self.mouse-y + divider.y) / root.height * 100));
+                root.split-changed(root.split-percent);
+            }
         }
+    }
 
-        Rectangle {
-            width: horizontal ? 4px : parent.width;
-            height: horizontal ? parent.height : 4px;
-            background: Theme.border-default;
-        }
+    Rectangle {
+        x: horizontal ? parent.width * split-percent / 100 + 4px : 0px;
+        y: horizontal ? 0px : parent.height * split-percent / 100 + 4px;
+        width: horizontal ? parent.width - (parent.width * split-percent / 100) - 4px : parent.width;
+        height: horizontal ? parent.height : parent.height - (parent.height * split-percent / 100) - 4px;
+        background: Theme.bg-base;
 
-        Rectangle {
-            vertical-stretch: 1;
-            background: Theme.bg-base;
-        }
+        @children
     }
 }

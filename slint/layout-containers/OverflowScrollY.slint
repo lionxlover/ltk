@@ -5,11 +5,12 @@ export component OverflowScrollY inherits Rectangle {
     clip: true;
 
     Flickable {
-        viewport-height: 2000px;
+        viewport-height: content.preferred-height;
         vertical-stretch: 1;
 
-        VerticalLayout {
+        content := VerticalLayout {
             spacing: Theme.sp-4;
+            @children
         }
     }
 }

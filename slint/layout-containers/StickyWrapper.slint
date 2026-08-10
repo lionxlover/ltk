@@ -7,8 +7,10 @@ export component StickyWrapper inherits Rectangle {
     in property <bool> stuck: false;
 
     Rectangle {
-        y: stuck ? 0px : 0px;
+        y: stuck ? sticky-top : 0px;
         background: stuck ? Theme.bg-raised : transparent;
         z: 10;
+
+        @children
     }
 }

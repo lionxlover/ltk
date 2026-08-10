@@ -5,11 +5,12 @@ export component OverflowScrollX inherits Rectangle {
     clip: true;
 
     Flickable {
-        viewport-width: 2000px;
+        viewport-width: content.preferred-width;
         horizontal-stretch: 1;
 
-        HorizontalLayout {
+        content := HorizontalLayout {
             spacing: Theme.sp-4;
+            @children
         }
     }
 }

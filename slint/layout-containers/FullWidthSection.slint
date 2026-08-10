@@ -1,8 +1,18 @@
 import { Theme } from "../core/Theme.slint";
 
+// Was previously just a bag of unused int properties with no layout at
+// all — nothing could ever be placed inside it.
 export component FullWidthSection inherits Rectangle {
     background: transparent;
 
-    in property <int> padding-y: 48;
-    in property <int> padding-x: 0;
+    in property <length> section-padding-y: 48px;
+    in property <length> section-padding-x: 0px;
+
+    VerticalLayout {
+        padding-top: section-padding-y;
+        padding-bottom: section-padding-y;
+        padding-left: section-padding-x;
+        padding-right: section-padding-x;
+        @children
+    }
 }

@@ -6,6 +6,19 @@ export component CssGridContainer inherits Rectangle {
 
     in property <int> columns: 3;
     in property <int> rows: 3;
-    in property <int> column-gap: 16;
-    in property <int> row-gap: 16;
+    in property <length> column-gap: 16px;
+    in property <length> row-gap: 16px;
+
+    // This was previously just a bag of unused properties with no layout
+    // at all — nothing placed "inside" it could ever appear. GridLayout is
+    // the real Slint equivalent of CSS grid: children set their own
+    // `row`/`col`/`rowspan`/`colspan`, or omit them to auto-flow.
+    GridLayout {
+        spacing: column-gap;
+        // GridLayout only has one `spacing`; a distinct row-gap would need
+        // per-row Rectangle spacers, so this maps `column-gap` as the
+        // primary spacing between cells. `row-gap` and `rows`/`columns`
+        // stay available for the host's own row/col arithmetic.
+        @children
+    }
 }

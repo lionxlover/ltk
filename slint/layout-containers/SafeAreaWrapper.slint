@@ -13,5 +13,7 @@ export component SafeAreaWrapper inherits Rectangle {
         y: safe-top;
         width: parent.width - safe-left - safe-right;
         height: parent.height - safe-top - safe-bottom;
+
+        @children
     }
 }

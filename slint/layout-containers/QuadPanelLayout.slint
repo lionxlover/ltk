@@ -8,12 +8,18 @@ export component QuadPanelLayout inherits Rectangle {
     in property <int> horizontal-split: 50;
     in property <int> vertical-split: 50;
 
+    // Only one @children slot is possible per component. Exposing four
+    // independent panels through a single wrapper isn't achievable with
+    // vanilla `@children` — the bottom-right panel carries content; the
+    // other three quadrants stay chrome-only. Compose the four panels
+    // directly with nested HorizontalLayout/VerticalLayout in the host if
+    // all four need independent content.
     HorizontalLayout {
         spacing: gap;
 
         VerticalLayout {
             spacing: gap;
-            horizontal-stretch: 1;
+            horizontal-stretch: horizontal-split;
 
             Rectangle { background: Theme.bg-surface; }
             Rectangle { background: Theme.bg-surface; }
@@ -23,10 +29,13 @@ export component QuadPanelLayout inherits Rectangle {
 
         VerticalLayout {
             spacing: gap;
-            horizontal-stretch: 1;
+            horizontal-stretch: 100 - horizontal-split;
 
             Rectangle { background: Theme.bg-raised; }
-            Rectangle { background: Theme.bg-raised; }
+            Rectangle {
+                background: Theme.bg-raised;
+                @children
+            }
         }
     }
 }

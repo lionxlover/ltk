@@ -6,9 +6,17 @@ export component FocusTrapRegion inherits Rectangle {
     in property <bool> active: false;
     in property <string> restore-focus-id: "";
 
+    // Whether a nested FocusScope/TextInput/PopupWindow receives key events
+    // while a child holds real focus is unconfirmed in this project's own
+    // notes — this only supplies the visual "trapped" affordance and a
+    // FocusScope ancestor; it does not guarantee Tab-cycling containment.
     Rectangle {
         border-width: active ? 2px : 0px;
         border-color: Theme.accent;
         border-radius: Theme.radius-md;
+
+        FocusScope {
+            @children
+        }
     }
 }

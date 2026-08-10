@@ -4,7 +4,7 @@ export component SingleColumn inherits Rectangle {
     background: transparent;
 
     in property <length> column-max-width: 720px;
-    in property <int> padding-px: 24;
+    in property <length> column-padding-x: 24px;
 
     HorizontalLayout {
         alignment: center;
@@ -12,6 +12,12 @@ export component SingleColumn inherits Rectangle {
         Rectangle {
             width: Math.min(parent.width, root.column-max-width);
             background: transparent;
+
+            HorizontalLayout {
+                padding-left: root.column-padding-x;
+                padding-right: root.column-padding-x;
+                @children
+            }
         }
     }
 }

@@ -6,11 +6,21 @@ export component InfiniteScrollWrapper inherits Rectangle {
     in property <bool> loading: false;
     in property <bool> has-more: true;
 
+    // Fires when the scroll position nears the bottom, so the host can
+    // fetch the next page. Whether `changed <child>.<property>` is valid
+    // for a property on a *nested* element (vs. one on `root` itself) is
+    // unconfirmed in this project's own notes, so this deliberately
+    // doesn't guess at wiring an automatic scroll-position trigger — the
+    // host should call `load-more` itself when it detects the Flickable
+    // nearing its viewport end (e.g. from its own scroll-position binding).
+    callback load-more();
+
     Flickable {
         vertical-stretch: 1;
 
         VerticalLayout {
             spacing: Theme.sp-4;
+            @children
         }
     }
 

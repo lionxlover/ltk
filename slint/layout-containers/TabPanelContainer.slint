@@ -1,11 +1,21 @@
 import { Theme } from "../core/Theme.slint";
 
+// Per-tab content panes have the same fundamental limitation as any
+// multi-slot component: a single @children placeholder can't be routed to
+// a different pane per tab index, since Slint gives no way to introspect
+// or split opaque children by position. This exposes ONE content region
+// (below the tab strip) that always shows whatever was passed in;
+// switching tabs changes `active-tab` for the host to react to (e.g. via
+// a `for`/`if` over its own model keyed on `active-tab`), but doesn't by
+// itself swap the displayed content.
 export component TabPanelContainer inherits Rectangle {
     background: transparent;
 
     in property <[string]> tabs: ["Tab 1", "Tab 2", "Tab 3"];
     in-out property <int> active-tab: 0;
     in property <bool> show-icons: false;
+
+    callback tab-changed(int);
 
     VerticalLayout {
         spacing: 0;
@@ -34,7 +44,10 @@ export component TabPanelContainer inherits Rectangle {
                 }
 
                 TouchArea {
-                    clicked => { root.active-tab = idx; }
+                    clicked => {
+                        root.active-tab = idx;
+                        root.tab-changed(idx);
+                    }
                 }
             }
         }
@@ -42,6 +55,7 @@ export component TabPanelContainer inherits Rectangle {
         Rectangle {
             vertical-stretch: 1;
             background: transparent;
+            @children
         }
     }
 }

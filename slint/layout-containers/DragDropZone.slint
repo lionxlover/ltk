@@ -5,8 +5,14 @@ export component DragDropZone inherits Rectangle {
     border-width: 2px;
 
     in property <bool> drag-over: false;
+    in property <bool> enabled: true;
     in property <string> label: "Drop files here";
     in property <string> sublabel: "or click to browse";
+
+    // Actual OS-level drag-over/drop detection is host-side (Slint has no
+    // native file-drag API exposed in .slint); the host drives `drag-over`
+    // and listens for `browse-clicked` to open a file picker itself.
+    callback browse-clicked();
 
     border-color: drag-over ? Theme.accent : Theme.border-default;
     background: drag-over ? Theme.accent-subtle : Theme.bg-surface;
@@ -35,5 +41,11 @@ export component DragDropZone inherits Rectangle {
             color: Theme.text-tertiary;
             horizontal-alignment: center;
         }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.browse-clicked(); }
     }
 }

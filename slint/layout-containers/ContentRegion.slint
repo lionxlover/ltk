@@ -11,6 +11,11 @@ export component ContentRegion inherits Rectangle {
 
         Rectangle {
             width: Math.min(parent.width, root.region-max-width);
+
+            HorizontalLayout {
+                padding: root.region-padding;
+                @children
+            }
         }
     }
 }

@@ -6,8 +6,13 @@ export component CustomScrollbar inherits Rectangle {
     in property <bool> show-vertical: true;
     in property <bool> show-horizontal: false;
     in property <length> thumb-min-height: 32px;
+    in property <length> thumb-min-width: 32px;
+    // 0..1 scroll position, driven by the host's Flickable.
+    in property <float> scroll-position-v: 0;
+    in property <float> scroll-position-h: 0;
+    in property <float> viewport-ratio-v: 1;
+    in property <float> viewport-ratio-h: 1;
 
-    // Vertical scrollbar track
     if show-vertical: Rectangle {
         x: parent.width - 8px;
         width: 6px;
@@ -16,7 +21,24 @@ export component CustomScrollbar inherits Rectangle {
 
         Rectangle {
             width: 6px;
-            height: thumb-min-height;
+            height: max(thumb-min-height, parent.height * viewport-ratio-v);
+            y: (parent.height - self.height) * scroll-position-v;
+            border-radius: 3px;
+            background: Theme.text-tertiary;
+            opacity: 0.5;
+        }
+    }
+
+    if show-horizontal: Rectangle {
+        y: parent.height - 8px;
+        height: 6px;
+        border-radius: 3px;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            height: 6px;
+            width: max(thumb-min-width, parent.width * viewport-ratio-h);
+            x: (parent.width - self.width) * scroll-position-h;
             border-radius: 3px;
             background: Theme.text-tertiary;
             opacity: 0.5;

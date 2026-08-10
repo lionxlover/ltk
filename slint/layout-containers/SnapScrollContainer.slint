@@ -1,17 +1,25 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same constraint as FlexContainer: @children must be unconditional and
+// can only appear once, so a single instance can't swap between a
+// HorizontalLayout and a VerticalLayout based on `horizontal`. This
+// commits to vertical snapping (matching the default) — for horizontal
+// snap-scrolling, wrap content in a HorizontalLayout yourself before
+// passing it in, or request a dedicated HorizontalSnapScrollContainer.
 export component SnapScrollContainer inherits Rectangle {
     background: transparent;
     clip: true;
 
-    in property <bool> horizontal: false;
     in property <int> snap-count: 4;
     in property <int> current-snap: 0;
     in property <bool> show-dots: true;
 
     Flickable {
-        viewport-height: horizontal ? parent.height : snap-count * parent.height;
-        viewport-width: horizontal ? snap-count * parent.width : parent.width;
+        viewport-height: snap-count * parent.height;
+
+        VerticalLayout {
+            @children
+        }
     }
 
     if show-dots: Rectangle {

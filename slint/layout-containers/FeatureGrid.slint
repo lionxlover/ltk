@@ -8,10 +8,9 @@ export component FeatureGrid inherits Rectangle {
     in property <length> item-min-height: 200px;
 
     Flickable {
-        VerticalLayout {
+        GridLayout {
             spacing: gap;
-            HorizontalLayout { spacing: gap; }
-            HorizontalLayout { spacing: gap; }
+            @children
         }
     }
 }

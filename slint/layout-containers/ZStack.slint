@@ -6,6 +6,9 @@ export component ZStack inherits Rectangle {
 
     in property <string> alignment: "center";
 
-    // Children are stacked on top of each other
-    // Each child should set x/y for absolute positioning
+    // Children are stacked on top of each other (later siblings render on
+    // top, per Slint's normal z-order); each child should set x/y (or
+    // width:100%/height:100% to fill) for absolute positioning within
+    // this Rectangle.
+    @children
 }

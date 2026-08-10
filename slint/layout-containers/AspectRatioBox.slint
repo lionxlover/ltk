@@ -2,11 +2,25 @@ import { Theme } from "../core/Theme.slint";
 
 export component AspectRatioBox inherits Rectangle {
     background: transparent;
+    clip: true;
 
     in property <int> ratio-numerator: 16;
     in property <int> ratio-denominator: 9;
     in property <bool> use-width: true;
 
-    // Calculate height from width based on aspect ratio
-    height: use-width ? (root.width / 1px * ratio-denominator / ratio-numerator) * 1px : 0px;
+    // Only `height` is ever bound here — never `width` too. Having both
+    // `width` and `height` reciprocally reference each other (even inside
+    // mutually-exclusive ternary branches) creates a real binding-loop
+    // error, because Slint's dependency graph is built per-property from
+    // the textual bindings, not per-branch at runtime (see
+    // debugging-and-mcp.md's "Binding loops" note). So this only supports
+    // the width-driven direction: given a width (explicit, or from a
+    // parent layout), it derives height. The `use-width: false` case is a
+    // known, documented gap rather than a guess — if the host needs a
+    // height-driven box, compute the width externally
+    // (`height / ratio_denominator * ratio_numerator`) and set it directly
+    // on the instance instead of relying on this component to infer it.
+    height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px : self.height;
+
+    @children
 }

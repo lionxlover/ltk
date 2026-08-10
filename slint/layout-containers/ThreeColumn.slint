@@ -8,6 +8,8 @@ export component ThreeColumn inherits Rectangle {
     in property <length> right-width: 280px;
     in property <length> gap: 0px;
 
+    // Only one @children slot is possible per component — the center
+    // column carries content; the side columns are chrome-only.
     HorizontalLayout {
         spacing: gap;
 
@@ -19,6 +21,7 @@ export component ThreeColumn inherits Rectangle {
         Rectangle {
             vertical-stretch: 1;
             background: transparent;
+            @children
         }
 
         Rectangle {

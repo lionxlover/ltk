@@ -7,6 +7,10 @@ export component MasterDetailSplit inherits Rectangle {
     in property <length> master-width: 320px;
     in property <length> split-position: 4px;
 
+    // Only one @children slot is possible per component — the detail
+    // (right) pane carries the content; the master pane is chrome-only.
+    // Compose both panes directly in the host if the master list also
+    // needs custom content.
     HorizontalLayout {
         Rectangle {
             width: master-width;
@@ -19,8 +23,9 @@ export component MasterDetailSplit inherits Rectangle {
         }
 
         Rectangle {
-            vertical-stretch: 1;
+            horizontal-stretch: 1;
             background: Theme.bg-base;
+            @children
         }
     }
 }
