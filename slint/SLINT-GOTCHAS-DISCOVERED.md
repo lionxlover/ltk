@@ -302,6 +302,68 @@ itself — never assumed onto, or read back from, whatever element wraps it.
 
 ---
 
+### A property binding cannot read its own value — not even as a ternary fallback
+
+```slint
+// WRONG — real compiler error (VS Code Problems panel: "The binding for
+// the property..."), flagged even though the self.height branch is only
+// reached when use-width is false
+height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px
+                   : self.height;
+```
+This is the same "binding loop" class Slint's own debugging docs mention
+(a property depending on itself through a chain), just in its most direct
+form: `height`'s binding expression contains `self.height`. It doesn't
+matter that the offending branch is never the one that fires for a given
+`use-width` value — Slint's dependency graph is built from the *textual*
+bindings, not evaluated per-branch, so any mention of the property's own
+name inside its own binding is a cycle. This is a narrower case of the
+more general reciprocal-cross-reference bug below (`width` reading
+`height` while `height` reads `width`): even fixing the cross-reference by
+only ever binding one of the pair isn't enough if that one binding's
+"unimplemented" fallback branch reads itself.
+
+```slint
+// RIGHT — fall back to a different element's property, e.g. the parent's,
+// never the same property on the same element
+height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px
+                   : parent.height;
+```
+Reading `root.<same-prop>` instead of `self.<same-prop>` has the identical
+problem when `root` *is* the element being bound (it doesn't when `root`
+refers to a different, outer component than the element currently being
+positioned — e.g. a `PopupWindow`'s `width: root.width` reading its
+enclosing component's width is a normal cross-element binding, not a
+self-reference).
+
+---
+
+### Reciprocal width/height ternary bindings are still a binding loop, even across mutually-exclusive branches
+
+```slint
+// WRONG — width's binding depends on height, height's binding depends on
+// width; Slint flags this as a cycle even though at runtime only one
+// direction is ever active for a given `use-width` value
+height: use-width ? (root.width / 1px * ratio-denominator / ratio-numerator) * 1px : root.height;
+width: use-width ? root.width : (root.height / 1px * ratio-numerator / ratio-denominator) * 1px;
+```
+Same root cause as the self-reference case above, one level less obvious:
+the dependency graph doesn't know the two ternaries are logically
+mutually exclusive — it just sees "`width` binding mentions `height`" and
+"`height` binding mentions `width`" and calls that a loop.
+
+```slint
+// RIGHT — only ever bind ONE of width/height on a given element. If the
+// component genuinely needs to support deriving in both directions,
+// that's two different components (or leave the second dimension for the
+// host to set explicitly), not one component with reciprocal formulas.
+height: use-width ? (parent.width / 1px * ratio-denominator / ratio-numerator) * 1px : parent.height;
+// (width is left unbound here — the host either sets it explicitly, or a
+// parent layout fills it — never derived from this element's own height)
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

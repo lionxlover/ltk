@@ -20,7 +20,12 @@ export component AspectRatioBox inherits Rectangle {
     // height-driven box, compute the width externally
     // (`height / ratio_denominator * ratio_numerator`) and set it directly
     // on the instance instead of relying on this component to infer it.
-    height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px : self.height;
+    //
+    // The `height` binding must never read `self.height` either — that's
+    // the exact same binding-loop shape (a property depending on itself),
+    // just self-referential instead of cross-referential with `width`.
+    // The unimplemented branch falls back to `parent.height` instead.
+    height: use-width ? (self.width / 1px * ratio-denominator / ratio-numerator) * 1px : parent.height;
 
     @children
 }

@@ -147,6 +147,25 @@ def check_children_conditional(path):
     return findings
 ```
 
+```python
+# self-referential width/height scanner — flags a `width:`/`height:`
+# binding whose own expression reads `self.<same-prop>` or
+# `root.<same-prop>`. Added after AspectRatioBox shipped this exact bug
+# twice: first as a width<->height cross-reference cycle, then again (after
+# the first "fix") as height falling back to reading itself. A binding
+# that reads root.<prop> on a genuinely *different* element (e.g. a nested
+# PopupWindow's width reading its parent component's root.width) is fine —
+# this only flags the same element reading its own property back.
+import re, glob
+def check_self_referential_dimension(path):
+    findings = []
+    for i, l in enumerate(open(path, encoding='utf-8').read().split('\n')):
+        m = re.match(r'^\s*(width|height)\s*:\s*(.+);\s*$', l)
+        if m and re.search(rf'\b(self|root)\.{m.group(1)}\b', m.group(2)):
+            findings.append((i + 1, l.strip()))
+    return findings
+```
+
 ## Notable bugs fixed (the ones worth remembering the *shape* of)
 
 - **Structural/non-functional**: `PillButton`, `LoadingButton`,
@@ -316,6 +335,24 @@ support deriving in both directions, that's actually two different
 components (or one property left for the host to set explicitly), not one
 component with reciprocal formulas.
 
+**Correction (caught by the person's VS Code Problems panel after
+delivery):** the first fix for this in `AspectRatioBox` still failed —
+`height: use-width ? (...) : self.height;` — because the *unimplemented*
+ternary branch fell back to `self.height`, which is `height` reading
+**itself**. That's the same binding-loop error in a narrower shape:
+not cross-referencing a sibling property, but a property directly
+depending on its own value. The "only ever bind one of the pair" rule
+above isn't sufficient on its own — the bound property also can't
+fall back to reading itself in any branch. Fixed by falling back to
+`parent.height` (a different element's property) instead. Repo-wide
+grep for `width:`/`height:` bindings that read `self.width`/`self.height`
+or `root.width`/`root.height` on the *same* property found this was the
+only real instance (one other hit, `Select.slint`'s popup
+`width: root.width`, is a false positive — `root` there is the outer
+`Select` component, a different element from the `PopupWindow` whose
+`width` is being set, so it's a normal cross-element binding, not a
+self-reference).
+
 ## Post-delivery fix: `mouse-cursor` set on a `Rectangle`, not a `TouchArea`
 
 The person's VS Code Slint Preview caught a real compile error after the
@@ -361,3 +398,13 @@ with the fix.
   in the same edit — caught by re-reading the diff against the "binding
   loops" entry in `debugging-and-mcp.md` rather than assuming the fix was
   safe because it compiled the "obvious" branch mentally.
+- Then did it *again* in the very same file: the "fix" for the reciprocal
+  cross-reference bug still had `height` falling back to `self.height` in
+  its unimplemented branch — a property reading itself is the same
+  binding-loop error, just narrower (self-reference instead of
+  cross-reference with `width`). Caught only because the person actually
+  compiled it in the Slint Preview and reported the Problems-panel error;
+  my own reasoning about "only bind one of the pair" was necessary but not
+  sufficient — should have also grepped for the bound property appearing
+  on the right-hand side of its own binding, which is now a standing check
+  (see the scanner snippet added above) rather than something to eyeball.
