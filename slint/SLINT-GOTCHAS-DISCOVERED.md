@@ -439,6 +439,52 @@ Rectangle {
 
 ---
 
+### An explicit `x:` on a layout-managed child doesn't reliably reposition it — use a real spacer element instead
+
+```slint
+// WRONG — visually confirmed via the person's Slint Preview screenshots:
+// no staircase indentation appeared at all, despite depth data being
+// correct and the binding being syntactically valid
+VerticalLayout {
+    for cmt[idx] in root.item-count: Rectangle {
+        x: root.demo-depths[idx] * 24px;   // <- silently has no visible effect
+        HorizontalLayout { /* avatar, text, ... */ }
+    }
+}
+```
+This project's own `gotchas.md` says an explicit `x: 0;` inside a layout
+"even overrides the computed position" — true for `0`, but empirically a
+*non-zero* explicit `x:` on a direct child of `VerticalLayout`/
+`HorizontalLayout` doesn't reliably show up in the render the way the
+same binding would on a child of a plain `Rectangle` with no enclosing
+layout. Confirmed by a direct side-by-side in the same screenshot set:
+`HorizontalTimeline`'s `for`-loop items *do* use `x:` successfully to
+place themselves along a line — but its `for` loop is a direct child of
+a plain `Rectangle` root with no `VerticalLayout`/`HorizontalLayout`
+wrapping it (the "reserve x/y for overlays and custom drawing" pattern
+from `language-and-layout.md`). The moment a `VerticalLayout` or
+`HorizontalLayout` actually owns the child's positioning, don't fight it
+with `x:`/`y:` — add a real spacer element instead, exactly the pattern
+`TreeTable` already uses correctly for its own depth-based indentation:
+
+```slint
+// RIGHT — a real Rectangle that consumes layout space and pushes
+// everything after it to the right, inside the row's own HorizontalLayout
+VerticalLayout {
+    for cmt[idx] in root.item-count: Rectangle {
+        HorizontalLayout {
+            Rectangle {
+                width: root.demo-depths[idx] * 24px;
+                horizontal-stretch: 0;
+            }
+            /* avatar, text, ... */
+        }
+    }
+}
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

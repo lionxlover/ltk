@@ -21,10 +21,22 @@ export component NestedCommentSection inherits Rectangle {
 
         for cmt[idx] in root.item-count: Rectangle {
             height: 64px;
-            x: idx < root.demo_depths.length ? root.demo_depths[idx] * 24px : 0px;
 
             HorizontalLayout {
                 spacing: Theme.sp-2;
+
+                // Indent spacer — a real element that consumes layout
+                // space and pushes the avatar/text to the right, mirroring
+                // the proven-working pattern already used by TreeTable's
+                // `depths`-based indentation. Setting `x:` directly on
+                // this row (a VerticalLayout child) did not visibly
+                // reposition it — confirmed by comparing against
+                // TreeTable's indentation, which does render correctly in
+                // the same screenshot set.
+                Rectangle {
+                    width: idx < root.demo_depths.length ? root.demo_depths[idx] * 24px : 0px;
+                    horizontal-stretch: 0;
+                }
 
                 Rectangle {
                     width: 28px;

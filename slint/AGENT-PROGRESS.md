@@ -504,6 +504,45 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Second round of visual-review fixes (new screenshots, `data-display.zip`)
+
+Problems panel showed 0 errors/0 warnings this round — this fix was
+purely from looking at the render. Also a good confirmation pass: the
+`OrgChart` overlap fix, the `Timeline` `@children` fix (now visibly
+rendering via the `Flickable`-wrapped `test.slint` usage), and the
+`JsonTreeViewer`/`FrozenColumnTable` fixes from the previous round all
+show correctly in these new screenshots.
+
+- **`NestedCommentSection` — no visible depth-based indentation at all**
+  despite `demo-depths: [0, 1, 2]` being correct and the `x:` binding
+  being syntactically valid. Caught by a direct contrast within the same
+  screenshot set: `TreeView`'s indentation renders correctly a few rows
+  away, `NestedCommentSection`'s doesn't, despite both claiming to indent
+  by depth. Root cause: the row `Rectangle` (the `for` loop's body) sets
+  `x: depth * 24px;` directly on itself, but it's a direct child of a
+  `VerticalLayout` — and empirically, a *non-zero* explicit `x:` doesn't
+  reliably reposition a layout-managed child, even though this project's
+  own `gotchas.md` note about `x: 0` overriding a layout's computed
+  position implied it generally would. Confirmed this wasn't a fluke by
+  finding the counter-example already living in the same file set:
+  `HorizontalTimeline` *does* successfully use `x:` for the same kind of
+  positioning, but its `for` loop is a direct child of a plain `Rectangle`
+  with no enclosing layout at all — a genuinely different, valid case
+  (the "reserve x/y for overlays and custom drawing" pattern), not a
+  counter-proof that `x:` overrides work reliably inside a layout. Fixed
+  by switching to the same real-spacer-element technique `TreeTable`
+  already uses correctly for its own depth indentation — a plain
+  `Rectangle` with a computed `width` and `horizontal-stretch: 0` placed
+  inside the row's own `HorizontalLayout`, so it actually consumes layout
+  space and pushes the avatar/text to the right, rather than trying to
+  reposition the row from outside the layout's control. Scanned the whole
+  batch for the same "row `Rectangle` setting its own `x:` while being a
+  direct child of a Vertical/HorizontalLayout" shape — every other hit
+  was a false positive (either a nested `Text`'s own centering `x:`, which
+  is a different element with no layout fighting it, or
+  `HorizontalTimeline`'s legitimate no-layout case) — this was the only
+  real instance.
+
 ## Post-delivery fixes from visual review of the Slint Preview screenshots (`data-display.zip`)
 
 The person shared screenshots of the whole rendered `test.slint`. Since
