@@ -504,6 +504,106 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Fourth round: an external "audit document" pasted by the person, verified claim-by-claim
+
+The person pasted a document titled "comprehensive architectural audit"
+listing ~10 UI issues with severities and "fixes." It does not match this
+project at all — every remediation is written in CSS/HTML vocabulary
+(`display: flex`, `<input>`, `::placeholder`, `caret-color`,
+`border-bottom` on `<li>`) that has no meaning in `.slint`. Rather than
+either blindly implementing nonsensical CSS "fixes" or dismissing the
+whole document outright, each underlying *observation* was checked
+independently against the real source (not against the document's stated
+reasoning, which turned out to be wrong even for the one claim that held
+up).
+
+**Confirmed real, fixed**: `TerminalOutput`'s command/output rows — same
+exact bug shape as `JsonTreeViewer`'s alignment fix from the previous
+round (a `for`-loop-generated `HorizontalLayout` with 2+ `Text` children
+and no `alignment: start;`, causing the prompt/command text to spread
+apart instead of packing left). The audit's stated cause ("violates CLI
+UX, should be text-align: left") doesn't even match what was visually
+wrong (nothing was center-aligned — the layout was spreading elements
+apart, not centering them), but the underlying observation ("something
+about this text's positioning looks off") pointed at something real. Ran
+the alignment scanner from the previous round again across the *whole*
+batch afterward and got zero hits — confirms this was the only remaining
+instance; unclear why the scan two rounds ago missed this specific file,
+worth being less confident that "scan came back clean" fully rules
+things out in the future.
+
+**Checked and disproven** (do not match the actual source):
+- `DiffViewer`'s diff-line colors: audit claimed "white text on light
+  green/red background." Actual code uses `Theme.red-600`/`Theme.green-600`
+  text (medium-dark) on `Theme.red-100`/`Theme.green-100` `.darker(0.1)`
+  backgrounds (light) — a legitimate, readable dark-on-light diff pairing,
+  not white-on-light.
+- `HorizontalTimeline`: audit claimed "critical layout break, nodes
+  compress and overlap." Worked through the actual position math (same
+  technique used to confirm the real `OrgChart` overlap bug two rounds
+  ago) — each label is correctly centered under its own node via
+  symmetric `x`/`width` offsets, and adjacent labels are ~267px apart for
+  an 80px-wide label box in a typical container width. No overlap.
+- `GanttTimeline`: audit claimed row labels sit above/below their bars.
+  Both the label `Text` and the task bar `Rectangle` use the identical
+  `y: (parent.height - self.height) / 2;` centering formula against the
+  same 40px row height — can't be misaligned relative to each other.
+- `Checklist` (the audit called it "SelectionList"): audit called the
+  strikethrough on "Task 1"/"Task 2" a "glitch." It's a conditional
+  element (`if idx < root.checked.length && root.checked[idx]: Rectangle`)
+  that only appears on *checked* items — this is the intended
+  completed-task strikethrough, not a bug.
+- `BulkActionBar`: audit claimed asymmetric padding around the Deselect
+  button. Source has `padding-left: Theme.sp-4;` and
+  `padding-right: Theme.sp-4;` — the identical token on both sides.
+- `TreeView`: audit claimed the caret sits too close to the label.
+  `spacing: Theme.sp-2;` (8px) between them — a standard, deliberate gap
+  matching the project's 8px spacing grid.
+
+**Not touched, on purpose** (real observations, but the "fix" would be a
+theme-wide design decision, not a targeted bug fix): `DayAgendaCalendar`'s
+timestamps and `FeatureComparisonMatrix`'s null-state icons both use
+`Theme.text-tertiary` — a deliberately dim, muted color used identically
+for de-emphasized secondary content across every component in this entire
+project. It's possible this token is legitimately too low-contrast, but
+that's a single global decision in `Theme.slint` affecting every category
+including ones already shipped, not something to change unilaterally
+based on an unverified third-party document without the person's
+sign-off — flagging it here rather than guessing.
+
+## Third round: `EditableInlineTable` looked empty/broken next to fully-populated siblings
+
+The person reported "same problem, not able to fix anything" and shared a
+fresh set of screenshots. Good news buried in that round: every previous
+fix (`OrgChart` overlap, `Timeline` `@children`, `JsonTreeViewer`
+alignment, `FrozenColumnTable` column collapse, `NestedCommentSection`
+indentation) was visibly confirmed working correctly in the new
+screenshots — none of those had regressed or were still broken.
+
+The actual remaining issue: `EditableInlineTable` rendered as an almost
+entirely empty box (only the first, auto-focused cell showed a visible
+border; every other cell showed nothing at all — no border, no text),
+starkly different from every other table/list in the same render, all of
+which show fully-populated mock content. Not a structural bug — the
+component itself is correctly built (real `TextInput` per cell, bordered
+only when focused, blank until given data) — but `test.slint`'s
+invocation only passed `columns`/`row-count`, never `cell-values`, so
+every cell was genuinely blank by design. Checked every other
+`row-count`/`item-count`-driven component's invocation in `test.slint` to
+confirm this was the *only* one with this gap: the read-only tables
+(`Table`, `SortableDataTable`, `VirtualizedTable`, `ExpandableRowTable`,
+`FrozenColumnTable`, `TreeTable`) all bake in "Row N — Column" placeholder
+text internally regardless of external props, and everything else
+(`LeaderboardTable`, `ActivityFeed`, `NestedCommentSection`, `LogViewer`,
+`JsonTreeViewer`, `TreeView`, `GanttTimeline`, `OrgChart`) has internal
+`demo-*` properties with sensible non-empty defaults. `EditableInlineTable`
+deliberately has neither (real editable fields shouldn't ship with fake
+placeholder text a user could mistake for saved data), so it's the one
+component that needs the demo file itself to supply sample data to look
+complete. Fixed by passing `cell-values: ["Name", "LTK", "Version",
+"1.0.0", "Type", "Framework"];` in `test.slint`'s invocation — the
+component's own code is unchanged.
+
 ## Second round of visual-review fixes (new screenshots, `data-display.zip`)
 
 Problems panel showed 0 errors/0 warnings this round — this fix was

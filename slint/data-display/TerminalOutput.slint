@@ -59,6 +59,12 @@ export component TerminalOutput inherits Rectangle {
 
                     HorizontalLayout {
                         spacing: Theme.sp-2;
+                        // Missing here (same bug already fixed in
+                        // JsonTreeViewer): without this, the prompt and
+                        // command Text children spread apart instead of
+                        // packing left, since this is a for-loop-generated
+                        // row with no alignment set.
+                        alignment: start;
 
                         Text {
                             text: root.prompt-text;
@@ -79,6 +85,7 @@ export component TerminalOutput inherits Rectangle {
 
                     if idx < root.demo-outputs.length: HorizontalLayout {
                         spacing: Theme.sp-2;
+                        alignment: start;
 
                         Text {
                             text: "      ";
