@@ -504,6 +504,34 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Sixth round: `HorizontalTimeline` label overlapping its own node circle
+
+The person shared a screenshot showing each label ("Design", "Develop",
+"Test") rendering overlapping its node circle instead of sitting clearly
+below it. This is a different bug from the one already disproven for this
+same file during the "audit document" round — that check only verified
+*horizontal* spacing between adjacent labels (fine), not the *vertical*
+relationship between each label and its own circle (broken). Root cause:
+the per-item `for`-loop `Rectangle` had explicit `x:`/`width:` but no
+`y:`/`height:` at all. Since this element sits directly under the root
+`Rectangle` with no enclosing `Layout` (the legitimate free-positioning
+pattern), nothing fills in the missing dimensions predictably — a
+`Rectangle` "fills its parent by default" for whichever axis isn't
+overridden, so the circle (also no `y:`) and the label (`y: 28px`,
+intended as "below the circle") ended up positioned relative to an origin
+that didn't line up with the connector line's own fixed `y: 19px`. Fixed
+by making every position explicit and deterministic: `y: 0px; height:
+80px;` on the wrapper, `y: 9px;` on the circle (centers on the line), and
+`y: 34px;` on the label (clear 5px gap below the circle's bottom edge).
+
+Scanned the whole batch for the same shape (an `x`-positioned `for`-loop
+`Rectangle` with only some dimensions explicit) — every other hit was the
+normal, safe pattern of a row inside a `VerticalLayout` where only
+`height` needs to be set and the layout manages the rest.
+`HorizontalTimeline` was the only instance of a `for`-loop element
+positioned outside any `Layout` at all, so it was the only place this
+specific gap could occur.
+
 ## Fifth round: `MonthCalendar` weeks squished/overlapping
 
 The person shared a screenshot showing all 5 week rows compressed into a

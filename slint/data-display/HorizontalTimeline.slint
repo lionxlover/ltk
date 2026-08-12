@@ -16,10 +16,22 @@ export component HorizontalTimeline inherits Rectangle {
     }
 
     for item[idx] in root.items: Rectangle {
+        // Previously had no explicit y:/height: at all — only x:/width:
+        // were set, leaving this dimension to Slint's implicit default
+        // (a Rectangle "fills its parent by default" for whichever
+        // dimension isn't overridden). That left the circle and label
+        // text positioned relative to an unpredictable origin instead of
+        // the connector line's own fixed y: 19px, causing the label to
+        // render overlapping the circle instead of clearly below it
+        // (confirmed via the person's screenshot). Every position below
+        // is now explicit and deterministic.
         x: 24px + idx * ((parent.width - 48px) / (root.items.length > 1 ? root.items.length - 1 : 1)) - 10px;
+        y: 0px;
         width: 20px;
+        height: 80px;
 
         Rectangle {
+            y: 9px;
             width: 20px;
             height: 20px;
             border-radius: Theme.radius-full;
@@ -29,7 +41,7 @@ export component HorizontalTimeline inherits Rectangle {
         }
 
         Text {
-            y: 28px;
+            y: 34px;
             width: 80px;
             x: -30px;
             text: item;

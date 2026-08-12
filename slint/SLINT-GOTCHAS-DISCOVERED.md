@@ -536,6 +536,48 @@ is absolutely positioned.
 
 ---
 
+### An `x`-positioned `for`-loop element outside any `Layout` needs *every* dimension explicit, not just `x`
+
+```slint
+// WRONG — visually confirmed: label text rendered overlapping the node
+// circle instead of clearly below it
+for item[idx] in root.items: Rectangle {
+    x: 24px + idx * (...) - 10px;   // explicit
+    width: 20px;                     // explicit
+    // no y:, no height: — left to Slint's implicit default
+
+    Rectangle { /* the circle, also no y: */ width: 20px; height: 20px; }
+    Text { y: 28px; /* ... */ }      // meant to sit "28px below the circle"
+}
+```
+Inside a `VerticalLayout`/`HorizontalLayout`, leaving a dimension unset
+is completely normal — the layout fills it in. But this `for`-loop body
+is a direct child of a plain `Rectangle` root with **no** enclosing
+layout (the legitimate "reserve x/y for overlays and custom drawing"
+pattern) — nothing manages the unset dimensions for it. A `Rectangle`
+"fills its parent by default" for whichever dimension isn't overridden,
+so leaving `y`/`height` unset here doesn't center or collapse
+predictably the way it might elsewhere — it left the circle and label
+positioned relative to an origin that didn't line up with the connector
+line's own fixed `y: 19px`, so the label's `y: 28px` (meant as "well
+below the circle") ended up overlapping it instead.
+
+```slint
+// RIGHT — every dimension explicit and deterministic once nothing
+// external (a Layout) is managing positioning for this element
+for item[idx] in root.items: Rectangle {
+    x: 24px + idx * (...) - 10px;
+    y: 0px;
+    width: 20px;
+    height: 80px;   // matches the root's own height
+
+    Rectangle { y: 9px; width: 20px; height: 20px; /* ... */ }  // centers on the y:19px line
+    Text { y: 34px; /* ... */ }  // clear gap below the circle's y:9+20=29 bottom edge
+}
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`
