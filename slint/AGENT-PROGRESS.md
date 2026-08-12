@@ -504,6 +504,60 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Eighth round: `PriceComparisonTable` rebuilt on `GridLayout` per the person's direction
+
+The person reported the highlighted-column inconsistency was still
+visible after the previous fix and specifically suggested using
+`GridLayout`. Took that guidance directly rather than re-diagnosing:
+rebuilt the whole component on a single `GridLayout` instead of N
+independent `HorizontalLayout`s (one for the header, one per feature
+row). Separate `HorizontalLayout`s computing the same column widths
+independently don't carry the same structural guarantee of landing at
+identical x/width boundaries that a single shared `GridLayout` does — a
+`GridLayout` computes each column's width once and applies it uniformly
+to every cell placed in that column via `row:`/`col:`, which is the
+actual correct mechanism for "the highlighted column must line up
+exactly across every row" rather than something to get right by manually
+keeping N separate layouts' column math in sync.
+
+Implementation note: `GridLayout` needs each cell as its own direct
+child with explicit `row:`/`col:` — nesting a `for` inside another
+`for`'s body only produces children of that outer body element, not
+direct `GridLayout` children. Used a single flattened `for cell-idx in
+total-cols * total-rows` loop instead, computing `row`/`col` from the
+flat index (`Math.floor(cell-idx / total-cols)`, `mod(cell-idx,
+total-cols)`), with the header row, label column, and matrix cells
+distinguished via `if` blocks inside each cell based on its own
+`grid-row`/`grid-col`. Carried over the "featured column always wins
+over zebra striping" fix from the previous round into this new
+structure (`is-featured ? Theme.accent-subtle : striped ? ... :
+transparent`).
+
+## Seventh round: `PriceComparisonTable`'s featured-column highlight inconsistent between rows
+
+The person shared a screenshot showing the highlighted "Pro" column
+looking visually different/inconsistent between the "Users" and
+"Storage" rows. Root cause: two separate translucent backgrounds were
+compositing. The row itself had a zebra-stripe background
+(`mod(fi, 2) == 1 ? Theme.bg-overlay : transparent;`) spanning the full
+row width, and *separately* each plan cell had its own
+`featured-plan == pi ? Theme.accent-subtle : transparent;` background
+layered on top. `Theme.accent-subtle` is only 10% opacity, so the
+underlying zebra tint still showed through and blended differently
+depending on row parity — the featured column ended up a visibly
+different shade on striped vs. unstriped rows instead of one uniform
+highlight running down the whole column, which defeats the point of a
+"featured plan" highlight. Fixed by moving zebra striping to apply
+per-cell instead of per-row, with the featured highlight explicitly
+taking priority over it (`root.featured-plan == pi ? Theme.accent-subtle
+: striped ? Theme.bg-overlay : transparent;`) — the featured column is
+now always exactly the same color regardless of row parity, and
+non-featured columns still zebra-stripe normally. Checked for the same
+"row zebra-stripe + separate translucent column highlight" combination
+elsewhere in the batch (`FeatureComparisonMatrix` has row zebra-striping
+but no featured-column concept at all, so no compositing issue there) —
+`PriceComparisonTable` was the only component with both.
+
 ## Sixth round: `HorizontalTimeline` label overlapping its own node circle
 
 The person shared a screenshot showing each label ("Design", "Develop",

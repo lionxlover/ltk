@@ -1,5 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
+// Rebuilt on a single GridLayout instead of one independent HorizontalLayout
+// per row. Multiple separate HorizontalLayouts (one for the header, one per
+// feature row) don't give a structural guarantee that the same logical
+// column lands at the exact same x/width in every row — a GridLayout
+// computes column boundaries once and applies them uniformly to every cell
+// placed in that column, which is what a table actually needs.
 export component PriceComparisonTable inherits Rectangle {
     in property <[string]> features: [];
     in property <[string]> plans: [];
@@ -13,84 +19,81 @@ export component PriceComparisonTable inherits Rectangle {
     border-color: Theme.border-base;
     clip: true;
 
-    VerticalLayout {
-        Rectangle {
-            height: 80px;
-            background: Theme.bg-overlay;
+    property <int> total-cols: root.plans.length + 1;
+    property <int> total-rows: root.features.length + 1;
 
-            HorizontalLayout {
-                Rectangle { width: 160px; horizontal-stretch: 0; }
+    GridLayout {
+        spacing: 0px;
 
-                for plan[i] in root.plans: Rectangle {
-                    horizontal-stretch: 1;
-                    background: root.featured-plan == i ? Theme.accent-subtle : transparent;
+        for cell-idx in root.total-cols * root.total-rows: Rectangle {
+            property <int> grid-row: Math.floor(cell-idx / root.total-cols);
+            property <int> grid-col: mod(cell-idx, root.total-cols);
+            property <bool> is-header: grid-row == 0;
+            property <bool> is-label-col: grid-col == 0;
+            property <int> plan-idx: grid-col - 1;
+            property <int> feat-idx: grid-row - 1;
+            property <bool> striped: !is-header && mod(feat-idx, 2) == 1;
+            property <bool> is-featured: !is-label-col && root.featured-plan == plan-idx;
 
-                    VerticalLayout {
-                        alignment: center;
+            row: grid-row;
+            col: grid-col;
+            height: is-header ? 80px : 40px;
+            min-width: is-label-col ? 160px : 0px;
+            horizontal-stretch: is-label-col ? 0 : 1;
 
-                        Text {
-                            x: (parent.width - self.width) / 2;
-                            text: plan;
-                            color: Theme.text-primary;
-                            font-family: Theme.font-ui;
-                            font-size: Theme.text-sm;
-                            font-weight: Theme.weight-bold;
-                            horizontal-alignment: center;
-                        }
+            background: is-header
+                ? (is-featured ? Theme.accent-subtle : Theme.bg-overlay)
+                : (is-featured ? Theme.accent-subtle : striped ? Theme.bg-overlay : transparent);
 
-                        if i < root.prices.length: Text {
-                            x: (parent.width - self.width) / 2;
-                            text: root.prices[i];
-                            color: Theme.accent;
-                            font-family: Theme.font-display;
-                            font-size: Theme.text-lg;
-                            font-weight: Theme.weight-bold;
-                            horizontal-alignment: center;
-                        }
-                    }
+            // Header: plan name + price
+            if is-header && !is-label-col: VerticalLayout {
+                alignment: center;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    text: plan-idx < root.plans.length ? root.plans[plan-idx] : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-bold;
+                    horizontal-alignment: center;
+                }
+
+                if plan-idx < root.prices.length: Text {
+                    x: (parent.width - self.width) / 2;
+                    text: root.prices[plan-idx];
+                    color: Theme.accent;
+                    font-family: Theme.font-display;
+                    font-size: Theme.text-lg;
+                    font-weight: Theme.weight-bold;
+                    horizontal-alignment: center;
                 }
             }
-        }
 
-        Rectangle { height: 1px; background: Theme.border-subtle; }
+            // Feature label (first column, non-header rows)
+            if !is-header && is-label-col: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: feat-idx < root.features.length ? root.features[feat-idx] : "";
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+            }
 
-        for feat[fi] in root.features: Rectangle {
-            height: 40px;
-            background: mod(fi, 2) == 1 ? Theme.bg-overlay : transparent;
-
-            HorizontalLayout {
-                Rectangle {
-                    width: 160px;
-                    horizontal-stretch: 0;
-
-                    Text {
-                        x: Theme.sp-3;
-                        y: (parent.height - self.height) / 2;
-                        text: feat;
-                        color: Theme.text-primary;
-                        font-family: Theme.font-ui;
-                        font-size: Theme.text-sm;
-                        vertical-alignment: center;
-                    }
-                }
-
-                for plan[pi] in root.plans: Rectangle {
-                    horizontal-stretch: 1;
-                    background: root.featured-plan == pi ? Theme.accent-subtle : transparent;
-
-                    Text {
-                        x: (parent.width - self.width) / 2;
-                        y: (parent.height - self.height) / 2;
-                        text: (fi * root.plans.length + pi) < root.matrix.length && root.matrix[fi * root.plans.length + pi] ? "✓" : "✗";
-                        color: (fi * root.plans.length + pi) < root.matrix.length && root.matrix[fi * root.plans.length + pi] ? Theme.state-success : Theme.text-tertiary;
-                        font-family: Theme.font-ui;
-                        font-size: Theme.text-sm;
-                        font-weight: Theme.weight-bold;
-                        vertical-alignment: center;
-                        horizontal-alignment: center;
-                        horizontal-stretch: 1;
-                    }
-                }
+            // Matrix checkmark cell
+            if !is-header && !is-label-col: Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: (feat-idx * root.plans.length + plan-idx) < root.matrix.length
+                    && root.matrix[feat-idx * root.plans.length + plan-idx] ? "✓" : "✗";
+                color: (feat-idx * root.plans.length + plan-idx) < root.matrix.length
+                    && root.matrix[feat-idx * root.plans.length + plan-idx] ? Theme.state-success : Theme.text-tertiary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-bold;
+                vertical-alignment: center;
+                horizontal-alignment: center;
             }
         }
     }
