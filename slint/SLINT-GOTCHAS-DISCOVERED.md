@@ -485,6 +485,57 @@ VerticalLayout {
 
 ---
 
+### `vertical-stretch: 1` collapses to near-zero when the only content is absolutely-positioned
+
+```slint
+// WRONG — visually confirmed: all 5 week rows compressed into a tiny
+// strip, with the 30px selected-day circles overlapping each other
+// between adjacent weeks
+for row_idx in 5: HorizontalLayout {
+    vertical-stretch: 1;   // <- no explicit height, and nothing else
+                            //    forces real space either
+    for col_idx in 7: Rectangle {
+        horizontal-stretch: 1;
+        Rectangle {
+            x: (parent.width - 30px) / 2;
+            y: (parent.height - 30px) / 2;
+            width: 30px; height: 30px;   // <- absolutely positioned,
+        }                                 //    doesn't count toward the
+    }                                     //    row's preferred size
+}
+```
+`vertical-stretch: 1` only distributes *already-available* leftover
+space among stretchy siblings — it doesn't itself create space. A row's
+own preferred height (what it asks for before stretching) normally comes
+from its content, but content placed via absolute `x:`/`y:` (rather than
+through normal layout flow) doesn't reliably contribute to that
+preferred-size calculation. With no ancestor forcing extra height either
+(the component was placed directly in a `VerticalLayout` with no fixed
+wrapper `height:`, unlike sibling components in the same file), every row
+collapsed toward ~0px while the fixed-size circles inside still rendered
+at full size — producing overlap between weeks instead of a gap.
+
+```slint
+// RIGHT — an explicit height reserves real space per row; the column
+// Rectangle underneath it still just uses normal Rectangle fill-by-default
+// behavior to take that space, no changes needed there
+for row_idx in 5: HorizontalLayout {
+    height: 38px;
+    for col_idx in 7: Rectangle {
+        horizontal-stretch: 1;
+        /* ... 30px circle now centers with (38-30)/2 = 4px margin ... */
+    }
+}
+```
+Not a bug whenever the stretchy row/column is nested inside *some*
+ancestor that already has an explicit `height:`/`width:` (a very common,
+safe pattern throughout this codebase, e.g. `FeatureComparisonMatrix`'s
+and `GanttTimeline`'s header rows) — the collapse only happens when
+nothing anywhere in the chain establishes real space and the only content
+is absolutely positioned.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

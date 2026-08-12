@@ -106,7 +106,16 @@ export component MonthCalendar inherits Rectangle {
 
         // 5 rows x 7 columns grid
         for row_idx in 5: HorizontalLayout {
-            vertical-stretch: 1;
+            // `vertical-stretch: 1` alone left each row's own preferred
+            // height ambiguous — the day-circles inside are absolutely
+            // positioned (x/y), so they don't contribute to normal layout
+            // flow sizing, and the row collapsed toward ~0px preferred
+            // height with nothing forcing the calendar taller overall.
+            // Result: all 5 weeks compressed into a tiny space while the
+            // 30px-diameter circles still rendered full-size, overlapping
+            // each other (confirmed via the person's screenshot). An
+            // explicit height reserves real space per row instead.
+            height: 38px;
 
             for col_idx in 7: Rectangle {
                 horizontal-stretch: 1;

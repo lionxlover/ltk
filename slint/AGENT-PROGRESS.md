@@ -504,6 +504,36 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Fifth round: `MonthCalendar` weeks squished/overlapping
+
+The person shared a screenshot showing all 5 week rows compressed into a
+tiny vertical strip, with the selected-day (23) circle visibly
+overlapping the row below it (30). Root cause: each week row used
+`vertical-stretch: 1` with no explicit `height:`, and its only content
+(the day-number circles) is absolutely positioned via `x:`/`y:` rather
+than normal layout flow — which doesn't reliably contribute to a row's
+preferred-size calculation. With nothing else in the chain forcing real
+height either (`MonthCalendar` is placed directly in `test.slint`'s outer
+`VerticalLayout` with no fixed-height wrapper, unlike sibling components
+such as `OrgChart`/`WeekCalendar` which are wrapped in
+`Rectangle { height: 200px; }`), every row collapsed toward ~0px while
+the fixed 30px-diameter circles inside still rendered at full size,
+overlapping between weeks instead of leaving a gap. Fixed with an
+explicit `height: 38px;` on each row — the column `Rectangle`s underneath
+didn't need any change, since they already correctly fill whatever real
+height their row ends up with.
+
+Scanned the batch for the same shape (a `vertical-stretch`/
+`horizontal-stretch: 1` element whose only content is absolutely
+positioned, with no explicit height/width established anywhere in the
+element itself) — 5 more hits in `FeatureComparisonMatrix`,
+`GanttTimeline`, and `PriceComparisonTable`, all false positives: each is
+nested inside an *ancestor* `Rectangle` that already has an explicit
+`height:` (40px/32px), so they correctly inherit real space through
+normal fill-by-default behavior. `MonthCalendar` was the only genuine
+instance — confirmed by the fact that its sibling calendar components
+happen to get a fixed-height wrapper in `test.slint` and it didn't.
+
 ## Fourth round: an external "audit document" pasted by the person, verified claim-by-claim
 
 The person pasted a document titled "comprehensive architectural audit"
