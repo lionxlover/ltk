@@ -504,6 +504,42 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Tenth round: real compile error in `TreeTable` — `x:` on a direct `HorizontalLayout` child
+
+The person's Slint Preview caught a genuine compile error: "The property
+'x' cannot be set for elements placed in this layout, because the layout
+is already setting it" — the label `Text` inside `TreeTable`'s inner
+first-column `HorizontalLayout` (caret + depth-indent + label) had
+`x: Theme.sp-3;` set directly on itself while being a *direct* child of
+that `HorizontalLayout`. Fixed by wrapping it in a plain `Rectangle`
+(`horizontal-stretch: 1;`) — the wrapper participates in the layout
+normally, and the `Text` inside it is free to set its own `x` since
+nothing owns that axis for a plain `Rectangle`'s children.
+
+This is more significant than a single-file typo: it directly
+contradicts a claim in this project's own `language-and-layout.md`
+("inside a layout an explicit `x: 0` even overrides the computed
+position"), which I'd been treating as settled and had relied on
+earlier (e.g. `NestedCommentSection`'s indentation fix a few rounds back
+assumed the opposite — that `x:` on a layout child just silently doesn't
+work rather than being a hard error, which happened to still lead to the
+right fix there since I replaced it with a spacer element regardless,
+but for the wrong stated reason). The precise, now compiler-confirmed
+rule: a `HorizontalLayout` owns `x`/`width` for its *direct* children,
+a `VerticalLayout` owns `y`/`height` — overriding the axis the layout
+manages is a hard error, not a silent no-op or a working override. The
+*other* axis is unmanaged and free to set. Documented this correction in
+`SLINT-GOTCHAS-DISCOVERED.md` (can't edit `language-and-layout.md`
+itself — it's a read-only project skill file).
+
+Wrote a scanner for the exact shape (any element that's a direct child of
+a `HorizontalLayout` with its own `x:`, or a direct child of a
+`VerticalLayout` with its own `y:`) and verified it actually catches the
+known-bad pattern before trusting a clean result. Ran it across the whole
+batch — `TreeTable` was the only instance, including across all the
+`GridLayout` conversions from the previous round and everything from
+earlier rounds.
+
 ## Ninth round: converted the rest of the table family to `GridLayout` per the person's direction
 
 Following the `PriceComparisonTable` fix, the person asked to use

@@ -578,6 +578,54 @@ for item[idx] in root.items: Rectangle {
 
 ---
 
+### `x:`/`y:` cannot be set on a *direct* child of a `Layout` that manages that axis — not even to override it
+
+```slint
+// WRONG — real compiler error: "The property 'x' cannot be set for
+// elements placed in this layout, because the layout is already setting
+// it"
+HorizontalLayout {
+    Rectangle { width: 24px; }
+    Text {
+        x: Theme.sp-3;   // <- HorizontalLayout owns x for its direct
+        text: "...";     //    children; this is a hard error, not a
+    }                    //    silently-ignored/overridden binding
+}
+```
+This project's other reference file (`language-and-layout.md`) says "an
+explicit `x: 0` even overrides the computed position" inside a layout —
+that turned out to be too broad, confirmed wrong by an actual compiler
+error caught in `TreeTable.slint`'s Slint Preview. The real rule is
+per-axis and depends on which layout: `HorizontalLayout` manages `x`/
+`width` for its direct children (so neither can be overridden there —
+`width` is fine to override, only `x` errors, since stretch factors
+still need to control width distribution); `VerticalLayout` manages `y`/
+`height` the same way. The *other* axis (e.g. `y` inside a
+`HorizontalLayout`) is fine to set freely, since the layout doesn't
+manage it. This only applies to **direct** children of the layout
+element itself — wrap the element needing custom positioning in a plain
+`Rectangle` (which the layout is free to size via `width`/
+`horizontal-stretch` as normal), and set `x`/`y` on something *inside*
+that wrapper instead, where no layout owns that axis.
+
+```slint
+// RIGHT — the Rectangle participates in the layout normally (sized via
+// horizontal-stretch); the Text inside it is free to set its own x,
+// since nothing owns that axis for a plain Rectangle's children
+HorizontalLayout {
+    Rectangle { width: 24px; }
+    Rectangle {
+        horizontal-stretch: 1;
+        Text { x: Theme.sp-3; text: "..."; }
+    }
+}
+```
+Scanned the whole batch afterward for the same shape (any direct
+`HorizontalLayout`/`VerticalLayout` child with an explicit `x:`/`y:` on
+itself) — `TreeTable` was the only instance.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

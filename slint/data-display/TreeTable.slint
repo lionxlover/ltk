@@ -76,14 +76,18 @@ export component TreeTable inherits Rectangle {
                     horizontal-stretch: 0;
                 }
 
-                Text {
-                    x: Theme.sp-3;
-                    y: (parent.height - self.height) / 2;
-                    text: grid-col < root.columns.length ? "Row \{rowidx + 1} — \{root.columns[grid-col]}" : "";
-                    color: Theme.text-primary;
-                    font-family: Theme.font-ui;
-                    font-size: Theme.text-sm;
-                    vertical-alignment: center;
+                Rectangle {
+                    horizontal-stretch: 1;
+
+                    Text {
+                        x: Theme.sp-3;
+                        y: (parent.height - self.height) / 2;
+                        text: grid-col < root.columns.length ? "Row \{rowidx + 1} — \{root.columns[grid-col]}" : "";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        vertical-alignment: center;
+                    }
                 }
             }
 
