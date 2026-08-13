@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Header + rows on a single GridLayout instead of independent
+// HorizontalLayouts — see PriceComparisonTable's fix history for why
+// this matters for column alignment across rows.
 export component EditableInlineTable inherits Rectangle {
     in property <[string]> columns: [];
     in property <int> row-count: 0;
@@ -17,77 +20,70 @@ export component EditableInlineTable inherits Rectangle {
     border-color: Theme.border-base;
     clip: true;
 
-    VerticalLayout {
-        if columns.length > 0: Rectangle {
-            height: 40px;
-            background: Theme.bg-overlay;
+    property <int> total-cols: max(1, root.columns.length);
+    property <int> total-rows: 1 + root.row-count;
 
-            HorizontalLayout {
-                for col[i] in root.columns: Rectangle {
-                    horizontal-stretch: 1;
+    GridLayout {
+        spacing: 0px;
 
-                    Text {
-                        x: Theme.sp-3;
-                        y: (parent.height - self.height) / 2;
-                        text: col;
-                        color: Theme.text-secondary;
-                        font-family: Theme.font-ui;
-                        font-size: Theme.text-xs;
-                        font-weight: Theme.weight-semibold;
-                        vertical-alignment: center;
-                        horizontal-stretch: 1;
+        for cell-idx in root.total-cols * root.total-rows: Rectangle {
+            property <int> grid-row: Math.floor(cell-idx / root.total-cols);
+            property <int> grid-col: mod(cell-idx, root.total-cols);
+            property <bool> is-header: grid-row == 0;
+            property <int> rowidx: grid-row - 1;
+
+            row: grid-row;
+            col: grid-col;
+            height: is-header ? (root.columns.length > 0 ? 40px : 0px) : 40px;
+
+            background: is-header ? Theme.bg-overlay
+                : row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : transparent;
+
+            animate background { duration: Theme.dur-fast; }
+
+            if is-header: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: grid-col < root.columns.length ? root.columns[grid-col] : "";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            if !is-header: Rectangle {
+                x: Theme.sp-2;
+                y: 6px;
+                width: parent.width - Theme.sp-4;
+                height: 28px;
+                border-radius: Theme.radius-sm;
+                border-width: 1px;
+                border-color: cell-input.has-focus ? Theme.accent : transparent;
+
+                animate border-color { duration: Theme.dur-fast; }
+
+                cell-input := TextInput {
+                    x: Theme.sp-2;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - Theme.sp-4;
+                    text: (rowidx * root.columns.length + grid-col) < root.cell-values.length
+                        ? root.cell-values[rowidx * root.columns.length + grid-col]
+                        : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    edited => {
+                        root.cell-edited(rowidx, grid-col, self.text);
                     }
                 }
             }
-        }
 
-        Rectangle { height: 1px; background: Theme.border-subtle; }
-
-        VerticalLayout {
-            for row[rowidx] in root.row-count: Rectangle {
-                height: 40px;
-                background: row-ta.pressed ? Theme.surface-pressed
-                    : row-ta.has-hover ? Theme.surface-hover
-                    : transparent;
-
-                animate background { duration: Theme.dur-fast; }
-
-                HorizontalLayout {
-                    for col[i] in root.columns: Rectangle {
-                        horizontal-stretch: 1;
-
-                        Rectangle {
-                            x: Theme.sp-2;
-                            y: 6px;
-                            width: parent.width - Theme.sp-4;
-                            height: 28px;
-                            border-radius: Theme.radius-sm;
-                            border-width: 1px;
-                            border-color: cell-input.has-focus ? Theme.accent : transparent;
-
-                            animate border-color { duration: Theme.dur-fast; }
-
-                            cell-input := TextInput {
-                                x: Theme.sp-2;
-                                y: (parent.height - self.height) / 2;
-                                width: parent.width - Theme.sp-4;
-                                text: (rowidx * root.columns.length + i) < root.cell-values.length
-                                    ? root.cell-values[rowidx * root.columns.length + i]
-                                    : "";
-                                color: Theme.text-primary;
-                                font-family: Theme.font-ui;
-                                font-size: Theme.text-sm;
-                                edited => {
-                                    root.cell-edited(rowidx, i, self.text);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                row-ta := TouchArea {
-                    clicked => { root.row-clicked(rowidx); }
-                }
+            row-ta := TouchArea {
+                enabled: !is-header;
+                clicked => { root.row-clicked(rowidx); }
             }
         }
     }

@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Header + rows on a single GridLayout instead of independent
+// HorizontalLayouts — see PriceComparisonTable's fix history for why
+// this matters for column alignment across rows. The first column still
+// uses an inner HorizontalLayout for its caret+indent+label content,
+// since the indent width is inherently per-row (depth-dependent) rather
+// than a fixed shared column width — only the outer grid needs the
+// cross-row alignment guarantee, not that inner per-row detail.
 export component TreeTable inherits Rectangle {
     in property <[string]> columns: [];
     in property <int> row-count: 0;
@@ -13,83 +20,86 @@ export component TreeTable inherits Rectangle {
     border-color: Theme.border-base;
     clip: true;
 
-    VerticalLayout {
-        if columns.length > 0: Rectangle {
-            height: 40px;
-            background: Theme.bg-overlay;
+    property <int> total-cols: max(1, root.columns.length);
+    property <int> total-rows: 1 + root.row-count;
 
-            HorizontalLayout {
-                Rectangle { width: 24px; horizontal-stretch: 0; }
+    GridLayout {
+        spacing: 0px;
 
-                for col[i] in root.columns: Rectangle {
-                    horizontal-stretch: 1;
+        for cell-idx in root.total-cols * root.total-rows: Rectangle {
+            property <int> grid-row: Math.floor(cell-idx / root.total-cols);
+            property <int> grid-col: mod(cell-idx, root.total-cols);
+            property <bool> is-header: grid-row == 0;
+            property <bool> is-first-col: grid-col == 0;
+            property <int> rowidx: grid-row - 1;
+
+            row: grid-row;
+            col: grid-col;
+            height: is-header ? (root.columns.length > 0 ? 40px : 0px) : 36px;
+
+            background: is-header ? Theme.bg-overlay
+                : row-ta.pressed ? Theme.surface-pressed
+                : row-ta.has-hover ? Theme.surface-hover
+                : transparent;
+
+            animate background { duration: Theme.dur-fast; }
+
+            if is-header: Text {
+                x: is-first-col ? 24px + Theme.sp-3 : Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: grid-col < root.columns.length ? root.columns[grid-col] : "";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
+            if !is-header && is-first-col: HorizontalLayout {
+                Rectangle {
+                    width: 24px;
+                    horizontal-stretch: 0;
 
                     Text {
-                        x: Theme.sp-3;
+                        x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
-                        text: col;
-                        color: Theme.text-secondary;
-                        font-family: Theme.font-ui;
+                        text: rowidx < root.depths.length && root.depths[rowidx] > 0 ? "├" : " ";
+                        color: Theme.text-tertiary;
+                        font-family: Theme.font-mono;
                         font-size: Theme.text-xs;
-                        font-weight: Theme.weight-semibold;
                         vertical-alignment: center;
-                        horizontal-stretch: 1;
                     }
+                }
+
+                Rectangle {
+                    width: rowidx < root.depths.length ? root.depths[rowidx] * 16px : 0px;
+                    horizontal-stretch: 0;
+                }
+
+                Text {
+                    x: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                    text: grid-col < root.columns.length ? "Row \{rowidx + 1} — \{root.columns[grid-col]}" : "";
+                    color: Theme.text-primary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-sm;
+                    vertical-alignment: center;
                 }
             }
-        }
 
-        Rectangle { height: 1px; background: Theme.border-subtle; }
+            if !is-header && !is-first-col: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: grid-col < root.columns.length ? "Row \{rowidx + 1} — \{root.columns[grid-col]}" : "";
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                vertical-alignment: center;
+            }
 
-        VerticalLayout {
-            for row[rowidx] in root.row-count: Rectangle {
-                height: 36px;
-                background: row-ta.pressed ? Theme.surface-pressed
-                    : row-ta.has-hover ? Theme.surface-hover
-                    : transparent;
-
-                animate background { duration: Theme.dur-fast; }
-
-                HorizontalLayout {
-                    Rectangle {
-                        width: 24px;
-                        horizontal-stretch: 0;
-
-                        Text {
-                            x: (parent.width - self.width) / 2;
-                            y: (parent.height - self.height) / 2;
-                            text: rowidx < root.depths.length && root.depths[rowidx] > 0 ? "├" : " ";
-                            color: Theme.text-tertiary;
-                            font-family: Theme.font-mono;
-                            font-size: Theme.text-xs;
-                            vertical-alignment: center;
-                        }
-                    }
-
-                    Rectangle {
-                        width: rowidx < root.depths.length ? root.depths[rowidx] * 16px : 0px;
-                        horizontal-stretch: 0;
-                    }
-
-                    for col[i] in root.columns: Rectangle {
-                        horizontal-stretch: 1;
-
-                        Text {
-                            x: Theme.sp-3;
-                            y: (parent.height - self.height) / 2;
-                            text: "Row \{rowidx + 1} — \{col}";
-                            color: Theme.text-primary;
-                            font-family: Theme.font-ui;
-                            font-size: Theme.text-sm;
-                            vertical-alignment: center;
-                            horizontal-stretch: 1;
-                        }
-                    }
-                }
-
-                row-ta := TouchArea {
-                    clicked => { root.row-clicked(rowidx); }
-                }
+            row-ta := TouchArea {
+                enabled: !is-header;
+                clicked => { root.row-clicked(rowidx); }
             }
         }
     }

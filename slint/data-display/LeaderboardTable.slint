@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Header + rows on a single GridLayout instead of independent
+// HorizontalLayouts — see PriceComparisonTable's fix history for why
+// this matters for column alignment across rows.
 export component LeaderboardTable inherits Rectangle {
     in property <int> row-count: 8;
     in property <int> highlight-rank: 3;
@@ -15,92 +18,99 @@ export component LeaderboardTable inherits Rectangle {
     in property <[string]> demo-names: ["Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Heidi"];
     in property <[string]> demo-scores: ["12,450", "11,200", "10,800", "9,300", "8,100", "7,600", "6,900", "5,400"];
 
-    VerticalLayout {
-        Rectangle {
-            height: 40px;
-            background: Theme.bg-overlay;
+    property <int> total-rows: 1 + root.row-count;
 
-            HorizontalLayout {
-                Rectangle { width: 48px; horizontal-stretch: 0; }
-                Rectangle { horizontal-stretch: 1; Text { x: Theme.sp-3; y: (parent.height - self.height) / 2; text: "Player"; color: Theme.text-secondary; font-family: Theme.font-ui; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; vertical-alignment: center; horizontal-stretch: 1; } }
-                Rectangle { width: 80px; horizontal-stretch: 0; Text { x: Theme.sp-3; y: (parent.height - self.height) / 2; text: "Score"; color: Theme.text-secondary; font-family: Theme.font-ui; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; vertical-alignment: center; horizontal-stretch: 1; } }
-            }
-        }
+    GridLayout {
+        spacing: 0px;
 
-        Rectangle { height: 1px; background: Theme.border-subtle; }
+        for cell-idx in 3 * root.total-rows: Rectangle {
+            property <int> grid-row: Math.floor(cell-idx / 3);
+            property <int> grid-col: mod(cell-idx, 3);
+            property <bool> is-header: grid-row == 0;
+            property <int> rowidx: grid-row - 1;
 
-        for row[rowidx] in root.row-count: Rectangle {
-            height: 44px;
-            background: row-ta.pressed ? Theme.surface-pressed
+            row: grid-row;
+            col: grid-col;
+            height: is-header ? 40px : 44px;
+            min-width: grid-col == 0 ? 48px : grid-col == 2 ? 80px : 0px;
+            horizontal-stretch: grid-col == 1 ? 1 : 0;
+
+            background: is-header ? Theme.bg-overlay
+                : row-ta.pressed ? Theme.surface-pressed
                 : row-ta.has-hover ? Theme.surface-hover
                 : transparent;
 
             animate background { duration: Theme.dur-fast; }
 
-            HorizontalLayout {
-                Rectangle {
-                    width: 48px;
-                    horizontal-stretch: 0;
+            if is-header && grid-col == 1: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: "Player";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
 
-                    Rectangle {
-                        width: 28px;
-                        height: 28px;
-                        x: 10px;
-                        y: (parent.height - self.height) / 2;
-                        border-radius: Theme.radius-full;
-                        background: rowidx == 0 ? #FFD700
-                            : rowidx == 1 ? #C0C0C0
-                            : rowidx == 2 ? #CD7F32
-                            : Theme.bg-overlay;
+            if is-header && grid-col == 2: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: "Score";
+                color: Theme.text-secondary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-xs;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
 
-                        Text {
-                            x: (parent.width - self.width) / 2;
-                            y: (parent.height - self.height) / 2;
-                            text: "\{rowidx + 1}";
-                            color: rowidx < 3 ? #ffffff : Theme.text-secondary;
-                            font-family: Theme.font-ui;
-                            font-size: Theme.text-xs;
-                            font-weight: Theme.weight-bold;
-                            vertical-alignment: center;
-                        }
-                    }
-                }
+            if !is-header && grid-col == 0: Rectangle {
+                width: 28px;
+                height: 28px;
+                x: 10px;
+                y: (parent.height - self.height) / 2;
+                border-radius: Theme.radius-full;
+                background: rowidx == 0 ? #FFD700
+                    : rowidx == 1 ? #C0C0C0
+                    : rowidx == 2 ? #CD7F32
+                    : Theme.bg-overlay;
 
-                Rectangle {
-                    horizontal-stretch: 1;
-
-                    Text {
-                        x: Theme.sp-3;
-                        y: (parent.height - self.height) / 2;
-                        text: rowidx < root.demo-names.length ? root.demo_names[rowidx] : "";
-                        color: Theme.text-primary;
-                        font-family: Theme.font-ui;
-                        font-size: Theme.text-sm;
-                        font-weight: rowidx < root.highlight-rank ? Theme.weight-semibold : Theme.weight-medium;
-                        vertical-alignment: center;
-                        horizontal-stretch: 1;
-                    }
-                }
-
-                Rectangle {
-                    width: 80px;
-                    horizontal-stretch: 0;
-
-                    Text {
-                        x: Theme.sp-3;
-                        y: (parent.height - self.height) / 2;
-                        text: rowidx < root.demo-scores.length ? root.demo_scores[rowidx] : "";
-                        color: rowidx == 0 ? #FFD700 : Theme.text-secondary;
-                        font-family: Theme.font-mono;
-                        font-size: Theme.text-sm;
-                        font-weight: Theme.weight-semibold;
-                        vertical-alignment: center;
-                        horizontal-stretch: 1;
-                    }
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "\{rowidx + 1}";
+                    color: rowidx < 3 ? #ffffff : Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-bold;
+                    vertical-alignment: center;
                 }
             }
 
+            if !is-header && grid-col == 1: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: rowidx < root.demo-names.length ? root.demo-names[rowidx] : "";
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: Theme.text-sm;
+                font-weight: rowidx < root.highlight-rank ? Theme.weight-semibold : Theme.weight-medium;
+                vertical-alignment: center;
+            }
+
+            if !is-header && grid-col == 2: Text {
+                x: Theme.sp-3;
+                y: (parent.height - self.height) / 2;
+                text: rowidx < root.demo-scores.length ? root.demo-scores[rowidx] : "";
+                color: rowidx == 0 ? #FFD700 : Theme.text-secondary;
+                font-family: Theme.font-mono;
+                font-size: Theme.text-sm;
+                font-weight: Theme.weight-semibold;
+                vertical-alignment: center;
+            }
+
             row-ta := TouchArea {
+                enabled: !is-header;
                 clicked => { root.row-clicked(rowidx); }
             }
         }

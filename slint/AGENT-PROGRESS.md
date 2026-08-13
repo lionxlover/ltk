@@ -504,6 +504,47 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Ninth round: converted the rest of the table family to `GridLayout` per the person's direction
+
+Following the `PriceComparisonTable` fix, the person asked to use
+`GridLayout` as widely as possible across the batch, and whatever's best
+elsewhere. Surveyed every component with 2+ independent `HorizontalLayout`
+instances for the same "header + N data rows, same columns" shape that
+caused the `PriceComparisonTable` bug, and converted the ones where it
+was a clean fit:
+
+- **`Table`**, **`SortableDataTable`**, **`VirtualizedTable`**,
+  **`FrozenColumnTable`**, **`EditableInlineTable`**, **`LeaderboardTable`**
+  — straightforward header+rows tables, converted to a single `GridLayout`
+  using the same flattened `for cell-idx in total-cols * total-rows` +
+  `Math.floor`/`mod` technique established for `PriceComparisonTable`,
+  with `if is-header`/`if !is-header` (and per-column `if`s for
+  `LeaderboardTable`'s 3 distinct column types) branching each cell's
+  content. Header row collapses to 0px height when a component's
+  `header-visible`/`columns.length == 0` condition says it shouldn't show,
+  since GridLayout can't easily skip a row — every cell in that row just
+  gets 0 height instead.
+- **`TreeTable`** — converted the outer grid (header + rows, columns
+  aligned), but kept an inner `HorizontalLayout` for the first column's
+  caret+depth-indent+label content, since the indent width is inherently
+  per-row (depth-dependent) rather than a fixed shared column width — only
+  the parts that actually need cross-row alignment went through the grid.
+
+**Not converted, on purpose**: `ExpandableRowTable` has a variable-height
+detail panel that only sometimes appears below a given row (based on
+`expanded-row`), which doesn't map cleanly onto a `GridLayout`'s fixed,
+predictable row count — reserving a permanent detail-row slot per data
+row (zero-height when collapsed) would work but adds real complexity for
+a component whose header+row columns were never the failure mode in the
+first place. Left it on `HorizontalLayout` per-row, matching the original
+design.
+
+Ran the full standing verification suite (brace balance,
+`@children`-in-conditional, self-referential dimensions, min/max-width
+alias) across all 8 converted files — all clean. Confirmed every
+`test.slint` invocation still matches (no public property names changed
+on any of these components, so no `test.slint` edits were needed).
+
 ## Eighth round: `PriceComparisonTable` rebuilt on `GridLayout` per the person's direction
 
 The person reported the highlighted-column inconsistency was still
