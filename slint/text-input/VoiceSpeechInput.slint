@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component VoiceSpeechInput inherits Rectangle {
     in-out property <bool> recording: false;
     in-out property <string> transcript: "";
-    out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     // Real speech-to-text is a platform/host capability outside what
     // .slint alone can do — this signals record start/stop so the host

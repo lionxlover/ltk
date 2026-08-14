@@ -505,6 +505,28 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Post-delivery fix: `<=>` cannot bind to `TextInput.has-focus` — a real compile error across 29 files
+
+The person's Slint Preview caught a genuine compile error: "Cannot link
+to a output pr[operty]" on `has-focus <=> input.has-focus;`.
+`TextInput.has-focus` is output-only — the framework sets it based on
+real focus state, nothing outside can assign it — and `<=>` specifically
+needs both sides to be writable, unlike `:` which just reads one-way.
+This exact declaration was used across 29 of the 30 files this pass
+converted to a real `TextInput` (every one that needed to reflect focus
+state outward), so it wasn't a one-off — a single grep confirmed the
+scope before fixing anything. Fixed uniformly: `<=>` → `:`, and
+`in-out`/`out` → `out` consistently (a one-way reflection of the real
+focus state has nothing for a host to write back to, so `in-out` was
+never the right direction anyway — matches the same reasoning already
+applied to `AddressInput`'s derived `has-focus` a few files earlier in
+this same batch). Checked `test.slint` for any external `has-focus:`
+assignment that this would break — none — and scanned the rest of the
+project for the same `<=>`-to-output-only-property shape (both
+`has-focus` specifically and other known output-only builtins like
+`TouchArea.pressed`/`.has-hover`) — no other instances, isolated to this
+one batch.
+
 ## `text-input/` batch — the biggest systemic bug found yet
 
 Every one of the 45 files in this category shared the exact same

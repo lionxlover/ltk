@@ -8,7 +8,7 @@ import { Theme } from "../core/Theme.slint";
 export component JsonYamlEditor inherits Rectangle {
     in-out property <string> text: "{\n  \"name\": \"LTK\",\n  \"version\": \"1.0\"\n}";
     in property <bool> valid: true;
-    out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
     in-out property <int> active-tab: 0;
 
     background: Theme.bg-base;

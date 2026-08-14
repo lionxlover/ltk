@@ -4,7 +4,7 @@ export component ColorPickerInput inherits Rectangle {
     in-out property <color> current-color: Theme.accent;
     in-out property <string> hex-text: "#5B9DFA";
     in-out property <int> active-tab: 0;
-    in-out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     // Opening a real color wheel/swatch-picker popup is out of scope for
     // a text field — this signals the host to show one.

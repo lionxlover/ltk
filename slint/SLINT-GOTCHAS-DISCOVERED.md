@@ -659,6 +659,37 @@ TextInput { text <=> root.d1; }
 
 ---
 
+### `<=>` fails on a builtin's output-only property — `TextInput.has-focus` can't be two-way bound
+
+```slint
+// WRONG — real compiler error: "Cannot link to a output pr[operty]"
+in-out property <bool> has-focus <=> input.has-focus;
+```
+`<=>` requires both sides to be writable. `TextInput.has-focus` is
+output-only (the framework sets it based on real focus state; nothing
+outside can assign it), so aliasing an `in-out` (or even an `out`)
+property to it with `<=>` fails — `<=>` isn't "alias to whatever this
+is," it specifically needs a two-way-capable target. This is easy to
+miss because plenty of *other* two-way bindings in this exact codebase
+work fine with `<=>` against a builtin — `TextInput.text` genuinely is
+bidirectionally writable, so `text <=> root.text;` is correct — the
+failure is specific to properties the framework only ever writes to
+from its own side.
+
+```slint
+// RIGHT — one-way binding (`:`) reads the real focus state without
+// trying to make it writable from outside; `out`, not `in-out`, since a
+// host has no business writing this property anyway (there's nothing
+// for it to write TO now that it's a one-way reflection)
+out property <bool> has-focus: input.has-focus;
+```
+Hit this across 29 of `text-input/`'s 30 fixed files at once, since they
+all used the identical `<=>` pattern for exactly this property. Scanned
+the rest of the project for the same shape afterward — no other
+instances found, so it was isolated to this one batch.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

@@ -4,7 +4,7 @@ export component MaskedInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> mask: "(###) ###-####";
     in-out property <string> placeholder;
-    in-out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;

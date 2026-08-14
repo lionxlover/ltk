@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component CreditCardInput inherits Rectangle {
     in-out property <string> card-number;
     in-out property <string> placeholder: "1234  5678  9012  3456";
-    in-out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;

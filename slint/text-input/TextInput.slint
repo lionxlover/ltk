@@ -12,7 +12,7 @@ export component TextInput inherits Rectangle {
     // component itself would need a different exported name).
     in-out property <string> text;
     in-out property <string> placeholder: "Enter text...";
-    in-out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
     in-out property <bool> enabled: true;
 
     background: Theme.bg-surface;

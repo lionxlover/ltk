@@ -6,7 +6,7 @@ import { Theme } from "../core/Theme.slint";
 // fully hardcoded, non-editable "highlighted" text.
 export component CodeEditor inherits Rectangle {
     in-out property <string> code: "fn main() {\n    let name = \"LTK\";\n    let version = 1.0;\n\n    if name == \"LTK\" {\n        println!(\"Hello, {name}!\");\n    }\n}";
-    out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     background: Theme.bg-base;
     border-radius: Theme.radius-md;

@@ -4,7 +4,7 @@ export component MeasurementInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> unit: "px";
     in-out property <string> placeholder: "0";
-    in-out property <bool> has-focus <=> input.has-focus;
+    out property <bool> has-focus: input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
