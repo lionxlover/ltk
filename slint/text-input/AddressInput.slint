@@ -4,7 +4,11 @@ export component AddressInput inherits Rectangle {
     in-out property <string> street;
     in-out property <string> city;
     in-out property <string> zip;
-    in-out property <bool> has-focus: false;
+    // Derived from the three fields' own focus state — not something a
+    // host should set directly, so this is `out`, not `in-out` (an
+    // in-out property with a computed expression binding would conflict
+    // with external assignment).
+    out property <bool> has-focus: street-input.has-focus || city-input.has-focus || zip-input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -28,13 +32,27 @@ export component AddressInput inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             border-width: 1px;
-            border-color: Theme.border-base;
+            border-color: street-input.has-focus ? Theme.accent : Theme.border-base;
 
-            Text {
+            TouchArea {
+                clicked => { street-input.focus(); }
+            }
+
+            if root.street == "" && !street-input.has-focus: Text {
                 x: 10px;
                 y: (parent.height - self.height) / 2;
-                text: root.street == "" ? "Street address" : root.street;
-                color: root.street == "" ? Theme.text-placeholder : Theme.text-primary;
+                text: "Street address";
+                color: Theme.text-placeholder;
+                font-size: 13px;
+                vertical-alignment: center;
+            }
+
+            street-input := TextInput {
+                x: 10px;
+                y: (parent.height - self.height) / 2;
+                width: parent.width - 20px;
+                text <=> root.street;
+                color: Theme.text-primary;
                 font-size: 13px;
                 vertical-alignment: center;
             }
@@ -48,13 +66,27 @@ export component AddressInput inherits Rectangle {
                 height: 36px;
                 border-radius: Theme.radius-sm;
                 border-width: 1px;
-                border-color: Theme.border-base;
+                border-color: city-input.has-focus ? Theme.accent : Theme.border-base;
 
-                Text {
+                TouchArea {
+                    clicked => { city-input.focus(); }
+                }
+
+                if root.city == "" && !city-input.has-focus: Text {
                     x: 10px;
                     y: (parent.height - self.height) / 2;
-                    text: root.city == "" ? "City" : root.city;
-                    color: root.city == "" ? Theme.text-placeholder : Theme.text-primary;
+                    text: "City";
+                    color: Theme.text-placeholder;
+                    font-size: 13px;
+                    vertical-alignment: center;
+                }
+
+                city-input := TextInput {
+                    x: 10px;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - 20px;
+                    text <=> root.city;
+                    color: Theme.text-primary;
                     font-size: 13px;
                     vertical-alignment: center;
                 }
@@ -65,21 +97,31 @@ export component AddressInput inherits Rectangle {
                 height: 36px;
                 border-radius: Theme.radius-sm;
                 border-width: 1px;
-                border-color: Theme.border-base;
+                border-color: zip-input.has-focus ? Theme.accent : Theme.border-base;
 
-                Text {
+                TouchArea {
+                    clicked => { zip-input.focus(); }
+                }
+
+                if root.zip == "" && !zip-input.has-focus: Text {
                     x: 10px;
                     y: (parent.height - self.height) / 2;
-                    text: root.zip == "" ? "ZIP" : root.zip;
-                    color: root.zip == "" ? Theme.text-placeholder : Theme.text-primary;
+                    text: "ZIP";
+                    color: Theme.text-placeholder;
+                    font-size: 13px;
+                    vertical-alignment: center;
+                }
+
+                zip-input := TextInput {
+                    x: 10px;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - 20px;
+                    text <=> root.zip;
+                    color: Theme.text-primary;
                     font-size: 13px;
                     vertical-alignment: center;
                 }
             }
         }
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

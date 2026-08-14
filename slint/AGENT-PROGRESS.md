@@ -13,11 +13,12 @@ re-discovering things the hard way.
 | `inputs/` | 11 | ✅ Done, verified | `inputs.zip` |
 | `forms/` | 4 | ✅ Done, verified | `forms.zip` |
 | `layout-containers/` | 52 | ✅ Done, verified via VS Code Problems panel (3 rounds of fixes) | `layout-containers.zip` |
-| `data-display/` | 60 | ✅ Done, pending VS Code Problems-panel check | `data-display.zip` |
-| everything else | ~661 | ⬜ Not started | — |
+| `data-display/` | 60 | ✅ Done, verified via VS Code Problems panel (10 rounds of fixes) | `data-display.zip` |
+| `text-input/` | 45 | ✅ Done, pending VS Code Problems-panel check | `text-input.zip` |
+| everything else | ~571 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`text-input` (45), `charts` (43), `cards` (39),
+`charts` (43), `cards` (39),
 `navigation` (39), `feedback` (36), `typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
@@ -503,6 +504,135 @@ were spotted in already-shipped, out-of-scope categories —
 noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
+
+## `text-input/` batch — the biggest systemic bug found yet
+
+Every one of the 45 files in this category shared the exact same
+disease, confirmed before touching a single fix: **every text-entry
+component was fake.** Each was a static `Text` element bound to an
+`in-out string` property, wrapped in a `TouchArea` that only set
+`has-focus = true` on click — no real `TextInput` element anywhere in
+the entire category. None of them could receive typed input at all,
+including the base `TextInput.slint` itself. This is a bigger, more
+uniform version of the "container missing `@children`"
+(`layout-containers/`) and "row missing a click callback"
+(`data-display/`) diseases from earlier batches — here it was the same
+single bug, essentially unchanged, across all 45 files.
+
+**Fixed with a real `TextInput`** in the ~30 straightforward single- or
+multi-field text components (`TextInput`, `EmailInput`, `UrlInput`,
+`HashtagInput`, `MentionInput`, `MaskedInput`, `SearchInput`, `TelInput`,
+`GeolocationInput`, `AutocompleteInput`, `CommandSpotlightInput`,
+`NumberInput`, `CurrencyInput`, `PercentageInput`, `MeasurementInput`,
+`PasswordInput`, `CreditCardInput`, `AddressInput`, `TextareaFixed`,
+`TextareaAutoResize`, `TagsChipsInput`, the 7 date/time/color pickers,
+`FontPickerInput`, `IconPickerInput`, `EmojiPickerInput`,
+`GradientBuilderInput`, `VoiceSpeechInput`), each keeping its existing
+icon/prefix/badge chrome and adding a placeholder `Text` shown only when
+empty and unfocused (Slint's `TextInput` has no native placeholder
+support). `PasswordInput` got real masking via `input-type:
+InputType.password` — one of the very few `InputType`/enum values used
+anywhere in this pass, since most others (`email`, `url`, `tel`) aren't
+confirmed enough to risk; `decimal` was used for the numeric fields since
+it's commonly-enough documented to trust.
+
+**Real per-component bugs beyond the missing `TextInput`:**
+- **`TagsChipsInput`** — the "×" on each tag chip had an empty click
+  handler; wired a real `tag-removed(int)` callback (array mutation
+  stays the host's job, per the established array-reassignment pattern),
+  plus `tag-added(string)` on Enter.
+- **`ColorPickerInput`** — the format tabs (HEX/RGB/HSL/OKLCH) were
+  static decoration with no click handling at all; made them real
+  tab-switching via `active-tab`.
+- **`AddressInput`** — the derived `has-focus` (OR of all three fields'
+  own focus) was declared `in-out` with a computed expression binding, a
+  semantic conflict (an in-out property that's also internally computed
+  can't coherently accept external writes too) — changed to `out`.
+- **`SignaturePad`** — real drag-gesture tracking (press/move/release via
+  `pointer-event`) replacing a single-click boolean toggle, with a live
+  dot following the finger while dragging. Full freehand stroke
+  rendering (an actual visible signature path) was *not* attempted —
+  Slint's `Path` element could in principle do this, but its `commands`
+  string syntax isn't something this pass could verify without compiler
+  access, and guessing at SVG path syntax risks a silently-broken,
+  non-rendering path. Documented as a real gap rather than faked.
+- **`OtpInput`** — needed real per-digit typing. First attempt used
+  `for box[index] in [d0, d1, ...]: TextInput { text <=> box; }`, which
+  is fundamentally broken: a `for` loop's model is an array of *values*,
+  so `box` is a copy of whichever property held that value when the
+  array literal was evaluated — `<=>` had nothing live to write back to.
+  Caught before shipping (not a compiler error, a logic error that would
+  have silently done nothing when typed into) and rewritten as six
+  explicit named boxes, each bound directly to its own `d0`..`d5`
+  property. Documented as a new gotcha — see below.
+- **`CodeEditor`** first draft called `code.length` (strings have no
+  `.length` in Slint, an established gotcha from earlier in this
+  project) inside a dead `line-count` property that wasn't even used
+  anywhere — caught and deleted during self-review before it was ever
+  delivered, rather than shipping something that would have failed to
+  compile.
+- **`CameraCaptureInput`** — first fix replaced the old (fake but
+  visibly-interactive) self-toggling click with callback-only delegation
+  to the host. Since `test.slint` doesn't wire custom callbacks (true of
+  every category's demo file so far), that would have made the demo look
+  non-interactive despite compiling fine — reverted to toggling locally
+  *and* firing the callback, so the demo still visibly works while a real
+  host can still hook in.
+
+**Editors — real editing added, full rich features documented as out of
+scope rather than faked**: `CodeEditor`, `MarkdownEditor`,
+`JsonYamlEditor`, and `RichTextEditor` all had 100% hardcoded, frozen
+"preview" text with no way to type at all, dressed up to look like
+working editors (fake syntax-highlighted code, a fake "rendered"
+Markdown preview, a fake JSON tree, a formatting toolbar with dead
+buttons). All four now have genuine editable multi-line `TextInput`
+content. What's *not* implemented, and said so directly in each file
+rather than faked: real syntax highlighting, live-rendered Markdown
+preview (the "Preview" tab now honestly shows raw source instead of a
+non-functional fake render), JSON/YAML validation, and actual rich-text
+formatting (the toolbar buttons fire a real `format-requested(string)`
+callback instead of doing nothing, but there's no rich-text model to
+apply it to).
+
+**Action-only components** (`QrBarcodeScanner`, `FileUploadDropZone`,
+`MultiFileUpload`, `ImageUploadPreview`) — same "toggles a bool, tells no
+one" shape as `DragDropZone` from the `layout-containers` batch. Added
+real callbacks (`scan-toggled`, `browse-clicked`, `file-removed(int)`,
+`crop-clicked`/`remove-clicked`) so a host can actually react, following
+the same precedent: real platform capability (camera, file picker,
+barcode decoding) is host-side, not something `.slint` alone can do.
+
+**Not touched**: `NumberStepper` was already correctly built (working
++/- buttons, no fake interactivity) — left alone, except for the
+`parent.width` bug described below, found incidentally while verifying
+the batch.
+
+## New gotcha: `for` loop over a literal array of named properties doesn't give live references
+
+Documented in full in `SLINT-GOTCHAS-DISCOVERED.md`. Worth calling out
+here because it's a *logic* bug, not a compile error — `for box[i] in
+[d0, d1, d2]: TextInput { text <=> box; }` compiles fine and looks
+correct, but typing into any of the resulting boxes silently does
+nothing to `d0`/`d1`/`d2`, since each loop iteration's `box` is a copy of
+that property's value at model-evaluation time, not a live reference.
+Caught during self-review (comparing the generated code against what the
+two-way binding was actually supposed to achieve) before it was ever
+delivered — this specific shape wouldn't necessarily show up in a
+Problems-panel check at all, since it's not a type or syntax error.
+
+## Post-delivery fix: two more `parent.*`-on-root-child instances found during the standing verification sweep
+
+Running the full verification suite (the same one built after the
+`AspectRatioBox` incident) across this batch caught two instances of
+that exact bug shape — a direct child of the exported root component
+referencing `parent.width`, which fails with "Cannot access id 'parent'"
+if the component is ever previewed/used as a top-level element:
+`MarkdownEditor`'s tab-divider line (introduced in this pass) and
+`NumberStepper`'s button-divider line (pre-existing, not something this
+pass touched otherwise — `NumberStepper` was already functionally
+correct and wasn't rewritten, just incidentally caught by the sweep).
+Both fixed by switching to `root.width` — the component's own dimension,
+which always exists, rather than its parent's.
 
 ## Tenth round: real compile error in `TreeTable` — `x:` on a direct `HorizontalLayout` child
 

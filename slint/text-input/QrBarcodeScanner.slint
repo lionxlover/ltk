@@ -4,6 +4,12 @@ export component QrBarcodeScanner inherits Rectangle {
     in-out property <string> scanned-text;
     in-out property <bool> scanning: false;
 
+    // Real camera-feed access and QR/barcode decoding are host/platform
+    // capabilities outside what .slint alone can do — this toggles the
+    // visual scanning state and signals the host to start/stop the
+    // actual camera + decoder, which reports back via `scanned-text`.
+    callback scan-toggled(bool);
+
     background: Theme.bg-base;
     border-radius: Theme.radius-lg;
     border-width: 1px;
@@ -42,7 +48,19 @@ export component QrBarcodeScanner inherits Rectangle {
         }
     }
 
+    if root.scanned-text != "": Text {
+        x: (parent.width - self.width) / 2;
+        y: 186px;
+        text: root.scanned-text;
+        color: Theme.text-secondary;
+        font-family: Theme.font-mono;
+        font-size: 12px;
+    }
+
     TouchArea {
-        clicked => { root.scanning = !root.scanning; }
+        clicked => {
+            root.scanning = !root.scanning;
+            root.scan-toggled(root.scanning);
+        }
     }
 }

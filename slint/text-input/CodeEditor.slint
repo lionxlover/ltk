@@ -1,7 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Real syntax highlighting (tokenizing and coloring keywords, strings,
+// etc. as the person types) is a substantial feature on its own — this
+// is a genuinely editable plain-text code area instead of the previous
+// fully hardcoded, non-editable "highlighted" text.
 export component CodeEditor inherits Rectangle {
-    in-out property <bool> has-focus: false;
+    in-out property <string> code: "fn main() {\n    let name = \"LTK\";\n    let version = 1.0;\n\n    if name == \"LTK\" {\n        println!(\"Hello, {name}!\");\n    }\n}";
+    out property <bool> has-focus <=> input.has-focus;
 
     background: Theme.bg-base;
     border-radius: Theme.radius-md;
@@ -9,7 +14,11 @@ export component CodeEditor inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 280px;
     horizontal-stretch: 1;
+    clip: true;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
     HorizontalLayout {
         // Line numbers
@@ -22,9 +31,14 @@ export component CodeEditor inherits Rectangle {
                 padding-bottom: 12px;
                 spacing: 0px;
 
-                for ln in [1, 2, 3, 4, 5, 6, 7]: Text {
+                // Line numbers are a fixed range (up to 40), not
+                // dynamically matching the actual content's line count —
+                // that would need splitting the text on "\n", which
+                // Slint's string type doesn't support (no length/
+                // indexing/substring; see SLINT-GOTCHAS-DISCOVERED.md).
+                for ln in 40: Text {
                     horizontal-stretch: 0;
-                    text: "\{ln}";
+                    text: "\{ln + 1}";
                     color: Theme.text-disabled;
                     font-family: Theme.font-mono;
                     font-size: 12px;
@@ -34,25 +48,21 @@ export component CodeEditor inherits Rectangle {
         }
 
         // Code area
-        Rectangle {
+        Flickable {
             background: Theme.bg-base;
+            viewport-height: input.preferred-height + 24px;
 
-            VerticalLayout {
-                padding: 12px;
-                spacing: 0px;
-
-                Text { text: "fn main() {"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: "    let name = \"LTK\";"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: "    let version = 1.0;"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: ""; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: "    if name == \"LTK\" {"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: "        println!(\"Hello, {name}!\");"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 13px; }
-                Text { text: "    }"; color: Theme.accent; font-family: Theme.font-mono; font-size: 13px; }
+            input := TextInput {
+                x: 12px;
+                y: 12px;
+                width: parent.width - 12px;
+                text <=> root.code;
+                single-line: false;
+                wrap: no-wrap;
+                color: Theme.text-primary;
+                font-family: Theme.font-mono;
+                font-size: 13px;
             }
         }
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

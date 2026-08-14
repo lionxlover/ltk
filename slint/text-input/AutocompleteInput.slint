@@ -3,7 +3,13 @@ import { Theme } from "../core/Theme.slint";
 export component AutocompleteInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> placeholder: "Type to search...";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+    in property <bool> loading: false;
+
+    // Real suggestion-list rendering is the host's job (needs a real
+    // data source); this just signals every keystroke so the host can
+    // query and show its own popup/dropdown of matches.
+    callback query-changed(string);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,28 +18,39 @@ export component AutocompleteInput inherits Rectangle {
     height: 40px;
     horizontal-stretch: 1;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
-    Text {
+    if root.text == "" && !input.has-focus: Text {
         x: 12px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
     }
 
+    input := TextInput {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - (root.loading ? 40px : 24px);
+        text <=> root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+        edited => { root.query-changed(self.text); }
+    }
+
     // Loading spinner
-    if has-focus: Text {
+    if root.loading: Text {
         x: parent.width - 28px;
         y: (parent.height - self.height) / 2;
         text: "◌";
         color: Theme.text-tertiary;
         font-size: 14px;
         vertical-alignment: center;
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

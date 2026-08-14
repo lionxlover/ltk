@@ -1,7 +1,16 @@
 import { Theme } from "../core/Theme.slint";
 
+// Real rich-text formatting (actually bolding/italicizing selected
+// spans, embedding images/links) is a substantial feature needing a rich
+// text model Slint doesn't provide natively — the toolbar buttons now
+// fire a real callback with which format was requested instead of doing
+// nothing, so a host could apply formatting to its own text model, but
+// the content area here is honest plain-text editing.
 export component RichTextEditor inherits Rectangle {
-    in-out property <bool> has-focus: false;
+    in-out property <string> content: "";
+    out property <bool> has-focus <=> input.has-focus;
+
+    callback format-requested(string);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -9,6 +18,7 @@ export component RichTextEditor inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 300px;
     horizontal-stretch: 1;
+    clip: true;
 
     Rectangle {
         x: 0px;
@@ -27,7 +37,10 @@ export component RichTextEditor inherits Rectangle {
                 width: 32px;
                 height: 28px;
                 border-radius: Theme.radius-sm;
+                background: op-ta.has-hover ? Theme.surface-hover : transparent;
                 vertical-stretch: 0;
+
+                animate background { duration: Theme.dur-fast; }
 
                 Text {
                     x: (parent.width - self.width) / 2;
@@ -40,8 +53,8 @@ export component RichTextEditor inherits Rectangle {
                     horizontal-alignment: center;
                 }
 
-                TouchArea {
-                    clicked => { }
+                op-ta := TouchArea {
+                    clicked => { root.format-requested(op); }
                 }
             }
         }
@@ -55,7 +68,13 @@ export component RichTextEditor inherits Rectangle {
         background: Theme.border-subtle;
     }
 
-    Text {
+    TouchArea {
+        y: 41px;
+        height: parent.height - 41px;
+        clicked => { input.focus(); }
+    }
+
+    if root.content == "" && !input.has-focus: Text {
         x: 16px;
         y: 56px;
         width: parent.width - 32px;
@@ -66,7 +85,21 @@ export component RichTextEditor inherits Rectangle {
         wrap: word-wrap;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    Flickable {
+        x: 16px;
+        y: 56px;
+        width: parent.width - 32px;
+        height: parent.height - 72px;
+        viewport-height: input.preferred-height;
+
+        input := TextInput {
+            width: parent.width;
+            text <=> root.content;
+            single-line: false;
+            wrap: word-wrap;
+            color: Theme.text-primary;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+        }
     }
 }

@@ -3,6 +3,9 @@ import { Theme } from "../core/Theme.slint";
 export component IconPickerInput inherits Rectangle {
     in-out property <string> selected-icon: "✓";
     in-out property <bool> has-focus: false;
+    in property <[string]> recent-icons: ["✓", "✕", "⚙", "❤", "★", "🔔", "📁"];
+
+    callback icon-picked(string);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -10,7 +13,6 @@ export component IconPickerInput inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
-
 
     Text {
         x: 12px;
@@ -31,22 +33,36 @@ export component IconPickerInput inherits Rectangle {
         vertical-alignment: center;
     }
 
-    // Icon grid hint
+    // Recent icons — actually clickable, unlike the previous static hint.
     HorizontalLayout {
         x: parent.width - 160px;
         spacing: 6px;
         alignment: end;
 
-        for ic in ["✓", "✕", "⚙", "❤", "★", "🔔", "📁"]: Text {
-            text: ic;
-            color: Theme.text-tertiary;
-            font-size: 14px;
-            vertical-alignment: center;
-            horizontal-alignment: center;
+        for ic in root.recent-icons: Rectangle {
+            width: 20px;
+            horizontal-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: ic;
+                color: Theme.text-tertiary;
+                font-size: 14px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected-icon = ic;
+                    root.icon-picked(ic);
+                }
+            }
         }
     }
 
     TouchArea {
-        clicked => { root.has-focus = true; }
+        clicked => { root.has-focus = !root.has-focus; }
     }
 }

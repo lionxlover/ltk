@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component CreditCardInput inherits Rectangle {
     in-out property <string> card-number;
     in-out property <string> placeholder: "1234  5678  9012  3456";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,6 +12,9 @@ export component CreditCardInput inherits Rectangle {
     height: 48px;
     horizontal-stretch: 1;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
     // Card brand icon
     Rectangle {
@@ -33,18 +36,31 @@ export component CreditCardInput inherits Rectangle {
         }
     }
 
-    Text {
+    if root.card-number == "" && !input.has-focus: Text {
         x: 64px;
         y: (parent.height - self.height) / 2;
-        text: root.card-number == "" ? root.placeholder : root.card-number;
-        color: root.card-number == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-mono;
         font-size: 16px;
         letter-spacing: 2px;
         vertical-alignment: center;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    input := TextInput {
+        x: 64px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 76px;
+        text <=> root.card-number;
+        color: Theme.text-primary;
+        font-family: Theme.font-mono;
+        font-size: 16px;
+        letter-spacing: 2px;
+        vertical-alignment: center;
+        // Digit-group auto-formatting (inserting spaces every 4 digits
+        // as the person types) would need string slicing, which Slint
+        // doesn't support (see SLINT-GOTCHAS-DISCOVERED.md — no
+        // substring/indexing on strings) — the host is responsible for
+        // formatting `card-number` before displaying/submitting it.
     }
 }

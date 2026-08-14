@@ -2,7 +2,9 @@ import { Theme } from "../core/Theme.slint";
 
 export component CommandSpotlightInput inherits Rectangle {
     in-out property <string> text;
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+
+    callback accepted();
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
@@ -11,6 +13,9 @@ export component CommandSpotlightInput inherits Rectangle {
     height: 48px;
     horizontal-stretch: 1;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
     Text {
         x: 16px;
@@ -21,14 +26,26 @@ export component CommandSpotlightInput inherits Rectangle {
         vertical-alignment: center;
     }
 
-    Text {
+    if root.text == "" && !input.has-focus: Text {
         x: 40px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? "Search commands, files, actions..." : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: "Search commands, files, actions...";
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 15px;
         vertical-alignment: center;
+    }
+
+    input := TextInput {
+        x: 40px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 128px;
+        text <=> root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 15px;
+        vertical-alignment: center;
+        accepted => { root.accepted(); }
     }
 
     // Keyboard shortcut hint
@@ -50,9 +67,5 @@ export component CommandSpotlightInput inherits Rectangle {
             vertical-alignment: center;
             horizontal-alignment: center;
         }
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

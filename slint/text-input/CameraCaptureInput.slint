@@ -3,6 +3,12 @@ import { Theme } from "../core/Theme.slint";
 export component CameraCaptureInput inherits Rectangle {
     in-out property <bool> has-captured: false;
 
+    // Real camera access is a platform/host capability outside what
+    // .slint alone can do — this signals the tap so the host can open
+    // its own camera capture flow and set `has-captured` back.
+    callback capture-clicked();
+    callback retake-clicked();
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 1px;
@@ -43,6 +49,14 @@ export component CameraCaptureInput inherits Rectangle {
     }
 
     TouchArea {
-        clicked => { root.has-captured = !root.has-captured; }
+        clicked => {
+            if root.has-captured {
+                root.has-captured = false;
+                root.retake-clicked();
+            } else {
+                root.has-captured = true;
+                root.capture-clicked();
+            }
+        }
     }
 }

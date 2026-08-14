@@ -3,7 +3,9 @@ import { Theme } from "../core/Theme.slint";
 export component GeolocationInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> placeholder: "Search location...";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+
+    callback locate-me();
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,26 +14,48 @@ export component GeolocationInput inherits Rectangle {
     height: 40px;
     horizontal-stretch: 1;
 
-
-    Text {
-        x: 12px;
-        y: (parent.height - self.height) / 2;
-        text: "📍";
-        font-size: 14px;
-        vertical-alignment: center;
+    TouchArea {
+        clicked => { input.focus(); }
     }
 
-    Text {
+    Rectangle {
+        x: 4px;
+        y: (parent.height - 28px) / 2;
+        width: 28px;
+        height: 28px;
+        border-radius: Theme.radius-sm;
+
+        Text {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            text: "📍";
+            font-size: 14px;
+            vertical-alignment: center;
+        }
+
+        TouchArea {
+            clicked => { root.locate-me(); }
+        }
+    }
+
+    if root.text == "" && !input.has-focus: Text {
         x: 36px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    input := TextInput {
+        x: 36px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 48px;
+        text <=> root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
     }
 }

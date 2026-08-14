@@ -4,7 +4,10 @@ export component TagsChipsInput inherits Rectangle {
     in-out property <[string]> tags: ["react", "slint", "rust"];
     in-out property <string> text;
     in-out property <string> placeholder: "Add tag...";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+
+    callback tag-removed(int);
+    callback tag-added(string);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,13 +15,17 @@ export component TagsChipsInput inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
+    clip: true;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
     HorizontalLayout {
         padding-left: 8px;
         spacing: 6px;
 
-        for tag in root.tags: Rectangle {
+        for tag[idx] in root.tags: Rectangle {
             height: 28px;
             border-radius: 14px;
             background: Theme.accent-subtle;
@@ -54,14 +61,41 @@ export component TagsChipsInput inherits Rectangle {
                     }
 
                     TouchArea {
-                        clicked => { }
+                        clicked => { root.tag-removed(idx); }
                     }
                 }
             }
         }
-    }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+        Rectangle {
+            horizontal-stretch: 1;
+            min-width: 60px;
+
+            if root.text == "" && !input.has-focus: Text {
+                x: 4px;
+                y: (parent.height - self.height) / 2;
+                text: root.placeholder;
+                color: Theme.text-placeholder;
+                font-size: 13px;
+                vertical-alignment: center;
+            }
+
+            input := TextInput {
+                x: 4px;
+                y: (parent.height - self.height) / 2;
+                width: parent.width - 8px;
+                text <=> root.text;
+                color: Theme.text-primary;
+                font-family: Theme.font-ui;
+                font-size: 13px;
+                vertical-alignment: center;
+                accepted => {
+                    if self.text != "" {
+                        root.tag-added(self.text);
+                        self.text = "";
+                    }
+                }
+            }
+        }
     }
 }

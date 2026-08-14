@@ -4,6 +4,11 @@ export component FileUploadDropZone inherits Rectangle {
     in-out property <bool> dragging: false;
     in-out property <string> status-text: "Drop files here or click to browse";
 
+    // Real OS-level drag-over/drop detection is host-side (no native
+    // file-drag API exposed in .slint) — the host drives `dragging` and
+    // listens for `browse-clicked` to open its own file picker.
+    callback browse-clicked();
+
     background: dragging ? Theme.accent-subtle : Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 2px;
@@ -37,6 +42,6 @@ export component FileUploadDropZone inherits Rectangle {
     }
 
     TouchArea {
-        clicked => { }
+        clicked => { root.browse-clicked(); }
     }
 }

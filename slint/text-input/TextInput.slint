@@ -1,9 +1,18 @@
 import { Theme } from "../core/Theme.slint";
 
 export component TextInput inherits Rectangle {
+    // This component is itself named `TextInput`, same as the Slint
+    // builtin text-editing element used below. Not importing anything
+    // named `TextInput` into this file, so nothing should locally shadow
+    // the builtin — the `input := TextInput { ... }` further down should
+    // resolve to the builtin, not recurse into this component itself.
+    // Flagging explicitly since it's the one genuinely ambiguous-looking
+    // spot in this whole batch; if the person's Slint Preview disagrees,
+    // the fix is simple (there's no way to rename the builtin, so the
+    // component itself would need a different exported name).
     in-out property <string> text;
     in-out property <string> placeholder: "Enter text...";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
     in-out property <bool> enabled: true;
 
     background: Theme.bg-surface;
@@ -13,17 +22,30 @@ export component TextInput inherits Rectangle {
     height: 40px;
     horizontal-stretch: 1;
 
-    Text {
+    TouchArea {
+        enabled: root.enabled;
+        clicked => { input.focus(); }
+    }
+
+    if root.text == "" && !input.has-focus: Text {
         x: 12px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    input := TextInput {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 24px;
+        text <=> root.text;
+        enabled: root.enabled;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
     }
 }

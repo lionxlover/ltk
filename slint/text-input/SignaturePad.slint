@@ -1,7 +1,25 @@
 import { Theme } from "../core/Theme.slint";
 
+// Freehand path rendering (an actual signature stroke) isn't attempted
+// here — Slint's `Path` element could in principle render one built from
+// captured drag points, but its `commands` string syntax isn't something
+// this pass could verify without compiler access, and guessing at SVG
+// path syntax risks a silently-broken (non-rendering) path. What's here
+// is honest, real touch tracking: `has-signature` only flips true once
+// an actual press-drag-release gesture happens (not just any single
+// click, which was the previous behavior), and a live dot follows the
+// finger while dragging so there's real visual feedback. A host wanting
+// genuine stroke rendering should track `signed` and build its own
+// canvas/path from the coordinates it captures via its own event
+// handling, or request a dedicated drawing-canvas component.
 export component SignaturePad inherits Rectangle {
     in-out property <bool> has-signature: false;
+    property <bool> dragging: false;
+    property <length> drag-x: 0px;
+    property <length> drag-y: 0px;
+
+    callback signed();
+    callback cleared();
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -9,8 +27,9 @@ export component SignaturePad inherits Rectangle {
     border-color: has-signature ? Theme.accent : Theme.border-base;
     height: 120px;
     horizontal-stretch: 1;
+    clip: true;
 
-    if !root.has-signature: VerticalLayout {
+    if !root.has-signature && !dragging: VerticalLayout {
         alignment: center;
         spacing: 4px;
 
@@ -20,7 +39,7 @@ export component SignaturePad inherits Rectangle {
             horizontal-alignment: center;
         }
         Text {
-            text: "Click to sign";
+            text: "Draw to sign";
             color: Theme.text-placeholder;
             font-family: Theme.font-ui;
             font-size: 13px;
@@ -28,19 +47,66 @@ export component SignaturePad inherits Rectangle {
         }
     }
 
-    if root.has-signature: Text {
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
-        text: "Signature captured";
-        color: Theme.accent;
-        font-family: Theme.font-display;
-        font-size: 16px;
-        font-italic: true;
-        vertical-alignment: center;
-        horizontal-alignment: center;
+    if dragging: Rectangle {
+        x: drag-x - 3px;
+        y: drag-y - 3px;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background: Theme.accent;
     }
 
-    TouchArea {
-        clicked => { root.has-signature = !root.has-signature; }
+    if root.has-signature && !dragging: HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+
+        Text {
+            text: "Signature captured";
+            color: Theme.accent;
+            font-family: Theme.font-display;
+            font-size: 16px;
+            font-italic: true;
+            vertical-alignment: center;
+        }
+
+        Rectangle {
+            width: 20px;
+            height: 20px;
+            border-radius: Theme.radius-sm;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.text-tertiary;
+                font-size: 11px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.has-signature = false;
+                    root.cleared();
+                }
+            }
+        }
+    }
+
+    sign-ta := TouchArea {
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down {
+                dragging = true;
+            }
+            if event.kind == PointerEventKind.up {
+                dragging = false;
+                root.has-signature = true;
+                root.signed();
+            }
+        }
+        moved => {
+            drag-x = self.mouse-x;
+            drag-y = self.mouse-y;
+        }
     }
 }

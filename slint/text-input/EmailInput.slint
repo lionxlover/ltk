@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component EmailInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> placeholder: "user@example.com";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,18 +12,28 @@ export component EmailInput inherits Rectangle {
     height: 40px;
     horizontal-stretch: 1;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
-    Text {
+    if root.text == "" && !input.has-focus: Text {
         x: 12px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    input := TextInput {
+        x: 12px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 24px;
+        text <=> root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
     }
 }

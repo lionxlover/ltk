@@ -2,6 +2,10 @@ import { Theme } from "../core/Theme.slint";
 
 export component MultiFileUpload inherits Rectangle {
     in-out property <bool> dragging: false;
+    in property <[string]> files: ["report.pdf (2.4 MB)", "image.png (890 KB)", "data.csv (156 KB)"];
+
+    callback browse-clicked();
+    callback file-removed(int);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
@@ -14,15 +18,24 @@ export component MultiFileUpload inherits Rectangle {
         padding: 16px;
         spacing: 12px;
 
-        Text {
-            text: "↑ Drop files here";
-            color: Theme.text-secondary;
-            font-size: 13px;
-            horizontal-alignment: center;
+        Rectangle {
+            height: 24px;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                text: "↑ Drop files here";
+                color: Theme.text-secondary;
+                font-size: 13px;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => { root.browse-clicked(); }
+            }
         }
 
         // File list
-        for item in ["report.pdf (2.4 MB)", "image.png (890 KB)", "data.csv (156 KB)"]: Rectangle {
+        for item[idx] in root.files: Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: Theme.bg-raised;
@@ -44,18 +57,25 @@ export component MultiFileUpload inherits Rectangle {
                     vertical-alignment: center;
                     horizontal-stretch: 1;
                 }
-                Text {
-                    text: "✕";
-                    color: Theme.text-tertiary;
-                    font-size: 12px;
-                    vertical-alignment: center;
-                    horizontal-alignment: right;
+                Rectangle {
+                    width: 20px;
+                    horizontal-stretch: 0;
+
+                    Text {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        text: "✕";
+                        color: Theme.text-tertiary;
+                        font-size: 12px;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { root.file-removed(idx); }
+                    }
                 }
             }
         }
-    }
-
-    TouchArea {
-        clicked => { }
     }
 }

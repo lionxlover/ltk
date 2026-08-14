@@ -626,6 +626,39 @@ itself) — `TreeTable` was the only instance.
 
 ---
 
+### A `for` loop over `[prop1, prop2, ...]` iterates copies, not live references — can't two-way bind back
+
+```slint
+// WRONG — box is a COPY of whichever property's value was in the array
+// at that index when the array literal was evaluated; two-way binding
+// `text <=> box` has nothing live to write back to
+in-out property <string> d0: "";
+in-out property <string> d1: "";
+for box[index] in [d0, d1]: TextInput {
+    text <=> box;   // does not, and cannot, update root.d0 / root.d1
+}
+```
+This looks like it should work — `box` seems to "be" `d0` or `d1` on
+each iteration — but a `for` loop's model is evaluated as an array of
+values, not an array of bindable references to the original properties.
+Once `[d0, d1]` is evaluated into a model, each element is an independent
+copy; there is no mechanism in Slint to iterate "the next named property"
+by reference. This matters specifically when several *separately named*
+properties (not a single array property) each need their own editable
+`TextInput`, e.g. per-digit OTP boxes — see the existing note above on
+per-character fields (strings have no indexing, so multi-box text entry
+already has to use separate `d0`/`d1`/… properties instead of one
+string).
+
+```slint
+// RIGHT — write out each box explicitly against its own named property;
+// verbose, but each TextInput's <=> binding is real
+TextInput { text <=> root.d0; }
+TextInput { text <=> root.d1; }
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

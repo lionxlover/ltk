@@ -1,9 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
+// Real JSON/YAML validation (parsing and checking syntax as the person
+// types) is a substantial feature on its own — `valid` stays a plain
+// `in` property the host sets after its own validation, same as before;
+// what's fixed here is that the content area is now genuinely editable
+// instead of frozen static text.
 export component JsonYamlEditor inherits Rectangle {
-    in-out property <string> text;
-    in-out property <bool> valid: true;
-    in-out property <bool> has-focus: false;
+    in-out property <string> text: "{\n  \"name\": \"LTK\",\n  \"version\": \"1.0\"\n}";
+    in property <bool> valid: true;
+    out property <bool> has-focus <=> input.has-focus;
+    in-out property <int> active-tab: 0;
 
     background: Theme.bg-base;
     border-radius: Theme.radius-md;
@@ -11,6 +17,7 @@ export component JsonYamlEditor inherits Rectangle {
     border-color: has-focus ? Theme.accent : (root.valid ? Theme.border-base : Theme.error);
     height: 200px;
     horizontal-stretch: 1;
+    clip: true;
 
     Rectangle {
         x: 0px;
@@ -24,22 +31,26 @@ export component JsonYamlEditor inherits Rectangle {
             spacing: 4px;
             alignment: start;
 
-            for tabitem in ["JSON", "YAML"]: Rectangle {
+            for tabitem[idx] in ["JSON", "YAML"]: Rectangle {
                 width: 60px;
                 height: 24px;
                 border-radius: 4px;
-                background: tabitem == "JSON" ? Theme.bg-surface : transparent;
+                background: root.active-tab == idx ? Theme.bg-surface : transparent;
                 vertical-stretch: 0;
 
                 Text {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
                     text: tabitem;
-                    color: tabitem == "JSON" ? Theme.text-primary : Theme.text-tertiary;
+                    color: root.active-tab == idx ? Theme.text-primary : Theme.text-tertiary;
                     font-size: 11px;
                     font-weight: 600;
                     vertical-alignment: center;
                     horizontal-alignment: center;
+                }
+
+                TouchArea {
+                    clicked => { root.active-tab = idx; }
                 }
             }
         }
@@ -54,18 +65,27 @@ export component JsonYamlEditor inherits Rectangle {
         }
     }
 
-    Text {
+    TouchArea {
+        y: 32px;
+        height: parent.height - 32px;
+        clicked => { input.focus(); }
+    }
+
+    Flickable {
         x: 12px;
         y: 44px;
         width: parent.width - 24px;
-        text: "{\n  \"name\": \"LTK\",\n  \"version\": \"1.0\"\n}";
-        color: Theme.text-primary;
-        font-family: Theme.font-mono;
-        font-size: 12px;
-        wrap: word-wrap;
-    }
+        height: parent.height - 56px;
+        viewport-height: input.preferred-height;
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+        input := TextInput {
+            width: parent.width;
+            text <=> root.text;
+            single-line: false;
+            wrap: word-wrap;
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 12px;
+        }
     }
 }

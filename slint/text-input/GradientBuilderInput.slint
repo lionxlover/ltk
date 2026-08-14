@@ -2,6 +2,12 @@ import { Theme } from "../core/Theme.slint";
 
 export component GradientBuilderInput inherits Rectangle {
     in-out property <bool> has-focus: false;
+    in-out property <string> gradient-css: "linear-gradient(90deg, #5B9DFA, #a855f7, #ec4899)";
+
+    // A real gradient-stop editor (draggable color stops) is a
+    // substantial feature on its own; this signals the tap so the host
+    // can open one and set `gradient-css` back.
+    callback clicked();
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -9,7 +15,6 @@ export component GradientBuilderInput inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
-
 
     // Gradient preview bar
     Rectangle {
@@ -24,7 +29,8 @@ export component GradientBuilderInput inherits Rectangle {
     Text {
         x: 96px;
         y: (parent.height - self.height) / 2;
-        text: "linear-gradient(90deg, #5B9DFA, #a855f7, #ec4899)";
+        width: parent.width - 108px;
+        text: root.gradient-css;
         color: Theme.text-secondary;
         font-family: Theme.font-mono;
         font-size: 12px;
@@ -32,6 +38,9 @@ export component GradientBuilderInput inherits Rectangle {
     }
 
     TouchArea {
-        clicked => { root.has-focus = true; }
+        clicked => {
+            root.has-focus = !root.has-focus;
+            root.clicked();
+        }
     }
 }

@@ -4,6 +4,10 @@ export component ImageUploadPreview inherits Rectangle {
     in-out property <bool> has-image: false;
     in-out property <bool> dragging: false;
 
+    callback browse-clicked();
+    callback crop-clicked();
+    callback remove-clicked();
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 2px;
@@ -66,10 +70,40 @@ export component ImageUploadPreview inherits Rectangle {
                 vertical-alignment: center;
                 horizontal-alignment: center;
             }
+
+            TouchArea {
+                clicked => { root.crop-clicked(); }
+            }
+        }
+
+        Rectangle {
+            x: parent.width - 36px;
+            y: 40px;
+            width: 28px;
+            height: 28px;
+            border-radius: Theme.radius-sm;
+            background: Theme.bg-surface;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "✕";
+                color: Theme.error;
+                font-size: 14px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.has-image = false;
+                    root.remove-clicked();
+                }
+            }
         }
     }
 
-    TouchArea {
-        clicked => { }
+    if !root.has-image: TouchArea {
+        clicked => { root.browse-clicked(); }
     }
 }

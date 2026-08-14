@@ -4,7 +4,11 @@ export component TelInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> country-code: "+1";
     in-out property <string> placeholder: "(555) 123-4567";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+
+    // Opening a full country-code picker is out of scope for a text
+    // field — this signals the host to show one (e.g. a popup list).
+    callback country-code-clicked();
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -32,7 +36,7 @@ export component TelInput inherits Rectangle {
         }
 
         TouchArea {
-            clicked => { }
+            clicked => { root.country-code-clicked(); }
         }
     }
 
@@ -44,17 +48,28 @@ export component TelInput inherits Rectangle {
         background: Theme.border-base;
     }
 
-    Text {
+    TouchArea {
+        clicked => { input.focus(); }
+    }
+
+    if root.text == "" && !input.has-focus: Text {
         x: 72px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
     }
 
-    TouchArea {
-        clicked => { root.has-focus = true; }
+    input := TextInput {
+        x: 72px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 84px;
+        text <=> root.text;
+        color: Theme.text-primary;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
     }
 }

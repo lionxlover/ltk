@@ -4,7 +4,13 @@ export component ColorPickerInput inherits Rectangle {
     in-out property <color> current-color: Theme.accent;
     in-out property <string> hex-text: "#5B9DFA";
     in-out property <int> active-tab: 0;
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
+
+    // Opening a real color wheel/swatch-picker popup is out of scope for
+    // a text field — this signals the host to show one.
+    callback swatch-clicked();
+
+    property <[string]> formats: ["HEX", "RGB", "HSL", "OKLCH"];
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,7 +18,6 @@ export component ColorPickerInput inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
-
 
     // Color swatch
     Rectangle {
@@ -24,12 +29,21 @@ export component ColorPickerInput inherits Rectangle {
         background: root.current-color;
         border-width: 1px;
         border-color: Theme.border-base;
+
+        TouchArea {
+            clicked => { root.swatch-clicked(); }
+        }
     }
 
-    Text {
+    TouchArea {
+        clicked => { input.focus(); }
+    }
+
+    input := TextInput {
         x: 40px;
         y: (parent.height - self.height) / 2;
-        text: root.hex-text;
+        width: 108px;
+        text <=> root.hex-text;
         color: Theme.text-primary;
         font-family: Theme.font-mono;
         font-size: 13px;
@@ -49,26 +63,26 @@ export component ColorPickerInput inherits Rectangle {
             padding: 2px;
             spacing: 2px;
 
-            for tabitem in ["HEX", "RGB", "HSL", "OKLCH"]: Rectangle {
+            for tabitem[idx] in root.formats: Rectangle {
                 horizontal-stretch: 1;
                 border-radius: 4px;
-                background: tabitem == "HEX" ? Theme.bg-surface : transparent;
+                background: root.active-tab == idx ? Theme.bg-surface : transparent;
 
                 Text {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
                     text: tabitem;
-                    color: tabitem == "HEX" ? Theme.text-primary : Theme.text-tertiary;
+                    color: root.active-tab == idx ? Theme.text-primary : Theme.text-tertiary;
                     font-size: 9px;
                     font-weight: 600;
                     vertical-alignment: center;
                     horizontal-alignment: center;
                 }
+
+                TouchArea {
+                    clicked => { root.active-tab = idx; }
+                }
             }
         }
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

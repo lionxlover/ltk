@@ -1,7 +1,14 @@
 import { Theme } from "../core/Theme.slint";
 
+// Real live-rendered Markdown preview (parsing headings, bold/italic,
+// lists, etc.) is a substantial feature on its own — the "Write" tab is
+// now genuinely editable; "Preview" shows the raw source rather than a
+// faked rendered view, which is honest about what isn't implemented
+// rather than faking a preview that doesn't actually render anything.
 export component MarkdownEditor inherits Rectangle {
-    in-out property <bool> has-focus: false;
+    in-out property <string> markdown: "# Hello World\n\nThis is a **markdown** editor with *live* preview.\n\n- Item one\n- Item two";
+    in-out property <bool> preview-mode: false;
+    out property <bool> has-focus <=> input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -9,6 +16,7 @@ export component MarkdownEditor inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 300px;
     horizontal-stretch: 1;
+    clip: true;
 
     Rectangle {
         x: 0px;
@@ -22,41 +30,88 @@ export component MarkdownEditor inherits Rectangle {
             spacing: 2px;
             alignment: start;
 
-            for tabitem in ["Write", "Preview"]: Rectangle {
+            Rectangle {
                 width: 80px;
                 height: 28px;
                 border-radius: Theme.radius-sm;
-                background: tabitem == "Write" ? Theme.bg-surface : transparent;
+                background: !root.preview-mode ? Theme.bg-surface : transparent;
                 vertical-stretch: 0;
 
                 Text {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
-                    text: tabitem;
-                    color: tabitem == "Write" ? Theme.text-primary : Theme.text-tertiary;
+                    text: "Write";
+                    color: !root.preview-mode ? Theme.text-primary : Theme.text-tertiary;
                     font-size: 12px;
-                    font-weight: tabitem == "Write" ? 600 : 400;
+                    font-weight: !root.preview-mode ? 600 : 400;
                     vertical-alignment: center;
                     horizontal-alignment: center;
+                }
+
+                TouchArea {
+                    clicked => { root.preview-mode = false; }
+                }
+            }
+
+            Rectangle {
+                width: 80px;
+                height: 28px;
+                border-radius: Theme.radius-sm;
+                background: root.preview-mode ? Theme.bg-surface : transparent;
+                vertical-stretch: 0;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "Preview";
+                    color: root.preview-mode ? Theme.text-primary : Theme.text-tertiary;
+                    font-size: 12px;
+                    font-weight: root.preview-mode ? 600 : 400;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                }
+
+                TouchArea {
+                    clicked => { root.preview-mode = true; }
                 }
             }
         }
     }
 
-    Rectangle { x: 0px; y: 36px; width: parent.width; height: 1px; background: Theme.border-subtle; }
+    Rectangle { x: 0px; y: 36px; width: root.width; height: 1px; background: Theme.border-subtle; }
 
-    Text {
+    if !root.preview-mode: TouchArea {
+        y: 37px;
+        height: parent.height - 37px;
+        clicked => { input.focus(); }
+    }
+
+    if !root.preview-mode: Flickable {
         x: 16px;
         y: 52px;
         width: parent.width - 32px;
-        text: "# Hello World\n\nThis is a **markdown** editor with *live* preview.\n\n- Item one\n- Item two";
+        height: parent.height - 68px;
+        viewport-height: input.preferred-height;
+
+        input := TextInput {
+            width: parent.width;
+            text <=> root.markdown;
+            single-line: false;
+            wrap: word-wrap;
+            color: Theme.text-primary;
+            font-family: Theme.font-mono;
+            font-size: 13px;
+        }
+    }
+
+    if root.preview-mode: Text {
+        x: 16px;
+        y: 52px;
+        width: parent.width - 32px;
+        text: root.markdown;
         color: Theme.text-primary;
         font-family: Theme.font-mono;
         font-size: 13px;
         wrap: word-wrap;
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }

@@ -3,6 +3,9 @@ import { Theme } from "../core/Theme.slint";
 export component EmojiPickerInput inherits Rectangle {
     in-out property <string> text;
     in-out property <bool> has-focus: false;
+    in property <[string]> common-emojis: ["😊", "❤️", "👍", "🎉", "🔥", "⭐"];
+
+    callback emoji-picked(string);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -10,7 +13,6 @@ export component EmojiPickerInput inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
-
 
     Text {
         x: 12px;
@@ -30,21 +32,35 @@ export component EmojiPickerInput inherits Rectangle {
         vertical-alignment: center;
     }
 
-    // Common emojis
+    // Common emojis — actually clickable, unlike the previous static hint.
     HorizontalLayout {
         x: parent.width - 180px;
         spacing: 4px;
         alignment: end;
 
-        for e in ["😊", "❤️", "👍", "🎉", "🔥", "⭐"]: Text {
-            text: e;
-            font-size: 16px;
-            vertical-alignment: center;
-            horizontal-alignment: center;
+        for e in root.common-emojis: Rectangle {
+            width: 24px;
+            horizontal-stretch: 0;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: e;
+                font-size: 16px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.text = e;
+                    root.emoji-picked(e);
+                }
+            }
         }
     }
 
     TouchArea {
-        clicked => { root.has-focus = true; }
+        clicked => { root.has-focus = !root.has-focus; }
     }
 }

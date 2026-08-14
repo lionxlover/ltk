@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component SearchInput inherits Rectangle {
     in-out property <string> text;
     in-out property <string> placeholder: "Search...";
-    in-out property <bool> has-focus: false;
+    in-out property <bool> has-focus <=> input.has-focus;
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -12,6 +12,9 @@ export component SearchInput inherits Rectangle {
     height: 40px;
     horizontal-stretch: 1;
 
+    TouchArea {
+        clicked => { input.focus(); }
+    }
 
     Text {
         x: 12px;
@@ -22,11 +25,22 @@ export component SearchInput inherits Rectangle {
         vertical-alignment: center;
     }
 
-    Text {
+    if root.text == "" && !input.has-focus: Text {
         x: 34px;
         y: (parent.height - self.height) / 2;
-        text: root.text == "" ? root.placeholder : root.text;
-        color: root.text == "" ? Theme.text-placeholder : Theme.text-primary;
+        text: root.placeholder;
+        color: Theme.text-placeholder;
+        font-family: Theme.font-ui;
+        font-size: 14px;
+        vertical-alignment: center;
+    }
+
+    input := TextInput {
+        x: 34px;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - (root.text != "" ? 70px : 46px);
+        text <=> root.text;
+        color: Theme.text-primary;
         font-family: Theme.font-ui;
         font-size: 14px;
         vertical-alignment: center;
@@ -54,9 +68,5 @@ export component SearchInput inherits Rectangle {
         TouchArea {
             clicked => { root.text = ""; }
         }
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = true; }
     }
 }
