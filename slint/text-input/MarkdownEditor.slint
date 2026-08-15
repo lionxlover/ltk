@@ -80,13 +80,22 @@ export component MarkdownEditor inherits Rectangle {
 
     Rectangle { x: 0px; y: 36px; width: root.width; height: 1px; background: Theme.border-subtle; }
 
-    if !root.preview-mode: TouchArea {
+    TouchArea {
+        visible: !root.preview-mode;
+        enabled: !root.preview-mode;
         y: 37px;
         height: parent.height - 37px;
         clicked => { input.focus(); }
     }
 
-    if !root.preview-mode: Flickable {
+    // Unconditionally instantiated (visibility-toggled instead of `if`)
+    // — an element declared inside one `if` block isn't accessible by id
+    // from any other scope, including a root-level property binding or a
+    // *different* `if` block with the same condition (confirmed via the
+    // person's Slint Preview: "Cannot access id 'input'" at both the
+    // `has-focus` binding above and the TouchArea's `clicked` handler).
+    Flickable {
+        visible: !root.preview-mode;
         x: 16px;
         y: 52px;
         width: parent.width - 32px;

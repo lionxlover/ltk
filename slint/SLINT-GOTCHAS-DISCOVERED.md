@@ -726,6 +726,55 @@ directly on itself) — `CodeEditor.slint` was the only instance.
 
 ---
 
+### An id declared inside an `if` block isn't accessible outside that same conditional scope
+
+```slint
+// WRONG — real compiler error: "Cannot access id 'input'" (twice: once
+// at the has-focus binding, once at the TouchArea's clicked handler)
+out property <bool> has-focus: input.has-focus;   // <- root-level
+
+if !root.preview-mode: TouchArea {
+    clicked => { input.focus(); }   // <- a DIFFERENT if-block, same condition
+}
+
+if !root.preview-mode: Flickable {
+    input := TextInput { ... }      // <- input only exists inside HERE
+}
+```
+Even though both `if` blocks share the identical condition
+(`!root.preview-mode`), they're separately, independently instantiated —
+Slint has no guarantee (or mechanism to express) "these two conditionals
+are logically the same branch." An id given to an element inside an `if`
+is scoped to that specific conditional subtree; nothing outside it —
+not a sibling `if` with the same condition, not a root-level property
+binding evaluated unconditionally — can reference that id, because the
+element might not exist at runtime.
+
+```slint
+// RIGHT — make the element unconditionally instantiated (toggle
+// visibility/enabled instead of using `if`), so its id is a normal,
+// always-valid reference from anywhere in the component
+Flickable {
+    visible: !root.preview-mode;
+    input := TextInput { ... }   // now exists always; id always valid
+}
+
+TouchArea {
+    visible: !root.preview-mode;
+    enabled: !root.preview-mode;
+    clicked => { input.focus(); }   // works: input always exists
+}
+```
+This is the same underlying constraint already documented above for
+`@children` (can't live inside `if`) and for the width/height
+self-reference cycle — conditionally-instantiated elements are more
+restricted than they look. Scanned the whole project for the same shape
+(an id declared inside one `if` block, referenced by that id from
+anywhere outside that specific block) — `MarkdownEditor` was the only
+instance.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

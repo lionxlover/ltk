@@ -505,6 +505,36 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Post-delivery fix: `MarkdownEditor` — an id inside one `if` block isn't visible outside it
+
+Two more real compile errors from the person's Slint Preview: "Cannot
+access id 'input'" at both `has-focus: input.has-focus;` (a root-level
+property) and a sibling `if !root.preview-mode: TouchArea`'s `clicked`
+handler. `input` was declared inside a *different*
+`if !root.preview-mode: Flickable { input := TextInput {...} }` block —
+even though both conditionals share the identical condition, Slint
+doesn't treat them as the same branch; an id given inside one `if`
+simply isn't a valid reference from anywhere outside that specific
+conditional subtree, including another `if` with the same-looking
+condition. Fixed by making the `Flickable`+`TextInput` (and, for safety,
+the `TouchArea` too) unconditionally instantiated with `visible:`/
+`enabled:` toggling instead of `if` — the same "keep the wrapper
+unconditional, toggle visibility instead" pattern already established
+for `DisclosureWidget`/`AccordionItem` several batches ago, just applied
+here for id-scoping reasons rather than the `@children`-in-conditional
+reason those used it for.
+
+Wrote a scanner for the general shape (an id declared inside an `if`
+block, referenced by that id from anywhere outside that specific block)
+and verified it against a known-bad snippet before trusting a clean
+result — same discipline as the `TreeTable` layout-axis-conflict scan
+two rounds ago. Ran it across the *whole* project, not just this batch —
+`MarkdownEditor` was the only instance anywhere. Documented as a new
+gotcha, framed as a sharper version of the existing "@children can't
+live inside `if`" rule: conditionally-instantiated elements are more
+scope-restricted than they look, and this is the second distinct way
+that's bitten a fix in this project.
+
 ## Post-delivery fix: `Flickable` has no `background` property
 
 Another real compile error from the person's Slint Preview: "Unknown
