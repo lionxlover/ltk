@@ -15,10 +15,11 @@ re-discovering things the hard way.
 | `layout-containers/` | 52 | ✅ Done, verified via VS Code Problems panel (3 rounds of fixes) | `layout-containers.zip` |
 | `data-display/` | 60 | ✅ Done, verified via VS Code Problems panel (10 rounds of fixes) | `data-display.zip` |
 | `text-input/` | 45 | ✅ Done, pending VS Code Problems-panel check | `text-input.zip` |
-| everything else | ~571 | ⬜ Not started | — |
+| `charts/` | 43 | ✅ Done, pending VS Code Problems-panel check | `charts.zip` |
+| everything else | ~528 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`charts` (43), `cards` (39),
+`cards` (39),
 `navigation` (39), `feedback` (36), `typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
@@ -1149,3 +1150,100 @@ with the fix.
   sufficient — should have also grepped for the bound property appearing
   on the right-hand side of its own binding, which is now a standing check
   (see the scanner snippet added above) rather than something to eyeball.
+
+## `charts/` batch — data-driving props that were declared but never actually wired to the drawing
+
+All 43 files reviewed and, where broken, fixed; 45 files delivered
+(43 components + `export.slint` + `test.slint`, both untouched — no
+export/API renames). No `core/` changes needed.
+
+**The recurring disease, one level more subtle than `text-input/`'s:**
+these components *did* have real visual output (unlike the fake
+`TextInput`s), but several had a data-driving property that was declared,
+accepted, and then silently ignored by the actual drawing — the render
+was always the same static picture no matter what was passed in:
+
+- `PieChart` / `DonutChart` — `data`/`colors` unused; always a single
+  solid-color circle/ring.
+- `GaugeChart` / `ProgressRingChart` — `value`/`progress` unused; always
+  a full circle in one fixed color.
+- `RadialBarChart` — the `for bar[i] in root.data` loop bound `bar` but
+  the body only ever read `i`; every ring was a full circle regardless of
+  its value. Also fixed a second bug in the same component: rings shrank
+  by `i * 24px` but only shifted **down** by `i * 12px`, never right, so
+  they drifted diagonally instead of staying concentric.
+- `RadarChart` — worse than the others: no `data` property existed at
+  all. Five dots sat at hardcoded pixel positions with no connecting
+  shape. Added a real `[float] data` (5-axis) property and rewrote as an
+  actual polygon.
+
+**Fix pattern for the ring/circle group:** `@conic-gradient` with
+cumulative fraction stops (`Theme.color 0deg, Theme.color X*360deg, ...`)
+— same technique across `PieChart`, `DonutChart`, `GaugeChart`,
+`ProgressRingChart`, `RadialBarChart`. `PieChart`/`DonutChart` support up
+to 4 slices (matches their default array length); extra entries are
+silently ignored since conic-gradient stops are a fixed compile-time
+list, not something you can loop to build dynamically.
+
+**Second recurring issue — "chart" with no actual line:** `LineChart`,
+`AreaChart`, `MultiLineChart`, `MicroAreaChart`, `SparklineLine`,
+`BumpChart` all plotted floating dots (or, for `AreaChart`/
+`MicroAreaChart`, disconnected rectangles) with nothing connecting them —
+not wrong exactly, but not what the component name promised either.
+
+Tried the obvious fix first — a `for` loop inside one `Path` generating
+`MoveTo`/`LineTo` per data point — and it's a **confirmed, currently-open
+Slint limitation**: `for` cannot iterate *inside* a `Path` to generate
+dynamic sub-elements (verified via slint-ui/slint#754, referenced again
+in #776, before writing a single line of the fix — didn't want to
+rediscover this one the hard way). Note the distinction this project
+almost tripped over: looping to produce multiple whole `Path` *elements*
+works fine (used for `RadarChart`'s three grid rings via
+`for ring-scale in [0.33, 0.66, 1.0] : Path { ... }`); looping to produce
+multiple `MoveTo`/`LineTo` *inside one* `Path` does not.
+
+**Fixed with a static, fixed-8-point technique** instead: eight `idxN`/
+`vN`/`xN` properties per series, each bounds-checked against the real
+array length (`N < len ? N : (len > 0 ? len - 1 : 0)`), so indices past
+the real data length collapse onto the last real point — the line
+correctly terminates there instead of dropping to zero or needing a
+variable-length `Path`. Supports up to 8 points per series (covers every
+default array in this category, the largest being 7); extra points are
+ignored. Documented as a header comment in every file using it so a
+future pass doesn't "fix" it into the broken dynamic-loop version.
+
+**Other real, standalone bugs found and fixed:**
+- `StackedAreaChart` — both stacked layers painted in the identical
+  `Theme.accent-subtle`, making `series-b` invisible as a distinct layer.
+  Gave it its own color (`Theme.green_100`) and added a legend.
+- `Treemap` — the bottom-left quadrant (`0–0.5w, 0.6–1.0h`) was never
+  covered by any tile — a plain gap in what's supposed to be a fully
+  tiled treemap. Added a covering box.
+- `GroupedBarChart` — referenced `root.series_b` (underscore) when the
+  declared property is `series-b` (dash). This is a genuine compile
+  error, not a style nit — Slint identifiers are kebab-case and
+  `series_b`/`series-b` are different identifiers. First real
+  "wouldn't have compiled" bug found this batch; caught by grepping for
+  `_` inside otherwise-dashed property names project-wide after finding
+  the first instance, in case it was a pattern — it wasn't, isolated to
+  this one file.
+- `ChordDiagram` — three ring circles at the exact same position and
+  size; with matching border-width their borders occupy identical
+  pixels, so the last one drawn (z-order) completely hid the other two.
+  Offset the three like a Venn diagram instead of stacking them.
+
+**Left as legitimately decorative, not bugs:** `SunburstChart`,
+`MultiRingDonut`, `NetworkGraphViz`, `FlowchartDiagram`,
+`GanttResourceChart`, `SankeyDiagram`, `ChoroplethMap`, `GeoHeatmap`,
+`DotDensityMap`, `CorrelationMatrix`, `Heatmap`, `WordCloud`,
+`SlopeChart`, `ViolinPlot`, `BoxPlot`, `CandlestickChart`, `ScatterPlot`,
+`BubbleChart` — these either declare no data-driving property at all
+(static reference diagrams — a real per-relationship-driven Sankey/
+network/flowchart is its own significant undertaking, not a quick fix)
+or use their array purely as an item-count/pseudo-random seed, which is
+consistent with what they claim to do. Not touched.
+
+**Still open before this category is fully closed:** none — this
+completes the `charts/` review. Next: pick the next untouched category
+per the size list above (VS Code Problems-panel check for `charts/`
+still pending from the person, same as `text-input/`).

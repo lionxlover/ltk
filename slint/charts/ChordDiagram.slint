@@ -1,5 +1,10 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: all three rings were the same size at the exact same position —
+// with matching border-width they occupy identical pixels, so only the
+// last (state-warning) ring was visible; the other two were completely
+// hidden underneath it. Offset them like a Venn diagram so all three
+// show, which also reads more like a chord/relationship diagram.
 export component ChordDiagram inherits Rectangle {
     in property <string> label: "Chord Diagram";
 
@@ -16,29 +21,30 @@ export component ChordDiagram inherits Rectangle {
 
         Rectangle { vertical-stretch: 1;
             Rectangle {
-                width: 120px; height: 120px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                width: 100px; height: 100px;
+                x: (parent.width - self.width) / 2 - 30px; y: (parent.height - self.height) / 2 - 15px;
                 border-radius: Theme.radius-full;
-                border-width: 16px;
-                border-color: Theme.accent;
+                border-width: 14px;
+                border-color: Theme.accent.with-alpha(0.7);
                 background: transparent;
             }
             Rectangle {
-                width: 120px; height: 120px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                width: 100px; height: 100px;
+                x: (parent.width - self.width) / 2 + 30px; y: (parent.height - self.height) / 2 - 15px;
                 border-radius: Theme.radius-full;
-                border-width: 16px;
-                border-color: Theme.state-success;
+                border-width: 14px;
+                border-color: Theme.state-success.with-alpha(0.7);
                 background: transparent;
             }
             Rectangle {
-                width: 120px; height: 120px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                width: 100px; height: 100px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2 + 30px;
                 border-radius: Theme.radius-full;
-                border-width: 16px;
-                border-color: Theme.state-warning;
+                border-width: 14px;
+                border-color: Theme.state-warning.with-alpha(0.7);
                 background: transparent;
             }
         }
     }
 }
+

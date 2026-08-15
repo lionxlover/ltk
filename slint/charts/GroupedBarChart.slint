@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: referenced `root.series_b` (underscore) — a compile error, since
+// the declared property is `series-b` (kebab-case; Slint identifiers use
+// dashes, not underscores, and the two are not the same identifier).
 export component GroupedBarChart inherits Rectangle {
     in property <[float]> series-a: [0.6, 0.8, 0.4];
     in property <[float]> series-b: [0.4, 0.5, 0.7];
@@ -19,7 +22,7 @@ export component GroupedBarChart inherits Rectangle {
         HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-4; alignment: center;
             for bar[i] in root.series-a: HorizontalLayout { spacing: 2px; alignment: start;
                 Rectangle { width: 16px; VerticalLayout { alignment: end; Rectangle { height: bar * 100px; background: Theme.accent; border-radius: 2px; } } }
-                Rectangle { width: 16px; VerticalLayout { alignment: end; Rectangle { height: (i < root.series_b.length ? root.series_b[i] : 0) * 100px; background: Theme.state-success; border-radius: 2px; } } }
+                Rectangle { width: 16px; VerticalLayout { alignment: end; Rectangle { height: (i < root.series-b.length ? root.series-b[i] : 0) * 100px; background: Theme.state-success; border-radius: 2px; } } }
             }
         }
     }

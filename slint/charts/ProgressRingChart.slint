@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same bug as GaugeChart: `progress` was declared but the ring was always
+// drawn as a full circle in one fixed color. Fixed with a conic-gradient
+// arc sized to `progress`/100.
 export component ProgressRingChart inherits Rectangle {
     in property <int> progress: 72;
     in property <string> label: "Progress";
@@ -8,6 +11,8 @@ export component ProgressRingChart inherits Rectangle {
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
+
+    property <float> fraction: max(0.0, min(1.0, root.progress / 100));
 
     VerticalLayout {
         padding: Theme.sp-3;
@@ -20,17 +25,15 @@ export component ProgressRingChart inherits Rectangle {
                 width: 80px; height: 80px;
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
                 border-radius: Theme.radius-full;
-                border-width: 6px;
-                border-color: Theme.bg-overlay;
-                background: transparent;
+                background: @conic-gradient(from 0deg,
+                    Theme.accent 0deg, Theme.accent root.fraction * 360deg,
+                    Theme.bg-overlay root.fraction * 360deg, Theme.bg-overlay 360deg);
             }
             Rectangle {
-                width: 80px; height: 80px;
+                width: 68px; height: 68px;
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
                 border-radius: Theme.radius-full;
-                border-width: 6px;
-                border-color: Theme.accent;
-                background: transparent;
+                background: Theme.bg-surface;
             }
             Text {
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;

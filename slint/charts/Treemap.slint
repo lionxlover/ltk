@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: boxes A (top-left, 0..0.6h) and B/C/D (right half) never covered
+// the bottom-left region (0..0.5w, 0.6..1.0h) — that quadrant was just
+// blank background, an obvious visual gap in what's supposed to be a
+// fully-tiled treemap. Added box E to fill it.
 export component Treemap inherits Rectangle {
     in property <string> label: "Treemap";
 
@@ -26,6 +30,9 @@ export component Treemap inherits Rectangle {
             }
             Rectangle { x: parent.width * 0.8; y: parent.height * 0.4; width: parent.width * 0.2; height: parent.height * 0.6; background: Theme.red_100; border-width: 1px; border-color: Theme.bg-surface;
                 Text { text: "D"; color: Theme.state-error; font-size: Theme.text-xs; font-weight: Theme.weight-bold; x: 4px; y: 4px; }
+            }
+            Rectangle { x: 0; y: parent.height * 0.6; width: parent.width * 0.5; height: parent.height * 0.4; background: Theme.bg-overlay; border-width: 1px; border-color: Theme.bg-surface;
+                Text { text: "E"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-bold; x: 8px; y: 8px; }
             }
         }
     }

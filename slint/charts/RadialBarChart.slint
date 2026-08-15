@@ -1,5 +1,14 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the `for bar[i] in root.data` loop bound each value to `bar` but
+// never actually used it anywhere in the body — only the index `i` (for
+// concentric sizing) mattered, so every ring was a full circle regardless
+// of its data value. Fixed with the same conic-gradient arc technique as
+// GaugeChart/ProgressRingChart: each ring's colored arc is sized to its
+// own `bar` fraction, with the rest of the ring in a neutral track color.
+// Also fixed: rings shrank by `i * 24px` but only shifted down by
+// `i * 12px` (not right), so they drifted diagonally instead of staying
+// concentric — added the matching horizontal shift.
 export component RadialBarChart inherits Rectangle {
     in property <[float]> data: [0.8, 0.6, 0.4];
     in property <[brush]> colors: [Theme.accent, Theme.state-success, Theme.state-warning];
@@ -18,13 +27,23 @@ export component RadialBarChart inherits Rectangle {
 
         Rectangle { vertical-stretch: 1;
             for bar[i] in root.data: Rectangle {
-                x: (parent.width - 120px) / 2; y: (parent.height - 120px) / 2 + i * 12px;
+                x: (parent.width - 120px) / 2 + i * 12px; y: (parent.height - 120px) / 2 + i * 12px;
                 width: 120px - i * 24px; height: 120px - i * 24px;
                 border-radius: Theme.radius-full;
-                border-width: 10px;
-                border-color: i < root.colors.length ? root.colors[i] : Theme.accent;
-                background: transparent;
+                property <brush> ring-color: i < root.colors.length ? root.colors[i] : Theme.accent;
+                property <float> fraction: max(0.0, min(1.0, bar));
+                background: @conic-gradient(from 0deg,
+                    ring-color 0deg, ring-color fraction * 360deg,
+                    Theme.bg-overlay fraction * 360deg, Theme.bg-overlay 360deg);
+
+                Rectangle {
+                    x: 10px; y: 10px;
+                    width: parent.width - 20px; height: parent.height - 20px;
+                    border-radius: Theme.radius-full;
+                    background: Theme.bg-surface;
+                }
             }
         }
     }
 }
+

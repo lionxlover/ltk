@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: both layers were painted in the exact same `Theme.accent-subtle`,
+// so `series-b` was invisible as a distinct stacked layer — the chart
+// looked like a single blob instead of two stacked series. Gave `series-b`
+// its own color so the stacking is actually visible.
 export component StackedAreaChart inherits Rectangle {
     in property <[float]> series-a: [0.2, 0.4, 0.3, 0.5];
     in property <[float]> series-b: [0.1, 0.2, 0.3, 0.2];
@@ -29,8 +33,15 @@ export component StackedAreaChart inherits Rectangle {
                 width: parent.width / (root.series-b.length > 1 ? root.series-b.length - 1 : 1);
                 y: parent.height - pt * parent.height;
                 height: pt * parent.height;
-                background: Theme.accent-subtle;
+                background: Theme.green_100;
             }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3;
+            Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.accent-subtle; }
+            Text { text: "Series A"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
+            Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: Theme.green_100; }
+            Text { text: "Series B"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
         }
     }
 }

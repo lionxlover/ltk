@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same conic-gradient technique as PieChart, with an inner circle painted
+// in the card's own background color to punch out the donut hole (a real
+// arc-cutout would need Path/ArcTo, which is unconfirmed for a dynamic,
+// data-driven sweep — this is the safe, established mechanism instead).
 export component DonutChart inherits Rectangle {
     in property <[float]> data: [0.4, 0.3, 0.2, 0.1];
     in property <[brush]> colors: [Theme.accent, Theme.state-success, Theme.state-warning, Theme.state-error];
@@ -10,6 +14,17 @@ export component DonutChart inherits Rectangle {
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
+
+    property <float> cut0: 0;
+    property <float> cut1: root.data.length > 0 ? root.data[0] : 0;
+    property <float> cut2: cut1 + (root.data.length > 1 ? root.data[1] : 0);
+    property <float> cut3: cut2 + (root.data.length > 2 ? root.data[2] : 0);
+    property <float> cut4: min(1.0, cut3 + (root.data.length > 3 ? root.data[3] : 0));
+
+    property <brush> col0: root.colors.length > 0 ? root.colors[0] : Theme.accent;
+    property <brush> col1: root.colors.length > 1 ? root.colors[1] : Theme.state-success;
+    property <brush> col2: root.colors.length > 2 ? root.colors[2] : Theme.state-warning;
+    property <brush> col3: root.colors.length > 3 ? root.colors[3] : Theme.state-error;
 
     VerticalLayout {
         padding: Theme.sp-3;
@@ -22,7 +37,12 @@ export component DonutChart inherits Rectangle {
                 width: 120px; height: 120px;
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
                 border-radius: Theme.radius-full;
-                background: Theme.accent;
+                background: @conic-gradient(from 0deg,
+                    root.col0 root.cut0 * 360deg, root.col0 root.cut1 * 360deg,
+                    root.col1 root.cut1 * 360deg, root.col1 root.cut2 * 360deg,
+                    root.col2 root.cut2 * 360deg, root.col2 root.cut3 * 360deg,
+                    root.col3 root.cut3 * 360deg, root.col3 root.cut4 * 360deg,
+                    Theme.bg-overlay root.cut4 * 360deg, Theme.bg-overlay 360deg);
             }
             Rectangle {
                 width: 60px; height: 60px;
@@ -38,6 +58,13 @@ export component DonutChart inherits Rectangle {
                     font-weight: Theme.weight-bold;
                     vertical-alignment: center;
                 }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-2; alignment: center;
+            for c[i] in root.colors: HorizontalLayout { spacing: 4px;
+                Rectangle { width: 8px; height: 8px; border-radius: Theme.radius-full; background: c; }
+                Text { text: "\{round((i < root.data.length ? root.data[i] : 0) * 100)}%"; color: Theme.text-tertiary; font-size: Theme.text-xs; }
             }
         }
     }

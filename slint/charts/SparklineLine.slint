@@ -1,17 +1,54 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same fixed-8-point Path technique as LineChart (see its header comment) —
+// the original only plotted floating dots, no actual line.
 export component SparklineLine inherits Rectangle {
     in property <[float]> data: [0.3, 0.5, 0.4, 0.7, 0.6, 0.8, 0.5];
     in property <brush> line-color: Theme.accent;
 
     height: 24px;
     background: transparent;
+    clip: true;
 
-    for pt[i] in root.data: Rectangle {
-        x: i * (parent.width / (root.data.length > 1 ? root.data.length - 1 : 1));
-        y: parent.height - pt * parent.height - 2px;
-        width: 4px; height: 4px;
-        border-radius: Theme.radius-full;
-        background: root.line-color;
+    property <int> len: root.data.length;
+    property <int> denom: max(1, len - 1);
+    property <int> idx0: 0;
+    property <int> idx1: 1 < len ? 1 : (len > 0 ? len - 1 : 0);
+    property <int> idx2: 2 < len ? 2 : (len > 0 ? len - 1 : 0);
+    property <int> idx3: 3 < len ? 3 : (len > 0 ? len - 1 : 0);
+    property <int> idx4: 4 < len ? 4 : (len > 0 ? len - 1 : 0);
+    property <int> idx5: 5 < len ? 5 : (len > 0 ? len - 1 : 0);
+    property <int> idx6: 6 < len ? 6 : (len > 0 ? len - 1 : 0);
+    property <int> idx7: 7 < len ? 7 : (len > 0 ? len - 1 : 0);
+    property <float> v0: len > 0 ? root.data[idx0] : 0;
+    property <float> v1: len > 0 ? root.data[idx1] : 0;
+    property <float> v2: len > 0 ? root.data[idx2] : 0;
+    property <float> v3: len > 0 ? root.data[idx3] : 0;
+    property <float> v4: len > 0 ? root.data[idx4] : 0;
+    property <float> v5: len > 0 ? root.data[idx5] : 0;
+    property <float> v6: len > 0 ? root.data[idx6] : 0;
+    property <float> v7: len > 0 ? root.data[idx7] : 0;
+    property <float> x0: idx0 / denom * 100;
+    property <float> x1: idx1 / denom * 100;
+    property <float> x2: idx2 / denom * 100;
+    property <float> x3: idx3 / denom * 100;
+    property <float> x4: idx4 / denom * 100;
+    property <float> x5: idx5 / denom * 100;
+    property <float> x6: idx6 / denom * 100;
+    property <float> x7: idx7 / denom * 100;
+
+    Path {
+        width: parent.width; height: parent.height;
+        viewbox-width: 100; viewbox-height: 100;
+        stroke: root.line-color;
+        stroke-width: 1.5px;
+        MoveTo { x: x0; y: (1 - v0) * 100; }
+        LineTo { x: x1; y: (1 - v1) * 100; }
+        LineTo { x: x2; y: (1 - v2) * 100; }
+        LineTo { x: x3; y: (1 - v3) * 100; }
+        LineTo { x: x4; y: (1 - v4) * 100; }
+        LineTo { x: x5; y: (1 - v5) * 100; }
+        LineTo { x: x6; y: (1 - v6) * 100; }
+        LineTo { x: x7; y: (1 - v7) * 100; }
     }
 }

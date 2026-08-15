@@ -1,12 +1,41 @@
 import { Theme } from "../core/Theme.slint";
 
+// The original had no `data` property at all — five dots sat at hardcoded
+// pixel positions with no relationship to any value and no connecting
+// line, so nothing about the "chart" was actually a chart. Rewritten as a
+// real 5-axis radar: `data` (5 values, 0..1 each) drives a filled polygon
+// via `Path`/`MoveTo`/`LineTo` (confirmed real elements — see
+// language-and-layout.md and Slint's own Path docs), on top of pentagon
+// grid rings for scale reference. Axis angles are compile-time constants
+// (cos/sin of literal `deg` values), so this is safe without needing a
+// dynamic-length loop inside `Path`, which this project hasn't verified.
 export component RadarChart inherits Rectangle {
+    in property <[float]> data: [0.8, 0.6, 0.9, 0.5, 0.7];
+    in property <[string]> axis-labels: ["Speed", "Power", "Range", "Control", "Defense"];
     in property <string> label: "Radar Chart";
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
+
+    // Unit direction for each of the 5 axes, starting straight up and
+    // going clockwise in 72° steps — all compile-time constant.
+    property <float> ax0: cos(-90deg); property <float> ay0: sin(-90deg);
+    property <float> ax1: cos(-18deg); property <float> ay1: sin(-18deg);
+    property <float> ax2: cos(54deg);  property <float> ay2: sin(54deg);
+    property <float> ax3: cos(126deg); property <float> ay3: sin(126deg);
+    property <float> ax4: cos(198deg); property <float> ay4: sin(198deg);
+
+    property <float> f0: root.data.length > 0 ? max(0.0, min(1.0, root.data[0])) : 0;
+    property <float> f1: root.data.length > 1 ? max(0.0, min(1.0, root.data[1])) : 0;
+    property <float> f2: root.data.length > 2 ? max(0.0, min(1.0, root.data[2])) : 0;
+    property <float> f3: root.data.length > 3 ? max(0.0, min(1.0, root.data[3])) : 0;
+    property <float> f4: root.data.length > 4 ? max(0.0, min(1.0, root.data[4])) : 0;
+
+    property <float> cx: 100;
+    property <float> cy: 100;
+    property <float> radius: 88;
 
     VerticalLayout {
         padding: Theme.sp-3;
@@ -15,55 +44,77 @@ export component RadarChart inherits Rectangle {
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
         Rectangle { vertical-stretch: 1;
-            Rectangle {
-                width: 120px; height: 120px;
+            // Three concentric pentagon grid rings (33/66/100% scale), each
+            // its own Path — a single Path can't loop multiple independent
+            // closed rings this way, since every ring after the first
+            // MoveTo would just keep extending the same one sub-path.
+            for ring-scale in [0.33, 0.66, 1.0] : Path {
+                width: 200px; height: 200px;
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
-                border-radius: Theme.radius-full;
-                border-width: 1px;
-                border-color: Theme.border-subtle;
-                background: transparent;
-            }
-            Rectangle {
-                width: 80px; height: 80px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
-                border-radius: Theme.radius-full;
-                border-width: 1px;
-                border-color: Theme.border-subtle;
-                background: transparent;
-            }
-            Rectangle {
-                width: 40px; height: 40px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
-                border-radius: Theme.radius-full;
-                border-width: 1px;
-                border-color: Theme.border-subtle;
-                background: transparent;
+                stroke: Theme.border-subtle;
+                stroke-width: 1px;
+                viewbox-width: 200; viewbox-height: 200;
+                MoveTo { x: cx + radius * ring-scale * ax0; y: cy + radius * ring-scale * ay0; }
+                LineTo { x: cx + radius * ring-scale * ax1; y: cy + radius * ring-scale * ay1; }
+                LineTo { x: cx + radius * ring-scale * ax2; y: cy + radius * ring-scale * ay2; }
+                LineTo { x: cx + radius * ring-scale * ax3; y: cy + radius * ring-scale * ay3; }
+                LineTo { x: cx + radius * ring-scale * ax4; y: cy + radius * ring-scale * ay4; }
+                Close { }
             }
 
-            Rectangle {
-                width: 8px; height: 8px;
-                x: (parent.width) / 2 - 4px; y: (parent.height) / 2 - 60px;
-                border-radius: Theme.radius-full; background: Theme.accent;
+            // Axis spokes from center to each outer vertex.
+            Path {
+                width: 200px; height: 200px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                stroke: Theme.border-subtle;
+                stroke-width: 1px;
+                viewbox-width: 200; viewbox-height: 200;
+                MoveTo { x: cx; y: cy; } LineTo { x: cx + radius * ax0; y: cy + radius * ay0; }
+                MoveTo { x: cx; y: cy; } LineTo { x: cx + radius * ax1; y: cy + radius * ay1; }
+                MoveTo { x: cx; y: cy; } LineTo { x: cx + radius * ax2; y: cy + radius * ay2; }
+                MoveTo { x: cx; y: cy; } LineTo { x: cx + radius * ax3; y: cy + radius * ay3; }
+                MoveTo { x: cx; y: cy; } LineTo { x: cx + radius * ax4; y: cy + radius * ay4; }
             }
-            Rectangle {
-                width: 8px; height: 8px;
-                x: (parent.width) / 2 + 50px; y: (parent.height) / 2 - 30px;
-                border-radius: Theme.radius-full; background: Theme.accent;
+
+            // The actual data polygon.
+            Path {
+                width: 200px; height: 200px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                fill: Theme.accent-subtle;
+                stroke: Theme.accent;
+                stroke-width: 2px;
+                viewbox-width: 200; viewbox-height: 200;
+                MoveTo { x: cx + radius * f0 * ax0; y: cy + radius * f0 * ay0; }
+                LineTo { x: cx + radius * f1 * ax1; y: cy + radius * f1 * ay1; }
+                LineTo { x: cx + radius * f2 * ax2; y: cy + radius * f2 * ay2; }
+                LineTo { x: cx + radius * f3 * ax3; y: cy + radius * f3 * ay3; }
+                LineTo { x: cx + radius * f4 * ax4; y: cy + radius * f4 * ay4; }
+                Close { }
             }
-            Rectangle {
-                width: 8px; height: 8px;
-                x: (parent.width) / 2 + 30px; y: (parent.height) / 2 + 40px;
-                border-radius: Theme.radius-full; background: Theme.accent;
-            }
-            Rectangle {
-                width: 8px; height: 8px;
-                x: (parent.width) / 2 - 40px; y: (parent.height) / 2 + 30px;
-                border-radius: Theme.radius-full; background: Theme.accent;
-            }
-            Rectangle {
-                width: 8px; height: 8px;
-                x: (parent.width) / 2 - 50px; y: (parent.height) / 2 - 20px;
-                border-radius: Theme.radius-full; background: Theme.accent;
+
+            // Vertex dots, in real (pixel) coordinates matching the Path above.
+            Rectangle { width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent;
+                x: (parent.width) / 2 + radius * f0 * ax0 * 1px - self.width / 2;
+                y: (parent.height) / 2 + radius * f0 * ay0 * 1px - self.height / 2; }
+            Rectangle { width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent;
+                x: (parent.width) / 2 + radius * f1 * ax1 * 1px - self.width / 2;
+                y: (parent.height) / 2 + radius * f1 * ay1 * 1px - self.height / 2; }
+            Rectangle { width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent;
+                x: (parent.width) / 2 + radius * f2 * ax2 * 1px - self.width / 2;
+                y: (parent.height) / 2 + radius * f2 * ay2 * 1px - self.height / 2; }
+            Rectangle { width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent;
+                x: (parent.width) / 2 + radius * f3 * ax3 * 1px - self.width / 2;
+                y: (parent.height) / 2 + radius * f3 * ay3 * 1px - self.height / 2; }
+            Rectangle { width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent;
+                x: (parent.width) / 2 + radius * f4 * ax4 * 1px - self.width / 2;
+                y: (parent.height) / 2 + radius * f4 * ay4 * 1px - self.height / 2; }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-2; alignment: center;
+            for lbl[i] in root.axis-labels: Text {
+                text: i < root.data.length ? "\{lbl} \{round(root.data[i] * 100)}%" : lbl;
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
             }
         }
     }

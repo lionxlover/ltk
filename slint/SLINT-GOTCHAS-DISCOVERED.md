@@ -775,6 +775,106 @@ instance.
 
 ---
 
+---
+
+### `Path` cannot loop *inside itself* to generate `MoveTo`/`LineTo` — but looping to produce whole `Path` elements is fine
+
+```slint
+// WRONG — confirmed open Slint limitation (slint-ui/slint#754, #776):
+// `for` cannot iterate inside a Path to generate dynamic sub-elements.
+Path {
+    MoveTo { x: data[0].x; y: data[0].y; }
+    for pt[i] in data : LineTo { x: pt.x; y: pt.y; }   // does not work
+}
+```
+Hit this while trying to draw a real polyline for `LineChart` et al. from
+a dynamic-length `[float]` array. Verified via search *before* writing
+the fix, not after hitting a compiler error — worth doing that check
+first for anything Path+`for`-shaped.
+
+```slint
+// RIGHT (for a genuinely dynamic-length series) — a fixed maximum of
+// static, indexed MoveTo/LineTo, each bounds-checked against the real
+// array length so extra points collapse onto the last real value:
+property <int> len: root.data.length;
+property <int> idx1: 1 < len ? 1 : (len > 0 ? len - 1 : 0);
+property <float> v1: len > 0 ? root.data[idx1] : 0;
+// ...repeat per point up to whatever max you're committing to (8 covered
+// every default array in the charts/ category)
+Path {
+    MoveTo { x: x0; y: v0; }
+    LineTo { x: x1; y: v1; }   // ...
+}
+```
+```slint
+// RIGHT (looping to produce several independent, fully-static Path
+// elements is a completely different thing and works fine — used for
+// RadarChart's three grid rings):
+for ring-scale in [0.33, 0.66, 1.0] : Path {
+    MoveTo { x: cx + radius * ring-scale * ax0; y: cy + radius * ring-scale * ay0; }
+    LineTo { x: cx + radius * ring-scale * ax1; y: cy + radius * ring-scale * ay1; }
+    Close { }
+}
+```
+The distinction: looping *elements* (each a complete, self-contained
+`Path`) is ordinary `for` usage; looping to build up the *sub-element
+list inside one* `Path` is the unsupported case.
+
+---
+
+### `Path` needs `viewbox-width`/`viewbox-height` set explicitly for predictable scaling
+
+Confirmed real properties (official Path docs), alongside `viewbox-x`/
+`viewbox-y`. Set `width`/`height` to the pixel box you want the shape
+drawn into, and `viewbox-width`/`viewbox-height` to the coordinate range
+your `MoveTo`/`LineTo` commands are written in — the shape scales from
+one to the other. Left unset, the viewbox is inferred from the path
+commands' own bounding box, which is harder to reason about when the
+coordinates are computed from data rather than hand-picked.
+
+```slint
+Path {
+    width: parent.width; height: parent.height;   // real pixel box
+    viewbox-width: 100; viewbox-height: 100;       // coordinate system MoveTo/LineTo use
+    MoveTo { x: 0; y: 100; }                       // bottom-left, in viewbox units
+}
+```
+A useful trick when you want a Path's coordinate system to match real
+pixels 1:1 (so other, non-Path elements in the same container can share
+the same numbers): set `viewbox-width: parent.width / 1px;` — dividing a
+`length` by `1px` strips the unit back to a plain number, same
+conversion direction as the already-documented `value * 1px`.
+
+---
+
+### `.with-alpha()` works on a `brush`-typed property, not just literal colors
+
+Confirmed via the docs: `.with-alpha()`/`.with-alpha()`-adjacent methods
+are defined for both colors and brushes. This matters when a component's
+property is declared `in property <brush> foo` (broader than `color`, so
+callers can also pass gradients) — `foo.with-alpha(0.2)` still compiles
+and works, no need to narrow the property to `color` just to use it.
+
+---
+
+### Underscore vs. dash in a property reference is a silent-until-compile bug, not a typo the language forgives
+
+```slint
+// Declared:
+in property <[float]> series-b: [...];
+// WRONG elsewhere in the same file — compiles to "Unknown property", not
+// a fuzzy match to series-b:
+root.series_b.length
+```
+Slint identifiers are kebab-case; `series_b` and `series-b` are different
+identifiers, full stop — there's no automatic underscore/dash
+normalization. Found one instance of this in `charts/GroupedBarChart.slint`
+(`root.series_b` where the declared property was `series-b`); grepped the
+rest of the project for the same shape afterward — isolated to this one
+file, not a systemic pattern this time.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

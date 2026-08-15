@@ -1,13 +1,23 @@
 import { Theme } from "../core/Theme.slint";
 
+// The original always drew a full-circle border in a single fixed color —
+// `value` was declared but never actually affected the drawing. Fixed with
+// the same conic-gradient technique as PieChart/ProgressRingChart: a
+// colored arc sized to `value`/100, track color for the remainder.
 export component GaugeChart inherits Rectangle {
     in property <int> value: 72;
+    in property <int> max: 100;
     in property <string> label: "Gauge";
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
+
+    property <float> fraction: root.max > 0 ? max(0.0, min(1.0, root.value / root.max)) : 0;
+    property <brush> fill-color: root.fraction > 0.8 ? Theme.state-error
+        : root.fraction > 0.6 ? Theme.state-warning
+        : Theme.accent;
 
     VerticalLayout {
         padding: Theme.sp-3;
@@ -17,27 +27,18 @@ export component GaugeChart inherits Rectangle {
 
         Rectangle { vertical-stretch: 1;
             Rectangle {
-                width: 100px; height: 50px;
+                width: 100px; height: 100px;
                 x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
-                clip: true;
-            }
-
-            Rectangle {
-                width: 100px; height: 100px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2 - 50px;
                 border-radius: Theme.radius-full;
-                border-width: 10px;
-                border-color: Theme.bg-overlay;
-                background: transparent;
+                background: @conic-gradient(from 0deg,
+                    root.fill-color 0deg, root.fill-color root.fraction * 360deg,
+                    Theme.bg-overlay root.fraction * 360deg, Theme.bg-overlay 360deg);
             }
-
             Rectangle {
-                width: 100px; height: 100px;
-                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2 - 50px;
+                width: 80px; height: 80px;
+                x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
                 border-radius: Theme.radius-full;
-                border-width: 10px;
-                border-color: Theme.accent;
-                background: transparent;
+                background: Theme.bg-surface;
             }
 
             Text {

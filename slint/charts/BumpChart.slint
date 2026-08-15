@@ -1,5 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
+// The "path" comments were aspirational — only floating dots were ever
+// drawn, no line connected them, so the one thing a bump chart needs to
+// show (rank changing over time) wasn't visible. Added real connecting
+// lines via `Path`, reusing the exact same coordinate expressions as the
+// existing dots (divided by `1px` to strip the unit, since Path's
+// coordinate system is unitless) so the lines land exactly on the dots.
 export component BumpChart inherits Rectangle {
     in property <string> label: "Bump / Ranking Chart";
 
@@ -17,6 +23,34 @@ export component BumpChart inherits Rectangle {
         Rectangle { vertical-stretch: 1;
             // Rank lines
             for r in 4: Rectangle { x: 20px; y: 20px + r * 30px; width: parent.width - 40px; height: 1px; background: Theme.border-subtle; }
+
+            Path {
+                width: parent.width; height: parent.height;
+                viewbox-width: parent.width / 1px; viewbox-height: parent.height / 1px;
+                stroke: Theme.accent; stroke-width: 2px;
+                MoveTo { x: 33; y: 28; }
+                LineTo { x: (parent.width * 0.33) / 1px; y: 38; }
+                LineTo { x: (parent.width * 0.66) / 1px; y: 31; }
+                LineTo { x: (parent.width - 33px) / 1px; y: 25; }
+            }
+            Path {
+                width: parent.width; height: parent.height;
+                viewbox-width: parent.width / 1px; viewbox-height: parent.height / 1px;
+                stroke: Theme.state-success; stroke-width: 2px;
+                MoveTo { x: 33; y: 58; }
+                LineTo { x: (parent.width * 0.33) / 1px; y: 51; }
+                LineTo { x: (parent.width * 0.66) / 1px; y: 55; }
+                LineTo { x: (parent.width - 33px) / 1px; y: 48; }
+            }
+            Path {
+                width: parent.width; height: parent.height;
+                viewbox-width: parent.width / 1px; viewbox-height: parent.height / 1px;
+                stroke: Theme.state-warning; stroke-width: 2px;
+                MoveTo { x: 33; y: 88; }
+                LineTo { x: (parent.width * 0.33) / 1px; y: 81; }
+                LineTo { x: (parent.width * 0.66) / 1px; y: 85; }
+                LineTo { x: (parent.width - 33px) / 1px; y: 78; }
+            }
 
             // Team A path
             Rectangle { x: 30px; y: 25px; width: 6px; height: 6px; border-radius: Theme.radius-full; background: Theme.accent; }
@@ -38,3 +72,4 @@ export component BumpChart inherits Rectangle {
         }
     }
 }
+
