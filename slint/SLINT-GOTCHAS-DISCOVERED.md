@@ -690,6 +690,42 @@ instances found, so it was isolated to this one batch.
 
 ---
 
+### `Flickable` (and other non-drawable elements) have no `background`/`border-*` properties
+
+```slint
+// WRONG — real compiler error: "Unknown property background"
+Flickable {
+    background: Theme.bg-base;
+    viewport-height: input.preferred-height + 24px;
+    input := TextInput { ... }
+}
+```
+`Flickable` is a viewport/scroll container — it has scroll-position and
+viewport-size properties, but no drawable surface of its own (same
+category as `VerticalLayout`/`HorizontalLayout`/`GridLayout`/
+`TouchArea`/`FocusScope`: layout and interaction primitives, not visual
+elements). Only elements that actually paint something (`Rectangle`,
+`Text`, `Image`, `Path`) have `background`/`border-*`.
+
+```slint
+// RIGHT — wrap it in a plain Rectangle for the background; Flickable
+// fills its wrapper by default (containers fill their parent unless
+// overridden), so no extra width/height binding is needed
+Rectangle {
+    background: Theme.bg-base;
+    Flickable {
+        viewport-height: input.preferred-height + 24px;
+        input := TextInput { ... }
+    }
+}
+```
+Scanned the whole project for the same shape (any of `Flickable`,
+`VerticalLayout`, `HorizontalLayout`, `GridLayout`, `TouchArea`,
+`FocusScope` with `background`/`border-radius`/`border-width` set
+directly on itself) — `CodeEditor.slint` was the only instance.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

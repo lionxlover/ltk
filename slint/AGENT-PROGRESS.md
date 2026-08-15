@@ -505,6 +505,23 @@ noted here rather than fixed now, since those categories haven't come up
 in the rotation yet; worth a quick check when `navigation`/`indicators`
 are reached.
 
+## Post-delivery fix: `Flickable` has no `background` property
+
+Another real compile error from the person's Slint Preview: "Unknown
+property background" on `CodeEditor`'s code-area `Flickable`.
+`Flickable` is a viewport/scroll container, not a drawable element — same
+category as the layout primitives (`VerticalLayout`/`HorizontalLayout`/
+`GridLayout`) and interaction primitives (`TouchArea`/`FocusScope`): it
+has no paint surface of its own. Fixed by wrapping it in a plain
+`Rectangle` for the background instead, which required one more closing
+brace than the original structure (added and re-verified via a brace
+count, not just visual inspection, after the previous `TreeTable`
+incident made clear that eyeballing indentation after a structural edit
+isn't reliable enough on its own). Scanned the whole project for the
+same shape (`background`/`border-radius`/`border-width` set directly on
+any of `Flickable`/`VerticalLayout`/`HorizontalLayout`/`GridLayout`/
+`TouchArea`/`FocusScope`) — this was the only instance anywhere.
+
 ## Post-delivery fix: `<=>` cannot bind to `TextInput.has-focus` — a real compile error across 29 files
 
 The person's Slint Preview caught a genuine compile error: "Cannot link

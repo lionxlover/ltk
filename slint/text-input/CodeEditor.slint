@@ -47,21 +47,26 @@ export component CodeEditor inherits Rectangle {
             }
         }
 
-        // Code area
-        Flickable {
+        // Code area — Flickable has no `background` property (it's a
+        // viewport/scroll container, not a drawable element); wrap it in
+        // a plain Rectangle for the background instead.
+        Rectangle {
             background: Theme.bg-base;
-            viewport-height: input.preferred-height + 24px;
 
-            input := TextInput {
-                x: 12px;
-                y: 12px;
-                width: parent.width - 12px;
-                text <=> root.code;
-                single-line: false;
-                wrap: no-wrap;
-                color: Theme.text-primary;
-                font-family: Theme.font-mono;
-                font-size: 13px;
+            Flickable {
+                viewport-height: input.preferred-height + 24px;
+
+                input := TextInput {
+                    x: 12px;
+                    y: 12px;
+                    width: parent.width - 12px;
+                    text <=> root.code;
+                    single-line: false;
+                    wrap: no-wrap;
+                    color: Theme.text-primary;
+                    font-family: Theme.font-mono;
+                    font-size: 13px;
+                }
             }
         }
     }
