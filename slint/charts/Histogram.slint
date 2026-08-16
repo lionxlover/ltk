@@ -15,7 +15,12 @@ export component Histogram inherits Rectangle {
 
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
-        HorizontalLayout { vertical-stretch: 1; spacing: 2px; alignment: end;
+        // Same bug as BarChartVertical: `alignment: end` on this outer
+        // HorizontalLayout overrode `horizontal-stretch`, collapsing
+        // every bin to 0px wide. Removed — the inner VerticalLayout's own
+        // `alignment: end` (bottom-aligning each bin's single bar) was
+        // always fine and needed no change.
+        HorizontalLayout { vertical-stretch: 1; spacing: 2px;
             for bin[i] in root.bins: Rectangle { horizontal-stretch: 1;
                 VerticalLayout { alignment: end;
                     Rectangle { height: bin * 6px; background: Theme.accent; border-radius: 2px; }

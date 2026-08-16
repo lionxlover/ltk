@@ -15,12 +15,15 @@ export component VolumeChart inherits Rectangle {
 
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
-        HorizontalLayout { vertical-stretch: 1; spacing: 2px; alignment: end;
-            for bar[i] in root.data: Rectangle {
-                horizontal-stretch: 1;
-                height: bar * 100px;
-                background: Theme.accent;
-                border-radius: 1px;
+        // Same bug as BarChartVertical: `alignment: end` overrode
+        // `horizontal-stretch`, collapsing every bar to 0px wide.
+        HorizontalLayout { vertical-stretch: 1; spacing: 2px;
+            for bar[i] in root.data: VerticalLayout { horizontal-stretch: 1; alignment: end;
+                Rectangle {
+                    height: bar * 100px;
+                    background: Theme.accent;
+                    border-radius: 1px;
+                }
             }
         }
     }

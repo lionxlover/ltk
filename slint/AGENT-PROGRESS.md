@@ -1272,3 +1272,48 @@ exactly `max` or `min`) — isolated to this one file, not a pattern.
 function name — Slint doesn't warn on the shadowing at declaration time,
 it only surfaces as "not a function" wherever the builtin gets called
 later, which can be a distant line and a confusing message.
+
+## Post-delivery fix #2: nine `charts/` files — `alignment: start/center/end` silently overrides `horizontal-stretch`, collapsing bars to 0px
+
+The person's screenshots of the live Slint Preview showed several bar-
+family charts rendering completely blank: `BarChartVertical`,
+`Histogram`, `VolumeChart`, `HundredPercentBar`, `StackedBarChart`, plus
+`ViolinPlot`/`BoxPlot`/`CandlestickChart` rendering cramped into a
+narrow strip instead of spread across the card, and `SparklineBar`.
+No compiler errors — Problems panel showed 0 — so this was a pure
+layout-semantics bug, not a syntax one.
+
+**Root cause, confirmed against Slint's layout docs before touching any
+file:** a `HorizontalLayout`'s default `alignment` is `stretch`, which is
+what actually lets each child's `horizontal-stretch` factor divide the
+available width. Setting `alignment` to anything else (`start`, `center`,
+`end`) turns *off* that stretching — children fall back to their own
+preferred/min width instead. A bare `Rectangle` has no intrinsic
+preferred width (0), so every one of these charts, which set
+`horizontal-stretch: 1` on each bar/candle/violin *and* an explicit
+`alignment: end/center/start` on the containing `HorizontalLayout`,
+collapsed every bar to 0px — completely invisible. `BoxPlot`/
+`CandlestickChart`/`ViolinPlot` didn't go fully invisible only because
+their bars wrap fixed-width inner content (8–24px), so the outer
+`Rectangle` still picked up *some* non-zero preferred width from that —
+enough to render narrow and cramped, not evenly spread as intended.
+
+**Fix, applied uniformly:** drop the alignment override on the outer
+`HorizontalLayout` so it's back to the default `stretch` (letting
+`horizontal-stretch` do its job); where per-bar bottom-alignment was
+actually wanted (bars of varying height sharing a baseline), move that
+into a `VerticalLayout { alignment: end; ... }` wrapping just that one
+bar — the exact pattern `GroupedBarChart` already used and which is the
+only bar-family component in this category that rendered correctly from
+the first pass.
+
+Scanned the whole category afterward for the same shape
+(`HorizontalLayout` with an explicit non-stretch `alignment` and
+`horizontal-stretch`-driven children) to make sure this was fully
+caught, not just the files visible in the screenshots — found and fixed
+`CandlestickChart` and `SparklineBar` this way too, neither of which was
+called out by name but matched the exact pattern. The three remaining
+non-stretch `alignment` uses left untouched (`DonutChart`/`PieChart`/
+`RadarChart`'s legend rows, `GroupedBarChart`'s own working layout) are
+safe: their children have real fixed/intrinsic widths, not
+`horizontal-stretch` depending on the layout to size them.

@@ -15,12 +15,24 @@ export component BarChartVertical inherits Rectangle {
 
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
-        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-1; alignment: end;
-            for bar[i] in root.data: Rectangle {
-                horizontal-stretch: 1;
-                height: bar * 100px;
-                background: Theme.accent;
-                border-radius: 4px;
+        // Bug: `alignment: end` on this HorizontalLayout overrode
+        // `horizontal-stretch` — per Slint's layout docs, any alignment
+        // other than the default `stretch` makes children fall back to
+        // their own (here: zero, since Rectangle has no intrinsic width)
+        // preferred width instead of dividing the available space. Every
+        // bar collapsed to 0px wide and the whole chart rendered blank.
+        // Fixed by leaving the outer layout at its default `stretch` (so
+        // `horizontal-stretch: 1` actually divides the width evenly) and
+        // moving the bottom-alignment into a per-bar `VerticalLayout`
+        // instead — the same pattern `GroupedBarChart` already used
+        // successfully.
+        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-1;
+            for bar[i] in root.data: VerticalLayout { horizontal-stretch: 1; alignment: end;
+                Rectangle {
+                    height: bar * 100px;
+                    background: Theme.accent;
+                    border-radius: 4px;
+                }
             }
         }
     }

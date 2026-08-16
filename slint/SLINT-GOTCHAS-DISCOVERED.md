@@ -905,6 +905,51 @@ just never name a property identically to a builtin function.
 
 ---
 
+---
+
+### `alignment: start/center/end` on a layout silently disables `*-stretch` for its children
+
+```slint
+// WRONG — every bar collapses to 0px wide. `horizontal-stretch: 1` only
+// takes effect when the layout's own alignment is the default `stretch`;
+// setting alignment to anything else makes children fall back to their
+// own preferred width instead — 0 for a bare Rectangle.
+HorizontalLayout { alignment: end;
+    for bar[i] in data : Rectangle { horizontal-stretch: 1; height: bar * 100px; }
+}
+```
+Confirmed against Slint's own layout docs/examples (the `alignment: start`
+example explicitly notes children "retain their specified minimum width"
+instead of stretching). Hit this live across nine `charts/` files —
+several (`BarChartVertical`, `Histogram`, `VolumeChart`,
+`HundredPercentBar`, `StackedBarChart`, `SparklineBar`) rendered
+completely blank; three more (`BoxPlot`, `CandlestickChart`,
+`ViolinPlot`) rendered cramped into a narrow strip rather than spread
+across the row, because their bars wrapped fixed-width inner content
+that gave the outer `Rectangle` *some* non-zero preferred width instead
+of exactly zero. No compiler error either way — this is a pure
+layout-semantics footgun, not a syntax mistake, and it only shows up
+visually.
+
+```slint
+// RIGHT — leave the layout at its default alignment (stretch) so
+// horizontal-stretch actually divides the width; if per-item
+// bottom/top/center-alignment along the *other* axis is also wanted,
+// nest a layout for just that:
+HorizontalLayout {
+    for bar[i] in data : VerticalLayout { horizontal-stretch: 1; alignment: end;
+        Rectangle { height: bar * 100px; }
+    }
+}
+```
+The general rule this falls out of: `alignment` and `*-stretch` are two
+different mechanisms for the *same axis* (the layout's main axis) and
+only one wins — `alignment` at any non-default value always wins over a
+sibling's stretch factor, for every child in that layout, not just the
+ones without their own explicit size.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

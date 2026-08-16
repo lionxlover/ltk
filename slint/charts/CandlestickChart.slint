@@ -15,7 +15,10 @@ export component CandlestickChart inherits Rectangle {
 
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
-        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-1; alignment: center;
+        // Same bug as StackedBarChart/BoxPlot: `alignment: center`
+        // overrode `horizontal-stretch`, so candles crowded to their
+        // narrow (~8px) preferred width instead of spreading evenly.
+        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-1;
             for c[i] in root.count: Rectangle { horizontal-stretch: 1;
                 VerticalLayout { alignment: center;
                     Rectangle { width: 1px; height: 20px; background: Math.mod(i, 2) == 0 ? Theme.state-success : Theme.state-error; }

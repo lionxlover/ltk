@@ -16,7 +16,9 @@ export component StackedBarChart inherits Rectangle {
 
         Text { text: root.label; color: Theme.text-secondary; font-size: Theme.text-xs; font-weight: Theme.weight-semibold; }
 
-        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-2; alignment: center;
+        // Bug: `alignment: center` overrode `horizontal-stretch`,
+        // collapsing every stacked bar to 0px wide.
+        HorizontalLayout { vertical-stretch: 1; spacing: Theme.sp-2;
             for bar[i] in root.series-a: Rectangle { horizontal-stretch: 1;
                 VerticalLayout { alignment: end;
                     Rectangle { height: (i < root.series-b.length ? root.series-b[i] : 0) * 100px; background: Theme.state-success; border-radius: 2px; }

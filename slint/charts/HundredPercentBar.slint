@@ -18,7 +18,13 @@ export component HundredPercentBar inherits Rectangle {
         for bar[i] in root.series-a: Rectangle { height: 24px;
             HorizontalLayout { spacing: Theme.sp-2;
                 Rectangle { vertical-stretch: 1; clip: true;
-                    HorizontalLayout { alignment: start;
+                    // Bug: `alignment: start` overrode `horizontal-stretch`
+                    // on the two segments below, collapsing both to 0px
+                    // wide — the whole bar was invisible, leaving only
+                    // the percentage label. Removed so the default
+                    // `stretch` alignment lets the stretch factors
+                    // (`bar` / `1 - bar`) actually divide the width.
+                    HorizontalLayout {
                         Rectangle { horizontal-stretch: bar; background: Theme.accent; }
                         Rectangle { horizontal-stretch: (1 - bar); background: Theme.state-success; }
                     }
