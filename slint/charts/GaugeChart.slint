@@ -3,10 +3,12 @@ import { Theme } from "../core/Theme.slint";
 // The original always drew a full-circle border in a single fixed color —
 // `value` was declared but never actually affected the drawing. Fixed with
 // the same conic-gradient technique as PieChart/ProgressRingChart: a
-// colored arc sized to `value`/100, track color for the remainder.
+// colored arc sized to `value`/`max-value`, track color for the remainder.
+// (Named it `max-value`, not `max` — a property called `max` shadows the
+// builtin `max()` function used below, breaking the "not a function" way.)
 export component GaugeChart inherits Rectangle {
     in property <int> value: 72;
-    in property <int> max: 100;
+    in property <int> max-value: 100;
     in property <string> label: "Gauge";
 
     background: Theme.bg-surface;
@@ -14,7 +16,7 @@ export component GaugeChart inherits Rectangle {
     border-width: 1px;
     border-color: Theme.border-subtle;
 
-    property <float> fraction: root.max > 0 ? max(0.0, min(1.0, root.value / root.max)) : 0;
+    property <float> fraction: root.max-value > 0 ? max(0.0, min(1.0, root.value / root.max-value)) : 0;
     property <brush> fill-color: root.fraction > 0.8 ? Theme.state-error
         : root.fraction > 0.6 ? Theme.state-warning
         : Theme.accent;

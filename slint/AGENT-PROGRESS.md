@@ -1247,3 +1247,28 @@ consistent with what they claim to do. Not touched.
 completes the `charts/` review. Next: pick the next untouched category
 per the size list above (VS Code Problems-panel check for `charts/`
 still pending from the person, same as `text-input/`).
+
+## Post-delivery fix: `charts/GaugeChart.slint` — property named `max` shadowed the builtin `max()` function
+
+The person's VS Code Slint Preview reported a real compiler error:
+"The expression is not a function" at the `fraction` binding. Cause:
+`GaugeChart` declared `in property <int> max: 100;`, and a property
+named `max` shadows the global `max()` function for the rest of that
+component's scope — so `max(0.0, min(1.0, ...))` on the very next
+non-blank line tried to call the *property* as a function instead of the
+builtin. `min` wasn't renamed (still used as the builtin, unshadowed) —
+only `max` collided, since only `max` was also declared as a property
+name here.
+
+**Fixed by renaming the property to `max-value`** (not `max`) and
+updating its one internal reference (`root.max-value`). No other file
+in `test.slint` or elsewhere referenced `GaugeChart`'s old `max` prop, so
+this was a one-file, one-property fix — no cascading renames needed.
+
+Scanned the rest of the batch for the same shape (a property named
+exactly `max` or `min`) — isolated to this one file, not a pattern.
+**New standing check for future batches:** never name a property `max`,
+`min`, `abs`, `round`, `floor`, `ceil`, `mod`, or any other bare global
+function name — Slint doesn't warn on the shadowing at declaration time,
+it only surfaces as "not a function" wherever the builtin gets called
+later, which can be a distant line and a confusing message.

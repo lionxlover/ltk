@@ -875,6 +875,36 @@ file, not a systemic pattern this time.
 
 ---
 
+---
+
+### A property named `max`/`min` (or any other bare global function name) shadows that function
+
+```slint
+// WRONG — compiles, but breaks the very next use of the builtin:
+// "The expression is not a function"
+in property <int> max: 100;
+property <float> fraction: max(0.0, min(1.0, value / max));
+//                          ^^^ tries to call the *property* max, not the builtin
+```
+Confirmed by hitting it live: `charts/GaugeChart.slint` declared
+`in property <int> max`, which shadowed the global `max()` function for
+the rest of that component — the error pointed at the `max(...)` call
+site, not the property declaration, so the actual cause (a same-named
+property several lines above) wasn't obvious from the error location
+alone. Slint doesn't warn at the declaration; it only ever surfaces where
+the builtin is later called.
+
+```slint
+// RIGHT
+in property <int> max-value: 100;
+property <float> fraction: max(0.0, min(1.0, value / max-value));
+```
+Applies to any bare global function name, not just `max`/`min` — `abs`,
+`round`, `floor`, `ceil`, `mod`, etc. are equally shadowable. Safest to
+just never name a property identically to a builtin function.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`
