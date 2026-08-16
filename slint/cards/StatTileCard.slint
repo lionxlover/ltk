@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `accent-color` was declared and accepted but never actually used
+// anywhere in the drawing — every StatTileCard looked identical
+// regardless of what color was passed in. Added a small accent bar so
+// the property does something.
 export component StatTileCard inherits Rectangle {
     in-out property <string> label: "Metric";
     in-out property <string> value: "0";
@@ -14,6 +18,13 @@ export component StatTileCard inherits Rectangle {
     VerticalLayout {
         padding: 16px;
         spacing: 4px;
+
+        Rectangle {
+            height: 3px;
+            width: 24px;
+            border-radius: Theme.radius-full;
+            background: root.accent-color;
+        }
 
         Text {
             text: root.label;
@@ -31,3 +42,4 @@ export component StatTileCard inherits Rectangle {
         }
     }
 }
+

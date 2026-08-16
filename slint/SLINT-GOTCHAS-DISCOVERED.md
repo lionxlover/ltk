@@ -950,6 +950,63 @@ ones without their own explicit size.
 
 ---
 
+---
+
+### A `Text` centered via `x`/`y` inside a width-less `Rectangle` doesn't size the `Rectangle` — with three different failure modes depending on context
+
+```slint
+// WRONG — Rectangle has no explicit width, and its only child sets x/y,
+// which Slint's own preferred-size rules exclude from sizing the parent.
+Rectangle {
+    height: 20px;
+    background: Theme.accent-subtle;
+    Text {
+        x: (parent.width - self.width) / 2;   // centering — but this
+        y: (parent.height - self.height) / 2; // excludes Text from the
+        text: "New";                          // parent's preferred size
+    }
+}
+```
+Confirmed against Slint's layout docs: preferred size is computed from
+"the child that has the bigger preferred size, **whose x and y property
+are not set**." A `Text` positioned this way never counts, so the
+`Rectangle` has *no* content to size itself from. What that actually
+renders as depends entirely on where the `Rectangle` sits, which is what
+makes this one sneaky — it doesn't fail the same way twice:
+- Inside a `HorizontalLayout` with `horizontal-stretch: 0` → preferred
+  width resolves to 0 → **completely invisible**.
+- Direct child of a `VerticalLayout` → cross-axis default is to stretch
+  to the full available width → renders as a **full-width banner**
+  instead of a small pill.
+- Outside any layout, positioned by explicit `x`/`y` on the `Rectangle`
+  itself → an unset width on a `Rectangle` **fills its parent** (per the
+  already-documented "containers fill their parent by default" rule) →
+  can produce an oversized shape that only looks right at one specific
+  parent size by coincidence, if something else happens to clip it back
+  down.
+
+```slint
+// RIGHT — size the Rectangle from real layout content instead of
+// manual x/y centering, so its preferred size is well-defined:
+Rectangle {
+    height: 20px;
+    background: Theme.accent-subtle;
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 8px;
+        Text { text: "New"; vertical-alignment: center; }
+    }
+}
+```
+Found this shape four times in one category (`cards/`) alone — grep for
+`x: (parent.width - self.width) / 2` (or the `y` equivalent) with no
+sibling `width:`/`height:` binding on the parent as a standing check in
+any new category, the same way the `alignment`-vs-`stretch` check from
+`charts/` is. The two are easy to conflate (both are "a bar/badge didn't
+show up right") but are different root causes and different fixes.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

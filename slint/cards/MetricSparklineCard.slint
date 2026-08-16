@@ -1,15 +1,58 @@
 import { Theme } from "../core/Theme.slint";
 
+// Two real bugs:
+// 1. `change` was unconditionally colored `Theme.state-success` (green)
+//    no matter what the string said — a "-8.2%" change would still show
+//    green, misleadingly implying growth. Exposed a `positive` property
+//    (a plain bool is simpler and more reliable than trying to detect a
+//    leading "-" from the string — Slint strings have no indexing to do
+//    that natively anyway) so the host decides, and colors follow it.
+// 2. The "sparkline" was five dots at hardcoded positions with no `data`
+//    property at all and no connecting line between them — identical to
+//    the systemic bug already found and fixed across most of charts/.
+//    Added a real `data` array and a connecting line via `Path`, reusing
+//    the same fixed-8-point technique used there (Slint's `Path` can't
+//    loop over a dynamic-length array to generate MoveTo/LineTo —
+//    confirmed open limitation, slint-ui/slint#754/#776).
 export component MetricSparklineCard inherits Rectangle {
     in-out property <string> label: "Revenue";
     in-out property <string> value: "$12,340";
     in-out property <string> change: "+12.5%";
+    in-out property <bool> positive: true;
+    in property <[float]> data: [0.3, 0.5, 0.35, 0.6, 0.5, 0.75, 0.65];
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 1px;
     border-color: Theme.border-base;
     horizontal-stretch: 1;
+
+    property <int> len: root.data.length;
+    property <int> denom: max(1, len - 1);
+    property <int> idx0: 0;
+    property <int> idx1: 1 < len ? 1 : (len > 0 ? len - 1 : 0);
+    property <int> idx2: 2 < len ? 2 : (len > 0 ? len - 1 : 0);
+    property <int> idx3: 3 < len ? 3 : (len > 0 ? len - 1 : 0);
+    property <int> idx4: 4 < len ? 4 : (len > 0 ? len - 1 : 0);
+    property <int> idx5: 5 < len ? 5 : (len > 0 ? len - 1 : 0);
+    property <int> idx6: 6 < len ? 6 : (len > 0 ? len - 1 : 0);
+    property <int> idx7: 7 < len ? 7 : (len > 0 ? len - 1 : 0);
+    property <float> v0: len > 0 ? root.data[idx0] : 0;
+    property <float> v1: len > 0 ? root.data[idx1] : 0;
+    property <float> v2: len > 0 ? root.data[idx2] : 0;
+    property <float> v3: len > 0 ? root.data[idx3] : 0;
+    property <float> v4: len > 0 ? root.data[idx4] : 0;
+    property <float> v5: len > 0 ? root.data[idx5] : 0;
+    property <float> v6: len > 0 ? root.data[idx6] : 0;
+    property <float> v7: len > 0 ? root.data[idx7] : 0;
+    property <float> x0: idx0 / denom * 100;
+    property <float> x1: idx1 / denom * 100;
+    property <float> x2: idx2 / denom * 100;
+    property <float> x3: idx3 / denom * 100;
+    property <float> x4: idx4 / denom * 100;
+    property <float> x5: idx5 / denom * 100;
+    property <float> x6: idx6 / denom * 100;
+    property <float> x7: idx7 / denom * 100;
 
     VerticalLayout {
         padding: 16px;
@@ -37,7 +80,7 @@ export component MetricSparklineCard inherits Rectangle {
 
             Text {
                 text: root.change;
-                color: Theme.state-success;
+                color: root.positive ? Theme.state-success : Theme.state-error;
                 font-size: 12px;
                 font-weight: Theme.weight-medium;
                 vertical-alignment: bottom;
@@ -47,58 +90,23 @@ export component MetricSparklineCard inherits Rectangle {
         Rectangle {
             height: 32px;
             background: transparent;
+            clip: true;
 
-            Rectangle {
-                y: parent.height - 8px;
-                height: 2px;
-                width: parent.width;
-                background: Theme.accent-subtle;
-            }
-
-            Rectangle {
-                x: parent.width * 0.1;
-                y: parent.height * 0.3;
-                width: 3px;
-                height: 3px;
-                border-radius: Theme.radius-full;
-                background: Theme.accent;
-            }
-
-            Rectangle {
-                x: parent.width * 0.3;
-                y: parent.height * 0.5;
-                width: 3px;
-                height: 3px;
-                border-radius: Theme.radius-full;
-                background: Theme.accent;
-            }
-
-            Rectangle {
-                x: parent.width * 0.5;
-                y: parent.height * 0.2;
-                width: 3px;
-                height: 3px;
-                border-radius: Theme.radius-full;
-                background: Theme.accent;
-            }
-
-            Rectangle {
-                x: parent.width * 0.7;
-                y: parent.height * 0.4;
-                width: 3px;
-                height: 3px;
-                border-radius: Theme.radius-full;
-                background: Theme.accent;
-            }
-
-            Rectangle {
-                x: parent.width * 0.9;
-                y: parent.height * 0.1;
-                width: 3px;
-                height: 3px;
-                border-radius: Theme.radius-full;
-                background: Theme.accent;
+            Path {
+                width: parent.width; height: parent.height;
+                viewbox-width: 100; viewbox-height: 100;
+                stroke: root.positive ? Theme.state-success : Theme.state-error;
+                stroke-width: 1.5px;
+                MoveTo { x: x0; y: (1 - v0) * 100; }
+                LineTo { x: x1; y: (1 - v1) * 100; }
+                LineTo { x: x2; y: (1 - v2) * 100; }
+                LineTo { x: x3; y: (1 - v3) * 100; }
+                LineTo { x: x4; y: (1 - v4) * 100; }
+                LineTo { x: x5; y: (1 - v5) * 100; }
+                LineTo { x: x6; y: (1 - v6) * 100; }
+                LineTo { x: x7; y: (1 - v7) * 100; }
             }
         }
     }
 }
+

@@ -1,9 +1,16 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the avatar always showed a hardcoded "?" regardless of `name`.
+// Slint strings have no indexing/substring (confirmed: see gotchas), so
+// deriving an initial from `name` isn't possible inside .slint itself —
+// exposed an `initials` property instead (the same pattern
+// `media/AvatarCircle.slint` already uses), for the host to fill in from
+// `name`, and default it to the previous "?" only when unset.
 export component TeamMemberCard inherits Rectangle {
     in-out property <string> name: "Name";
     in-out property <string> role: "Role";
     in-out property <string> email: "email@example.com";
+    in-out property <string> initials: "?";
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
@@ -25,7 +32,7 @@ export component TeamMemberCard inherits Rectangle {
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "?";
+                text: root.initials;
                 color: Theme.accent;
                 font-size: 24px;
                 font-weight: Theme.weight-bold;

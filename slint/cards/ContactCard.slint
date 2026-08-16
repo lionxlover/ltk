@@ -1,9 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Same fix as TeamMemberCard: exposed `initials` instead of a hardcoded
+// "?" (Slint strings have no indexing/substring to derive one from `name`).
 export component ContactCard inherits Rectangle {
     in-out property <string> name: "Contact Name";
     in-out property <string> phone: "+1 (555) 000-0000";
     in-out property <string> email: "email@example.com";
+    in-out property <string> initials: "?";
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
@@ -24,7 +27,7 @@ export component ContactCard inherits Rectangle {
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "?";
+                text: root.initials;
                 color: Theme.accent;
                 font-size: 18px;
                 font-weight: Theme.weight-bold;

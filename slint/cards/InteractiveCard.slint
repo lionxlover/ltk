@@ -1,14 +1,23 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `TouchArea { clicked => { } }` — the empty handler meant tapping
+// this "InteractiveCard" did literally nothing observable, and there was
+// no `callback clicked()` exposed for the host to react to a tap at all.
+// Also missing the hover/press feedback and cursor that polish.md calls
+// for on any custom interactive element. Fixed: forwards a real
+// `clicked` callback, and reacts visually via `has-hover`.
 export component InteractiveCard inherits Rectangle {
     in-out property <string> title: "Card Title";
     in-out property <string> subtitle: "Subtitle text";
 
+    callback clicked();
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 1px;
-    border-color: Theme.border-base;
+    border-color: ta.has-hover ? Theme.accent : Theme.border-base;
     horizontal-stretch: 1;
+    animate border-color { duration: Theme.dur-fast; }
 
     VerticalLayout {
         padding: 16px;
@@ -28,5 +37,9 @@ export component InteractiveCard inherits Rectangle {
         }
     }
 
-    TouchArea { clicked => { } }
+    ta := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => { root.clicked(); }
+    }
 }
+

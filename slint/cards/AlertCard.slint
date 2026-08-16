@@ -1,13 +1,28 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `kind` only switched the icon glyph (!/⚠/✓/i) — the card's actual
+// background stayed hardcoded to `Theme.state-info` no matter what `kind`
+// was, so an "error" alert and a "success" alert looked identical apart
+// from one character. Also: `Theme.text-primary` sitting directly on the
+// solid `state-info` blue has poor contrast in light mode (dark navy text
+// on saturated blue). Fixed by tinting the background per-kind with a
+// low-alpha wash of the matching state color (the same idiom this
+// project already uses for `Theme.accent-subtle`), so text-primary stays
+// legible and the alert's color actually communicates its severity.
 export component AlertCard inherits Rectangle {
     in-out property <string> title: "Alert";
     in-out property <string> message: "Something needs your attention.";
     in-out property <string> kind: "info";
 
-    background: Theme.state-info;
+    property <brush> kind-color: root.kind == "error" ? Theme.state-error
+        : root.kind == "warning" ? Theme.state-warning
+        : root.kind == "success" ? Theme.state-success
+        : Theme.state-info;
+
+    background: root.kind-color.with-alpha(0.14);
     border-radius: Theme.radius-lg;
     border-width: 1px;
+    border-color: root.kind-color.with-alpha(0.4);
     horizontal-stretch: 1;
 
     HorizontalLayout {
@@ -23,7 +38,7 @@ export component AlertCard inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
                 text: root.kind == "error" ? "!" : (root.kind == "warning" ? "⚠" : (root.kind == "success" ? "✓" : "i"));
-                color: Theme.text-primary;
+                color: root.kind-color;
                 font-size: 14px;
                 font-weight: Theme.weight-bold;
                 vertical-alignment: center;
@@ -43,10 +58,11 @@ export component AlertCard inherits Rectangle {
 
             Text {
                 text: root.message;
-                color: Theme.text-primary;
+                color: Theme.text-secondary;
                 font-size: 12px;
                 wrap: word-wrap;
             }
         }
     }
 }
+

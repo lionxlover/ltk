@@ -4,6 +4,7 @@ export component TestimonialCard inherits Rectangle {
     in-out property <string> quote: "This product changed how we work. Highly recommended.";
     in-out property <string> author: "Jane Doe";
     in-out property <string> role: "CTO, Acme Corp";
+    in-out property <string> initials: "?";
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
@@ -15,8 +16,11 @@ export component TestimonialCard inherits Rectangle {
         padding: 20px;
         spacing: 16px;
 
+        // Bug: this was a literal ">" (greater-than sign), not a
+        // quotation mark — looked like a copy/paste mistake for what's
+        // meant to be a decorative opening quote.
         Text {
-            text: ">";
+            text: "“";
             color: Theme.accent;
             font-family: Theme.font-display;
             font-size: 48px;
@@ -43,7 +47,7 @@ export component TestimonialCard inherits Rectangle {
                 Text {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
-                    text: "?";
+                    text: root.initials;
                     color: Theme.accent;
                     font-size: 14px;
                     font-weight: Theme.weight-bold;
@@ -70,3 +74,4 @@ export component TestimonialCard inherits Rectangle {
         }
     }
 }
+

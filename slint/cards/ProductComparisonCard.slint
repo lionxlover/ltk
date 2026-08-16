@@ -17,19 +17,33 @@ export component ProductComparisonCard inherits Rectangle {
         padding: 20px;
         spacing: 12px;
 
-        if root.featured: Rectangle {
-            height: 20px;
-            background: Theme.accent;
-            border-radius: Theme.radius-sm;
+        // Bug: this badge had no explicit width and its Text child used
+        // x/y centering (excluded from Slint's preferred-size
+        // computation — same root cause as the badges fixed in
+        // LocationCard/JobListingCard). As a direct VerticalLayout child
+        // it didn't vanish like those did — VerticalLayout stretches
+        // children to the full cross-axis width by default — but it
+        // rendered as a full-width banner instead of the small pill
+        // "Most Popular" badges are supposed to be. Fixed by sizing it
+        // from real content and centering it explicitly.
+        if root.featured: HorizontalLayout { alignment: center;
+            Rectangle {
+                height: 20px;
+                background: Theme.accent;
+                border-radius: Theme.radius-sm;
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                y: (parent.height - self.height) / 2;
-                text: "Most Popular";
-                color: #ffffff;
-                font-size: 10px;
-                font-weight: Theme.weight-bold;
-                vertical-alignment: center;
+                HorizontalLayout {
+                    padding-left: 10px;
+                    padding-right: 10px;
+
+                    Text {
+                        text: "Most Popular";
+                        color: #ffffff;
+                        font-size: 10px;
+                        font-weight: Theme.weight-bold;
+                        vertical-alignment: center;
+                    }
+                }
             }
         }
 

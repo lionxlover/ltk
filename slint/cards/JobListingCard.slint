@@ -33,14 +33,23 @@ export component JobListingCard inherits Rectangle {
                 border-radius: Theme.radius-sm;
                 horizontal-stretch: 0;
 
-                Text {
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    text: "New";
-                    color: Theme.accent;
-                    font-size: 10px;
-                    font-weight: Theme.weight-bold;
-                    vertical-alignment: center;
+                // Same bug as LocationCard's category badge: no explicit
+                // width, and the only child used x/y centering — which
+                // Slint's sizing rules exclude from preferred-size
+                // computation — so this badge had 0 preferred width and
+                // was invisible with horizontal-stretch: 0. Fixed by
+                // sizing from real layout content instead.
+                HorizontalLayout {
+                    padding-left: 8px;
+                    padding-right: 8px;
+
+                    Text {
+                        text: "New";
+                        color: Theme.accent;
+                        font-size: 10px;
+                        font-weight: Theme.weight-bold;
+                        vertical-alignment: center;
+                    }
                 }
             }
         }

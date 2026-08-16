@@ -82,8 +82,8 @@ export component CardsTest inherits Rectangle {
         Text { text: "Profile / Team / Contact"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
         HorizontalLayout { spacing: 16px;
             ProfileCard { name: "Jane Smith"; role: "Designer"; }
-            TeamMemberCard { name: "John Doe"; role: "Engineer"; email: "john@co.com"; }
-            ContactCard { name: "Alice Brown"; phone: "+1 555-1234"; email: "alice@co.com"; }
+            TeamMemberCard { name: "John Doe"; role: "Engineer"; email: "john@co.com"; initials: "JD"; }
+            ContactCard { name: "Alice Brown"; phone: "+1 555-1234"; email: "alice@co.com"; initials: "AB"; }
         }
 
         // --- PRICING / COMPARISON ---
@@ -105,7 +105,7 @@ export component CardsTest inherits Rectangle {
         Text { text: "Stats / Metrics"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
         HorizontalLayout { spacing: 16px;
             StatTileCard { label: "USERS"; value: "12,345"; }
-            MetricSparklineCard { label: "Revenue"; value: "$12,340"; change: "+12.5%"; }
+            MetricSparklineCard { label: "Revenue"; value: "$12,340"; change: "+12.5%"; positive: true; data: [0.3, 0.5, 0.35, 0.6, 0.5, 0.75, 0.65]; }
         }
 
         // --- NOTIFICATION / ALERT ---
@@ -164,7 +164,7 @@ export component CardsTest inherits Rectangle {
         // --- TESTIMONIAL / REVIEW ---
         Text { text: "Testimonial / Review"; color: Theme.text-secondary; font-size: 13px; font-weight: Theme.weight-semibold; }
         HorizontalLayout { spacing: 16px;
-            TestimonialCard { quote: "LTK changed how we build desktop apps."; author: "Jane CTO"; role: "CTO, Acme"; }
+            TestimonialCard { quote: "LTK changed how we build desktop apps."; author: "Jane CTO"; role: "CTO, Acme"; initials: "JC"; }
             ReviewCard { reviewer: "Bob"; stars: 5; text: "Excellent component library!"; }
         }
 

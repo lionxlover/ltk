@@ -47,14 +47,27 @@ export component LocationCard inherits Rectangle {
                     border-radius: Theme.radius-sm;
                     horizontal-stretch: 0;
 
-                    Text {
-                        x: (parent.width - self.width) / 2;
-                        y: (parent.height - self.height) / 2;
-                        text: root.category;
-                        color: Theme.accent;
-                        font-size: 10px;
-                        font-weight: Theme.weight-semibold;
-                        vertical-alignment: center;
+                    // Bug: this badge had no explicit `width` and relied
+                    // on an implicit preferred-width computed from its
+                    // Text child — but that Text used explicit `x`/`y`
+                    // for centering, and Slint's own sizing docs exclude
+                    // any child with `x`/`y` set from contributing to the
+                    // parent's preferred size. The badge's preferred
+                    // width came out as 0, so with `horizontal-stretch: 0`
+                    // in this row it rendered invisible. Fixed by sizing
+                    // it from real layout content (padding around the
+                    // text) instead of manual x/y centering.
+                    HorizontalLayout {
+                        padding-left: 8px;
+                        padding-right: 8px;
+
+                        Text {
+                            text: root.category;
+                            color: Theme.accent;
+                            font-size: 10px;
+                            font-weight: Theme.weight-semibold;
+                            vertical-alignment: center;
+                        }
                     }
                 }
             }

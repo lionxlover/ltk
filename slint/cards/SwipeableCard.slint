@@ -1,8 +1,26 @@
 import { Theme } from "../core/Theme.slint";
 
+// Two real bugs here:
+// 1. `cardsurface` never moved — it had no `x` binding at all, so it
+//    permanently covered the red "Delete" panel underneath. The panel
+//    existed but could never be seen or reached.
+// 2. The card's own TouchArea fired `dismissed()` on a plain `clicked`
+//    — meaning any single tap anywhere on the card immediately deleted
+//    it. For a component whose whole point is "swipe to confirm before
+//    deleting," that's the opposite of a safety gesture.
+//
+// True continuous drag-tracking (following the finger/cursor position
+// every frame) needs `absolute-position` math that's easy to get subtly
+// wrong without a live compiler to verify against, so this uses a
+// tap-to-reveal toggle instead: one tap slides the card left to reveal
+// the Delete action (real Delete now reachable), a second tap on the
+// card re-hides it, and only tapping the Delete button itself dismisses
+// — no more accidental single-tap deletes.
 export component SwipeableCard inherits Rectangle {
     in-out property <string> title: "Swipeable Card";
     in-out property <string> description: "Swipe left to reveal actions";
+    property <bool> revealed: false;
+    property <length> reveal-width: 90px;
 
     callback dismissed();
 
@@ -22,23 +40,31 @@ export component SwipeableCard inherits Rectangle {
             padding-left: 16px;
             alignment: end;
 
-            Text {
-                text: "Delete";
-                color: #ffffff;
-                font-size: 14px;
-                font-weight: Theme.weight-semibold;
-                vertical-alignment: center;
+            delete-btn := TouchArea {
+                enabled: root.revealed;
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.revealed = false; root.dismissed(); }
+
+                Text {
+                    text: "Delete";
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                }
             }
         }
     }
 
     cardsurface := Rectangle {
+        x: root.revealed ? -root.reveal-width : 0px;
         width: parent.width;
         height: parent.height;
         background: Theme.bg-surface;
         border-radius: Theme.radius-lg;
         border-width: 1px;
         border-color: Theme.border-base;
+        animate x { duration: Theme.dur-fast; easing: Theme.ease-out; }
 
         HorizontalLayout {
             padding: 16px;
@@ -73,7 +99,9 @@ export component SwipeableCard inherits Rectangle {
         }
 
         ta := TouchArea {
-            clicked => { root.dismissed(); }
+            mouse-cursor: MouseCursor.pointer;
+            clicked => { root.revealed = !root.revealed; }
         }
     }
 }
+

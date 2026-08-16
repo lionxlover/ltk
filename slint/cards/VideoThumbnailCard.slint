@@ -36,21 +36,39 @@ export component VideoThumbnailCard inherits Rectangle {
                 }
             }
 
+            // Bug: this badge had no explicit width and sat outside any
+            // layout — per Slint's sizing defaults, a Rectangle with no
+            // width and no layout context fills its *parent* (the
+            // 140px-tall thumbnail box), not zero. Combined with
+            // `x: parent.width - 56px`, it rendered as an oversized black
+            // bar starting 56px from the right edge and extending a full
+            // parent-width further right, only "looking right" by
+            // coincidence at this card's specific width because `clip:
+            // true` on the thumbnail happened to crop it back down to
+            // about the intended size — it would break at any other card
+            // width. Fixed by sizing the badge from its actual text
+            // content (padding around a Text in a layout) instead of a
+            // guessed fixed width, so it's correct for any duration
+            // string, not just ones that happen to fit "56px".
             Rectangle {
-                x: parent.width - 56px;
-                y: parent.height - 24px;
-                height: 20px;
+                x: parent.width - self.width - 8px;
+                y: parent.height - self.height - 8px;
                 border-radius: Theme.radius-sm;
                 background: #000000cc;
 
-                Text {
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    text: root.duration;
-                    color: #ffffff;
-                    font-size: 10px;
-                    font-weight: Theme.weight-medium;
-                    vertical-alignment: center;
+                HorizontalLayout {
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    padding-top: 2px;
+                    padding-bottom: 2px;
+
+                    Text {
+                        text: root.duration;
+                        color: #ffffff;
+                        font-size: 10px;
+                        font-weight: Theme.weight-medium;
+                        vertical-alignment: center;
+                    }
                 }
             }
         }

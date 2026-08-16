@@ -15,11 +15,11 @@ re-discovering things the hard way.
 | `layout-containers/` | 52 | ✅ Done, verified via VS Code Problems panel (3 rounds of fixes) | `layout-containers.zip` |
 | `data-display/` | 60 | ✅ Done, verified via VS Code Problems panel (10 rounds of fixes) | `data-display.zip` |
 | `text-input/` | 45 | ✅ Done, pending VS Code Problems-panel check | `text-input.zip` |
-| `charts/` | 43 | ✅ Done, pending VS Code Problems-panel check | `charts.zip` |
-| everything else | ~528 | ⬜ Not started | — |
+| `charts/` | 43 | ✅ Done, verified via VS Code Problems panel (2 rounds of post-delivery fixes) | `charts.zip` |
+| `cards/` | 39 | ✅ Done, pending VS Code Problems-panel check | `cards.zip` |
+| everything else | ~489 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`cards` (39),
 `navigation` (39), `feedback` (36), `typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
@@ -1317,3 +1317,130 @@ non-stretch `alignment` uses left untouched (`DonutChart`/`PieChart`/
 `RadarChart`'s legend rows, `GroupedBarChart`'s own working layout) are
 safe: their children have real fixed/intrinsic widths, not
 `horizontal-stretch` depending on the layout to size them.
+
+## `cards/` batch — mostly polished, but a new sizing gotcha and a genuinely dangerous UX bug
+
+All 39 components reviewed; 41 files delivered (39 components +
+`export.slint` + `test.slint`, `test.slint` updated only where a fixed
+component gained a new property worth demonstrating — `TeamMemberCard`/
+`ContactCard`/`TestimonialCard`'s `initials`, `MetricSparklineCard`'s
+`positive`/`data`). No `core/` changes needed. This category was in much
+better shape overall than `charts/` — most files were simple, correct,
+fully data-driven containers — but every real bug found here was worth
+finding:
+
+**New sizing gotcha, found four times:** a small "badge" pill
+(`LocationCard`'s category tag, `JobListingCard`'s "New" tag,
+`ProductComparisonCard`'s "Most Popular" tag, `VideoThumbnailCard`'s
+duration tag) with no explicit `width`, containing only a `Text` child
+centered via `x: (parent.width - self.width) / 2`. Slint's own
+preferred-size docs exclude any child with `x`/`y` set from contributing
+to the parent's implicit size — so these badges had *no* content to size
+themselves from. The actual failure mode depended on context:
+- `horizontal-stretch: 0` inside a `HorizontalLayout` (`LocationCard`,
+  `JobListingCard`) → 0px wide, fully invisible.
+- Direct `VerticalLayout` child (`ProductComparisonCard`) → stretched to
+  the full cross-axis width instead (VerticalLayout fills its children
+  horizontally by default), rendering as a full-width banner instead of
+  a small pill.
+- Outside any layout, positioned by explicit `x`/`y`
+  (`VideoThumbnailCard`) → filled its *parent's* size (the whole
+  thumbnail box), which combined with the badge's `x` offset produced an
+  oversized bar that only looked roughly right at one specific card
+  width by coincidence (clipped down by the thumbnail's own `clip:
+  true`).
+
+Fixed all four the same way: size the badge from real layout content
+(padding around the `Text` inside a small `HorizontalLayout`) instead of
+manual `x`/`y` centering. Logged as a new gotcha since it's a different
+failure shape from the `alignment`-vs-`stretch` bug found in `charts/`,
+easy to conflate with it, and worth checking for by name
+(`x: (parent.width - self.width) / 2` with no sibling `width:`) in every
+future category, not just chart-shaped ones.
+
+**Actually dangerous, not just cosmetic:** `SwipeableCard` had two
+stacked bugs that combined into something worse than either alone. The
+front card (`cardsurface`) had no `x` binding at all, so it permanently
+covered the red "Delete" panel underneath — the panel existed in the
+tree but could never be seen or reached. Separately, the *front* card's
+own `TouchArea` fired the `dismissed()` callback on a plain `clicked` —
+meaning **any single tap anywhere on the card immediately deleted it**,
+with the one visual safety cue (the swipe-to-reveal Delete panel)
+completely unreachable to warn the user first. For a component whose
+entire purpose is "require a deliberate gesture before this destructive
+action," that's the opposite of what it claimed to do.
+
+Considered implementing real continuous drag-tracking (following the
+finger/cursor every frame via `moved`/`mouse-x`) but didn't — the
+correct math needs `absolute-position`-based delta tracking to avoid a
+feedback loop when the dragged element's own `x` binding shifts its
+local coordinate frame mid-drag (see the events doc's own warning about
+`pressed-x`/`pressed-y` being a snapshot vs. `mouse-x` being live), and
+getting that subtly wrong without a live compiler to check against felt
+like a worse outcome than a simpler, verifiably-correct fix. Shipped a
+tap-to-reveal toggle instead: one tap slides the card left to reveal the
+real Delete button (now reachable), a second tap re-hides it, and only
+tapping Delete itself calls `dismissed()`. Flagging the full swipe-drag
+version as a good candidate for the person to implement directly with
+`slint-viewer`/MCP-server-verified iteration, where the coordinate math
+can actually be checked against a live render.
+
+**Other real bugs, one file each:**
+- `AlertCard` — `kind` ("error"/"warning"/"success"/"info") only ever
+  changed the icon glyph; `background` was hardcoded to
+  `Theme.state-info` regardless, so an error alert and a success alert
+  were the same color apart from one character. Also, `text-primary`
+  sitting directly on that solid saturated blue has poor contrast in
+  light mode. Rewired background/border to a `kind`-driven, low-alpha
+  tint of the matching state color (the same idiom already used for
+  `Theme.accent-subtle` elsewhere in this project), which fixes both the
+  color-doesn't-match-kind bug and the contrast issue in one change.
+- `TeamMemberCard` / `ContactCard` — avatar always showed a hardcoded
+  "?" no matter what `name` was. Slint strings have no
+  indexing/substring (confirmed, see gotchas), so deriving an initial
+  from `name` isn't possible in `.slint` itself — exposed an `initials`
+  property instead, the same pattern `media/AvatarCircle.slint` already
+  established.
+- `TestimonialCard` — same "?" avatar bug (fixed the same way), plus a
+  separate, unrelated bug: the big decorative quote mark was a literal
+  `">"` (greater-than sign) instead of an actual quotation glyph — looks
+  like a copy/paste mistake. Fixed to a real opening curly quote.
+- `MetricSparklineCard` — two bugs. (1) The `change` text was
+  unconditionally colored `Theme.state-success` (green) regardless of
+  what the string said, so a "-8.2%" change would still render green,
+  actively misleading about the trend direction. Exposed a `positive`
+  bool (simpler and more reliable than trying to sniff a leading "-"
+  out of a string Slint can't index into) and switched the color on it.
+  (2) The "sparkline" itself was five dots at hardcoded positions with
+  no `data` property and no connecting line — identical to the systemic
+  bug already found and fixed across most of `charts/`. Added a real
+  `data` array and a `Path`-based connecting line, reusing the exact
+  same fixed-8-point technique documented there.
+- `InteractiveCard` — `TouchArea { clicked => { } }`: an empty handler
+  and no exposed `callback clicked()`, so a tap on this
+  "InteractiveCard" was observably inert from the host's side, and no
+  hover/press feedback either (polish.md calls for this on any custom
+  interactive element). Now forwards a real `clicked` callback and
+  reacts to `has-hover`.
+- `StatTileCard` — `accent-color` was declared and accepted but never
+  actually drawn anywhere; every tile looked identical regardless of
+  what was passed. Added a small accent bar that uses it.
+- `WeatherCard` — temperature rendered as a bare number ("72") with no
+  unit. Added "°". (Confirmed in passing, not a bug: `int`/`float` do
+  convert implicitly to `string` in Slint, so the original `text:
+  root.temp;` did compile fine — the missing degree symbol was the only
+  actual issue.)
+- `PricingCard` — unused `import { FaIcon }` (never instantiated in the
+  file). Removed; not a compile error, just dead weight.
+
+**Reviewed and left as-is, not bugs:** the four bare
+`BasicCard`/`OutlinedCard`/`GlassCard`/`ElevatedCard` style-variant
+containers (no data props to misuse); `FlipCard`/`ExpandableCard` (both
+correctly wire their toggle state through visibility/animation); every
+remaining info-display card (`BlogPostCard`, `FeatureCard`,
+`HorizontalCard`, `ProductCard`, `ReviewCard`, `FileCard`, `ProfileCard`,
+`MapEmbedCard`, `NotificationCard`, `LinkPreviewCard`,
+`AchievementCard`, `MusicTrackCard`, `CourseCard`, `EventCard`,
+`ArticlePreviewCard`, `PodcastEpisodeCard`, `AppListingCard`,
+`JobListingCard`'s non-badge parts) — all their declared properties are
+actually used in the render, no dead props, no sizing traps found.
