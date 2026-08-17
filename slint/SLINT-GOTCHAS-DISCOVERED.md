@@ -1154,6 +1154,40 @@ category.
 
 ---
 
+---
+
+### An id declared inside a conditional `if` element is out of scope outside that conditional
+
+```slint
+// WRONG — real compiler error: "Cannot access id 'ta'"
+background: ta.pressed ? Theme.surface-pressed : transparent;   // ← declared earlier, unconditionally
+...
+if some-cond: ta := TouchArea { }   // `ta` only exists when some-cond is true
+```
+Hit this live in `navigation/FlyoutMenu.slint`, caught by the person's
+VS Code Problems panel. An id's scope is tied to the conditional it's
+declared inside — a sibling binding elsewhere in the component (even
+one declared earlier, at the component's top level) can't see into that
+conditional. This is a different limitation from the already-documented
+`@children`-inside-`if` restriction, but has the same shape of fix.
+
+```slint
+// RIGHT — make the element unconditional, express "sometimes inert"
+// with `enabled:` (or `opacity:`) instead of `if`:
+background: ta.pressed ? Theme.surface-pressed : transparent;
+...
+ta := TouchArea {
+    enabled: !some-cond;
+    clicked => { ... }
+}
+```
+Worth checking for specifically whenever a `TouchArea`/other id'd
+element that's conditionally shown also needs its state
+(`pressed`/`has-hover`/etc.) read by a sibling binding elsewhere in the
+same component — that combination is exactly when this bites.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

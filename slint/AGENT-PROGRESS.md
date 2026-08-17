@@ -1638,3 +1638,31 @@ mid-binding. Different thing; this one's fine.); `MegaMenu`'s
 `self.visible`-driven height/opacity (unlike `FloatingNavPanel`'s bug,
 this ties into the real builtin `visible` property, which a caller can
 validly set externally — not a self-reference tautology).
+
+## Post-delivery fix: `navigation/FlyoutMenu.slint` — id declared inside a conditional referenced from outside its scope
+
+The person's VS Code Problems panel caught two real compiler errors:
+"Cannot access id 'ta'" at the `background:` binding. Cause: the
+previous fix for `FlyoutMenuItem`'s dead click handler declared its
+`TouchArea` as `if !show-separator: ta := TouchArea { ... }` — but
+`background:` (declared earlier in the same component, unconditionally)
+references `ta.pressed`/`ta.has-hover` to drive hover/press feedback.
+An id declared inside a conditional element isn't in scope for bindings
+outside that same conditional — a real, structural error, not caught by
+the earlier read-through since nothing in this repo actually compiles
+`.slint` outside the person's own VS Code Problems panel.
+
+**Fixed by making the TouchArea unconditional** and using
+`enabled: !show-separator;` instead of wrapping it in `if` — `ta` is now
+always in scope, and separator rows just don't respond to hover/press
+since their TouchArea is disabled rather than absent.
+
+Scanned `navigation/`, `cards/`, and `charts/` afterward for the same
+shape (an id declared inside `if cond: id := Element` and referenced via
+`id.property` anywhere in the file) — isolated to this one file.
+**New standing check:** an id declared inside a conditional (`if`)
+element is only in scope within that same conditional block — if a
+binding elsewhere in the component needs to reference that id, either
+move the reference inside the same conditional, or make the element
+unconditional and use `enabled:`/`opacity:`/similar instead of `if` to
+express the "sometimes present" behavior.

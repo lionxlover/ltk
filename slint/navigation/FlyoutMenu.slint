@@ -13,6 +13,13 @@ export component FlyoutMenuItem inherits Rectangle {
     // hover feedback (per polish.md's guidance for any custom
     // interactive element), matching the has-hover/pressed convention
     // already used elsewhere in this category (e.g. NavItem).
+    // Post-delivery fix: the TouchArea (id `ta`) was originally wrapped
+    // in `if !show-separator:`, but `background:` above references
+    // `ta.pressed`/`ta.has-hover` — a real compile error ("Cannot access
+    // id 'ta'"), since an id declared inside a conditional element isn't
+    // in scope for bindings outside that conditional. Made the
+    // TouchArea unconditional and used `enabled: !show-separator;`
+    // instead, so it's always in scope but inert for separator rows.
     callback clicked();
 
     height: show-separator ? 20px : 32px;
@@ -64,7 +71,8 @@ export component FlyoutMenuItem inherits Rectangle {
         }
     }
 
-    if !show-separator: ta := TouchArea {
+    ta := TouchArea {
+        enabled: !root.show-separator;
         mouse-cursor: MouseCursor.pointer;
         clicked => { root.clicked(); }
     }
