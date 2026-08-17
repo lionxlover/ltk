@@ -101,9 +101,15 @@ export component Drawer inherits Rectangle {
             background: Theme.border-subtle;
         }
 
-        // Content slot
+        // Bug: same missing-`@children` issue as FlyoutMenu/NavCollapse
+        // in this category — this "Content slot" comment promised a
+        // place for nested items, but without `@children` here, anything
+        // placed inside `Drawer { ... }` becomes an unlaid-out direct
+        // child of the Drawer's root instead of landing in this content
+        // area.
         content-layout := VerticalLayout {
             padding: Theme.sp-2;
+            @children
         }
     }
 }

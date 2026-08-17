@@ -6,8 +6,38 @@ import { Pagination } from "Pagination.slint";
 import { Dock } from "Dock.slint";
 import { Taskbar } from "Taskbar.slint";
 import { WorkspaceSwitcher } from "WorkspaceSwitcher.slint";
-import { FlyoutMenuItem } from "FlyoutMenu.slint";
+import { FlyoutMenu, FlyoutMenuItem } from "FlyoutMenu.slint";
 import { EllipsisBreadcrumb } from "EllipsisBreadcrumb.slint";
+import { AnchorNavBar } from "AnchorNavBar.slint";
+import { BottomNavBar } from "BottomNavBar.slint";
+import { BottomNavRail } from "BottomNavRail.slint";
+import { CollapsingHeader } from "CollapsingHeader.slint";
+import { CommandPalette } from "CommandPalette.slint";
+import { DotStepper } from "DotStepper.slint";
+import { Drawer } from "Drawer.slint";
+import { FloatingNavPanel } from "FloatingNavPanel.slint";
+import { HamburgerButton } from "HamburgerButton.slint";
+import { HorizontalStepper } from "HorizontalStepper.slint";
+import { IconStepper } from "IconStepper.slint";
+import { InfiniteScrollTrigger } from "InfiniteScrollTrigger.slint";
+import { LaunchpadGrid } from "LaunchpadGrid.slint";
+import { LoadMoreButton } from "LoadMoreButton.slint";
+import { MegaMenu } from "MegaMenu.slint";
+import { MiniSidebar } from "MiniSidebar.slint";
+import { NavBadge } from "NavBadge.slint";
+import { NavCollapse } from "NavCollapse.slint";
+import { NavGroupHeader } from "NavGroupHeader.slint";
+import { NavItem } from "NavItem.slint";
+import { NestedTabs } from "NestedTabs.slint";
+import { PrevNextPagination } from "PrevNextPagination.slint";
+import { ScrollableTabs } from "ScrollableTabs.slint";
+import { StickyHeader } from "StickyHeader.slint";
+import { TabBar } from "TabBar.slint";
+import { TabButton } from "TabButton.slint";
+import { TokenPagination } from "TokenPagination.slint";
+import { TopAppBar } from "TopAppBar.slint";
+import { VerticalStepper } from "VerticalStepper.slint";
+import { VerticalTabBar } from "VerticalTabBar.slint";
 
 export component NavigationTest inherits Rectangle {
     background: Theme.bg-base;
@@ -50,7 +80,7 @@ export component NavigationTest inherits Rectangle {
         Pagination { current-page: 3; total-pages: 8; }
 
         Text { text: "Dock"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        Dock { width: 340px; icons: ["🏠", "📁", "🌐", "✉️", "🎵"]; labels: ["Home", "Files", "Web", "Mail", "Music"]; }
+        Dock { width: 340px; icons: ["◉", "▤", "◈", "✉", "♪"]; labels: ["Home", "Files", "Web", "Mail", "Music"]; }
 
         Text { text: "Taskbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         Taskbar { width: 500px; }
@@ -59,19 +89,112 @@ export component NavigationTest inherits Rectangle {
         WorkspaceSwitcher { width: 200px; }
 
         Text { text: "Flyout Menu Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        Rectangle { height: 140px; width: 220px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
-            VerticalLayout { padding: Theme.sp-1; spacing: 0px;
-                FlyoutMenuItem { icon: "📋"; label: "Copy"; shortcut: "Ctrl+C"; }
-                FlyoutMenuItem { icon: "📄"; label: "Paste"; shortcut: "Ctrl+V"; }
-                FlyoutMenuItem { show-separator: true; }
-                FlyoutMenuItem { icon: "🗑️"; label: "Delete"; danger: true; }
-            }
+        FlyoutMenu {
+            FlyoutMenuItem { icon: "▤"; label: "Copy"; shortcut: "Ctrl+C"; }
+            FlyoutMenuItem { icon: "▥"; label: "Paste"; shortcut: "Ctrl+V"; }
+            FlyoutMenuItem { show-separator: true; }
+            FlyoutMenuItem { icon: "✕"; label: "Delete"; danger: true; }
         }
 
         Text { text: "Ellipsis Breadcrumb"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         Rectangle { height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
             VerticalLayout { padding: Theme.sp-2;
                 EllipsisBreadcrumb { items: ["Home", "Documents", "Projects", "LTK", "src"]; active-index: 4; max-visible: 3; }
+            }
+        }
+
+        Text { text: "Nav Item / Badge / Collapse / Group Header"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 220px; width: 220px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+            VerticalLayout { padding: Theme.sp-2;
+                NavGroupHeader { label: "MAIN"; }
+                NavItem { label: "Dashboard"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/house.svg"); has-icon: true; active: true; }
+                NavBadge { label: "Inbox"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/envelope.svg"); count: 4; }
+                NavCollapse { label: "Projects"; expanded: true;
+                    NavItem { label: "LTK"; }
+                    NavItem { label: "Archive"; }
+                }
+            }
+        }
+
+        Text { text: "Top App Bar / Sticky Header / Collapsing Header"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            TopAppBar { width: 400px; title: "Settings"; has-back: true; }
+            StickyHeader { width: 400px; title: "Sticky Header"; }
+            CollapsingHeader { width: 400px; title: "Collapsing Header"; subtitle: "Subtitle text"; expanded: true; }
+        }
+
+        Text { text: "Hamburger Button / Drawer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4;
+            HamburgerButton { open: false; }
+            Rectangle { width: 280px; height: 200px; clip: true;
+                Drawer { open: true; modal: false;
+                    NavItem { label: "Overview"; active: true; }
+                    NavItem { label: "Settings"; }
+                }
+            }
+        }
+
+        Text { text: "Tab Bar / Tab Button / Vertical Tab Bar / Nested Tabs / Scrollable Tabs"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            TabBar { width: 400px; tabs: ["Home", "Docs", "API"]; current-index: 0; }
+            Rectangle { width: 300px; height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md;
+                TabButton { width: 120px; text: "Active"; checked: true; }
+            }
+            VerticalTabBar { height: 140px; }
+            NestedTabs { width: 400px; height: 160px; }
+            ScrollableTabs { width: 300px; }
+        }
+
+        Text { text: "Anchor Nav Bar / Mega Menu"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            Rectangle { height: 40px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                AnchorNavBar { items: ["Overview", "Features", "Pricing", "FAQ"]; active: 1; }
+            }
+            MegaMenu { visible: true; }
+        }
+
+        Text { text: "Bottom Nav Bar / Bottom Nav Rail / Mini Sidebar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4;
+            VerticalLayout { spacing: Theme.sp-2;
+                BottomNavBar { width: 320px; active: 0; }
+                BottomNavRail { width: 320px; active: 1; }
+            }
+            MiniSidebar { height: 140px; active: 0; }
+        }
+
+        Text { text: "Steppers — Dot / Horizontal / Vertical / Icon"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-3;
+            DotStepper { width: 120px; total: [0, 0, 0, 0]; current: 1; }
+            HorizontalStepper { width: 400px; steps: ["Cart", "Shipping", "Payment", "Done"]; current: 1; }
+            VerticalStepper { width: 240px; steps: ["Order placed", "Packed", "Shipped", "Delivered"]; current: 2; }
+            IconStepper { width: 400px; current: 1;
+                icons: [@image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/cart-shopping.svg"),
+                        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/truck.svg"),
+                        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/circle-check.svg")];
+                labels: ["Cart", "Shipping", "Done"];
+            }
+        }
+
+        Text { text: "Pagination Variants"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            PrevNextPagination { width: 300px; current: 3; total: 8; }
+            TokenPagination { width: 300px; has-more: true; }
+        }
+
+        Text { text: "Load More / Infinite Scroll Trigger"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            LoadMoreButton { width: 300px; }
+            InfiniteScrollTrigger { width: 300px; loading: true; }
+        }
+
+        Text { text: "Launchpad Grid"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        LaunchpadGrid { width: 400px; height: 220px; count: 7; }
+
+        Text { text: "Floating Nav Panel / Command Palette"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4;
+            FloatingNavPanel { open: true; current-index: 0; }
+            Rectangle { width: 400px; height: 180px; clip: true;
+                CommandPalette { results: ["Open file", "Close window", "Toggle sidebar"]; }
             }
         }
         }

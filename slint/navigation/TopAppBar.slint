@@ -1,8 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the back button's TouchArea had an empty `clicked => { }` handler
+// and no callback exposed — tapping "back" was observably inert from
+// the host's side. Same pattern found and fixed in cards/InteractiveCard.
 export component TopAppBar inherits Rectangle {
     in property <string> title: "";
     in property <bool> has-back: false;
+
+    callback back-clicked();
 
     height: 48px;
     background: Theme.bg-elevated;
@@ -24,7 +29,10 @@ export component TopAppBar inherits Rectangle {
                 y: (parent.height - self.height) / 2;
             }
 
-            TouchArea { clicked => { } }
+            TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.back-clicked(); }
+            }
         }
 
         Text {
@@ -37,3 +45,4 @@ export component TopAppBar inherits Rectangle {
         }
     }
 }
+

@@ -62,7 +62,7 @@ export component PrevNextPagination inherits Rectangle {
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: root.current + " / " + root.total;
+                text: "\{root.current} / \{root.total}";
                 color: Theme.text-primary;
                 font-family: Theme.font-ui;
                 font-size: Theme.text-sm;

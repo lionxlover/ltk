@@ -7,8 +7,21 @@ export component FlyoutMenuItem inherits Rectangle {
     in property <bool> show-separator: false;
     in property <bool> danger: false;
 
+    // Bug: the TouchArea below had an empty body — no `clicked =>`
+    // handler and no callback exposed — so tapping a menu item did
+    // nothing observable. Exposed a real `clicked` callback, and added
+    // hover feedback (per polish.md's guidance for any custom
+    // interactive element), matching the has-hover/pressed convention
+    // already used elsewhere in this category (e.g. NavItem).
+    callback clicked();
+
     height: show-separator ? 20px : 32px;
     border-radius: 6px;
+    background: show-separator ? transparent
+        : ta.pressed ? Theme.surface-pressed
+        : ta.has-hover ? Theme.surface-hover
+        : transparent;
+    animate background { duration: Theme.dur-fast; }
 
     if show-separator: HorizontalLayout {
         padding-left: Theme.sp-2;
@@ -51,18 +64,45 @@ export component FlyoutMenuItem inherits Rectangle {
         }
     }
 
-    if !show-separator: TouchArea { }
+    if !show-separator: ta := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => { root.clicked(); }
+    }
 }
 
+// Bug: FlyoutMenu had no `@children` at all — per Slint's own container
+// docs, elements nested inside a component without `@children` become
+// direct children of that component's root, NOT arranged by any layout.
+// Every `FlyoutMenuItem` placed inside `FlyoutMenu { ... }` would default
+// to filling/centering in the same space and overlap each other instead
+// of stacking into a proper menu list. (test.slint's demo never actually
+// caught this because it bypassed FlyoutMenu entirely, building its own
+// VerticalLayout of FlyoutMenuItems instead of using this component.)
+// Also: `padding: Theme.sp-1;` was set directly on this Rectangle — this
+// project's own gotchas.md already documents that padding only has an
+// effect on layout elements, so it was silently doing nothing. Both
+// fixed by moving the padding onto a real VerticalLayout wrapping
+// `@children`.
 export component FlyoutMenu inherits Rectangle {
     background: Theme.bg-elevated;
     border-radius: Theme.radius-lg;
     border-width: 1px;
     border-color: Theme.border-default;
-    padding: Theme.sp-1;
     width: 220px;
     clip: true;
 
+    // `show-icons`/`show-shortcuts` are informational for the caller —
+    // `@children` can't reach into injected children's properties, so
+    // FlyoutMenu can't force its FlyoutMenuItems to hide their icon/
+    // shortcut columns itself. Read these when building the menu's
+    // children and pass `icon: ""` / `shortcut: ""` accordingly.
     in property <bool> show-icons: true;
     in property <bool> show-shortcuts: true;
+
+    VerticalLayout {
+        padding: Theme.sp-1;
+        spacing: 0px;
+        @children
+    }
 }
+

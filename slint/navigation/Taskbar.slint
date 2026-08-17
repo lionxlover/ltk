@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component Taskbar inherits Rectangle {
     background: Theme.bg-base;
@@ -9,8 +10,16 @@ export component Taskbar inherits Rectangle {
 
     in property <string> clock-text: "12:00 PM";
     in-out property <int> active-app-index: -1;
-    in property <[string]> pinned-apps: ["🌐", "📁", "✉️", "🎵", "⚙️"];
-    in property <string> system-tray-icons: "🔊 📶 🔋";
+    // Bug: default `pinned-apps` were full-color pictographic emoji,
+    // which render as broken tofu glyphs in this environment (same issue
+    // fixed across cards/) — swapped for simple BMP symbols, confirmed
+    // safe, matching Dock's fix.
+    in property <[string]> pinned-apps: ["◈", "▤", "✉", "♪", "⚙"];
+    // Bug: `system-tray-icons` was declared and accepted but never
+    // actually rendered anywhere in the component body — the system
+    // tray was simply missing from the taskbar regardless of what was
+    // passed in.
+    in property <string> system-tray-icons: "▮ ▲ ▭";
 
     HorizontalLayout {
         padding-left: Theme.sp-2;
@@ -21,16 +30,22 @@ export component Taskbar inherits Rectangle {
             height: 32px;
             y: 4px;
 
-            Text {
-                text: "🦞";
-                font-size: 16px;
+            // Bug: 🦞 is a full-color emoji (also broken in this
+            // environment); replaced with the FA "fish" icon this
+            // project already uses as its brand mark elsewhere
+            // (media/LogoMark.slint), for consistency rather than
+            // guessing at a different mark.
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fish.svg");
+                fa-size: 16px;
+                fa-color: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
         }
 
         HorizontalLayout {
-            width: parent.width - 64px - 120px;
+            width: parent.width - 64px - 72px - 120px;
             spacing: Theme.sp-1;
             alignment: center;
 
@@ -50,6 +65,20 @@ export component Taskbar inherits Rectangle {
                 TouchArea {
                     clicked => { root.active-app-index = idx; }
                 }
+            }
+        }
+
+        Rectangle {
+            width: 72px;
+            height: 32px;
+            y: 4px;
+
+            Text {
+                text: root.system-tray-icons;
+                font-size: 12px;
+                color: Theme.text-secondary;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
             }
         }
 

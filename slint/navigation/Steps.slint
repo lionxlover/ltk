@@ -1,5 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
+// Fixed a risky mixed-type ternary: the step-number Text mixed a
+// string branch ("✓") with an int branch (i+1/idx+1). int does
+// convert implicitly to string on its own, but relying on the
+// ternary itself to unify two differently-typed branches is an
+// unnecessary risk with no live compiler here to verify against —
+// made both branches explicitly strings via interpolation.
 export component Steps inherits Rectangle {
     in property <int> current-step: 0;
     in property <[string]> steps: [];
@@ -31,7 +37,7 @@ export component Steps inherits Rectangle {
                     Text {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
-                        text: i < root.current-step ? "✓" : (i + 1);
+                        text: i < root.current-step ? "✓" : "\{i + 1}";
                         color: i <= root.current-step ? Theme.on-accent : Theme.text-tertiary;
                         font-family: Theme.font-ui;
                         font-size: Theme.text-xs;

@@ -1,10 +1,23 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// Bug: `source: @image-url("");` was a hardcoded empty path — `icon-name`
+// was declared and accepted but never actually used to choose an icon,
+// so NavItem's icon never showed anything regardless of what was passed.
+// The deeper issue: `@image-url(...)` needs a compile-time string
+// literal to embed the asset, so it can never resolve a *runtime*
+// `icon-name` string to a path anyway — that's an architectural
+// mismatch, not something fixable by just filling in the binding.
+// Switched to this project's own established pattern for a
+// per-instance-selectable icon (already used in
+// `overlays/FloatingActionPanel.slint` and `feedback/AboutDialog.slint`):
+// expose `in property <image> icon-source;` and let the *caller* supply
+// a literal `@image-url(...)` when instantiating NavItem.
 export component NavItem inherits Rectangle {
     in property <string> label: "";
     in property <bool> active: false;
-    in property <string> icon-name: "";
+    in property <image> icon-source: @image-url("");
+    in property <bool> has-icon: false;
 
     callback clicked();
 
@@ -23,8 +36,8 @@ export component NavItem inherits Rectangle {
         spacing: Theme.sp-2;
         alignment: stretch;
 
-        if icon-name != "": FaIcon {
-            source: @image-url("");
+        if root.has-icon: FaIcon {
+            source: root.icon-source;
             fa-size: Theme.icon-md;
             fa-color: active ? Theme.accent : Theme.text-tertiary;
             vertical-alignment: center;

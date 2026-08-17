@@ -16,11 +16,12 @@ re-discovering things the hard way.
 | `data-display/` | 60 | ✅ Done, verified via VS Code Problems panel (10 rounds of fixes) | `data-display.zip` |
 | `text-input/` | 45 | ✅ Done, pending VS Code Problems-panel check | `text-input.zip` |
 | `charts/` | 43 | ✅ Done, verified via VS Code Problems panel (2 rounds of post-delivery fixes) | `charts.zip` |
-| `cards/` | 39 | ✅ Done, pending VS Code Problems-panel check | `cards.zip` |
-| everything else | ~489 | ⬜ Not started | — |
+| `cards/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (1 round of post-delivery fixes) | `cards.zip` |
+| `navigation/` | 39 | ✅ Done, pending VS Code Problems-panel check | `navigation.zip` |
+| everything else | ~450 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`navigation` (39), `feedback` (36), `typography` (36), `media` (32),
+`feedback` (36), `typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
@@ -1509,3 +1510,131 @@ exactly one other suspicious instance, `media/LightboxViewer.slint`'s
 hasn't been reviewed yet this pass — left it for that category's own
 review rather than reach into unstarted work; noting it here so it
 isn't missed when `media/` comes up.
+
+## `navigation/` batch — several distinct bug families, plus a large test.slint coverage gap
+
+All 39 components reviewed; 41 files delivered (39 components +
+`export.slint`, untouched, + `test.slint`, substantially expanded — see
+below). No `core/` changes needed.
+
+**test.slint only demonstrated 10 of 39 components on arrival** (checked
+by cross-referencing every `export component` against every use in
+`test.slint`, the same check now run at the end of every category as a
+standing practice). Every other category delivered so far showed 100%
+of its components in the test file; this one didn't, which meant real
+bugs in components like `NavCollapse`'s `@children` and
+`CommandPalette`'s `TextInput` binding had never actually been exercised
+by anything, compiler or visual. Expanded `test.slint` to cover all 39,
+including live demos of the fixes below (an `IconStepper` with real FA
+icons, a `NavItem`/`NavBadge` pair using the new `icon-source` prop, a
+populated `Drawer`, etc.) — treat "does test.slint actually instantiate
+every exported component" as a required check before considering any
+future category done, not just an end-of-pass nice-to-have.
+
+**Bug family 1 — `@image-url("")` hardcoded, ignoring the property that
+was supposed to select the icon.** `NavItem` (`source: @image-url("");`
+regardless of `icon-name`) and `NavBadge` (same, with no property even
+attempting to drive it) both had icons that could never show anything.
+The deeper issue, not just a missing binding: `@image-url(...)` needs a
+compile-time string literal to embed the asset, so a *runtime*
+`icon-name: string` could never resolve to a path through it regardless
+of how the binding was written. Fixed both using this project's already-
+established pattern for exactly this problem (`overlays/
+FloatingActionPanel.slint`, `feedback/AboutDialog.slint`): expose
+`in property <image> icon-source;` and let the *caller* supply a literal
+`@image-url(...)` per instance.
+
+**Bug family 2 — components missing `@children`, so nested content
+would silently overlap instead of stacking.** Confirmed via Slint's own
+container-component docs: elements placed inside a component with no
+`@children` become direct, un-laid-out children of that component's
+root, not routed anywhere in particular. Found in three separate files
+— `FlyoutMenu` (a "Content slot" that had no slot mechanism at all),
+`NavCollapse` (same, for its expandable body), and `Drawer` (same, for
+its "Content slot" comment). None of these were caught by a compile
+error, since omitting `@children` isn't itself invalid — the component
+just silently doesn't do what it visually implies it should. `NavCollapse`
+needed a second pass: the first fix attempt put `@children` inside an
+`if expanded: VerticalLayout { @children }`, which is itself a confirmed,
+separately-documented Slint limitation (this project's own gotchas.md:
+"`@children` cannot be inside a conditional element"). Redone with the
+established workaround — keep the wrapper unconditional, animate its
+height to 0 when collapsed.
+
+**Bug family 3 — dead click handlers**, same shape as the
+`cards/InteractiveCard` bug from the previous category: `TouchArea {
+clicked => { } }` (empty body, no callback) in `TopAppBar`'s back
+button and three items in `FloatingNavPanel`. A sneakier variant turned
+up in `EllipsisBreadcrumb`: the "•••" expand button's handler was
+`clicked => { /* expand all */ }` — a comment describing what it should
+do, standing in for code that was never written. Grepped the whole
+category for both the empty-body and comment-only-body shapes after
+finding the first instance of each, to make sure this was fully caught
+rather than fixed once and assumed done.
+
+**Bug family 4 — mixed-type ternaries and concatenation**, flagged
+defensively rather than confirmed broken (no live compiler here to
+check against, and Slint's own docs are explicit that int/float convert
+implicitly to string in general — but relying on that inside a ternary
+or a chained `+` where the *other* operand's type varies by position is
+an unnecessary risk to leave in, especially now that this project has
+working examples of the safe alternative everywhere). Found and
+rewritten to explicit string interpolation: `NavBadge` (`root.count > 99
+? "99+" : root.count` — string branch vs. int branch), `Steps`/
+`HorizontalStepper`/`VerticalStepper` (identical shape, `"✓" : (i + 1)`,
+in all three stepper components), and `PrevNextPagination`
+(`root.current + " / " + root.total`, int leading a `+` chain into a
+string literal).
+
+**One-off, high-value fixes:**
+- `FloatingNavPanel` — `visible: root.visible;`, a property bound to
+  itself. This is a tautology (reads back whatever `visible`'s own
+  default already is), not a way to expose visibility control — looks
+  like a copy/paste mistake for what should have been a separate `open`
+  property. The component also had no data property at all (hardcoded
+  "Dashboard"/"Projects"/"Settings") and all three items were dead taps
+  (family 3 above). Rewrote as data-driven with a real `open` property
+  and working `item-clicked` callback.
+- `CommandPalette` — `TextInput { text: root.query; }`, a one-way
+  binding. This project's own gotchas.md already documents this exact
+  failure mode ("a persistent one-way binding keeps re-deriving
+  input.text from root.text, which never changes as the user types —
+  can fight typing") from a previous category; this is the first time
+  it's actually turned up live. Made `query` two-way (`in-out`) and
+  switched to `<=>`.
+- `ScrollableTabs` — no scrolling mechanism at all (no `Flickable`)
+  despite the name, and no way to pass more than the three hardcoded
+  tabs it shipped with. Made it data-driven (`[string] tabs`, matching
+  the sibling `TabBar` component's own convention) and wrapped the row
+  in a `Flickable` with `viewport-width` bound to the row's preferred
+  width, so it now actually scrolls once tabs overflow.
+- `Taskbar` — `system-tray-icons` was declared and accepted but never
+  rendered anywhere in the component body; the system tray was simply
+  absent regardless of what was passed in. Added a slot for it.
+- `Dock`/`Taskbar` — default icon values were full-color pictographic
+  emoji (🏠📁🌐✉️🎵🔊📶🔋), which render as broken tofu glyphs in this
+  environment (same issue found and fixed across all of `cards/` last
+  session). Swapped defaults for simple BMP symbols, confirmed safe.
+  `Taskbar`'s own logo was a 🦞 (lobster) — also broken for the same
+  reason, and also a mismatch for a project called "Lion Toolkit"
+  regardless; replaced with the FA "fish" icon this project already
+  established as its brand mark elsewhere (`media/LogoMark.slint`), for
+  consistency rather than guessing at a different mark.
+
+**Reviewed and left as-is, not bugs:** `NestedTabs` (fully wired, just
+not parameterized with arrays — a legitimate static demo, consistent
+with how this project already treats a few structural/diagram-style
+components in other categories); `Pagination`'s `for page[i] in
+root.total-pages` (dual-variable binding over a plain `int`, initially
+looked unusual but is a confirmed, already-established pattern
+elsewhere in this project — `data-display/ActivityFeed.slint` and
+`data-display/JsonTreeViewer.slint` both do the same over an
+`item-count`); `Drawer`'s `x: { if !open {...} else {...} }` (a
+statement-block property binding — checked against Slint's own docs,
+which confirm a binding can be "an expression or a block," before
+assuming this was the *other*, actually-unconfirmed shape this
+project's gotchas.md flags: an inline `if/else` used as a sub-expression
+mid-binding. Different thing; this one's fine.); `MegaMenu`'s
+`self.visible`-driven height/opacity (unlike `FloatingNavPanel`'s bug,
+this ties into the real builtin `visible` property, which a caller can
+validly set externally — not a self-reference tautology).

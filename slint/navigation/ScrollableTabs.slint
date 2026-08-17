@@ -1,70 +1,52 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: despite the name, this had no scrolling mechanism at all (no
+// Flickable) and no way to pass in more tabs than the three hardcoded
+// ones — so it could never actually need to scroll, and couldn't be
+// reused for a different tab set either. Made it data-driven (matching
+// the `[string] tabs` convention this category's own TabBar already
+// uses) and wrapped the row in a Flickable so it actually scrolls
+// horizontally once the tabs overflow the available width.
 export component ScrollableTabs inherits Rectangle {
+    in property <[string]> tabs: ["Tab 1", "Tab 2", "Tab 3", "Tab 4", "Tab 5", "Tab 6"];
     in-out property <int> active: 0;
+
+    callback tab-clicked(int);
 
     height: 40px;
     background: Theme.bg-surface;
+    clip: true;
 
-    HorizontalLayout {
-        padding: 4px;
-        spacing: 4px;
+    Flickable {
+        width: parent.width;
+        height: parent.height;
+        viewport-width: tab-row.preferred-width;
 
-        Rectangle {
-            height: 32px;
-            background: root.active == 0 ? Theme.accent-subtle : #00000000;
-            border-radius: Theme.radius-sm;
-            horizontal-stretch: 0;
-            min-width: 80px;
+        tab-row := HorizontalLayout {
+            padding: 4px;
+            spacing: 4px;
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                text: "Tab 1";
-                color: root.active == 0 ? Theme.accent : Theme.text-secondary;
-                font-size: 13px;
-                font-weight: root.active == 0 ? Theme.weight-semibold : Theme.weight-regular;
-                vertical-alignment: center;
+            for label[idx] in root.tabs: Rectangle {
+                height: 32px;
+                background: root.active == idx ? Theme.accent-subtle : #00000000;
+                border-radius: Theme.radius-sm;
+                horizontal-stretch: 0;
+                min-width: 80px;
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    text: label;
+                    color: root.active == idx ? Theme.accent : Theme.text-secondary;
+                    font-size: 13px;
+                    font-weight: root.active == idx ? Theme.weight-semibold : Theme.weight-regular;
+                    vertical-alignment: center;
+                }
+
+                TouchArea {
+                    clicked => { root.active = idx; root.tab-clicked(idx); }
+                }
             }
-
-            TouchArea { clicked => { root.active = 0; } }
-        }
-
-        Rectangle {
-            height: 32px;
-            background: root.active == 1 ? Theme.accent-subtle : #00000000;
-            border-radius: Theme.radius-sm;
-            horizontal-stretch: 0;
-            min-width: 80px;
-
-            Text {
-                x: (parent.width - self.width) / 2;
-                text: "Tab 2";
-                color: root.active == 1 ? Theme.accent : Theme.text-secondary;
-                font-size: 13px;
-                font-weight: root.active == 1 ? Theme.weight-semibold : Theme.weight-regular;
-                vertical-alignment: center;
-            }
-
-            TouchArea { clicked => { root.active = 1; } }
-        }
-
-        Rectangle {
-            height: 32px;
-            background: root.active == 2 ? Theme.accent-subtle : #00000000;
-            border-radius: Theme.radius-sm;
-            horizontal-stretch: 0;
-            min-width: 80px;
-
-            Text {
-                x: (parent.width - self.width) / 2;
-                text: "Tab 3";
-                color: root.active == 2 ? Theme.accent : Theme.text-secondary;
-                font-size: 13px;
-                font-weight: root.active == 2 ? Theme.weight-semibold : Theme.weight-regular;
-                vertical-alignment: center;
-            }
-
-            TouchArea { clicked => { root.active = 2; } }
         }
     }
 }
+

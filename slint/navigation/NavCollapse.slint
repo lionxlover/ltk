@@ -46,11 +46,26 @@ export component NavCollapse inherits Rectangle {
             }
         }
 
-        if expanded: VerticalLayout {
-            padding-left: Theme.sp-4;
-            padding-top: Theme.sp-1;
-            padding-bottom: Theme.sp-1;
-            spacing: Theme.sp-1;
+        // Bug fix note: an earlier pass here tried `if expanded:
+        // VerticalLayout { @children }` — but `@children` inside a
+        // conditional element is a confirmed, currently-open Slint
+        // limitation (this project's own gotchas.md documents the exact
+        // "The @children placeholder..." compiler error). Using the
+        // established workaround instead: keep the wrapper
+        // unconditional and animate its height to 0 when collapsed, so
+        // `@children` sits in an always-present element.
+        content-clip := Rectangle {
+            clip: true;
+            height: root.expanded ? content-inner.preferred-height : 0px;
+            animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+            content-inner := VerticalLayout {
+                padding-left: Theme.sp-4;
+                padding-top: Theme.sp-1;
+                padding-bottom: Theme.sp-1;
+                spacing: Theme.sp-1;
+                @children
+            }
         }
     }
 }

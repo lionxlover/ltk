@@ -1,7 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `TextInput { text: root.query; }` — a one-way binding, which this
+// project's own gotchas.md already documents as broken for exactly this
+// case ("a persistent one-way binding keeps re-deriving input.text from
+// root.text, which never changes as the user types. Can fight typing").
+// Made `query` two-way (`in-out`) and used `<=>` so typing actually
+// works.
 export component CommandPalette inherits Rectangle {
-    in property <string> query: "";
+    in-out property <string> query: "";
     in property <[string]> results: [];
 
     callback closed();
@@ -56,7 +62,7 @@ export component CommandPalette inherits Rectangle {
                 }
 
                 TextInput {
-                    text: root.query;
+                    text <=> root.query;
                     color: Theme.text-primary;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-base;

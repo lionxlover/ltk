@@ -1073,6 +1073,87 @@ specific shape (`#XX000000` or `#XXffffff`) is the tell.
 
 ---
 
+---
+
+### A component with no `@children` silently drops the layout of anything nested inside it
+
+```slint
+// WRONG — no compile error, but nested items become direct, un-laid-out
+// children of MyContainer's root instead of being arranged by the
+// VerticalLayout — they'll overlap instead of stacking.
+export component MyContainer inherits Rectangle {
+    VerticalLayout {
+        padding: 8px;
+        // no @children here
+    }
+}
+// MyContainer { ItemA {} ItemB {} }  <- both land on top of each other
+```
+Confirmed via Slint's own container-component docs: "by default child
+elements... become [direct] children of [the component]" when there's
+no `@children` to redirect them — not an error, just silently not what
+a container-shaped component almost certainly intends. Found this exact
+shape three separate times in one category (`navigation/`): `FlyoutMenu`,
+`NavCollapse`, and `Drawer` — all three had a comment or a name implying
+a content slot ("Content slot", an `if expanded:` body) but no actual
+`@children`.
+
+```slint
+// RIGHT
+export component MyContainer inherits Rectangle {
+    VerticalLayout {
+        padding: 8px;
+        @children
+    }
+}
+```
+Worth a standing check for any component whose whole purpose is to wrap
+other content (menus, drawers, collapsible sections, cards with a
+"slot"): grep the file for `@children` and confirm it's actually there
+before assuming a container component works.
+
+---
+
+### `TouchArea { clicked => { } }` and `clicked => { /* comment */ }` both mean "does nothing" — check for the comment-only variant too
+
+```slint
+// WRONG — compiles fine either way; both are silently inert
+TouchArea { clicked => { } }
+TouchArea { clicked => { /* expand all */ } }
+```
+The second form is sneakier: it reads like something was implemented,
+but the "implementation" is just a comment describing the intent. Found
+both shapes across `cards/` and `navigation/` — `grep -n "=> { }"` catches
+the first; `grep -n "=> { /\*"` catches the second. Worth running both on
+any category with interactive components, not just the first one.
+
+---
+
+### Don't lean on implicit int→string conversion inside a ternary or a `+` chain when the branches/operands have different types
+
+```slint
+// RISKY — one branch is string, the other is int. int does convert
+// implicitly to string in general (confirmed: Slint's own docs), but
+// that's a different guarantee from "a ternary/concatenation with
+// mismatched branch types resolves this automatically" — untested here,
+// no live compiler to verify against, and the safe alternative costs
+// nothing.
+text: count > 99 ? "99+" : count;
+text: current + " / " + total;   // int + string + int
+```
+```slint
+// RIGHT — make every branch explicitly a string via interpolation
+text: count > 99 ? "99+" : "\{count}";
+text: "\{current} / \{total}";
+```
+Found this shape five times in one category (`navigation/`: `NavBadge`,
+`Steps`, `HorizontalStepper`, `VerticalStepper`, `PrevNextPagination`) —
+worth grepping for `? "` immediately followed later by a bare
+non-string branch, and for `+ "` chains mixing types, in any new
+category.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`
@@ -1082,3 +1163,15 @@ specific shape (`#XX000000` or `#XXffffff`) is the tell.
 - `if (cond) { A } else { B }` as a property-binding *expression*
   (versus imperative statements inside a callback, which is confirmed).
   Always used the ternary form instead — never needed to resolve this.
+  **Partial update:** confirmed a *related* but different thing this
+  session — a property binding can be a whole statement *block*
+  (`x: { ... }`, not just a single expression; Slint's own docs say
+  bindings are reactive "whether... an expression or a block"), and
+  `navigation/Drawer.slint` uses exactly that (`x: { if !open {...}
+  else {...} }`) successfully. That's a block containing an if/else
+  *statement*, which is the already-confirmed callback-statement form,
+  just used as a binding body instead of inside a `clicked =>`. Still
+  unconfirmed: whether `if (cond) { A } else { B }` works as a bare
+  sub-expression *inside* a larger expression (e.g. `x: 5 + (if cond
+  {1} else {2})`) — didn't need that shape, so still hasn't been
+  tested.

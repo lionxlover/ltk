@@ -1,5 +1,9 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the "•••" button's handler was `clicked => { /* expand all */ }`
+// — an empty body with just an aspirational comment, never actually
+// implemented. Tapping it did nothing; hidden breadcrumb items could
+// never actually be revealed. Added real expand-on-click state.
 export component EllipsisBreadcrumb inherits Rectangle {
     background: transparent;
     height: 32px;
@@ -10,6 +14,7 @@ export component EllipsisBreadcrumb inherits Rectangle {
     in-out property <int> active-index: 4;
     in property <int> max-visible: 3;
     in property <string> separator: "›";
+    in-out property <bool> all-expanded: false;
 
     HorizontalLayout {
         spacing: Theme.sp-1;
@@ -17,7 +22,7 @@ export component EllipsisBreadcrumb inherits Rectangle {
 
         for item[idx] in root.items: HorizontalLayout {
             spacing: Theme.sp-1;
-            visible: idx < max-visible || idx == root.items.length - 1 || (idx > root.items.length - max-visible - 1);
+            visible: root.all-expanded || idx < max-visible || idx == root.items.length - 1 || (idx > root.items.length - max-visible - 1);
 
             if idx > 0 && idx < root.items.length: Text {
                 text: root.separator;
@@ -26,12 +31,13 @@ export component EllipsisBreadcrumb inherits Rectangle {
                 y: 4px;
             }
 
-            if idx == max-visible - 1 && root.items.length > root.max-visible + 1: Rectangle {
+            if idx == max-visible - 1 && root.items.length > root.max-visible + 1 && !root.all-expanded: Rectangle {
                 width: 24px;
                 height: 24px;
                 border-radius: 4px;
                 y: 4px;
-                background: transparent;
+                background: eta.has-hover ? Theme.surface-hover : transparent;
+                animate background { duration: Theme.dur-fast; }
 
                 Text {
                     text: "•••";
@@ -41,12 +47,13 @@ export component EllipsisBreadcrumb inherits Rectangle {
                     y: (parent.height - self.height) / 2;
                 }
 
-                TouchArea {
-                    clicked => { /* expand all */ }
+                eta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.all-expanded = true; }
                 }
             }
 
-            if idx != max-visible - 1 || root.items.length <= root.max-visible + 1: Rectangle {
+            if idx != max-visible - 1 || root.items.length <= root.max-visible + 1 || root.all-expanded: Rectangle {
                 height: 24px;
                 border-radius: 4px;
                 background: active-index == idx ? Theme.accent-subtle : transparent;
@@ -75,3 +82,4 @@ export component EllipsisBreadcrumb inherits Rectangle {
         }
     }
 }
+

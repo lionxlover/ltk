@@ -1,10 +1,24 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// Two bugs, same root causes as NavItem/EllipsisBreadcrumb fixed
+// elsewhere in this category:
+// 1. `source: @image-url("");` was hardcoded — there wasn't even an
+//    `icon-name`/similar property to *try* to wire it to, so the icon
+//    was unconditionally blank. Switched to this project's established
+//    `icon-source: image` pattern (caller supplies a literal
+//    `@image-url(...)`, since that macro needs a compile-time path).
+// 2. `root.count > 99 ? "99+" : root.count` mixes a string branch with
+//    an int branch. int does convert implicitly to string on its own,
+//    but relying on the ternary itself to unify two different branch
+//    types is an unnecessary risk with no live compiler here to verify
+//    against — made both branches explicitly strings.
 export component NavBadge inherits Rectangle {
     in property <string> label: "";
     in property <int> count: 0;
     in property <bool> active: false;
+    in property <image> icon-source: @image-url("");
+    in property <bool> has-icon: true;
 
     callback clicked();
 
@@ -23,8 +37,8 @@ export component NavBadge inherits Rectangle {
         spacing: Theme.sp-2;
         alignment: stretch;
 
-        FaIcon {
-            source: @image-url("");
+        if root.has-icon: FaIcon {
+            source: root.icon-source;
             fa-size: Theme.icon-md;
             fa-color: active ? Theme.accent : Theme.text-tertiary;
             vertical-alignment: center;
@@ -51,7 +65,7 @@ export component NavBadge inherits Rectangle {
                 alignment: center;
 
                 Text {
-                    text: root.count > 99 ? "99+" : root.count;
+                    text: root.count > 99 ? "99+" : "\{root.count}";
                     color: Theme.on-accent;
                     font-family: Theme.font-ui;
                     font-size: Theme.text-xs;
@@ -66,3 +80,4 @@ export component NavBadge inherits Rectangle {
         clicked => { root.clicked(); }
     }
 }
+

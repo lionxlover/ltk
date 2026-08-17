@@ -1,10 +1,26 @@
 import { Theme } from "../core/Theme.slint";
 
+// Several real bugs here:
+// 1. `visible: root.visible;` — a property bound to itself. This is a
+//    tautology, not a way to expose visibility control (it just reads
+//    back whatever `visible`'s own default already is); looks like a
+//    copy/paste mistake for what should have been a separate `open`
+//    property.
+// 2. No data property at all — "Dashboard"/"Projects"/"Settings" were
+//    hardcoded, so this couldn't actually be reused for different menus.
+// 3. All three TouchAreas had empty `clicked => { }` handlers with no
+//    callback exposed — every item was a dead tap.
 export component FloatingNavPanel inherits Rectangle {
+    in property <bool> open: true;
+    in property <[string]> items: ["Dashboard", "Projects", "Settings"];
+    in-out property <int> current-index: 0;
+
+    callback item-clicked(int);
+
     width: 220px;
     background: Theme.bg-elevated;
     border-radius: Theme.radius-lg;
-    visible: root.visible;
+    visible: root.open;
 
     drop-shadow-offset-y: 4px;
     drop-shadow-blur: 16px;
@@ -14,51 +30,27 @@ export component FloatingNavPanel inherits Rectangle {
         padding: 8px;
         spacing: 2px;
 
-        Rectangle {
+        for label[idx] in root.items: Rectangle {
             height: 36px;
-            background: Theme.accent-subtle;
+            background: idx == root.current-index ? Theme.accent-subtle
+                : ta.has-hover ? Theme.surface-hover : transparent;
             border-radius: Theme.radius-sm;
+            animate background { duration: Theme.dur-fast; }
 
             Text {
                 x: 12px;
-                text: "Dashboard";
-                color: Theme.accent;
+                text: label;
+                color: idx == root.current-index ? Theme.accent : Theme.text-primary;
                 font-size: 13px;
-                font-weight: Theme.weight-semibold;
+                font-weight: idx == root.current-index ? Theme.weight-semibold : Theme.weight-regular;
                 vertical-alignment: center;
             }
 
-            TouchArea { clicked => { } }
-        }
-
-        Rectangle {
-            height: 36px;
-            border-radius: Theme.radius-sm;
-
-            Text {
-                x: 12px;
-                text: "Projects";
-                color: Theme.text-primary;
-                font-size: 13px;
-                vertical-alignment: center;
+            ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.current-index = idx; root.item-clicked(idx); }
             }
-
-            TouchArea { clicked => { } }
-        }
-
-        Rectangle {
-            height: 36px;
-            border-radius: Theme.radius-sm;
-
-            Text {
-                x: 12px;
-                text: "Settings";
-                color: Theme.text-primary;
-                font-size: 13px;
-                vertical-alignment: center;
-            }
-
-            TouchArea { clicked => { } }
         }
     }
 }
+
