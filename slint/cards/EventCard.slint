@@ -53,10 +53,26 @@ export component EventCard inherits Rectangle {
                     font-size: 12px;
                 }
 
-                Text {
-                    text: "📍 " + root.location;
-                    color: Theme.text-tertiary;
-                    font-size: 12px;
+                // Bug: same emoji-rendering issue as AchievementCard (📍
+                // falls back to a tofu glyph here). Split into a real FA
+                // icon plus plain text instead of one emoji-prefixed
+                // string, since an icon can't be embedded inside a
+                // Text's string content anyway.
+                HorizontalLayout {
+                    spacing: 4px;
+
+                    Image {
+                        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/location-dot.svg");
+                        width: 10px;
+                        height: 10px;
+                        colorize: Theme.text-tertiary;
+                    }
+
+                    Text {
+                        text: root.location;
+                        color: Theme.text-tertiary;
+                        font-size: 12px;
+                    }
                 }
             }
         }

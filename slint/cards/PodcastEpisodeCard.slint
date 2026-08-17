@@ -1,5 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: same emoji-rendering issue as AchievementCard (🎙 falls back to a
+// tofu glyph in this environment). Swapped for the FA "microphone" icon.
 export component PodcastEpisodeCard inherits Rectangle {
     in-out property <string> title: "Episode Title";
     in-out property <string> podcast: "Podcast Name";
@@ -22,12 +24,13 @@ export component PodcastEpisodeCard inherits Rectangle {
             border-radius: Theme.radius-md;
             background: Theme.accent-subtle;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/microphone.svg");
+                width: 22px;
+                height: 22px;
+                colorize: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "🎙";
-                font-size: 24px;
-                vertical-alignment: center;
             }
         }
 

@@ -1444,3 +1444,68 @@ remaining info-display card (`BlogPostCard`, `FeatureCard`,
 `ArticlePreviewCard`, `PodcastEpisodeCard`, `AppListingCard`,
 `JobListingCard`'s non-badge parts) — all their declared properties are
 actually used in the render, no dead props, no sizing traps found.
+
+## Post-delivery fix #3: `cards/` — pictographic emoji render as broken tofu glyphs, plus a real hex-alpha byte-order bug
+
+The person's screenshots of the live Slint Preview showed several
+otherwise-correct cards with a small garbled/rotated glyph where an icon
+should be — visible in `AchievementCard`'s trophy, `MapEmbedCard`'s map
+pin, `CourseCard`'s book, `LinkPreviewCard`'s link icon, and the
+Music/Podcast row. Also `GlassCard` rendered as an opaque bright cyan
+bar instead of a translucent glass panel, and (found while checking for
+the same root cause nearby) `ElevatedCard`'s drop shadow was completely
+invisible.
+
+**Bug #1 — full-color pictographic emoji (🏆 🗺 📚 📱 🔗 🎙, plus ♫ which
+turned out affected too) don't render in this environment.** These
+depend on the platform having a color-emoji font installed; the Slint
+Preview here doesn't, so each fell back to a ".notdef" tofu glyph, which
+is what showed up as small garbled/rotated text in the screenshots.
+Fixed all seven instances (`AchievementCard`, `MapEmbedCard`,
+`CourseCard`, `AppListingCard`, `LinkPreviewCard`, `MusicTrackCard`,
+`PodcastEpisodeCard`) plus two inline emoji-in-string cases
+(`EventCard`'s "📍 " + location, `LocationCard`'s "📍 Map") by switching
+to the project's already-established FA-icon pattern (`Image { source:
+@image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/<name>.svg");
+colorize: ...; }` — confirmed working, already used successfully in
+`FeatureCard`). The two inline-string cases needed restructuring into a
+small `HorizontalLayout` with an `Image` + `Text` sibling, since an icon
+can't be embedded inside a `Text`'s string content the way an emoji
+character could.
+
+The two simple BMP symbols already in the category (★/☆ in
+`ReviewCard`/`AppListingCard`, ✓/⚠ in `AlertCard`/`ProductComparisonCard`)
+were confirmed still rendering correctly in the screenshots and were
+left alone — this is specifically a full-color-pictograph problem, not
+"emoji in general."
+
+**Bug #2 — hex alpha byte order.** `GlassCard` used `#20ffffff` /
+`#40ffffff` intending "white at ~12–25% opacity." Slint's 8-digit hex
+color format is `#RRGGBBAA` — alpha *last* (confirmed by this project's
+own `Theme.slint` tokens, e.g. `accent-glow: #5B9DFA44;`) — so
+`#20ffffff` actually parses as R=0x20, G=0xff, B=0xff, **A=0xff**: an
+*opaque* bright cyan. Exactly what the screenshot showed. This reads
+like the CSS/Android "alpha-first" (`#AARRGGBB`) convention some other
+ecosystems use, applied by mistake in a Slint file. Fixed by swapping
+the byte order (`#ffffff20` / `#ffffff40`).
+
+Checking for the same shape nearby caught a second, worse instance:
+`ElevatedCard`'s `drop-shadow-color: #40000000 / #20000000` parses as
+R=0x40/0x20, G=B=0, **A=0x00 — fully transparent**. This component's
+entire reason to exist (a visible drop shadow, distinguishing it from
+`BasicCard`/`OutlinedCard`) was invisible. Fixed the same way
+(`#00000040` / `#00000020`).
+
+Grepped every 8-digit hex color in `cards/` and `charts/` afterward
+(the two categories touched this session) to confirm nothing else had
+either the alpha-first mistake or a coincidentally-zero alpha — clean.
+Also grepped the **whole project** for the same shape, since this is
+the kind of bug that could easily predate this session in
+already-delivered categories: the vast majority are `#00000000` (safe
+regardless of byte order — all bytes zero) or already correctly
+alpha-last (matching `Theme.slint`'s own established tokens). Found
+exactly one other suspicious instance, `media/LightboxViewer.slint`'s
+`#cc000000` (parses as alpha=0, likely meant as ~80% black), but `media/`
+hasn't been reviewed yet this pass — left it for that category's own
+review rather than reach into unstarted work; noting it here so it
+isn't missed when `media/` comes up.

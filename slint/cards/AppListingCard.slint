@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: same emoji-rendering issue as AchievementCard (📱 falls back to a
+// tofu glyph in this environment). Swapped for the FA "mobile-screen"
+// icon.
 export component AppListingCard inherits Rectangle {
     in-out property <string> name: "App Name";
     in-out property <string> developer: "Developer";
@@ -23,12 +26,13 @@ export component AppListingCard inherits Rectangle {
             background: Theme.accent-subtle;
             horizontal-stretch: 0;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/mobile-screen.svg");
+                width: 22px;
+                height: 22px;
+                colorize: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "📱";
-                font-size: 24px;
-                vertical-alignment: center;
             }
         }
 

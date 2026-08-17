@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the trophy was a raw emoji character (🏆). Full-color pictographic
+// emoji (U+1F300+ range) depend on the platform having a color-emoji font
+// installed — the Slint Preview environment doesn't, so it fell back to
+// a ".notdef" tofu glyph (rendered as what looks like a small block of
+// rotated/garbled text). Replaced with the project's established FA-icon
+// pattern (already used successfully in FeatureCard) — a real vector SVG
+// via `@image-url`, not font-dependent.
 export component AchievementCard inherits Rectangle {
     in-out property <string> title: "Achievement Unlocked";
     in-out property <string> description: "Completed 100 tasks";
@@ -22,12 +29,13 @@ export component AchievementCard inherits Rectangle {
             border-radius: Theme.radius-full;
             background: #FBBF2420;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trophy.svg");
+                width: 26px;
+                height: 26px;
+                colorize: #FBBF24;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "🏆";
-                font-size: 28px;
-                vertical-alignment: center;
             }
         }
 

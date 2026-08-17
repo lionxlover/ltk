@@ -1,5 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the map pin was a raw emoji character (🗺). Full-color pictographic
+// emoji depend on a color-emoji font this environment doesn't have, so it
+// fell back to a ".notdef" tofu glyph (the small block of garbled/rotated
+// text visible in the preview). Replaced with the project's established
+// FA-icon pattern (already used successfully in FeatureCard) — a real
+// vector SVG via `@image-url`, not font-dependent.
 export component MapEmbedCard inherits Rectangle {
     in-out property <string> label: "Map";
     in-out property <string> sublabel: "Interactive map preview";
@@ -16,11 +22,13 @@ export component MapEmbedCard inherits Rectangle {
             background: Theme.dark-mode ? #1a2332 : #e8f0fe;
             clip: true;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/map.svg");
+                width: 32px;
+                height: 32px;
+                colorize: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "🗺";
-                font-size: 32px;
             }
         }
 

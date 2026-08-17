@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: same emoji-rendering issue as AchievementCard (📚 falls back to a
+// tofu glyph in this environment). Swapped for the FA "graduation-cap"
+// icon.
 export component CourseCard inherits Rectangle {
     in-out property <string> title: "Course Title";
     in-out property <string> instructor: "Instructor";
@@ -18,11 +21,13 @@ export component CourseCard inherits Rectangle {
             background: Theme.accent-subtle;
             clip: true;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/graduation-cap.svg");
+                width: 32px;
+                height: 32px;
+                colorize: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "📚";
-                font-size: 32px;
             }
         }
 

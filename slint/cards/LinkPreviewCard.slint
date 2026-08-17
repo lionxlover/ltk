@@ -1,5 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: same emoji-rendering issue as AchievementCard (🔗 falls back to a
+// tofu glyph in this environment). Swapped for the FA "link" icon.
 export component LinkPreviewCard inherits Rectangle {
     in-out property <string> url: "https://example.com";
     in-out property <string> title: "Link Preview";
@@ -18,11 +20,13 @@ export component LinkPreviewCard inherits Rectangle {
             background: Theme.bg-overlay;
             clip: true;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/link.svg");
+                width: 22px;
+                height: 22px;
+                colorize: Theme.text-tertiary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "🔗";
-                font-size: 24px;
             }
         }
 

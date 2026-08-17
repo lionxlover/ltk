@@ -1,9 +1,18 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `#20ffffff`/`#40ffffff` — Slint's 8-digit hex color is
+// `#RRGGBBAA` (alpha *last*; confirmed by this project's own
+// Theme.slint tokens, e.g. `accent-glow: #5B9DFA44;`). Written as
+// `#20ffffff`, that's R=0x20, G=0xff, B=0xff, A=0xff — an *opaque*
+// bright cyan, not a translucent white. This was clearly meant as the
+// CSS-adjacent "20% white" (alpha-first) convention some other
+// ecosystems use, which Slint doesn't follow. Swapped the byte order so
+// alpha is actually last.
 export component GlassCard inherits Rectangle {
-    background: Theme.dark-mode ? #20ffffff : #40ffffff;
+    background: Theme.dark-mode ? #ffffff20 : #ffffff40;
     border-radius: Theme.radius-lg;
     border-width: 1px;
-    border-color: #20ffffff;
+    border-color: #ffffff20;
     horizontal-stretch: 1;
 }
+

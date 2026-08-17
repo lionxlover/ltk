@@ -1,11 +1,18 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: same alpha-byte-order mistake as GlassCard, but with worse
+// consequences here — `#40000000`/`#20000000` under Slint's actual
+// `#RRGGBBAA` order parse as R=0x40/0x20, G=B=0, **A=0x00** (fully
+// transparent). The entire drop shadow — this component's whole reason
+// to exist as "Elevated" vs. "Basic"/"Outlined" — was invisible. Swapped
+// the byte order so alpha is actually last.
 export component ElevatedCard inherits Rectangle {
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     horizontal-stretch: 1;
 
-    drop-shadow-color: Theme.dark-mode ? #40000000 : #20000000;
+    drop-shadow-color: Theme.dark-mode ? #00000040 : #00000020;
     drop-shadow-blur: 12px;
     drop-shadow-offset-y: 4px;
 }
+

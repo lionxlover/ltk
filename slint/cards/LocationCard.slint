@@ -17,12 +17,26 @@ export component LocationCard inherits Rectangle {
             background: Theme.bg-overlay;
             clip: true;
 
-            Text {
+            // Bug: same emoji-rendering issue (📍 falls back to a tofu
+            // glyph). Split into a real FA icon plus text.
+            HorizontalLayout {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "📍 Map";
-                color: Theme.text-tertiary;
-                font-size: 14px;
+                spacing: 6px;
+
+                Image {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/location-dot.svg");
+                    width: 14px;
+                    height: 14px;
+                    colorize: Theme.text-tertiary;
+                }
+
+                Text {
+                    text: "Map";
+                    color: Theme.text-tertiary;
+                    font-size: 14px;
+                    vertical-alignment: center;
+                }
             }
         }
 

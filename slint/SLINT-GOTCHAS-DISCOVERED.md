@@ -1007,6 +1007,72 @@ show up right") but are different root causes and different fixes.
 
 ---
 
+---
+
+### Full-color pictographic emoji (🏆🗺📚📱🔗🎙…) can render as broken tofu glyphs — use a real icon asset instead
+
+```slint
+// RISKY — depends on the platform/environment having a color-emoji font
+// installed. Confirmed broken in the Slint Preview environment used for
+// this project: falls back to a ".notdef" tofu glyph, which shows up as
+// a small garbled/rotated block of text rather than the intended icon.
+Text { text: "🏆"; font-size: 28px; }
+```
+Hit this live across seven files in `cards/` — the person's screenshot
+showed the exact tofu-glyph symptom for every full-color pictograph
+(U+1F300+ range) in the category. Simple BMP symbols (★ ☆ ✓ ⚠ from the
+same category) were confirmed still rendering fine in the same
+screenshots — this is specifically a full-color-emoji problem, not
+"any non-ASCII character."
+
+```slint
+// RIGHT — this project's own established pattern (already used in
+// FeatureCard before this was ever an issue): a real vector SVG, not
+// font-dependent.
+Image {
+    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trophy.svg");
+    width: 26px; height: 26px;
+    colorize: Theme.accent;   // repaints the monochrome SVG to match theme
+}
+```
+For an emoji embedded *inside* a larger string (e.g. `"📍 " + location`),
+there's no way to keep it inline — split into a small `HorizontalLayout`
+with an `Image` + `Text` sibling instead; a `Text`'s string content can't
+contain an icon.
+
+---
+
+### Slint's 8-digit hex color is `#RRGGBBAA` — alpha *last*, not alpha-first
+
+```slint
+// WRONG — reads as R=0x20, G=0xff, B=0xff, A=0xff: an OPAQUE bright
+// cyan, not "white at ~12% opacity" the author clearly intended (this
+// is the CSS/Android "#AARRGGBB" convention, which Slint does not use).
+background: #20ffffff;
+```
+Confirmed by this project's own `Theme.slint` tokens, which are
+consistently alpha-last (`accent-glow: #5B9DFA44;`,
+`accent-subtle: #5B9DFA1A;`). Hit this live in two `cards/` files:
+`GlassCard` (`#20ffffff`/`#40ffffff` → opaque cyan instead of a glass
+effect — directly visible in a screenshot) and, worse, `ElevatedCard`
+(`drop-shadow-color: #40000000` → R=0x40, G=B=0, **A=0x00, fully
+transparent** — the component's entire drop shadow, its whole reason to
+exist as "Elevated," was invisible with zero visual symptom pointing at
+the color itself since a *missing* shadow doesn't look obviously wrong
+the way a wrong-colored one does).
+
+```slint
+// RIGHT
+background: #ffffff20;                    // white, ~12% opacity
+drop-shadow-color: #00000040;             // black, ~25% opacity
+```
+Worth a standing check in any new category: grep for 8-digit hex colors
+and sanity-check the alpha byte is last, especially for anything using
+`0x00`/near-zero alpha-looking values in the *first* two digits — that
+specific shape (`#XX000000` or `#XXffffff`) is the tell.
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

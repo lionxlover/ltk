@@ -1,5 +1,10 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: ♫ is a plain BMP musical-note symbol, not a full-color pictograph
+// like the others fixed in this pass — but the screenshot showed it
+// rendering the same broken way here, so this environment's font is
+// missing it too. Swapped for the FA "music" icon for consistency and
+// reliability, same as the rest of this batch.
 export component MusicTrackCard inherits Rectangle {
     in-out property <string> title: "Track Title";
     in-out property <string> artist: "Artist Name";
@@ -21,13 +26,13 @@ export component MusicTrackCard inherits Rectangle {
             border-radius: Theme.radius-md;
             background: Theme.accent-subtle;
 
-            Text {
+            Image {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/music.svg");
+                width: 18px;
+                height: 18px;
+                colorize: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "♫";
-                color: Theme.accent;
-                font-size: 20px;
-                vertical-alignment: center;
             }
         }
 
