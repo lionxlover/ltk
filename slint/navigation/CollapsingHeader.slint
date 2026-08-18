@@ -1,11 +1,24 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the root Rectangle had no explicit `height` — unlike
+// StickyHeader (which correctly sets `height: 48px;` on its own root),
+// this relied entirely on its conditional `if expanded:`/`if !expanded:`
+// children to imply a size, which they don't propagate up to the
+// parent. Inside a VerticalLayout (as used in test.slint, alongside
+// TopAppBar/StickyHeader), that meant CollapsingHeader was allocated
+// zero height — its actual 100px/48px content still rendered at its own
+// size, but overflowed out of a zero-height box and visibly overlapped
+// the sibling above it (StickyHeader, in the screenshot that caught
+// this). Fixed by binding the root's height to whichever variant is
+// showing.
 export component CollapsingHeader inherits Rectangle {
     in property <string> title: "";
     in property <string> subtitle: "";
     in property <bool> expanded: true;
 
+    height: root.expanded ? 100px : 48px;
     background: Theme.bg-elevated;
+    animate height { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
     if root.expanded: Rectangle {
         height: 100px;

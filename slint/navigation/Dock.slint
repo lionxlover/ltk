@@ -12,15 +12,17 @@ export component Dock inherits Rectangle {
     in property <bool> floating: true;
     in-out property <int> active-index: -1;
 
-    // Bug: default icons were full-color pictographic emoji (🏠📁🌐✉️🎵),
-    // which fall back to broken ".notdef" tofu glyphs in environments
-    // without a color-emoji font (confirmed — see the same issue fixed
-    // across cards/). Since `icons` is rendered as plain text (any
-    // string the host supplies), the safe default is a simple glyph set
-    // that's confirmed to render everywhere, matching the convention
-    // already used for `SidebarItem`'s `icon: "◉"` elsewhere in this
-    // category.
-    in property <[string]> icons: ["◉", "▤", "◈", "✉", "♪"];
+    // Post-delivery fix: even the "safe" BMP symbols this file's
+    // previous fix picked (◉▤◈✉♪) turned out to render as broken tofu
+    // glyphs too — confirmed via a live screenshot of this exact demo.
+    // Rendering an icon as arbitrary Unicode text isn't reliable in
+    // this environment at all, whatever the symbol. Meanwhile, real FA
+    // SVG images render correctly everywhere they're used in this
+    // category (BottomNavBar, MiniSidebar, IconStepper, TopAppBar).
+    // Switched `icons` from `[string]` to `[image]` to match — the same
+    // fix already applied to NavItem/NavBadge this category for a
+    // related (but distinct) reason.
+    in property <[image]> icons: [];
     in property <[string]> labels: ["Home", "Files", "Web", "Mail", "Music"];
 
     HorizontalLayout {
@@ -38,9 +40,11 @@ export component Dock inherits Rectangle {
                 alignment: center;
                 spacing: 2px;
 
-                Text {
-                    text: item;
-                    font-size: 18px;
+                Image {
+                    source: item;
+                    width: 20px;
+                    height: 20px;
+                    colorize: active-index == idx ? Theme.accent : Theme.text-secondary;
                     horizontal-alignment: center;
                 }
 
@@ -59,3 +63,4 @@ export component Dock inherits Rectangle {
         }
     }
 }
+

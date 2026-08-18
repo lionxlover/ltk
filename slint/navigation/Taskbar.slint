@@ -10,16 +10,15 @@ export component Taskbar inherits Rectangle {
 
     in property <string> clock-text: "12:00 PM";
     in-out property <int> active-app-index: -1;
-    // Bug: default `pinned-apps` were full-color pictographic emoji,
-    // which render as broken tofu glyphs in this environment (same issue
-    // fixed across cards/) — swapped for simple BMP symbols, confirmed
-    // safe, matching Dock's fix.
-    in property <[string]> pinned-apps: ["◈", "▤", "✉", "♪", "⚙"];
-    // Bug: `system-tray-icons` was declared and accepted but never
-    // actually rendered anywhere in the component body — the system
-    // tray was simply missing from the taskbar regardless of what was
-    // passed in.
-    in property <string> system-tray-icons: "▮ ▲ ▭";
+    // Post-delivery fix: even the "safe" BMP symbols this file's
+    // previous fix picked (◈▤✉♪⚙) still rendered as broken tofu glyphs
+    // — confirmed via a live screenshot. Converted to real images,
+    // matching Dock's fix (and NavItem/NavBadge before that).
+    in property <[image]> pinned-apps: [];
+    // Post-delivery fix: same issue for the tray glyphs (▮▲▭) — switched
+    // to plain readable text, which needs no special glyph support at
+    // all.
+    in property <string> system-tray-icons: "Wi-Fi · 100%";
 
     HorizontalLayout {
         padding-left: Theme.sp-2;
@@ -55,9 +54,11 @@ export component Taskbar inherits Rectangle {
                 border-radius: 8px;
                 background: active-app-index == idx ? Theme.bg-surface : transparent;
 
-                Text {
-                    text: app;
-                    font-size: 16px;
+                Image {
+                    source: app;
+                    width: 16px;
+                    height: 16px;
+                    colorize: active-app-index == idx ? Theme.accent : Theme.text-secondary;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
                 }

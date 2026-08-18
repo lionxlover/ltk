@@ -1,7 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
 export component FlyoutMenuItem inherits Rectangle {
-    in property <string> icon: "";
+    // Post-delivery fix: `icon` was rendered as plain text, and even the
+    // "safe" BMP symbols used for its demo values (▤▥✕) render as broken
+    // tofu glyphs in this environment (confirmed via a live screenshot).
+    // Switched to a real image, matching the same fix applied to
+    // Dock/Taskbar/NavItem/NavBadge in this category.
+    in property <image> icon-source: @image-url("");
+    in property <bool> has-icon: false;
     in property <string> label: "";
     in property <string> shortcut: "";
     in property <bool> show-separator: false;
@@ -46,11 +52,12 @@ export component FlyoutMenuItem inherits Rectangle {
         spacing: Theme.sp-3;
         alignment: stretch;
 
-        if icon != "": Text {
-            text: icon;
-            font-size: 14px;
+        if has-icon: Image {
+            source: icon-source;
+            width: 14px;
+            height: 14px;
+            colorize: danger ? Theme.error : Theme.text-secondary;
             y: (parent.height - self.height) / 2;
-            width: 20px;
             horizontal-alignment: center;
         }
 

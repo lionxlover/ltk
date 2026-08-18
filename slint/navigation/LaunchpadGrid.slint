@@ -1,7 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: this had no per-app data at all — just a `count` controlling how
+// many identical blank tiles to draw, each hardcoded to the literal text
+// "App". A launcher grid needs to actually show which app is which.
+// Added real `icons`/`names` arrays (icons as `image`, following this
+// category's established fix for text-glyph icons being unreliable in
+// this rendering environment — see NavItem/NavBadge).
 export component LaunchpadGrid inherits Rectangle {
-    in property <int> count: 0;
+    in property <[image]> icons: [];
+    in property <[string]> names: [];
+    in property <int> count: root.icons.length;
 
     callback app-clicked(int);
 
@@ -27,6 +35,8 @@ export component LaunchpadGrid inherits Rectangle {
                 border-radius: Theme.radius-md;
                 visible: (row-idx * root.cols + col-idx) < root.count;
 
+                property <int> app-idx: row-idx * root.cols + col-idx;
+
                 VerticalLayout {
                     alignment: center;
                     spacing: Theme.sp-2;
@@ -37,10 +47,18 @@ export component LaunchpadGrid inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         background: Theme.bg-overlay;
                         border-radius: Theme.radius-lg;
+
+                        if app-idx < root.icons.length: Image {
+                            source: root.icons[app-idx];
+                            width: 28px;
+                            height: 28px;
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                        }
                     }
 
                     Text {
-                        text: "App";
+                        text: app-idx < root.names.length ? root.names[app-idx] : "App";
                         color: Theme.text-primary;
                         font-family: Theme.font-ui;
                         font-size: Theme.text-xs;
@@ -49,9 +67,10 @@ export component LaunchpadGrid inherits Rectangle {
                 }
 
                 app-ta := TouchArea {
-                    clicked => { root.app-clicked(row-idx * root.cols + col-idx); }
+                    clicked => { root.app-clicked(app-idx); }
                 }
             }
         }
     }
 }
+

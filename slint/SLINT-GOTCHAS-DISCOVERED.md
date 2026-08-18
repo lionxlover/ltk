@@ -1021,9 +1021,25 @@ Text { text: "🏆"; font-size: 28px; }
 Hit this live across seven files in `cards/` — the person's screenshot
 showed the exact tofu-glyph symptom for every full-color pictograph
 (U+1F300+ range) in the category. Simple BMP symbols (★ ☆ ✓ ⚠ from the
-same category) were confirmed still rendering fine in the same
-screenshots — this is specifically a full-color-emoji problem, not
-"any non-ASCII character."
+same category) were confirmed still rendering fine in that same
+screenshot, which led to a wrong conclusion the next category acted on
+— see the correction below.
+
+**Correction, from `navigation/` one category later:** the "simple BMP
+symbols are safe" takeaway above was wrong, or at least incomplete. A
+follow-up fix swapped broken emoji for simple geometric/dingbat BMP
+symbols (◉▤◈✉♪⚙▮▲▭) reasoning they'd be safer — a later screenshot
+showed every one of *those* rendering as the same broken tofu glyph too.
+The `★ ☆ ✓ ⚠` that worked in `cards/` weren't safe because they're BMP;
+they were safe because they happen to be in whatever narrow glyph set
+this environment's font actually bundles (mostly basic
+ASCII/punctuation-adjacent symbols) — and that's not a rule you can
+extrapolate from to guess whether some *other* symbol will work. Only
+treat a glyph as safe if a working screenshot has actually confirmed it
+in this environment; the running confirmed-safe list is `✓ ✕ × ‹ ›` plus
+plain alphanumerics. For anything icon-shaped, skip `Text`-glyph icons
+entirely and use a real image from the start — don't try to find a
+"safer" fallback character.
 
 ```slint
 // RIGHT — this project's own established pattern (already used in
@@ -1039,6 +1055,17 @@ For an emoji embedded *inside* a larger string (e.g. `"📍 " + location`),
 there's no way to keep it inline — split into a small `HorizontalLayout`
 with an `Image` + `Text` sibling instead; a `Text`'s string content can't
 contain an icon.
+
+For a component whose icon needs to vary per-instance (not just a fixed
+default), expose `in property <image> icon-source;` (plus a
+`has-icon: bool` if the icon is optional) and let the *caller* supply a
+literal `@image-url(...)` — `@image-url()` needs a compile-time string
+literal, so it can't resolve a runtime `string` property to a path
+regardless of the font issue either. This is now this project's
+established convention for any per-instance-selectable icon (`NavItem`,
+`NavBadge`, `SidebarItem`, `Dock`, `Taskbar`, `FlyoutMenuItem`, plus the
+pre-existing `overlays/FloatingActionPanel.slint`/
+`feedback/AboutDialog.slint`).
 
 ---
 
@@ -1185,6 +1212,82 @@ Worth checking for specifically whenever a `TouchArea`/other id'd
 element that's conditionally shown also needs its state
 (`pressed`/`has-hover`/etc.) read by a sibling binding elsewhere in the
 same component — that combination is exactly when this bites.
+
+---
+
+---
+
+### A component with no explicit `height`/`vertical-stretch` on its root, whose real content lives only inside conditional children, gets zero size in a layout
+
+```slint
+// WRONG — no explicit height on the root, and the only content is
+// inside `if` blocks. Compiles fine, but inside a VerticalLayout this
+// component is allocated ZERO height — its content still renders at
+// its own conditional size, just overflowing out of that zero-height
+// box and overlapping whatever's next to it.
+export component MyHeader inherits Rectangle {
+    in property <bool> expanded: true;
+    if expanded: Rectangle { height: 100px; /* ... */ }
+    if !expanded: Rectangle { height: 48px; /* ... */ }
+}
+```
+Confirmed live via a screenshot: `navigation/CollapsingHeader.slint` had
+exactly this shape and visibly overlapped the sibling above it
+(`StickyHeader`) in a `VerticalLayout`. A sibling component in the same
+file, `StickyHeader`, has an unconditional `height: 48px;` on its own
+root and stacked correctly — the difference is exactly that explicit
+root sizing.
+
+```slint
+// RIGHT — bind the root's own height explicitly to whichever variant
+// is showing:
+export component MyHeader inherits Rectangle {
+    in property <bool> expanded: true;
+    height: expanded ? 100px : 48px;
+    if expanded: Rectangle { /* ... */ }
+    if !expanded: Rectangle { /* ... */ }
+}
+```
+Only relevant when a component's content is *entirely* conditional —
+a component with substantial unconditional layout content alongside
+some conditional decoration (checked a couple of steppers for this
+exact shape and they were fine) sizes correctly from that unconditional
+content regardless.
+
+---
+
+### Multiple direct children of a plain `Rectangle`, none inside a layout, all overlap instead of stacking
+
+```slint
+// WRONG — header, divider, and content are three separate children of
+// `panel` with no layout wrapping them. Per the "containers fill their
+// parent by default" rule, all three default to filling the ENTIRE
+// panel and completely overlap.
+panel := Rectangle {
+    Rectangle { height: 56px; /* header content */ }
+    Rectangle { height: 1px; /* divider */ }
+    VerticalLayout { @children /* content */ }
+}
+```
+Confirmed live via a screenshot: `navigation/Drawer.slint` had exactly
+this shape — the header's "Menu" text rendered jumbled together with
+the drawer's nav items instead of appearing above them, because nothing
+told the header/divider/content to stack top-to-bottom rather than each
+independently fill the whole panel.
+
+```slint
+// RIGHT — wrap the siblings in a layout so they actually stack:
+panel := Rectangle {
+    VerticalLayout {
+        Rectangle { height: 56px; /* header content */ }
+        Rectangle { height: 1px; /* divider */ }
+        VerticalLayout { @children /* content */ }
+    }
+}
+```
+Easy to miss because each individual child *looks* correctly sized on
+its own (explicit `height:` bindings and all) — the bug is purely about
+the missing outer layout, not any one child's own properties.
 
 ---
 

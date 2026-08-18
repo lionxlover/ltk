@@ -1,9 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
+// Post-delivery fix: `icon` was rendered as plain text; converted to a
+// real image for the same reason as Dock/Taskbar/FlyoutMenuItem/NavItem/
+// NavBadge in this category — arbitrary Unicode glyphs (even simple
+// geometric ones, not just emoji) don't render reliably in this
+// environment, confirmed via a live screenshot of this exact demo.
 export component SidebarItem inherits Rectangle {
     in property <string> text: "";
     in property <bool> active: false;
-    in property <string> icon: "";
+    in property <image> icon-source: @image-url("");
+    in property <bool> has-icon: false;
 
     callback clicked();
 
@@ -22,10 +28,11 @@ export component SidebarItem inherits Rectangle {
         spacing: Theme.sp-2;
         alignment: stretch;
 
-        if icon != "": Text {
-            text: icon;
-            color: active ? Theme.accent : Theme.text-tertiary;
-            font-size: Theme.text-base;
+        if has-icon: Image {
+            source: icon-source;
+            width: 16px;
+            height: 16px;
+            colorize: active ? Theme.accent : Theme.text-tertiary;
             vertical-alignment: center;
             horizontal-stretch: 0;
         }
@@ -45,3 +52,4 @@ export component SidebarItem inherits Rectangle {
         clicked => { root.clicked(); }
     }
 }
+

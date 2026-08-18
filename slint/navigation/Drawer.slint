@@ -45,71 +45,81 @@ export component Drawer inherits Rectangle {
         animate drop-shadow-blur { duration: Theme.dur-medium; }
         animate drop-shadow-color { duration: Theme.dur-medium; }
 
-        // Header
-        Rectangle {
-            height: 56px;
-            background: transparent;
+        // Bug: the header, divider, and content area below were three
+        // separate direct children of `panel` (a plain Rectangle) with
+        // no enclosing layout to stack them — per Slint's "containers
+        // fill their parent by default" rule, all three defaulted to
+        // filling the *entire* panel and completely overlapped each
+        // other (visible in a screenshot as "Menu" jumbled together
+        // with the nav items). Wrapped all three in a VerticalLayout so
+        // they stack top-to-bottom as intended.
+        VerticalLayout {
+            // Header
+            Rectangle {
+                height: 56px;
+                background: transparent;
 
-            HorizontalLayout {
-                padding-left: Theme.sp-4;
-                padding-right: Theme.sp-4;
-                alignment: stretch;
-
-                Text {
-                    text: root.open ? "Menu" : "";
-                    color: Theme.text-primary;
-                    font-family: Theme.font-ui;
-                    font-size: Theme.text-lg;
-                    font-weight: Theme.weight-semibold;
-                    vertical-alignment: center;
-                    horizontal-stretch: 1;
-                }
-
-                Rectangle {
-                    width: 32px;
-                    height: 32px;
-                    horizontal-stretch: 0;
-                    vertical-stretch: 0;
-
-                    close-bg := Rectangle {
-                        border-radius: Theme.radius-sm;
-                        background: ta-close.pressed ? Theme.surface-pressed
-                            : ta-close.has-hover ? Theme.surface-hover
-                            : transparent;
-                        animate background { duration: Theme.dur-fast; }
-                    }
+                HorizontalLayout {
+                    padding-left: Theme.sp-4;
+                    padding-right: Theme.sp-4;
+                    alignment: stretch;
 
                     Text {
-                        x: (parent.width - self.width) / 2;
-                        y: (parent.height - self.height) / 2;
-                        text: "✕";
-                        color: Theme.text-secondary;
-                        font-size: Theme.text-sm;
+                        text: root.open ? "Menu" : "";
+                        color: Theme.text-primary;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-lg;
+                        font-weight: Theme.weight-semibold;
                         vertical-alignment: center;
+                        horizontal-stretch: 1;
                     }
 
-                    ta-close := TouchArea {
-                        clicked => { root.closed(); }
+                    Rectangle {
+                        width: 32px;
+                        height: 32px;
+                        horizontal-stretch: 0;
+                        vertical-stretch: 0;
+
+                        close-bg := Rectangle {
+                            border-radius: Theme.radius-sm;
+                            background: ta-close.pressed ? Theme.surface-pressed
+                                : ta-close.has-hover ? Theme.surface-hover
+                                : transparent;
+                            animate background { duration: Theme.dur-fast; }
+                        }
+
+                        Text {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            text: "✕";
+                            color: Theme.text-secondary;
+                            font-size: Theme.text-sm;
+                            vertical-alignment: center;
+                        }
+
+                        ta-close := TouchArea {
+                            clicked => { root.closed(); }
+                        }
                     }
                 }
             }
-        }
 
-        // Divider
-        Rectangle {
-            height: 1px;
-            background: Theme.border-subtle;
-        }
+            // Divider
+            Rectangle {
+                height: 1px;
+                background: Theme.border-subtle;
+            }
 
-        // Bug: same missing-`@children` issue as FlyoutMenu/NavCollapse
-        // in this category — this "Content slot" comment promised a
-        // place for nested items, but without `@children` here, anything
-        // placed inside `Drawer { ... }` becomes an unlaid-out direct
-        // child of the Drawer's root instead of landing in this content
-        // area.
-        content-layout := VerticalLayout {
-            padding: Theme.sp-2;
-            @children
+            // Bug: same missing-`@children` issue as FlyoutMenu/NavCollapse
+            // in this category — this "Content slot" comment promised a
+            // place for nested items, but without `@children` here, anything
+            // placed inside `Drawer { ... }` becomes an unlaid-out direct
+            // child of the Drawer's root instead of landing in this content
+            // area.
+            content-layout := VerticalLayout {
+                padding: Theme.sp-2;
+                @children
+            }
         }
     }
 }

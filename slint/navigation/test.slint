@@ -67,9 +67,9 @@ export component NavigationTest inherits Rectangle {
         Text { text: "Sidebar Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         Rectangle { height: 180px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
             VerticalLayout { padding: Theme.sp-2;
-                SidebarItem { text: "Dashboard"; icon: "◉"; active: true; }
-                SidebarItem { text: "Components"; icon: "◇"; }
-                SidebarItem { text: "Settings"; icon: "⚙"; }
+                SidebarItem { text: "Dashboard"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gauge.svg"); has-icon: true; active: true; }
+                SidebarItem { text: "Components"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/shapes.svg"); has-icon: true; }
+                SidebarItem { text: "Settings"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg"); has-icon: true; }
             }
         }
 
@@ -80,20 +80,33 @@ export component NavigationTest inherits Rectangle {
         Pagination { current-page: 3; total-pages: 8; }
 
         Text { text: "Dock"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        Dock { width: 340px; icons: ["◉", "▤", "◈", "✉", "♪"]; labels: ["Home", "Files", "Web", "Mail", "Music"]; }
+        Dock { width: 340px;
+            icons: [@image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/house.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/folder.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/globe.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/envelope.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/music.svg")];
+            labels: ["Home", "Files", "Web", "Mail", "Music"];
+        }
 
         Text { text: "Taskbar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        Taskbar { width: 500px; }
+        Taskbar { width: 500px;
+            pinned-apps: [@image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/globe.svg"),
+                          @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/folder.svg"),
+                          @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/envelope.svg"),
+                          @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/music.svg"),
+                          @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg")];
+        }
 
         Text { text: "Workspace Switcher"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         WorkspaceSwitcher { width: 200px; }
 
         Text { text: "Flyout Menu Items"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         FlyoutMenu {
-            FlyoutMenuItem { icon: "▤"; label: "Copy"; shortcut: "Ctrl+C"; }
-            FlyoutMenuItem { icon: "▥"; label: "Paste"; shortcut: "Ctrl+V"; }
+            FlyoutMenuItem { icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/copy.svg"); has-icon: true; label: "Copy"; shortcut: "Ctrl+C"; }
+            FlyoutMenuItem { icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paste.svg"); has-icon: true; label: "Paste"; shortcut: "Ctrl+V"; }
             FlyoutMenuItem { show-separator: true; }
-            FlyoutMenuItem { icon: "✕"; label: "Delete"; danger: true; }
+            FlyoutMenuItem { icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trash.svg"); has-icon: true; label: "Delete"; danger: true; }
         }
 
         Text { text: "Ellipsis Breadcrumb"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
@@ -188,7 +201,16 @@ export component NavigationTest inherits Rectangle {
         }
 
         Text { text: "Launchpad Grid"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-        LaunchpadGrid { width: 400px; height: 220px; count: 7; }
+        LaunchpadGrid { width: 400px; height: 220px;
+            icons: [@image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/envelope.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/music.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/camera.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/calculator.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/calendar.svg"),
+                    @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/globe.svg")];
+            names: ["Mail", "Music", "Camera", "Settings", "Calc", "Calendar", "Browser"];
+        }
 
         Text { text: "Floating Nav Panel / Command Palette"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
         HorizontalLayout { spacing: Theme.sp-4;

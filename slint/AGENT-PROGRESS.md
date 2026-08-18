@@ -1666,3 +1666,96 @@ binding elsewhere in the component needs to reference that id, either
 move the reference inside the same conditional, or make the element
 unconditional and use `enabled:`/`opacity:`/similar instead of `if` to
 express the "sometimes present" behavior.
+
+## Post-delivery fix round 2: `navigation/` — layout-stacking overlaps, a data-less LaunchpadGrid, and confirmation that even "safe" text glyphs aren't safe here
+
+Three live screenshots of the delivered category caught real bugs the
+first pass missed — none were compiler errors (Problems panel showed
+0/0), all purely visual.
+
+**`CollapsingHeader` and `StickyHeader` rendered overlapping each
+other.** Cause: `CollapsingHeader`'s root `Rectangle` had no explicit
+`height` at all — unlike `StickyHeader`, which correctly sets `height:
+48px;` on its own root. Its actual content lived entirely inside
+`if expanded:`/`if !expanded:` conditional children, each with their
+own fixed height, but that doesn't propagate up to size the parent.
+Inside the `VerticalLayout` this category's test.slint uses to stack
+`TopAppBar`/`StickyHeader`/`CollapsingHeader`, that meant
+`CollapsingHeader` was allocated *zero* height — its content still
+rendered at full size, just overflowing out of a zero-height box and
+visually landing on top of the sibling above it. Fixed by binding the
+root's height explicitly to whichever variant is showing
+(`root.expanded ? 100px : 48px`), with an `animate` on it since the
+value now genuinely changes.
+
+Ran a heuristic scan afterward for the same shape (a `Rectangle`-rooted
+component with no `height`/`vertical-stretch` at the top level, whose
+only real content lives inside conditional children) across the rest of
+the category. Two more matched the pattern (`Drawer`, `Steps`,
+`VerticalStepper`) but turned out to be false positives on inspection —
+`Drawer` is designed to fill an already-sized parent directly (confirmed
+correct in the same screenshots), and `Steps`/`VerticalStepper` both
+have substantial *unconditional* layout content sizing them correctly,
+the scan just also noticed their (harmless) conditional connector-line
+decorations.
+
+**`Drawer`'s "Menu" header text rendered jumbled together with its nav
+items instead of appearing above them.** Cause: the header `Rectangle`,
+the 1px divider `Rectangle`, and `content-layout` (the `@children` slot
+fixed in the previous round) were three separate direct children of
+`panel` with no enclosing layout to stack them. Per Slint's "containers
+fill their parent by default" rule, all three defaulted to filling the
+*entire* panel and completely overlapped. Wrapped all three in a
+`VerticalLayout` so they stack top-to-bottom as the "Header" / "Divider"
+/ "Content slot" comments always implied they should.
+
+**`LaunchpadGrid` had no per-app data at all** — just a `count`
+producing that many identical tiles, each hardcoded to the literal text
+"App" with an empty icon square. Added real `icons: [image]` and
+`names: [string]` properties (`count` now defaults to `icons.length`,
+still overridable) so each tile actually shows a distinct app.
+
+**Confirmed — the previous round's "safe BMP symbol" fix for the
+tofu-glyph bug was itself wrong.** The first round (delivered, not yet
+screenshotted) swapped broken pictographic emoji (🏠📁✉️) for simple
+geometric/dingbat Unicode symbols (◉▤◈✉♪⚙▮▲▭), reasoning these were
+common enough to be safe. A live screenshot proved otherwise — every one
+of those still rendered as the same broken tofu glyph. The only glyphs
+confirmed actually rendering correctly across all three screenshots were
+ordinary ASCII/near-ASCII: `✓` (checkmark), `✕`/`×` (multiplication
+sign), `‹`/`›` (angle quotes) — all already in use elsewhere in this
+category (steppers, TabButton, pagination) — plus, critically, every
+*real FA SVG image* icon already in use (`BottomNavBar`, `BottomNavRail`,
+`MiniSidebar`, `TopAppBar`, `IconStepper`) rendered perfectly. The actual
+rule isn't "BMP vs. emoji," it's "this environment's bundled font has
+very little Unicode symbol coverage beyond basic punctuation — a
+freeform `Text`-based icon slot is fundamentally unreliable here
+regardless of which glyph block it draws from."
+
+Given that, converted every remaining freeform-text icon property to a
+real `image`, matching the pattern already established for NavItem/
+NavBadge (and consistent with why that pattern exists — `@image-url()`
+needing a compile-time literal is a *second*, independent reason beyond
+the font-coverage one): `Dock.icons`, `Taskbar.pinned-apps`,
+`FlyoutMenuItem.icon` → `icon-source`, `SidebarItem.icon` → `icon-source`.
+`Taskbar.system-tray-icons` and `EllipsisBreadcrumb`'s "•••" button
+stayed as plain text but had their glyphs swapped for guaranteed-safe
+plain text/ASCII (`"Wi-Fi · 100%"`, `"..."`) rather than converted to
+images, since neither is really an "icon" in the same sense. Updated
+`test.slint` throughout to match every changed property.
+
+This is a real API-breaking change for four components
+(`Dock`/`Taskbar`/`FlyoutMenuItem`/`SidebarItem`) delivered in the
+previous round — flagging clearly here since anyone who already
+integrated against the first delivery's `[string]` icon properties will
+need to switch to `[image]`/`icon-source`. Checked for other consumers
+of all four inside this repo (`grep`, cross-category) before making the
+change — none exist yet outside this category's own `test.slint`, so
+this is a clean break, not a breaking change against real usage.
+
+**New standing check, going forward:** don't trust a "safe" Unicode
+glyph choice without a screenshot confirming it actually renders in
+*this specific* Slint Preview environment — prefer real FA SVG icons
+for anything icon-shaped from the start, and reserve plain `Text` glyphs
+for cases already proven safe by an existing, working screenshot
+(`✓ ✕ × ‹ › ...` and plain alphanumerics).
