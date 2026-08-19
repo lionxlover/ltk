@@ -41,6 +41,14 @@ export component ActionToast inherits Rectangle {
             wrap: word-wrap;
         }
 
+        // Bug: this Rectangle had no explicit width, and its Text
+        // child used x/y centering — which Slint's own sizing rules
+        // exclude from preferred-size computation (the same badge-
+        // sizing bug found repeatedly across cards/, navigation/, and
+        // Snackbar.slint earlier in this category). With
+        // `horizontal-stretch: 0`, that meant 0px preferred width — the
+        // action button was invisible. Fixed by sizing from real layout
+        // content instead.
         if action-text != "": Rectangle {
             horizontal-stretch: 0;
             height: 28px;
@@ -53,15 +61,18 @@ export component ActionToast inherits Rectangle {
                 clicked => { root.action-clicked(); }
             }
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                y: (parent.height - self.height) / 2;
-                text: root.action-text;
-                color: Theme.on-accent;
-                font-family: Theme.font-ui;
-                font-size: Theme.text-xs;
-                font-weight: Theme.weight-semibold;
-                vertical-alignment: center;
+            HorizontalLayout {
+                padding-left: Theme.sp-3;
+                padding-right: Theme.sp-3;
+
+                Text {
+                    text: root.action-text;
+                    color: Theme.on-accent;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xs;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                }
             }
         }
 

@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `x: -parent.width * 0.4;` is a static binding — it never changes,
+// so the bar sat permanently parked just off the left edge (`animate x`
+// had nothing to actually transition between and never played). Same
+// "static binding never animates" issue as PulseLoader — this project's
+// own gotchas.md documents the pattern. Fixed with the confirmed nudge
+// technique: an internal `sweep` property goes from 0 to 1 and repeats
+// indefinitely, driving `x` across the full track each cycle.
 export component IndeterminateProgress inherits Rectangle {
     in property <color> bar-color: Theme.accent;
     in property <color> track-color: Theme.bg-overlay;
@@ -13,12 +20,15 @@ export component IndeterminateProgress inherits Rectangle {
     }
 
     pulse := Rectangle {
-        x: -parent.width * 0.4;
+        property <float> sweep: 0;
+        x: (sweep * 1.4 - 0.4) * parent.width;
         y: 0;
         width: parent.width * 0.4;
         height: parent.height;
         border-radius: Theme.radius-full;
         background: bar-color;
-        animate x { duration: 1400ms; iteration-count: -1; }
+        animate sweep { duration: 1400ms; easing: Theme.ease-in-out; iteration-count: -1; }
+        init => { sweep = 1; }
     }
 }
+

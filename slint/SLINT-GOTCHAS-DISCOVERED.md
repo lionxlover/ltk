@@ -1291,6 +1291,77 @@ the missing outer layout, not any one child's own properties.
 
 ---
 
+---
+
+### `animation-tick()` is the sanctioned way to drive a continuously-running animation — an alternative to the `init =>` nudge trick
+
+Confirmed via Slint's own docs ("for permanently running animations, see
+`animation-tick()`"). It returns a continuously-incrementing duration
+that updates every frame, so a binding that reads it naturally
+re-evaluates on every frame without needing the `init =>`-nudge-plus-
+`iteration-count: -1` workaround documented elsewhere in this file.
+
+```slint
+// A blink cycle: on for the first 600ms of every 1200ms window.
+opacity: mod(animation-tick() + 0ms, 1200ms) < 600ms ? 1.0 : 0.3;
+animate opacity { duration: 600ms; }
+```
+Confirmed working in this project's own `feedback/DotsLoader.slint`
+(three dots blinking in a staggered sequence, each offset by `+ 400ms`/
+`+ 800ms` in the `mod(...)` call) and reused for `WaveLoader.slint`'s
+bar-height animation (`sin(mod(animation-tick() + offset, period) /
+period * 360deg)` for a smooth up-down cycle, staggered per bar the same
+way). Prefer this over the nudge trick when the animation is driven by a
+repeating *function of time* (blink, wave, pulse-by-formula) rather than
+a simple back-and-forth or one-way sweep between two fixed values, where
+the nudge trick's `property + init + animate` is more direct.
+
+---
+
+---
+
+### A gradient `brush` on `border-color` may not render, even though `border-color` is brush-typed — use a background-fill-plus-punch-out instead
+
+`border-color` is documented as `brush` (confirmed: same type as
+`background`), so a `@conic-gradient(...)` on it looks like it should
+work for a partial-ring spinner/progress-arc effect without needing a
+punch-out mask. There's a confirmed open Slint issue where this doesn't
+render on the software renderer specifically (slint-ui/slint#6225:
+"Slint software renderer doesn't show gradients on rectangle with
+border... enough to have border-width: 1px. When removing the border...
+it shows fine"). Since it's unknown which renderer any given Slint
+Preview environment uses, don't rely on a gradient `border-color` for
+anything that must render reliably.
+
+```slint
+// RISKY — may render as a solid/wrong color instead of the gradient,
+// depending on renderer.
+Rectangle {
+    border-width: 3px;
+    border-color: @conic-gradient(from 0deg, accent 0deg, accent 90deg, transparent 90deg, transparent 360deg);
+}
+```
+```slint
+// RIGHT — this project's own established technique (used successfully
+// across charts/ and feedback/): fill the whole shape with the
+// gradient, then paint a smaller same-shaped Rectangle on top in
+// whatever color the surface actually is, to punch out the center and
+// leave only a ring. Needs to know the backdrop color (expose it as an
+// overridable property rather than hardcoding one theme token), but
+// sidesteps the renderer bug entirely since there's no gradient on a
+// bordered element at all.
+Rectangle {
+    background: @conic-gradient(from 0deg, accent 0deg, accent 90deg, transparent 90deg, transparent 360deg);
+}
+Rectangle {
+    width: parent.width - 6px; height: parent.height - 6px;
+    x: 3px; y: 3px;
+    background: backdrop-color;   // exposed as `in property <brush> backdrop-color`
+}
+```
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`

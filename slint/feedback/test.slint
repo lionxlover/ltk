@@ -5,6 +5,36 @@ import { Notification } from "Notification.slint";
 import { Snackbar } from "Snackbar.slint";
 import { ProgressBar } from "ProgressBar.slint";
 import { Skeleton } from "Skeleton.slint";
+import { AboutDialog } from "AboutDialog.slint";
+import { ActionToast } from "ActionToast.slint";
+import { Callout } from "Callout.slint";
+import { CircularProgress } from "CircularProgress.slint";
+import { ConfettiBurst } from "ConfettiBurst.slint";
+import { Dialog } from "Dialog.slint";
+import { DotsLoader } from "DotsLoader.slint";
+import { EmptyState } from "EmptyState.slint";
+import { ErrorState } from "ErrorState.slint";
+import { IndeterminateProgress } from "IndeterminateProgress.slint";
+import { IndeterminateSpinner } from "IndeterminateSpinner.slint";
+import { MultilineToast } from "MultilineToast.slint";
+import { NoResultsState } from "NoResultsState.slint";
+import { OfflineState } from "OfflineState.slint";
+import { PermissionDeniedState } from "PermissionDeniedState.slint";
+import { PersistentBanner } from "PersistentBanner.slint";
+import { PulseLoader } from "PulseLoader.slint";
+import { SegmentedProgress } from "SegmentedProgress.slint";
+import { SkeletonAvatar } from "SkeletonAvatar.slint";
+import { SkeletonCard } from "SkeletonCard.slint";
+import { SkeletonHeading } from "SkeletonHeading.slint";
+import { SkeletonImage } from "SkeletonImage.slint";
+import { SkeletonListItem } from "SkeletonListItem.slint";
+import { SkeletonParagraph } from "SkeletonParagraph.slint";
+import { SkeletonTableRow } from "SkeletonTableRow.slint";
+import { SkeletonText } from "SkeletonText.slint";
+import { StripedProgress } from "StripedProgress.slint";
+import { SuccessState } from "SuccessState.slint";
+import { Toast } from "Toast.slint";
+import { WaveLoader } from "WaveLoader.slint";
 
 export component FeedbackTest inherits Rectangle {
     background: Theme.bg-base;
@@ -59,6 +89,72 @@ export component FeedbackTest inherits Rectangle {
             Skeleton { skeleton-height: 20px; }
             Skeleton { skeleton-height: 14px; }
             Skeleton { skeleton-height: 14px; }
+        }
+
+        Text { text: "Skeleton Primitives — Avatar / Heading / Text / Image"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2; width: 300px;
+            SkeletonAvatar { size: 48px; }
+            SkeletonHeading { skeleton-width: 220px; }
+            SkeletonText { skeleton-width: 260px; }
+            SkeletonImage { image-height: 100px; width: 300px; }
+        }
+
+        Text { text: "Skeleton Composites — Paragraph / List Item / Table Row / Card"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-4; width: 300px;
+            SkeletonParagraph { width: 300px; }
+            SkeletonListItem { width: 300px; }
+            SkeletonTableRow { width: 300px; }
+            SkeletonCard { width: 220px; height: 220px; }
+        }
+
+        Text { text: "Loaders — Pulse / Dots / Wave / Indeterminate Spinner"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-8; alignment: start;
+            PulseLoader { }
+            DotsLoader { }
+            WaveLoader { }
+            IndeterminateSpinner { }
+        }
+
+        Text { text: "Progress — Circular / Segmented / Striped / Indeterminate Bar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-3;
+            CircularProgress { value: 68; }
+            SegmentedProgress { width: 300px; steps: 5; current: 3; }
+            StripedProgress { width: 300px; value: 60; }
+            IndeterminateProgress { width: 300px; }
+        }
+
+        Text { text: "Toasts — Toast / Action / Multiline"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            Toast { popup-text: "Changes saved"; active: true; width: 300px; }
+            ActionToast { message: "File moved to Trash"; action-text: "Undo"; kind: 0; width: 360px; }
+            MultilineToast { title: "Upload complete"; message: "3 files uploaded successfully to your workspace."; kind: 1; width: 360px; }
+        }
+
+        Text { text: "Callout / Persistent Banner"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2; width: 400px;
+            Callout { title: "Heads up"; text: "This action can't be undone."; kind: 2; }
+            PersistentBanner { text: "You're viewing a read-only snapshot."; kind: 0; }
+        }
+
+        Text { text: "Empty / Error / Success / No Results / Offline / Permission Denied States"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-2;
+            EmptyState { width: 180px; height: 200px; action-label: "Add Item"; }
+            ErrorState { width: 180px; height: 200px; }
+            SuccessState { width: 180px; height: 200px; }
+            NoResultsState { width: 180px; height: 200px; query: "quarterly report"; }
+            OfflineState { width: 180px; height: 200px; }
+            PermissionDeniedState { width: 180px; height: 200px; }
+        }
+
+        Text { text: "Dialog / About Dialog"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4;
+            Dialog { title: "Delete file?"; text: "This action cannot be undone."; left-button-text: "Cancel"; right-button-text: "Delete"; active: true; }
+            AboutDialog { name: "Lion Toolkit"; description: "Build native UIs with Slint + Rust."; active: true; }
+        }
+
+        Text { text: "Confetti Burst"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { width: 200px; height: 160px; clip: true;
+            ConfettiBurst { }
         }
         }
     }

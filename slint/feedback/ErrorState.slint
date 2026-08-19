@@ -44,19 +44,28 @@ export component ErrorState inherits Rectangle {
             wrap: word-wrap;
         }
 
+        // Bug: this Rectangle had no explicit width, and its Text
+        // child used x/y centering — which Slint's own sizing rules
+        // exclude from preferred-size computation (the same badge-
+        // sizing bug found repeatedly across this category). Fixed by
+        // sizing from real layout content instead.
         Rectangle {
             height: 36px;
             background: Theme.accent;
             border-radius: Theme.radius-md;
             horizontal-stretch: 0;
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                text: "Retry";
-                color: #ffffff;
-                font-size: 13px;
-                font-weight: Theme.weight-semibold;
-                vertical-alignment: center;
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: "Retry";
+                    color: #ffffff;
+                    font-size: 13px;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                }
             }
 
             TouchArea { clicked => { root.retry(); } }

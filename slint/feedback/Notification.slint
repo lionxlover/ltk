@@ -32,8 +32,10 @@ export component Notification inherits Rectangle {
         }
 
         // Icon
+        // Note: plain ASCII "i" rather than "ℹ" — see Alert.slint for
+        // why (only screenshot-confirmed glyphs are trusted here).
         if show-icon: Text {
-            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "ℹ"));
+            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "i"));
             color: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
             font-size: Theme.text-lg;
             vertical-alignment: center;

@@ -1,5 +1,15 @@
 import { Theme } from "../core/Theme.slint";
 
+// Two issues:
+// 1. `opacity: running ? 1.0 : 0.3;` was dead code — the root already
+//    has `visible: running;`, so nothing renders at all when
+//    `running` is false regardless of what this opacity was set to.
+// 2. No rotation at all — a "busy indicator" using a refresh-icon glyph
+//    that never actually spins doesn't communicate "in progress."
+//    Added continuous rotation using this project's own confirmed
+//    pattern for infinite loops (a static binding never animates;
+//    `init =>` needs to nudge the value once — see
+//    SLINT-GOTCHAS-DISCOVERED.md).
 export component BusyIndicator inherits Rectangle {
     in property <bool> running: true;
 
@@ -13,7 +23,11 @@ export component BusyIndicator inherits Rectangle {
         source: @image-url("../../src/images/refresh.svg");
         image-fit: contain;
         colorize: Theme.text-tertiary;
-        opacity: running ? 1.0 : 0.3;
-        animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+        property <float> spin-angle: 0;
+        transform-rotation: spin-angle * 1deg;
+        animate spin-angle { duration: 900ms; easing: Theme.ease-in-out; iteration-count: -1; }
+        init => { spin-angle = 360; }
     }
 }
+

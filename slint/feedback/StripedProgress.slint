@@ -1,5 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: each `stripeN`'s `x` was a static literal with `animate x {...}`
+// attached — same "static binding never animates" issue found
+// repeatedly across this category (PulseLoader, IndeterminateProgress,
+// ProgressBar's indeterminate mode): a value that never changes gives
+// the animate block nothing to transition between, so the "moving
+// stripes" barber-pole effect never actually moved. Fixed with the
+// confirmed nudge + repeat technique: each stripe now drives its
+// position from an internal `drift` property that goes 0→1 and repeats.
 export component StripedProgress inherits Rectangle {
     in property <float> value: 0;
     in property <float> max: 100;
@@ -25,48 +33,58 @@ export component StripedProgress inherits Rectangle {
         clip: true;
 
         stripe1 := Rectangle {
-            x: -16px;
+            property <float> drift: 0;
+            x: (-16px) + drift * 20px;
             y: 0;
             width: 6px;
             height: parent.height;
             background: rgba(255, 255, 255, 0.2);
-            animate x { duration: 800ms; iteration-count: -1; }
+            animate drift { duration: 800ms; iteration-count: -1; }
+            init => { drift = 1; }
         }
 
         stripe2 := Rectangle {
-            x: 4px;
+            property <float> drift: 0;
+            x: 4px + drift * 20px;
             y: 0;
             width: 6px;
             height: parent.height;
             background: rgba(255, 255, 255, 0.2);
-            animate x { duration: 800ms; iteration-count: -1; }
+            animate drift { duration: 800ms; iteration-count: -1; }
+            init => { drift = 1; }
         }
 
         stripe3 := Rectangle {
-            x: 24px;
+            property <float> drift: 0;
+            x: 24px + drift * 20px;
             y: 0;
             width: 6px;
             height: parent.height;
             background: rgba(255, 255, 255, 0.2);
-            animate x { duration: 800ms; iteration-count: -1; }
+            animate drift { duration: 800ms; iteration-count: -1; }
+            init => { drift = 1; }
         }
 
         stripe4 := Rectangle {
-            x: 44px;
+            property <float> drift: 0;
+            x: 44px + drift * 20px;
             y: 0;
             width: 6px;
             height: parent.height;
             background: rgba(255, 255, 255, 0.2);
-            animate x { duration: 800ms; iteration-count: -1; }
+            animate drift { duration: 800ms; iteration-count: -1; }
+            init => { drift = 1; }
         }
 
         stripe5 := Rectangle {
-            x: 64px;
+            property <float> drift: 0;
+            x: 64px + drift * 20px;
             y: 0;
             width: 6px;
             height: parent.height;
             background: rgba(255, 255, 255, 0.2);
-            animate x { duration: 800ms; iteration-count: -1; }
+            animate drift { duration: 800ms; iteration-count: -1; }
+            init => { drift = 1; }
         }
     }
 }

@@ -1,9 +1,22 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: this rendered as two static, complete, non-rotating rings — no
+// actual spinning motion, no partial arc — so it looked like a static
+// "loading complete" ring, not a spinner. Fixed with the conic-gradient
+// arc + rotation technique already proven in this project's charts/
+// category (GaugeChart/ProgressRingChart). Deliberately not using a
+// gradient directly on `border-color`, even though `border-color` is
+// brush-typed and would be the more natural fit here: Slint's software
+// renderer has a confirmed open issue where gradients on a bordered
+// Rectangle don't render (slint-ui/slint#6225) — the background-fill +
+// punch-out-circle technique sidesteps that entirely, at the cost of
+// needing to know the surface it sits on (exposed as `backdrop-color`,
+// defaulting to this project's card surface color, overridable per use).
 export component IndeterminateSpinner inherits Rectangle {
     in property <length> size: 24px;
     in property <color> spinner-color: Theme.accent;
     in property <length> stroke-width: 3px;
+    in property <brush> backdrop-color: Theme.bg-surface;
 
     width: root.size;
     height: root.size;
@@ -18,12 +31,27 @@ export component IndeterminateSpinner inherits Rectangle {
         background: transparent;
     }
 
-    Rectangle {
+    spin := Rectangle {
         width: parent.width;
         height: parent.height;
         border-radius: Theme.radius-full;
-        border-width: stroke-width;
-        border-color: spinner-color;
-        background: transparent;
+        background: @conic-gradient(from 0deg,
+            spinner-color 0deg, spinner-color 90deg,
+            transparent 90deg, transparent 360deg);
+
+        property <float> angle: 0;
+        transform-rotation: angle * 1deg;
+        animate angle { duration: 900ms; easing: Theme.ease-in-out; iteration-count: -1; }
+        init => { angle = 360; }
+    }
+
+    Rectangle {
+        width: parent.width - stroke-width * 2;
+        height: parent.height - stroke-width * 2;
+        x: stroke-width;
+        y: stroke-width;
+        border-radius: Theme.radius-full;
+        background: root.backdrop-color;
     }
 }
+

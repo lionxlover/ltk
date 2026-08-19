@@ -1,9 +1,17 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// Bug: `callback action();` was declared but nothing in the component
+// could ever trigger it — no button, no TouchArea referencing it
+// anywhere. Any host listening for this callback would never receive
+// it no matter what the user did. Added an actual action button
+// (following the same pattern as ErrorState's "Retry"), shown only
+// when the host supplies a label — so a host that genuinely doesn't
+// want a call-to-action can still leave it out.
 export component EmptyState inherits Rectangle {
     in property <string> title: "Nothing here";
     in property <string> description: "No data to display yet.";
+    in property <string> action-label: "";
 
     callback action();
 
@@ -44,5 +52,28 @@ export component EmptyState inherits Rectangle {
             horizontal-alignment: center;
             wrap: word-wrap;
         }
+
+        if root.action-label != "": Rectangle {
+            height: 36px;
+            background: Theme.accent;
+            border-radius: Theme.radius-md;
+            horizontal-stretch: 0;
+
+            HorizontalLayout {
+                padding-left: Theme.sp-4;
+                padding-right: Theme.sp-4;
+
+                Text {
+                    text: root.action-label;
+                    color: #ffffff;
+                    font-size: 13px;
+                    font-weight: Theme.weight-semibold;
+                    vertical-alignment: center;
+                }
+            }
+
+            TouchArea { clicked => { root.action(); } }
+        }
     }
 }
+

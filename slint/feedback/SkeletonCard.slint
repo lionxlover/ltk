@@ -13,6 +13,14 @@ export component SkeletonCard inherits Rectangle {
             height: 120px;
             background: Theme.bg-overlay;
             border-radius: Theme.radius-lg;
+
+            // Gap: no animation (see SkeletonImage.slint) — this
+            // duplicates that component's pattern inline rather than
+            // reusing it, so it needed the same fix applied separately.
+            property <float> pulse: 1.0;
+            opacity: pulse;
+            animate pulse { duration: 900ms; easing: Theme.ease-in-out; iteration-count: -1; direction: alternate; }
+            init => { pulse = 0.5; }
         }
 
         VerticalLayout {

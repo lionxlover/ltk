@@ -33,22 +33,34 @@ export component Snackbar inherits Rectangle {
         if action-text != "": Rectangle {
             horizontal-stretch: 0;
 
+            // Bug: this Rectangle had no explicit width, and its Text
+            // child used x/y centering — which Slint's own sizing rules
+            // exclude from preferred-size computation (the same badge-
+            // sizing bug found repeatedly across cards/ and navigation/
+            // this pass). With `horizontal-stretch: 0`, that meant 0px
+            // preferred width — the action button was invisible. Fixed
+            // by sizing from real layout content instead, nested inside
+            // the background rectangle (rather than as a sibling of it)
+            // so there's a single, unambiguous source of the size.
             action-bg := Rectangle {
                 border-radius: Theme.radius-sm;
                 background: action-ta.pressed ? Theme.accent-dim
                     : action-ta.has-hover ? Theme.accent
                     : transparent;
-            }
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                y: (parent.height - self.height) / 2;
-                text: root.action-text;
-                color: Theme.accent;
-                font-family: Theme.font-ui;
-                font-size: Theme.text-sm;
-                font-weight: Theme.weight-semibold;
-                vertical-alignment: center;
+                HorizontalLayout {
+                    padding-left: Theme.sp-2;
+                    padding-right: Theme.sp-2;
+
+                    Text {
+                        text: root.action-text;
+                        color: Theme.accent;
+                        font-family: Theme.font-ui;
+                        font-size: Theme.text-sm;
+                        font-weight: Theme.weight-semibold;
+                        vertical-alignment: center;
+                    }
+                }
             }
 
             action-ta := TouchArea {

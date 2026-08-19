@@ -1,15 +1,38 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: 20 particles at fixed positions with no animation at all — a
+// "confetti burst" that never actually bursts, just sits there as
+// static decoration. Added a real radial burst-and-fall animation using
+// this project's confirmed nudge pattern (a static binding never
+// animates; `init =>` needs to nudge the value once — see
+// SLINT-GOTCHAS-DISCOVERED.md): each particle animates outward from
+// center, falls, and fades, playing once per mount (no
+// `iteration-count`, since a burst is a one-shot trigger, not a loop —
+// re-mount the component, e.g. behind an `if`, to replay it).
 export component ConfettiBurst inherits Rectangle {
     background: transparent;
+    clip: true;
 
     for i in 20: Rectangle {
-        x: (mod(i * 37, 100)) * 1px;
-        y: (mod(i * 53, 100)) * 1px;
+        property <float> angle: mod(i * 137, 360);
+        property <float> distance: 30 + mod(i * 41, 40);
+        property <float> progress: 0;
+
+        x: parent.width * 0.5 + cos(angle * 1deg) * distance * progress * 1px - self.width / 2;
+        y: parent.height * 0.5 + sin(angle * 1deg) * distance * progress * 1px + (progress * progress * 40px) - self.height / 2;
         width: 6px;
         height: 6px;
-        background: i == 0 ? Theme.accent : (i == 1 ? Theme.error : (i == 2 ? Theme.success : (i == 3 ? Theme.warning : Theme.accent)));
-        border-radius: 3px;
-        opacity: 0.8;
+        background: mod(i, 5) == 0 ? Theme.accent
+            : mod(i, 5) == 1 ? Theme.error
+            : mod(i, 5) == 2 ? Theme.success
+            : mod(i, 5) == 3 ? Theme.warning
+            : Theme.violet_500;
+        border-radius: mod(i, 2) == 0 ? 3px : 0px;
+        opacity: 1.0 - progress;
+        transform-rotation: progress * 360deg * (mod(i, 2) == 0 ? 1 : -1);
+
+        animate progress { duration: 900ms + mod(i * 29, 400) * 1ms; easing: Theme.ease-out; }
+        init => { progress = 1; }
     }
 }
+

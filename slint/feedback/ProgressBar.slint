@@ -26,7 +26,17 @@ export component ProgressBar inherits Rectangle {
     }
 
     indeterminate-rect := Rectangle {
-        x: indeterminate ? parent.width * 0.3 : 0px;
+        // Bug: `x` was bound to a static conditional value
+        // (`indeterminate ? parent.width * 0.3 : 0px`) — it only ever
+        // changes once, at the moment `indeterminate` itself toggles,
+        // so the attached `animate x` played a single 1200ms transition
+        // and then sat still forever after. Same "static binding never
+        // truly loops" issue as PulseLoader/IndeterminateProgress in
+        // this category. Fixed with the same confirmed nudge + repeat
+        // technique used in IndeterminateProgress.slint: an internal
+        // `sweep` property drives `x` across the full track and repeats.
+        property <float> sweep: 0;
+        x: indeterminate ? (sweep * 1.4 - 0.4) * parent.width : 0px;
         y: 0;
         width: parent.width * 0.4;
         height: parent.height;
@@ -34,7 +44,8 @@ export component ProgressBar inherits Rectangle {
         background: progress-color;
         visible: indeterminate;
         opacity: indeterminate ? 0.6 : 0;
-        animate x { duration: 1200ms; easing: Theme.ease-in-out; }
+        animate sweep { duration: 1200ms; easing: Theme.ease-in-out; iteration-count: -1; }
         animate opacity { duration: 300ms; }
+        init => { sweep = 1; }
     }
 }

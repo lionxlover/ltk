@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `opacity: 0.4;` is a static binding — it never changes, so the
+// `animate opacity {...}` block has nothing to actually transition
+// between and never plays (this project's own gotchas.md already
+// documents this exact failure mode: "Infinite animation loop needs a
+// nudge, not a static binding"). Also missing `iteration-count: -1;`,
+// so even a real transition would've only played once. Fixed with the
+// confirmed nudge pattern.
 export component PulseLoader inherits Rectangle {
     in property <length> size: 12px;
 
@@ -7,7 +14,10 @@ export component PulseLoader inherits Rectangle {
     height: size;
     background: Theme.accent;
     border-radius: size / 2;
-    opacity: 0.4;
 
-    animate opacity { duration: 800ms; easing: ease-in-out; }
+    property <float> pulse: 1.0;
+    opacity: pulse;
+    animate pulse { duration: 800ms; easing: Theme.ease-in-out; iteration-count: -1; direction: alternate; }
+    init => { pulse = 0.4; }
 }
+

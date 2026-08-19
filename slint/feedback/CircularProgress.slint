@@ -1,5 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: `value`/`max` only toggled the second ring's *visibility*
+// (`value > 0`) — whether value was 5 or 95, the visible ring was
+// always a full, complete circle. This is the same "declared but not
+// actually wired to the drawing" disease found and fixed throughout
+// charts/ (GaugeChart, ProgressRingChart, etc.). Fixed with the same
+// conic-gradient arc technique used there and in this category's
+// IndeterminateSpinner.
 export component CircularProgress inherits Rectangle {
     in property <float> value: 0;
     in property <float> max: 100;
@@ -7,34 +14,43 @@ export component CircularProgress inherits Rectangle {
 
     in property <color> progress-color: Theme.accent;
     in property <color> track-color: Theme.bg-overlay;
+    in property <brush> backdrop-color: Theme.bg-surface;
 
     width: root.size;
     height: root.size;
     background: transparent;
 
-    Rectangle {
-        width: parent.width;
-        height: parent.height;
-        border-radius: Theme.radius-full;
-        border-width: 4px;
-        border-color: track-color;
-        background: transparent;
-    }
+    property <float> fraction: root.max > 0 ? max(0.0, min(1.0, root.value / root.max)) : 0;
 
     Rectangle {
         width: parent.width;
         height: parent.height;
         border-radius: Theme.radius-full;
-        border-width: 4px;
-        border-color: progress-color;
-        background: transparent;
-        visible: value > 0;
+        background: track-color;
+    }
+
+    if fraction > 0: Rectangle {
+        width: parent.width;
+        height: parent.height;
+        border-radius: Theme.radius-full;
+        background: @conic-gradient(from 0deg,
+            progress-color 0deg, progress-color root.fraction * 360deg,
+            transparent root.fraction * 360deg, transparent 360deg);
+    }
+
+    Rectangle {
+        width: parent.width - 8px;
+        height: parent.height - 8px;
+        x: 4px;
+        y: 4px;
+        border-radius: Theme.radius-full;
+        background: root.backdrop-color;
     }
 
     center-text := Text {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
-        text: Math.round(value) + "%";
+        text: "\{Math.round(value)}%";
         color: Theme.text-primary;
         font-family: Theme.font-ui;
         font-size: Theme.text-xs;
@@ -43,3 +59,4 @@ export component CircularProgress inherits Rectangle {
         vertical-alignment: center;
     }
 }
+

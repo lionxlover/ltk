@@ -34,8 +34,14 @@ export component NoResultsState inherits Rectangle {
             horizontal-alignment: center;
         }
 
+        // Bug: `{root.query}` (no backslash) is literal text in Slint,
+        // not interpolation — this project's own gotchas.md documents
+        // the exact failure ("Literal ${name} or {name} shows up in the
+        // UI (no diagnostic) — string interpolation is backslash-brace").
+        // The message would have literally shown `{root.query}` instead
+        // of the actual search term. Fixed to `\{root.query}`.
         Text {
-            text: root.query != "" ? "No results for \"{root.query}\"" : "Try a different search term";
+            text: root.query != "" ? "No results for \"\{root.query}\"" : "Try a different search term";
             color: Theme.text-secondary;
             font-size: 13px;
             horizontal-alignment: center;

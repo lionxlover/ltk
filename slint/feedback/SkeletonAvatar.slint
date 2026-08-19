@@ -1,5 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
+// Gap: no animation at all (see SkeletonImage.slint for the full
+// rationale — same fix applied to every skeleton primitive in this
+// category).
 export component SkeletonAvatar inherits Rectangle {
     in property <length> size: 40px;
 
@@ -7,4 +10,10 @@ export component SkeletonAvatar inherits Rectangle {
     height: size;
     background: Theme.bg-overlay;
     border-radius: size / 2;
+
+    property <float> pulse: 1.0;
+    opacity: pulse;
+    animate pulse { duration: 900ms; easing: Theme.ease-in-out; iteration-count: -1; direction: alternate; }
+    init => { pulse = 0.5; }
 }
+

@@ -1,9 +1,21 @@
 import { Theme } from "../core/Theme.slint";
 
+// Gap: this had no animation at all — a static gray box doesn't
+// actually read as "loading," which is the entire point of a skeleton
+// placeholder. Added a pulsing opacity animation using this project's
+// own confirmed pattern for infinite loops (a static binding never
+// animates; `init =>` needs to nudge the value once to give `animate`
+// something to actually transition — see SLINT-GOTCHAS-DISCOVERED.md).
 export component SkeletonImage inherits Rectangle {
     in property <length> image-height: 120px;
 
     height: image-height;
     background: Theme.bg-overlay;
     border-radius: Theme.radius-md;
+
+    property <float> pulse: 1.0;
+    opacity: pulse;
+    animate pulse { duration: 900ms; easing: Theme.ease-in-out; iteration-count: -1; direction: alternate; }
+    init => { pulse = 0.5; }
 }
+

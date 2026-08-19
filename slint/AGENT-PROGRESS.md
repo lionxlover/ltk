@@ -17,11 +17,12 @@ re-discovering things the hard way.
 | `text-input/` | 45 | ✅ Done, pending VS Code Problems-panel check | `text-input.zip` |
 | `charts/` | 43 | ✅ Done, verified via VS Code Problems panel (2 rounds of post-delivery fixes) | `charts.zip` |
 | `cards/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (1 round of post-delivery fixes) | `cards.zip` |
-| `navigation/` | 39 | ✅ Done, pending VS Code Problems-panel check | `navigation.zip` |
-| everything else | ~450 | ⬜ Not started | — |
+| `navigation/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (2 rounds of post-delivery fixes) | `navigation.zip` |
+| `feedback/` | 36 | ✅ Done, pending VS Code Problems-panel check | `feedback.zip` |
+| everything else | ~414 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`feedback` (36), `typography` (36), `media` (32),
+`typography` (36), `media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
@@ -1759,3 +1760,110 @@ glyph choice without a screenshot confirming it actually renders in
 for anything icon-shaped from the start, and reserve plain `Text` glyphs
 for cases already proven safe by an existing, working screenshot
 (`✓ ✕ × ‹ › ...` and plain alphanumerics).
+
+## `feedback/` batch — loading indicators that don't load, and two more instances of known bug patterns
+
+All 36 components reviewed; 38 files delivered (36 components +
+`export.slint` + `test.slint`, the latter substantially expanded — see
+below). No `core/` changes needed.
+
+**The headline bug in this category: loading/progress indicators whose
+animation binding never actually animates.** This project's own
+gotchas.md already documents the root cause ("Infinite animation loop
+needs a nudge, not a static binding") from a prior category, but it
+turned up *seven separate times* here, in every shape that pattern can
+take:
+
+- `PulseLoader` — `opacity: 0.4;` (static; the attached `animate`
+  had nothing to transition between, so it never played at all).
+- `IndeterminateProgress` — `x: -parent.width * 0.4;` (static; the bar
+  sat permanently parked off the left edge instead of sweeping).
+- `ProgressBar`'s indeterminate mode — `x: indeterminate ? parent.width
+  * 0.3 : 0px;` (this one *did* animate once, when `indeterminate`
+  itself toggled — but then sat still forever after, since nothing else
+  ever changed `x` again).
+- `StripedProgress` — all five `stripeN.x` bindings were static
+  literals with `animate x` attached; the "moving stripes" barber-pole
+  effect never moved.
+- `BusyIndicator` — no animation at all (a refresh-icon glyph that
+  never rotates isn't "busy"); also had genuinely dead code, an
+  `opacity: running ? 1.0 : 0.3;` toggle that could never matter since
+  the root already has `visible: running;` hiding the whole thing.
+- `WaveLoader` — three bars at completely fixed heights, no animation.
+- `ConfettiBurst` — 20 particles at fixed positions, no animation —
+  a "burst" that never bursts.
+
+Fixed all seven with the confirmed nudge-and-repeat technique (an
+internal property that gets bumped once via `init =>`, with `animate
+... { iteration-count: -1; }` on it), plus `animation-tick()` for
+`WaveLoader` (Slint's own sanctioned mechanism for continuously-running
+animations, confirmed via docs — the same idiom this category's
+`DotsLoader` already used correctly, which is why it wasn't in the list
+above). `ConfettiBurst` intentionally plays once per mount rather than
+looping, since a burst is a one-shot trigger by nature, not an ambient
+loop — noted in its header comment that re-mounting (e.g. behind an
+`if`) is how a host replays it.
+
+**Two more instances of the "fake progress" disease from charts/:**
+`CircularProgress` and `IndeterminateSpinner` both drew a full, complete
+ring regardless of `value`/state — `CircularProgress`'s `value`/`max`
+only toggled the second ring's *visibility*, never its extent. Fixed
+both with the conic-gradient arc technique from charts/
+(GaugeChart/ProgressRingChart), now a third time reused in this project.
+Deliberately did *not* put the gradient directly on `border-color`
+(which is brush-typed and would be the more natural fit) — Slint's
+software renderer has a confirmed open bug where gradients on a
+bordered Rectangle don't render (slint-ui/slint#6225) — used the
+background-fill-plus-punch-out-circle technique instead, which needs to
+know the surrounding surface color (exposed as `backdrop-color`,
+overridable per instance) but sidesteps that renderer issue entirely.
+
+**Other real, standalone bugs:**
+- `EmptyState` — `callback action();` was declared but nothing in the
+  component could ever trigger it: no button, no `TouchArea`
+  referencing it anywhere. Added an actual action button (shown only
+  when the host supplies `action-label`, so a host that doesn't want
+  one can still omit it).
+- `NoResultsState` — `"No results for \"{root.query}\""` — missing the
+  backslash Slint interpolation requires (confirmed against this
+  project's own gotchas.md: "Literal `{name}` shows up in the UI (no
+  diagnostic)"). Would have displayed the literal text `{root.query}`
+  instead of the actual search term. Fixed to `\{root.query}`.
+- `OfflineState` — referenced `wifi-slash.svg`, which doesn't exist in
+  this project's bundled FontAwesome set (confirmed against the actual
+  file listing — a missing-asset bug, not a rendering one). Swapped for
+  `plug-circle-xmark`, a real icon with the same "disconnected" meaning.
+- `Snackbar` and `ActionToast` — both had an action-button `Rectangle`
+  with no explicit width, centering its label via x/y (excluded from
+  Slint's preferred-size computation — the same badge-sizing bug found
+  repeatedly across `cards/` and `navigation/`). With
+  `horizontal-stretch: 0`, both buttons had 0px preferred width and
+  were invisible. `ErrorState`'s "Retry" button had the identical bug,
+  compounded by sitting inside a `VerticalLayout { alignment: center;
+  }` (the alignment-vs-stretch issue from charts/, reinforcing the same
+  failure). All three fixed by sizing from real layout content instead.
+- `AboutDialog` and `Dialog` — both ended with a stray `ta := TouchArea
+  { }`, completely empty and never referenced anywhere in either file.
+  Removed as dead code.
+- `Alert`/`Notification` — used "ℹ" (U+2139) for the info-kind icon.
+  Not confirmed broken by any screenshot, but given this category's own
+  established caution (only trust glyphs a screenshot has actually
+  confirmed — see the tofu-glyph correction from `navigation/`),
+  swapped preemptively for plain ASCII "i", which needs no such
+  confirmation at all.
+
+**Gap, not a bug — added anyway:** every skeleton-loader primitive
+(`Skeleton`, `SkeletonText`, `SkeletonHeading`, `SkeletonAvatar`,
+`SkeletonImage`, `SkeletonTableRow`'s cells, `SkeletonCard`'s image
+placeholder) was a static gray box with no animation at all. A skeleton
+screen's entire purpose is signaling "loading" through motion — a
+static block just reads as a gray box, not a loading state. Added the
+same pulsing-opacity nudge animation used for the loader fixes above to
+all of them. The composite skeletons (`SkeletonParagraph`,
+`SkeletonListItem`, most of `SkeletonCard`) inherit this for free since
+they're built from the leaf components.
+
+**test.slint coverage:** arrived demonstrating 7 of 36 components — the
+largest gap of any category so far. Expanded to cover all 36, including
+live demos of every fix above (`EmptyState` with `action-label` set,
+`NoResultsState` with a real `query`, etc.).

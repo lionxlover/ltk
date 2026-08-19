@@ -1,6 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
+// Bug: referenced `wifi-slash.svg`, which doesn't exist in this
+// project's bundled FontAwesome set (confirmed by checking the actual
+// file listing) — an `@image-url()` pointing at a missing file. Swapped
+// for `plug-circle-xmark`, a real icon conveying the same "disconnected"
+// meaning.
 export component OfflineState inherits Rectangle {
     in property <string> message: "No internet connection";
 
@@ -18,7 +23,7 @@ export component OfflineState inherits Rectangle {
             border-radius: 32px;
 
             FaIcon {
-                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/wifi-slash.svg");
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/plug-circle-xmark.svg");
                 fa-size: 28px;
                 fa-color: Theme.text-tertiary;
                 x: (parent.width - self.width) / 2;

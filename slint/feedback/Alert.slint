@@ -20,9 +20,14 @@ export component Alert inherits Rectangle {
         alignment: stretch;
 
         // Icon
+        // Note: using plain ASCII "i" rather than "ℹ" (U+2139 INFORMATION
+        // SOURCE) for the info glyph — per this category's established
+        // caution (see SLINT-GOTCHAS-DISCOVERED.md), only glyphs actually
+        // confirmed by a screenshot should be trusted, and ✓/⚠/✕ are the
+        // ones confirmed so far; "i" needs no such confirmation at all.
         if show-icon: Text {
             y: (parent.height - self.height) / 2;
-            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "ℹ"));
+            text: kind == "error" ? "✕" : (kind == "warning" ? "⚠" : (kind == "success" ? "✓" : "i"));
             color: kind == "error" ? Theme.state-error : (kind == "warning" ? Theme.state-warning : (kind == "success" ? Theme.state-success : Theme.state-info));
             font-size: Theme.text-lg;
             vertical-alignment: center;
