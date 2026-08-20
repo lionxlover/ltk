@@ -1867,3 +1867,23 @@ they're built from the leaf components.
 largest gap of any category so far. Expanded to cover all 36, including
 live demos of every fix above (`EmptyState` with `action-label` set,
 `NoResultsState` with a real `query`, etc.).
+
+## Post-delivery fix: `feedback/CircularProgress.slint` — same `max` shadowing mistake as charts/GaugeChart, missed this time
+
+The person's VS Code Problems panel caught a real compiler error: "The
+expression is not a function" at line 23. Identical root cause to the
+`charts/GaugeChart.slint` fix from an earlier round: `in property
+<float> max: 100;` shadows the global `max()` function for the rest of
+the component, breaking the `max(0.0, min(1.0, ...))` call a few lines
+later. This project's own gotchas.md already documents this exact
+pattern as a standing check ("never name a property `max`, `min`,
+`abs`, `round`, `floor`, `ceil`, `mod`...") — it just wasn't re-checked
+against `CircularProgress` specifically when that file was rewritten
+during the `feedback/` pass, since the rewrite was modeled on
+`GaugeChart`'s *fixed* version but the property name itself wasn't
+re-verified against the checklist at the end.
+
+**Fixed the same way**: renamed to `max-value`, updated its one internal
+reference. No other file in `feedback/` (checked via grep) has the same
+shadowing shape, and `test.slint`'s one `CircularProgress { value: 68;
+}` usage doesn't reference `max` at all, so no cascading changes needed.

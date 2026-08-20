@@ -7,9 +7,14 @@ import { Theme } from "../core/Theme.slint";
 // charts/ (GaugeChart, ProgressRingChart, etc.). Fixed with the same
 // conic-gradient arc technique used there and in this category's
 // IndeterminateSpinner.
+// Post-delivery fix: also renamed `max` to `max-value` — a property
+// named `max` shadows the builtin `max()` function used right below it
+// ("The expression is not a function"), the exact same mistake already
+// made once and fixed in charts/GaugeChart.slint. Missed checking for
+// it here; this project's own gotchas.md documents the pattern.
 export component CircularProgress inherits Rectangle {
     in property <float> value: 0;
-    in property <float> max: 100;
+    in property <float> max-value: 100;
     in property <length> size: 48px;
 
     in property <color> progress-color: Theme.accent;
@@ -20,7 +25,7 @@ export component CircularProgress inherits Rectangle {
     height: root.size;
     background: transparent;
 
-    property <float> fraction: root.max > 0 ? max(0.0, min(1.0, root.value / root.max)) : 0;
+    property <float> fraction: root.max-value > 0 ? max(0.0, min(1.0, root.value / root.max-value)) : 0;
 
     Rectangle {
         width: parent.width;
