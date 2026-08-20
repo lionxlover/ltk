@@ -1,6 +1,14 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: both paragraphs were hardcoded with no way to override either.
+// Since this inherits Rectangle (not Text), the builtin `text` property
+// isn't available the way it is for most of this category's presets —
+// nothing exposed a way to show different copy at all. Added explicit
+// `in property <string>` overrides for both paragraphs.
 export component RunningText inherits Rectangle {
+    in property <string> paragraph1: "Typography is the craft of endowing human language with a durable visual form. It is the art of arranging type to make written language legible, readable and appealing when displayed.";
+    in property <string> paragraph2: "The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing, as well as adjusting the space between pairs of letters.";
+
     horizontal-stretch: 1;
     vertical-stretch: 0;
 
@@ -8,7 +16,7 @@ export component RunningText inherits Rectangle {
         spacing: 12px;
 
         Text {
-            text: "Typography is the craft of endowing human language with a durable visual form. It is the art of arranging type to make written language legible, readable and appealing when displayed.";
+            text: root.paragraph1;
             color: Theme.text-primary;
             font-family: Theme.font-ui;
             font-size: 14px;
@@ -17,7 +25,7 @@ export component RunningText inherits Rectangle {
         }
 
         Text {
-            text: "The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing, as well as adjusting the space between pairs of letters.";
+            text: root.paragraph2;
             color: Theme.text-primary;
             font-family: Theme.font-ui;
             font-size: 14px;
@@ -26,3 +34,4 @@ export component RunningText inherits Rectangle {
         }
     }
 }
+

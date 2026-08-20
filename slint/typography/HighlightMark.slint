@@ -1,9 +1,32 @@
 import { Theme } from "../core/Theme.slint";
 
-export component HighlightMark inherits Text {
-    text: "Highlighted text";
-    color: Theme.text-primary;
-    font-family: Theme.font-ui;
-    font-size: 14px;
-    font-weight: Theme.weight-medium;
+// Bug: this inherited `Text` directly and set only color/font
+// properties — no actual highlight. Confirmed against Slint's own
+// Text docs: `Text` has no `background` property at all (that's
+// Rectangle-only), so a "highlighted mark" span fundamentally can't be
+// built as a bare `Text` — it needs a background fill behind the
+// glyphs, which means wrapping a Text inside a Rectangle. This is the
+// one component in this category that can't follow the
+// "inherits Text directly" convention every sibling preset uses, for
+// exactly that reason.
+export component HighlightMark inherits Rectangle {
+    in property <string> text: "Highlighted text";
+
+    background: Theme.amber_200;
+    border-radius: 3px;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        padding-left: 3px;
+        padding-right: 3px;
+
+        Text {
+            text: root.text;
+            color: #0f172a;
+            font-family: Theme.font-ui;
+            font-size: 14px;
+            font-weight: Theme.weight-medium;
+        }
+    }
 }
+

@@ -1,6 +1,17 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the code sample was four hardcoded Text lines with no way to
+// show different code at all. Exposed as a `[string] lines` array so
+// any snippet (any number of lines) can be shown — same reusability
+// gap fixed elsewhere in this category.
 export component CodeBlock inherits Rectangle {
+    in property <[string]> lines: [
+        "fn main() {",
+        "    let x = 42;",
+        "    println!(\"{x}\");",
+        "}",
+    ];
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     border-width: 1px;
@@ -11,29 +22,8 @@ export component CodeBlock inherits Rectangle {
         padding: 16px;
         spacing: 4px;
 
-        Text {
-            text: "fn main() {";
-            color: Theme.text-primary;
-            font-family: Theme.font-mono;
-            font-size: 13px;
-            font-weight: Theme.weight-regular;
-        }
-        Text {
-            text: "    let x = 42;";
-            color: Theme.text-primary;
-            font-family: Theme.font-mono;
-            font-size: 13px;
-            font-weight: Theme.weight-regular;
-        }
-        Text {
-            text: "    println!(\"{x}\");";
-            color: Theme.text-primary;
-            font-family: Theme.font-mono;
-            font-size: 13px;
-            font-weight: Theme.weight-regular;
-        }
-        Text {
-            text: "}";
+        for line in root.lines: Text {
+            text: line;
             color: Theme.text-primary;
             font-family: Theme.font-mono;
             font-size: 13px;
@@ -41,3 +31,4 @@ export component CodeBlock inherits Rectangle {
         }
     }
 }
+

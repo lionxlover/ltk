@@ -1,6 +1,17 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: both the drop-cap letter and the paragraph text were hardcoded
+// with no way to override either. A drop cap fundamentally needs the
+// first letter split from the rest of the paragraph — since Slint
+// strings have no indexing/substring (confirmed elsewhere in this
+// project's own gotchas.md), that split can't happen inside .slint
+// itself, so it's exposed as two separate properties for the host to
+// fill in (the same pattern already used for TeamMemberCard/ContactCard
+// avatar initials).
 export component DropCap inherits Rectangle {
+    in property <string> drop-letter: "T";
+    in property <string> rest-of-text: "he quick brown fox jumps over the lazy dog. This paragraph demonstrates a drop cap, a large initial letter that spans multiple lines of body text.";
+
     horizontal-stretch: 1;
     vertical-stretch: 0;
     height: self.preferred-height;
@@ -10,7 +21,7 @@ export component DropCap inherits Rectangle {
         alignment: start;
 
         Text {
-            text: "T";
+            text: root.drop-letter;
             color: Theme.accent;
             font-family: Theme.font-display;
             font-size: 52px;
@@ -24,7 +35,7 @@ export component DropCap inherits Rectangle {
             padding-top: 6px;
 
             Text {
-                text: "he quick brown fox jumps over the lazy dog. This paragraph demonstrates a drop cap, a large initial letter that spans multiple lines of body text.";
+                text: root.rest-of-text;
                 color: Theme.text-primary;
                 font-family: Theme.font-ui;
                 font-size: 14px;
@@ -34,3 +45,4 @@ export component DropCap inherits Rectangle {
         }
     }
 }
+

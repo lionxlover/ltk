@@ -1,6 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: the code snippet was hardcoded with no way to override it. Since
+// this inherits Rectangle (not Text, unlike most of this category's
+// presets), the builtin `text` property isn't available to override —
+// nothing exposed a way to show different code at all. Added an
+// explicit `in property <string> code`.
 export component InlineCodeSpan inherits Rectangle {
+    in property <string> code: "let x = 42;";
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-sm;
     horizontal-stretch: 1;
@@ -15,7 +22,7 @@ export component InlineCodeSpan inherits Rectangle {
         padding-bottom: 2px;
 
         Text {
-            text: "let x = 42;";
+            text: root.code;
             color: Theme.accent;
             font-family: Theme.font-mono;
             font-size: 13px;
@@ -23,3 +30,4 @@ export component InlineCodeSpan inherits Rectangle {
         }
     }
 }
+

@@ -1,6 +1,16 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: all three label/value pairs were hardcoded with no way to
+// override any of them. Since this inherits Rectangle (not Text),
+// nothing exposed a way to show different figures at all. Added
+// explicit `in property <string>` overrides for each value (labels stay
+// fixed, since PRICE/QTY/TOTAL are structural column headers, not
+// content).
 export component NumericTabular inherits Rectangle {
+    in property <string> price: "$1,234.56";
+    in property <string> qty: "12,450";
+    in property <string> total: "$99,876.00";
+
     horizontal-stretch: 1;
     vertical-stretch: 0;
 
@@ -13,20 +23,21 @@ export component NumericTabular inherits Rectangle {
             VerticalLayout {
                 spacing: 2px;
                 Text { text: "PRICE"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
-                Text { text: "$1,234.56"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+                Text { text: root.price; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
             }
 
             VerticalLayout {
                 spacing: 2px;
                 Text { text: "QTY"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
-                Text { text: "12,450"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+                Text { text: root.qty; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
             }
 
             VerticalLayout {
                 spacing: 2px;
                 Text { text: "TOTAL"; color: Theme.text-tertiary; font-family: Theme.font-ui; font-size: 10px; font-weight: Theme.weight-semibold; letter-spacing: 0.8px; }
-                Text { text: "$99,876.00"; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
+                Text { text: root.total; color: Theme.text-primary; font-family: Theme.font-mono; font-size: 20px; font-weight: Theme.weight-bold; }
             }
         }
     }
 }
+

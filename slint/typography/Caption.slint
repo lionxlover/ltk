@@ -1,9 +1,16 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: default text was garbled — English grafted mid-word onto a
+// Chinese clause with no space or punctuation between them
+// ("small辅助文字用于图片说明、时间戳等。"), producing nonsense in
+// either language. Looks like an encoding/copy-paste corruption, not
+// intentional bilingual content (every other component in this
+// category has a plain, clean English default). Fixed to plain English.
 export component Caption inherits Text {
-    text: "Caption — small辅助文字用于图片说明、时间戳等。";
+    text: "Caption — small helper text for image captions, timestamps, etc.";
     color: Theme.text-tertiary;
     font-family: Theme.font-ui;
     font-size: 11px;
     font-weight: Theme.weight-regular;
 }
+

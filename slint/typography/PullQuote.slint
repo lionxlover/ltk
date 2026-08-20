@@ -1,6 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: quote/author were hardcoded with no way to override either —
+// same reusability gap fixed elsewhere in this category
+// (RunningText/NumericTabular/DropCap/InlineCodeSpan).
 export component PullQuote inherits Rectangle {
+    in property <string> quote: "The details are not the details. They make the design.";
+    in property <string> author: "— Charles Eames";
+
     horizontal-stretch: 1;
     vertical-stretch: 0;
 
@@ -13,7 +19,7 @@ export component PullQuote inherits Rectangle {
         }
 
         Text {
-            text: "The details are not the details. They make the design.";
+            text: root.quote;
             color: Theme.text-primary;
             font-family: Theme.font-display;
             font-size: 22px;
@@ -23,7 +29,7 @@ export component PullQuote inherits Rectangle {
         }
 
         Text {
-            text: "— Charles Eames";
+            text: root.author;
             color: Theme.text-tertiary;
             font-family: Theme.font-ui;
             font-size: 12px;
@@ -36,3 +42,4 @@ export component PullQuote inherits Rectangle {
         }
     }
 }
+

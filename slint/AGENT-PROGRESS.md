@@ -18,11 +18,12 @@ re-discovering things the hard way.
 | `charts/` | 43 | ✅ Done, verified via VS Code Problems panel (2 rounds of post-delivery fixes) | `charts.zip` |
 | `cards/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (1 round of post-delivery fixes) | `cards.zip` |
 | `navigation/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (2 rounds of post-delivery fixes) | `navigation.zip` |
-| `feedback/` | 36 | ✅ Done, pending VS Code Problems-panel check | `feedback.zip` |
-| everything else | ~414 | ⬜ Not started | — |
+| `feedback/` | 36 | ✅ Done, verified via VS Code Problems panel (1 round of post-delivery fixes) | `feedback.zip` |
+| `typography/` | 36 | ✅ Done, pending VS Code Problems-panel check | `typography.zip` |
+| everything else | ~378 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`typography` (36), `media` (32),
+`media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
@@ -1887,3 +1888,74 @@ re-verified against the checklist at the end.
 reference. No other file in `feedback/` (checked via grep) has the same
 shadowing shape, and `test.slint`'s one `CircularProgress { value: 68;
 }` usage doesn't reference `max` at all, so no cascading changes needed.
+
+## `typography/` batch — mostly clean presets, but several components could never actually be reused with different content
+
+All 36 components reviewed; 38 files delivered (36 components +
+`export.slint`, untouched + `test.slint`, unchanged — it already
+covered all 36 components with bare `{}` instantiations, and every one
+still compiles and renders correctly against the new properties added
+below since all defaults were preserved). No `core/` changes needed.
+
+This category was the cleanest so far — 26 of the 36 components are
+simple `inherits Text` style presets (`DisplayLG`, `HeadingH1`,
+`BodyMD`, `LabelSM`, etc.) that need no fix at all: since they inherit
+`Text` directly, the builtin `text` property is always overridable by
+any caller (`DisplayLG { text: "My Heading"; }`), so a hardcoded default
+string isn't a reusability bug the way it would be for a composite
+component — it's just a sensible default, exactly like this project's
+other `Text`-inheriting presets already established as a working
+convention.
+
+**The real, recurring bug in this category**: the other ten
+components — the composite ones that inherit `Rectangle` and wrap one
+or more `Text` children (`InlineCodeSpan`, `RunningText`,
+`NumericTabular`, `DropCap`, `PullQuote`, `Blockquote`, `CodeBlock`) —
+had their actual content hardcoded with **no exposed property to
+override any of it**. Because they inherit `Rectangle`, not `Text`,
+there's no builtin `text` property a caller could reach for the way
+there is with the presets above; nothing was exposed in its place. A
+"CodeBlock" component that can only ever show one specific four-line
+Rust snippet, or a "PullQuote" that can only ever quote Charles Eames,
+isn't really reusable — it's a screenshot. Fixed all seven by adding
+explicit `in property <string>` (or `<[string]>`) overrides for every
+piece of real content, while keeping the existing hardcoded values as
+defaults so nothing about the current demo changes.
+
+`DropCap` needed a slightly different shape than the rest: a drop cap
+fundamentally requires the first letter split from the rest of the
+paragraph, and Slint strings have no indexing/substring (confirmed
+elsewhere in this project's own gotchas.md), so that split can't happen
+inside `.slint` at all. Exposed it as two separate properties
+(`drop-letter`, `rest-of-text`) for the host to pre-split — the same
+pattern already established for `TeamMemberCard`/`ContactCard`'s avatar
+`initials`.
+
+**Other real, one-off bugs:**
+- `Caption` — default text was corrupted: English grafted mid-word onto
+  a Chinese clause with no space or punctuation between them
+  ("Caption — small辅助文字用于图片说明、时间戳等。"), reading as
+  nonsense in both languages. Every other component in this category
+  has a clean, plain-English default — this reads like an encoding or
+  copy-paste accident, not intentional bilingual content. Fixed to
+  plain English.
+- `HighlightMark` — inherited `Text` directly and only set color/font
+  properties, so it couldn't actually highlight anything: confirmed
+  against Slint's own `Text` docs that `Text` has no `background`
+  property at all (that's `Rectangle`-only), so a "highlighted mark"
+  span genuinely cannot be built as a bare `Text`. This is the one
+  component in the category that couldn't follow the
+  "inherits `Text` directly" convention every sibling preset uses, for
+  exactly that reason — restructured to wrap a `Text` inside a
+  `Rectangle` with a real background fill.
+
+**Checked and not a bug:** `PullQuote`/`Blockquote`'s real, accurately-
+attributed quotes from Charles Eames and Steve Jobs — both are
+genuinely well-documented, correctly-attributed quotes (verified
+against what's widely and consistently cited), used as ordinary demo
+placeholder content in a private component library, not published
+persuasive material — no misattribution concern here. Also checked
+`CodeBlock`'s `println!("{x}")` line: the un-escaped `{x}` is *correct*
+as written — it's Rust source text meant to display literally, not
+Slint interpolation syntax, so it should NOT have a backslash the way a
+real interpolation would.

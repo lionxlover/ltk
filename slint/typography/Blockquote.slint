@@ -1,6 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
+// Bug: quote/author were hardcoded with no way to override either —
+// same reusability gap fixed elsewhere in this category.
 export component Blockquote inherits Rectangle {
+    in property <string> quote: "Design is not just what it looks like and feels like. Design is how it works.";
+    in property <string> author: "— Steve Jobs";
+
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
     horizontal-stretch: 1;
@@ -23,7 +28,7 @@ export component Blockquote inherits Rectangle {
         spacing: 8px;
 
         Text {
-            text: "Design is not just what it looks like and feels like. Design is how it works.";
+            text: root.quote;
             color: Theme.text-primary;
             font-family: Theme.font-ui;
             font-size: 15px;
@@ -32,7 +37,7 @@ export component Blockquote inherits Rectangle {
             wrap: word-wrap;
         }
         Text {
-            text: "— Steve Jobs";
+            text: root.author;
             color: Theme.text-tertiary;
             font-family: Theme.font-ui;
             font-size: 12px;
@@ -40,3 +45,4 @@ export component Blockquote inherits Rectangle {
         }
     }
 }
+
