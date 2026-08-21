@@ -31,13 +31,13 @@ export component AvatarBadge inherits Rectangle {
         y: 0px;
         min-width: 14px;
         height: 14px;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: root.badge-color;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
-            text: root.badge_text;
+            text: root.badge-text;
             color: #ffffff;
             font-size: 8px;
             font-weight: Theme.weight-bold;

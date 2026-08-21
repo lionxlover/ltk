@@ -47,7 +47,11 @@ export component ImageCarousel inherits Rectangle {
             y: (parent.height - self.height) / 2;
         }
 
-        TouchArea { }
+        TouchArea {
+            clicked => {
+                root.current = Math.mod(root.current - 1 + root.total, root.total);
+            }
+        }
     }
 
     Rectangle {
@@ -68,7 +72,11 @@ export component ImageCarousel inherits Rectangle {
             y: (parent.height - self.height) / 2;
         }
 
-        TouchArea { }
+        TouchArea {
+            clicked => {
+                root.current = Math.mod(root.current + 1, root.total);
+            }
+        }
     }
 
     Rectangle {
@@ -85,7 +93,7 @@ export component ImageCarousel inherits Rectangle {
             padding-left: 8px;
             padding-right: 8px;
 
-            for idx in 5: Rectangle {
+            for idx in root.total: Rectangle {
                 width: root.current == idx ? 16px : 6px;
                 height: 6px;
                 background: root.current == idx ? Theme.accent : Theme.text-placeholder;

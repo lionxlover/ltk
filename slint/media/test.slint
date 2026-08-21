@@ -72,12 +72,17 @@ export component MediaTest inherits Rectangle {
             ImageCarousel { width: 400px; height: 300px; total: 5; current: 2; }
 
             Text { text: "ImageGallery / ImageMasonry"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-            Rectangle { height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
-                ImageGallery { columns: 3; count: 6; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Rectangle { horizontal-stretch: 1; height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                    ImageGallery { columns: 3; count: 6; }
+                }
+                Rectangle { horizontal-stretch: 1; height: 200px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                    ImageMasonry { columns: 3; count: 6; }
+                }
             }
 
             Text { text: "LightboxViewer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-            LightboxViewer { width: 300px; height: 60px; active: true; alt: "Preview"; }
+            LightboxViewer { width: 440px; height: 340px; active: true; alt: "Preview"; }
 
             // --- AVATAR ---
             Text { text: "Avatars (Circle / Square / Fallback / StatusRing / Badge)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
@@ -95,9 +100,9 @@ export component MediaTest inherits Rectangle {
             // --- ICON ---
             Text { text: "IconDisplay / AnimatedIcon"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3; alignment: start;
-                IconDisplay { icon: "★"; icon-size: 24px; }
-                IconDisplay { icon: "⚙"; icon-size: 32px; icon-color: Theme.accent; }
-                AnimatedIcon { icon: "⟳"; icon-size: 24px; }
+                IconDisplay { icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/star.svg"); icon-size: 24px; }
+                IconDisplay { icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg"); icon-size: 32px; icon-color: Theme.accent; }
+                AnimatedIcon { icon-size: 24px; spinning: true; }
                 SvgIllustration { width: 160px; height: 100px; label: "Hero"; }
             }
 

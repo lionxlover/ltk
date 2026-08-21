@@ -3,7 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component AvatarGroupStack inherits Rectangle {
     in property <int> count: 3;
 
-    in property <int> display-count: Math.min(root.count, 4);
+    out property <int> display-count: Math.min(root.count, 4);
     in property <length> avatar-size: 36px;
     in property <length> overlap: 10px;
 

@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component MapEmbed inherits Rectangle {
     in property <string> label: "Map";
@@ -14,10 +15,11 @@ export component MapEmbed inherits Rectangle {
         alignment: center;
         spacing: Theme.sp-2;
 
-        Text {
-            text: "🗺";
-            font-size: 32px;
-            horizontal-alignment: center;
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/map.svg");
+            fa-size: 28px;
+            fa-color: Theme.text-secondary;
+            x: (parent.width - self.width) / 2;
         }
 
         Text {

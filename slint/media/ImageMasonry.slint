@@ -1,24 +1,39 @@
 import { Theme } from "../core/Theme.slint";
 
+// Note: a true variable-height masonry/waterfall packing isn't possible
+// here — Slint's GridLayout normalizes every cell in a row to the same
+// height (documented elsewhere in this project for MasonryGrid/
+// WaterfallLayout). This is an honest reduction to a real, uniform
+// GridLayout instead of a fake uneven-height effect. `columns`/`count`
+// now actually drive the render — previously both were declared/accepted
+// and ignored, with the loop hardcoded to 6 items placed as unlaidout
+// direct children of a plain Rectangle (they fully overlapped).
 export component ImageMasonry inherits Rectangle {
+    in property <int> columns: 3;
     in property <int> count: 6;
 
     background: transparent;
     clip: true;
 
-    for item[i] in 6: Rectangle {
-        height: Math.mod(i, 3) == 0 ? 120px : (Math.mod(i, 3) == 1 ? 80px : 100px);
-        background: Theme.bg-overlay;
-        border-radius: Theme.radius-md;
-        clip: true;
+    GridLayout {
+        spacing: Theme.sp-2;
 
-        Text {
-            x: (parent.width - self.width) / 2;
-            y: (parent.height - self.height) / 2;
-            text: "\{i + 1}";
-            color: Theme.text-tertiary;
-            font-size: Theme.text-xs;
-            vertical-alignment: center;
+        for item[i] in root.count: Rectangle {
+            row: Math.floor(i / root.columns);
+            col: Math.mod(i, root.columns);
+            min-height: Math.mod(i, 3) == 0 ? 120px : (Math.mod(i, 3) == 1 ? 80px : 100px);
+            background: Theme.bg-overlay;
+            border-radius: Theme.radius-md;
+            clip: true;
+
+            Text {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                text: "\{i + 1}";
+                color: Theme.text-tertiary;
+                font-size: Theme.text-xs;
+                vertical-alignment: center;
+            }
         }
     }
 }

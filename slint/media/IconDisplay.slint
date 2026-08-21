@@ -1,8 +1,8 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component IconDisplay inherits Rectangle {
-    in property <string> icon: "★";
-    in property <string> variant: "mono";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/star.svg");
     in property <length> icon-size: 24px;
     in property <brush> icon-color: Theme.text-primary;
 
@@ -10,12 +10,11 @@ export component IconDisplay inherits Rectangle {
     height: icon-size;
     background: transparent;
 
-    Text {
+    FaIcon {
+        source: root.icon-source;
+        fa-size: root.icon-size;
+        fa-color: root.icon-color;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
-        text: root.icon;
-        color: root.icon_color;
-        font-size: icon-size;
-        vertical-alignment: center;
     }
 }

@@ -4,6 +4,8 @@ import { FaIcon } from "../core/FaIcon.slint";
 export component VideoThumbnail inherits Rectangle {
     in property <string> title: "";
 
+    callback play-clicked();
+
     width: 240px;
     height: 160px;
     background: Theme.bg-overlay;
@@ -45,7 +47,9 @@ export component VideoThumbnail inherits Rectangle {
             y: (parent.height - self.height) / 2;
         }
 
-        TouchArea { }
+        TouchArea {
+            clicked => { root.play-clicked(); }
+        }
     }
 
     if root.title != "": Rectangle {

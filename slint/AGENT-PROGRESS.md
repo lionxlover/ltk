@@ -20,10 +20,10 @@ re-discovering things the hard way.
 | `navigation/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (2 rounds of post-delivery fixes) | `navigation.zip` |
 | `feedback/` | 36 | ✅ Done, verified via VS Code Problems panel (1 round of post-delivery fixes) | `feedback.zip` |
 | `typography/` | 36 | ✅ Done, pending VS Code Problems-panel check | `typography.zip` |
-| everything else | ~378 | ⬜ Not started | — |
+| `media/` | 32 | ✅ Done, pending VS Code Problems-panel check | `media.zip` |
+| everything else | ~346 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`media` (32),
 `mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
 `animation` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
@@ -1959,3 +1959,140 @@ persuasive material — no misattribution concern here. Also checked
 as written — it's Rust source text meant to display literally, not
 Slint interpolation syntax, so it should NOT have a backslash the way a
 real interpolation would.
+
+## `media/` batch — a confirmation round more than a discovery round
+
+All 32 components reviewed; 34 files delivered (32 components +
+`export.slint`, unchanged + `test.slint`, updated — see below). No
+`core/` changes needed. Unlike most previous batches, nothing here was a
+*new* bug shape — every fix matched a pattern this project had already
+confirmed and documented in an earlier category. Framing this
+explicitly since it's a useful signal: the standing checklist below is
+maturing into something that actually catches real bugs on the first
+pass, not just after a person's screenshot.
+
+**Real compile errors — underscore vs. dash, same shape as
+`charts/GroupedBarChart`'s `series_b` bug:** `AvatarBadge`
+(`root.badge_text` vs. the declared `badge-text`), `AvatarFallback`
+(`root.text_color` vs. `text-color`), `IconDisplay`
+(`root.icon_color` vs. `icon-color`). All three would have failed to
+compile. (`LivestreamPill`'s `Theme.red_500` was *not* touched — that's
+a real, correctly-named `Theme.slint` palette token, which legitimately
+uses underscores for its primitive-palette entries; checked against
+`core/Theme.slint` before assuming it was the same bug.)
+
+**Hex alpha byte-order bug, the one flagged and deferred from the
+`cards/` round:** `LightboxViewer`'s `#cc000000` backdrop parses as
+R=0xcc, G=B=0x00, **A=0x00** — fully transparent, so the modal backdrop
+never actually darkened anything behind it. Fixed to `#000000cc` (~80%
+opaque black), matching the byte order this project's own `Theme.slint`
+already establishes (alpha last). This was noted as a likely instance
+back in the `cards/` batch write-up specifically to check when `media/`
+came up — confirmed and fixed now.
+
+**Pill-radius-renders-as-ellipse, rule 2 from
+`SLINT-GOTCHAS-DISCOVERED.md`:** `LivestreamPill` (self-sizing width via
+`self.preferred-width`, fixed 28px height — genuinely non-square) and
+`AvatarBadge`'s notification badge (sized only by content, so a longer
+`badge-text` like "99+" can exceed its own height) both used
+`Theme.radius-full` on a non-square shape. Fixed both to
+`self.height / 2`, exact by construction regardless of content width.
+
+**Pictographic emoji tofu glyphs, same root cause as the `cards/`/
+`navigation/` corrections — converted to real FA SVG icons:**
+`CameraPreview` (camera emoji to `camera.svg`), `MapEmbed` (map emoji to
+`map.svg`), `ModelViewer` (ice-cube emoji to `cube.svg`), `PodcastPlayer`
+(microphone emoji to `microphone.svg`), `SvgIllustration` (palette emoji
+to `palette.svg`). Also converted two components whose *entire purpose*
+is displaying an arbitrary caller-supplied icon as freeform text —
+`IconDisplay` (`icon: string`, defaulted to a star glyph) and
+`AnimatedIcon` (`icon: string`, defaulted to a refresh-arrow glyph,
+neither on the confirmed-safe list) — to the same
+`in property <image> icon-source` pattern already established for
+`NavItem`/`NavBadge`/`Dock`/`Taskbar`. This is the correct fix rather
+than a narrower one for two independent reasons already on record: the
+font-coverage problem, and `@image-url()` needing a compile-time literal
+that a runtime string can't satisfy anyway. `IconDisplay`'s dead
+`variant: string` property ("mono", never read anywhere in the component
+body) was dropped rather than carried forward. `VideoPlayer`'s bare
+play-triangle text glyph got the same treatment, converted to real
+`FaIcon` play/pause images — bringing it in line with `AudioPlayer` in
+the same category, which already used real icons correctly from the
+start.
+
+**Unwired animation — the "static binding, animate has nothing to
+play" shape from `feedback/`'s loading-indicator round, found once
+more:** `AnimatedIcon`'s `spinning: bool` was declared and accepted but
+never actually connected to anything — the icon never rotated
+regardless of its value. Fixed with the same confirmed nudge-and-repeat
+technique (`init =>` bumps an internal `spin-angle` once, `animate`
+with `iteration-count: -1` replays it forever), gated behind
+`root.spinning` in the `transform-rotation` binding so the animation is
+only visible when actually requested.
+
+**Overlapping children + unwired configuration props, in the same two
+files:** `ImageGallery` and `ImageMasonry` both declared `columns`/
+`count` properties that the component body completely ignored — each
+`for` loop was hardcoded to a literal `6` regardless of what was passed
+in — *and* neither had any wrapping layout at all, so every generated
+tile was an un-laid-out direct child of a plain `Rectangle` and fully
+overlapped every other tile. Per this project's own precedent for the
+`layout-containers/` masonry family, true variable-height masonry
+packing isn't achievable in Slint (`GridLayout` normalizes every cell in
+a row to the same height, and there's no way to introspect rendered
+child size to balance columns) — rebuilt both on a real `GridLayout`
+with `row:`/`col:` computed from the flattened loop index
+(`Math.floor(i / root.columns)` / `Math.mod(i, root.columns)`), an
+honest, documented reduction to uniform grid packing rather than a fake
+uneven-height effect. `ImageMasonry` gained a `columns` property it
+never had before, to match `ImageGallery`'s existing one.
+
+**Dead click handlers, the `InteractiveCard`/`TopAppBar` shape again:**
+`ImageCarousel`'s prev/next chevron buttons were empty `TouchArea {}`
+elements — visually implying navigation that did nothing. Wired real
+wrap-around index logic (`Math.mod(root.current - 1 + root.total,
+root.total)` / `Math.mod(root.current + 1, root.total)`). Its dot
+indicator was also hardcoded to `for idx in 5` regardless of
+`root.total` — fixed to loop over the real property.
+`VideoThumbnail`'s play button had the same empty-`TouchArea` shape;
+added a real `play-clicked()` callback. `VideoPlayer`'s toolbar play
+button fired its `play-toggle()` callback but never actually updated
+`root.playing` (declared `in`, which can't be written internally
+anyway) — changed to `in-out` and made the click handler toggle it
+locally *and* fire the callback (the same dual approach already
+established for `text-input/CameraCaptureInput`, so the demo stays
+visibly interactive even though `test.slint` never wires custom
+callbacks). Both the big center icon and the small toolbar icon now
+actually swap between play/pause based on `root.playing`, instead of
+showing a permanently-static glyph.
+
+**Computed `in` property that should be `out`, the
+`AddressInput.has-focus` shape again:** `AvatarGroupStack.display-count`
+was declared `in` with a body computed entirely from `root.count`
+(`Math.min(root.count, 4)`) — an `in` property that's also internally
+computed can't coherently accept external writes, same semantic
+conflict already fixed once in `text-input/`. Changed to `out`.
+
+**`test.slint` gap:** `ImageMasonry` was imported but never actually
+instantiated anywhere in the file — would have shipped with zero visual
+or compile coverage. Added a real side-by-side `ImageGallery` /
+`ImageMasonry` demo. Also enlarged `LightboxViewer`'s test invocation
+(300x60 to 440x340) — the component centers a fixed 400x300 modal
+inside its own bounds, and a 60px-tall host box put that math into
+negative territory, guaranteeing overflow/clipping regardless of
+whether the component itself was correct.
+
+**Reviewed and left as-is:** `BeforeAfterSlider` and `ImageCropTool`
+have no `TouchArea` at all despite names implying interactivity
+("Slider", "Tool") — but per this project's own precedent (only fix an
+*actually broken* promise, like an empty `TouchArea` that implies
+interactivity through hover/press styling that goes nowhere), these
+have no such half-finished promise: no hover state, no drag affordance,
+nothing suggesting they should already respond to input. Adding real 2D
+drag-repositioning to `ImageCropTool` in particular would need delta
+tracking against `mouse-x`/`mouse-y` (never the frozen `pressed-x`/
+`pressed-y`) without a live compiler to verify the math against — the
+same reasoning `SignaturePad`'s freehand-stroke gap was left
+undone for. Documented here as a good candidate for the person to
+implement directly with `slint-viewer`/MCP-verified iteration, rather
+than guessed at now.

@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component CameraPreview inherits Rectangle {
     in property <bool> active: false;
@@ -13,10 +14,11 @@ export component CameraPreview inherits Rectangle {
         alignment: center;
         spacing: Theme.sp-3;
 
-        Text {
-            text: "📷";
-            font-size: 48px;
-            horizontal-alignment: center;
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/camera.svg");
+            fa-size: 40px;
+            fa-color: #ffffff;
+            x: (parent.width - self.width) / 2;
         }
 
         Text {

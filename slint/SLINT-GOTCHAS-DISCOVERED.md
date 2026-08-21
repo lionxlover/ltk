@@ -1383,3 +1383,23 @@ Rectangle {
   sub-expression *inside* a larger expression (e.g. `x: 5 + (if cond
   {1} else {2})`) — didn't need that shape, so still hasn't been
   tested.
+
+---
+
+### `media/` batch confirmation — no new gotcha shapes, all matched existing entries
+
+Worth recording as a data point rather than a new rule: every bug found
+in the `media/` category (3 underscore/dash property-name mismatches, 1
+hex-alpha byte-order backdrop, 2 non-square `radius-full` pills, 7
+pictographic-emoji-to-FA-icon conversions, 1 unwired `animate` needing
+the nudge-and-repeat fix, 2 overlapping-children-plus-unwired-config-
+prop containers, 3 dead `TouchArea {}` handlers, 1 computed `in`
+property that should have been `out`) matched a shape already written
+up above from an earlier category. None required a new entry. Treating
+this as mild evidence the standing checklist is actually catching things
+on a first pass now, not just being reconstructed after the fact from a
+person's screenshot — worth keeping the discipline of running the full
+scanner suite (brace balance, alias conflicts, `@children`-in-
+conditional, self-referential dimensions, root-level `parent`,
+underscore-vs-dash property refs) on every category from the start
+rather than only after a reported bug.

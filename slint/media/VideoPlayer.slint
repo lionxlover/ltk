@@ -1,8 +1,9 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component VideoPlayer inherits Rectangle {
     in property <string> title: "Video";
-    in property <bool> playing: false;
+    in-out property <bool> playing: false;
 
     callback play-toggle();
 
@@ -14,13 +15,14 @@ export component VideoPlayer inherits Rectangle {
         Rectangle {
             vertical-stretch: 1;
 
-            Text {
+            FaIcon {
+                source: root.playing
+                    ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg")
+                    : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+                fa-size: 44px;
+                fa-color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
-                text: "▶";
-                color: #ffffff;
-                font-size: 48px;
-                vertical-alignment: center;
             }
         }
 
@@ -39,8 +41,21 @@ export component VideoPlayer inherits Rectangle {
                     border-radius: Theme.radius-full;
                     background: Theme.accent;
 
+                    FaIcon {
+                        source: root.playing
+                            ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg")
+                            : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+                        fa-size: 14px;
+                        fa-color: #ffffff;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+
                     play-ta := TouchArea {
-                        clicked => { root.play-toggle(); }
+                        clicked => {
+                            root.playing = !root.playing;
+                            root.play-toggle();
+                        }
                     }
                 }
 

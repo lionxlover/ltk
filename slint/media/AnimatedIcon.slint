@@ -1,24 +1,32 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component AnimatedIcon inherits Rectangle {
-    in property <string> icon: "⟳";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrows-rotate.svg");
     in property <bool> spinning: false;
     in property <length> icon-size: 24px;
+    in property <brush> icon-color: Theme.accent;
 
     width: icon-size;
     height: icon-size;
 
-    Rectangle {
-        width: parent.width;
-        height: parent.height;
+    // Nudge-and-repeat technique: `spin-angle` is bumped once via `init`,
+    // which gives the attached `animate` an actual value change to replay
+    // forever (a static binding never gives `animate` anything to play).
+    private property <float> spin-angle: 0;
+    animate spin-angle {
+        duration: 900ms;
+        easing: linear;
+        iteration-count: -1;
+    }
+    init => { spin-angle = 360; }
 
-        Text {
-            x: (parent.width - self.width) / 2;
-            y: (parent.height - self.height) / 2;
-            text: root.icon;
-            color: Theme.accent;
-            font-size: icon-size;
-            vertical-alignment: center;
-        }
+    FaIcon {
+        source: root.icon-source;
+        fa-size: root.icon-size;
+        fa-color: root.icon-color;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        transform-rotation: root.spinning ? root.spin-angle * 1deg : 0deg;
     }
 }

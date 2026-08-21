@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component PodcastPlayer inherits Rectangle {
     in property <string> title: "Episode Title";
@@ -23,12 +24,12 @@ export component PodcastPlayer inherits Rectangle {
                 border-radius: Theme.radius-md;
                 background: Theme.accent-subtle;
 
-                Text {
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/microphone.svg");
+                    fa-size: 22px;
+                    fa-color: Theme.accent;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
-                    text: "🎙";
-                    font-size: 24px;
-                    vertical-alignment: center;
                 }
             }
 

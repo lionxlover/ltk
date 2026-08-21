@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SvgIllustration inherits Rectangle {
     in property <string> label: "Illustration";
@@ -12,10 +13,11 @@ export component SvgIllustration inherits Rectangle {
         alignment: center;
         spacing: Theme.sp-2;
 
-        Text {
-            text: "🎨";
-            font-size: 32px;
-            horizontal-alignment: center;
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/palette.svg");
+            fa-size: 28px;
+            fa-color: Theme.text-tertiary;
+            x: (parent.width - self.width) / 2;
         }
 
         if root.label != "": Text {
