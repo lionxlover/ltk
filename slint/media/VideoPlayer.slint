@@ -64,18 +64,20 @@ export component VideoPlayer inherits Rectangle {
                     vertical-stretch: 0;
 
                     Rectangle {
-                        y: (parent.height - self.height) / 2;
-                        height: 4px;
-                        width: parent.width * 0.35;
-                        background: Theme.accent;
-                        border-radius: 2px;
-                    }
-
-                    Rectangle {
+                        x: 0;
                         y: (parent.height - self.height) / 2;
                         height: 4px;
                         width: parent.width;
                         background: #ffffff30;
+                        border-radius: 2px;
+                    }
+
+                    Rectangle {
+                        x: 0;
+                        y: (parent.height - self.height) / 2;
+                        height: 4px;
+                        width: parent.width * 0.35;
+                        background: Theme.accent;
                         border-radius: 2px;
                     }
                 }

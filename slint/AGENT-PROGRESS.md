@@ -2096,3 +2096,55 @@ same reasoning `SignaturePad`'s freehand-stroke gap was left
 undone for. Documented here as a good candidate for the person to
 implement directly with `slint-viewer`/MCP-verified iteration, rather
 than guessed at now.
+
+## Post-delivery hotfix round — screenshot-driven, `media/` + cross-cutting
+
+Triggered by two screenshots of the live `media/` Slint Preview render.
+Per the established convention, these are individual-file hotfixes, not
+a re-bundled zip.
+
+**Confirmed via screenshot:** `BeforeAfterSlider`'s "Before" label was
+visibly truncated to "Bef" right at the center divider. Root cause and
+the general gotcha are written up in full in
+`SLINT-GOTCHAS-DISCOVERED.md` — short version: the "Before" panel had
+no `x:`, so it centered instead of anchoring left, which pushed its
+right edge (and the second half of its own label) underneath the
+"After" panel rendered on top of it. Fixed with `x: 0;`.
+
+**Caught in my own code before it shipped further:** re-verifying
+`VideoPlayer` (written earlier this same session) against the newly
+understood mechanism turned up the identical bug in its own toolbar
+progress bar — no `x:` on the fill, and the track/fill declared in the
+wrong z-order on top of that. Fixed both.
+
+**Found via project-wide grep prompted by the above:** the same exact
+shape — a proportional-width free child with no `x:` — turned up in
+`media/PodcastPlayer` (pre-existing, not something this session
+touched before now) and in seven files across five categories not yet
+reached in the normal workflow: `desktop2/SplashScreen`,
+`indicators/HealthBar`, `range-value/Slider`,
+`range-value/SteppedSlider`, `range-value/OpacitySlider`,
+`social2/InChatPollWidget`, `utility/SuspenseBoundary`. All ten
+confirmed instances are fixed now rather than deferred, since the fix
+is a mechanical one-line addition (occasionally a declaration-order
+swap) and there's no ambiguity once the shape is understood. Also
+checked four look-alike "fill" components that turned out to already
+be correct and were left untouched: `feedback/ProgressBar`,
+`indicators/BatteryIndicator`, `range-value/RangeSlider`,
+`range-value/VerticalSlider`.
+
+**What this means for the status table above:** `desktop2/`,
+`indicators/`, `range-value/`, `social2/`, and `utility/` are still
+"Not started" as categories — this hotfix only resolved this one
+specific bug shape in one file each. Each still needs its own full pass
+(unwired properties, dead handlers, emoji, hex-alpha, the rest of the
+standing checklist) when its turn comes up normally; the fix already
+applied here should carry forward as done rather than being
+rediscovered.
+
+Files delivered this round, individually (not zipped):
+`media/BeforeAfterSlider.slint`, `media/PodcastPlayer.slint`,
+`media/VideoPlayer.slint`, `desktop2/SplashScreen.slint`,
+`indicators/HealthBar.slint`, `range-value/Slider.slint`,
+`range-value/SteppedSlider.slint`, `range-value/OpacitySlider.slint`,
+`social2/InChatPollWidget.slint`, `utility/SuspenseBoundary.slint`.

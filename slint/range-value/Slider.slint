@@ -15,6 +15,7 @@ export component Slider inherits Rectangle {
         border-radius: 3px;
 
         fill := Rectangle {
+            x: 0;
             width: max(0, (root.value - root.minimum) / max(1, root.maximum - root.minimum) * parent.width);
             height: parent.height;
             background: Theme.accent;

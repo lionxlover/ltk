@@ -32,6 +32,7 @@ export component InChatPollWidget inherits Rectangle {
             clip: true;
 
             Rectangle {
+                x: 0;
                 width: total-votes > 0 ? parent.width * votes[idx] / total-votes : 0px;
                 height: parent.height;
                 background: Theme.accent-subtle;

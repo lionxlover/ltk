@@ -57,16 +57,18 @@ export component PodcastPlayer inherits Rectangle {
             height: 4px;
 
             Rectangle {
+                x: 0;
                 height: 4px;
-                width: parent.width * root.progress / 100;
-                background: Theme.accent;
+                width: parent.width;
+                background: Theme.border-subtle;
                 border-radius: 2px;
             }
 
             Rectangle {
+                x: 0;
                 height: 4px;
-                width: parent.width;
-                background: Theme.border-subtle;
+                width: parent.width * root.progress / 100;
+                background: Theme.accent;
                 border-radius: 2px;
             }
         }

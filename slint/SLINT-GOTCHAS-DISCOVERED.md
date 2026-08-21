@@ -1403,3 +1403,79 @@ scanner suite (brace balance, alias conflicts, `@children`-in-
 conditional, self-referential dimensions, root-level `parent`,
 underscore-vs-dash property refs) on every category from the start
 rather than only after a reported bug.
+
+---
+
+### A fractional-width free child with no `x:` doesn't sit flush left — it centers, and can hide under a sibling
+
+This is a genuinely new gotcha (not a rediscovery of an existing entry),
+found via a person's screenshot of `media/BeforeAfterSlider` showing its
+"Before" label truncated to "Bef" right at the center divider.
+
+```slint
+// WRONG — no x set. Outside a layout, ANY element with no explicit x/y
+// defaults to centering in its parent — this applies even when the
+// element's size is fully explicit (not just the "implicit size"
+// wording in this project's own language-and-layout.md), as long as
+// x/y themselves are omitted.
+Rectangle {
+    width: parent.width * root.split / 100;   // e.g. 50% of parent
+    background: #334155;
+}
+```
+If this rectangle is exactly as wide as its parent, centering happens to
+equal `x: 0` and nothing looks wrong — which is exactly how this bug
+hid across 10 confirmed instances in this codebase without ever being
+caught by a brace-balance or compile check (it's a runtime/visual bug,
+not a compile error). The moment the width is a genuine *fraction* of
+the parent (any progress bar, split-panel, or "fill" indicator), the
+centering math shifts it right by `(parent.width - self.width) / 2`,
+and if a later sibling explicitly occupies that same space (or is
+itself full-width and opaque/translucent), the later sibling — always
+on top, per z-order — can visually hide part or all of the shifted
+element.
+
+```slint
+// RIGHT
+Rectangle {
+    x: 0;
+    width: parent.width * root.split / 100;
+    background: #334155;
+}
+```
+
+**Checklist for every "fill inside a track" or "split panel" shape**
+(progress bars, sliders, health/battery/opacity bars, poll-result bars,
+before/after comparisons, loading indicators): if a Rectangle's width is
+computed as a fraction of `parent.width` (not exactly equal to it, and
+not `100%`), it needs an explicit `x:` — almost always `x: 0;` — even
+though "of course it starts at zero" feels too obvious to need stating.
+Also check declaration order: the empty/track/background layer must be
+declared *before* the filled/foreground layer (later siblings render on
+top), or the fill will be visually washed out or hidden even after the
+positioning itself is correct.
+
+**Confirmed and fixed this round** (project-wide grep after the
+`media/` finding, since this exact shape recurs anywhere a component
+shows a proportional fill): `media/BeforeAfterSlider.slint`,
+`media/PodcastPlayer.slint`, `media/VideoPlayer.slint` (the last two
+also had the fill/track declared in the wrong z-order — swapped so the
+track renders first), `desktop2/SplashScreen.slint`,
+`indicators/HealthBar.slint`, `range-value/Slider.slint`,
+`range-value/SteppedSlider.slint`, `range-value/OpacitySlider.slint`,
+`social2/InChatPollWidget.slint`, `utility/SuspenseBoundary.slint`.
+
+**Checked and confirmed already correct** (same "fill" shape, already
+had explicit positioning, left untouched): `feedback/ProgressBar.slint`
+(`x: 0; y: 0;` already present), `indicators/BatteryIndicator.slint`
+(`x: 1px; y: 1px;` already present), `range-value/RangeSlider.slint`
+(needs `x:` because its fill starts at the *low* handle, not always
+zero — already had it), `range-value/VerticalSlider.slint` (needs `y:`
+for the equivalent reason on its vertical axis — already had it; its
+missing `x:` is harmless there since that rectangle's width is set
+equal to its parent's width, the one case where omitting the position
+binding is provably safe).
+
+This is now a **standing check** for every remaining category, not just
+a one-off fix: any time a component's job is showing "how much of
+something," scan for this shape before considering that file done.

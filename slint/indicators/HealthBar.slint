@@ -12,6 +12,7 @@ export component HealthBar inherits Rectangle {
         border-radius: 4px;
 
         Rectangle {
+            x: 0;
             width: max(0, parent.width * root.score / max(1, root.max-score));
             height: parent.height;
             background: root.score >= 70 ? Theme.success : (root.score >= 40 ? Theme.warning : Theme.error);

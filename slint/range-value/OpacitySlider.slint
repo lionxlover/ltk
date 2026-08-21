@@ -21,6 +21,7 @@ export component OpacitySlider inherits Rectangle {
         }
 
         fill := Rectangle {
+            x: 0;
             width: parent.width * (root.opacity-value / 100);
             height: parent.height;
             background: Theme.accent;
