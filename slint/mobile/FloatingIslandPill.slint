@@ -1,8 +1,8 @@
 import { Theme } from "../core/Theme.slint";
 
 export component FloatingIslandPill inherits Rectangle {
-    background: Theme.text-primary;
-    border-radius: Theme.radius-full;
+    background: #0a0a0c;
+    border-radius: self.height / 2;
 
 
     in property <bool> expanded: false;
@@ -15,7 +15,7 @@ export component FloatingIslandPill inherits Rectangle {
     if expanded && content != "": Text {
         text: content;
         font-size: Theme.text-sm;
-        color: Theme.bg-base;
+        color: #ffffff;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }

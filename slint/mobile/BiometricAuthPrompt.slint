@@ -51,7 +51,7 @@ export component BiometricAuthPrompt inherits Rectangle {
                 Rectangle {
                     width: 120px;
                     height: 36px;
-                    border-radius: Theme.radius-full;
+                    border-radius: self.height / 2;
                     border-width: 1px;
                     border-color: Theme.border-default;
                     background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;

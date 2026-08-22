@@ -58,7 +58,7 @@ export component AppClipMiniCard inherits Rectangle {
         Rectangle {
             width: 60px;
             height: 32px;
-            border-radius: Theme.radius-full;
+            border-radius: self.height / 2;
             background: open-ta.has-hover ? Theme.accent-dim : Theme.accent;
             y: 24px;
 

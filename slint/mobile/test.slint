@@ -72,8 +72,8 @@ export component MobileTest inherits Rectangle {
 
             Text { text: "Dynamic Island / Floating Pill"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3;
-                DynamicIslandSlot { width: 120px; }
-                FloatingIslandPill { width: 120px; }
+                DynamicIslandSlot { }
+                FloatingIslandPill { expanded: true; content: "2:34 remaining"; }
             }
 
             Text { text: "Lock Screen Widgets"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }

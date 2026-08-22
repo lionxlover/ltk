@@ -3,6 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component SwipeToDelete inherits Rectangle {
     background: Theme.bg-surface;
     clip: true;
+    height: 64px;
 
     in property <string> label: "Swipe to delete";
     callback deleted();

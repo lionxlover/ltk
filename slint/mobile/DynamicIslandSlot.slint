@@ -1,8 +1,13 @@
 import { Theme } from "../core/Theme.slint";
 
 export component DynamicIslandSlot inherits Rectangle {
-    background: Theme.text-primary;
-    border-radius: Theme.radius-full;
+    // Was Theme.text-primary — that token is near-white in dark mode
+    // (it's meant for text readable on a dark background), so this
+    // rendered as a blank white pill instead of the Dynamic Island's
+    // signature black. The island itself is a physical hardware cutout,
+    // not app-themed, so it stays fixed-dark regardless of light/dark mode.
+    background: #0a0a0c;
+    border-radius: self.height / 2;
 
     in property <bool> expanded: false;
     in property <string> content: "";
@@ -14,7 +19,7 @@ export component DynamicIslandSlot inherits Rectangle {
     if expanded && content != "": Text {
         text: content;
         font-size: Theme.text-sm;
-        color: Theme.bg-base;
+        color: #ffffff;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
     }

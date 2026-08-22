@@ -59,7 +59,7 @@ export component OnboardingPager inherits Rectangle {
             Rectangle {
                 width: 200px;
                 height: 48px;
-                border-radius: Theme.radius-full;
+                border-radius: self.height / 2;
                 background: next-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
                 Text {

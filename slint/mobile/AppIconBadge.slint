@@ -29,10 +29,11 @@ export component AppIconBadge inherits Rectangle {
     }
 
     if badge-count > 0: Rectangle {
-        x: parent.width - 20px;
-        y: 2px;
+        width: root.badge-count > 99 ? 28px : (root.badge-count > 9 ? 24px : 20px);
         height: 20px;
-        border-radius: 10px;
+        x: parent.width - self.width - 4px;
+        y: 4px;
+        border-radius: self.height / 2;
         background: Theme.error;
 
         Text {

@@ -2286,3 +2286,78 @@ an explicit `y: 16px` with `vertical-stretch: 1` as a direct
 between an explicit cross-axis offset and stretch sizing, but left
 untouched rather than guessed at — not confirmed against the docs, and
 lower confidence than everything else fixed this round.
+
+## `mobile/` post-delivery hotfix round — screenshot-driven
+
+Triggered by three screenshots of the live render. Several were fixes
+I should have caught during the original pass rather than after —
+noted plainly rather than glossed over.
+
+**Wrong Theme token, not a typo family I'd seen before:**
+`DynamicIslandSlot` and `FloatingIslandPill` both used
+`background: Theme.text-primary` — that token is near-white in dark
+mode (it's meant for text readable on a dark surface), so both
+rendered as blank white pills with no visible content at all. Fixed to
+a fixed near-black (`#0a0a0c`), not tied to `Theme.dark-mode` at all,
+since a Dynamic Island is a physical hardware cutout, not part of the
+app's theme. Checked `SwipeNavigationGestureArea`'s identical-looking
+`background: Theme.text-primary` and left it alone — that one really
+does want to track the current theme (a home-indicator bar visible
+against whatever surface it sits on), so it's correct as written.
+
+**`radius-full` on a non-square shape — rule 2 from
+`SLINT-GOTCHAS-DISCOVERED.md`, missed on first pass in five of my own
+new components this round:** `DynamicIslandSlot`, `FloatingIslandPill`,
+`AppClipMiniCard`'s Open button, `BiometricAuthPrompt`'s Cancel button,
+`OnboardingPager`'s Next button — all non-square, all rendering as
+ellipses instead of flat-sided pills. This is a checklist item I
+personally added to the gotchas file after `media/`'s `LivestreamPill`
+and clearly didn't apply to my own new code here; fixed all five to
+`self.height / 2`.
+
+**`AppIconBadge`'s notification badge had no explicit `width`,** only
+`height` — relying on ambiguous default sizing gave an oversized,
+overflowing badge that bled into neighboring icons in the same row
+(and made the number look clipped). Gave it an explicit,
+content-aware width instead of leaning on any assumption about
+default-fill behavior.
+
+**`horizontal-stretch: 1` directly on a `Text` didn't reliably widen its
+box** — `ContactPicker`'s and `PhotoMediaPicker`'s headers rendered
+"Cancel"/title/spacer completely concatenated with no separation at
+all, not stretched-and-centered as intended. `DocumentFilePicker`'s
+very similar-looking per-row use of the same property (pushing a
+trailing chevron right) rendered correctly, so this isn't "stretch
+never works on Text" — likely something about combining stretch with
+`horizontal-alignment: center` specifically, not confirmed further.
+Sidestepped the ambiguity entirely: wrapped the title `Text` in a
+plain `Rectangle { horizontal-stretch: 1; }` (Rectangle's stretch
+behavior is unambiguous, confirmed dozens of times this whole project)
+and centered the `Text` inside it with the standard `x:
+(parent.width - self.width) / 2` technique instead of relying on
+`horizontal-alignment`.
+
+**`SwipeToDelete`/`SwipeToArchive`/`SwipeToAction` rendered as nothing
+at all** — an empty gap where the whole "Swipe Rows" section should
+be. None of the three components had an explicit `height`, and
+neither did any of their `test.slint` invocations; inside a
+`VerticalLayout`, an unconstrained `Rectangle` with no content-based
+sizing of its own has nothing to size itself from and collapses.
+Added `height: 64px` to all three as a sensible default row height,
+fixing it regardless of what a future caller does or doesn't specify.
+
+**`test.slint` improvement:** the Dynamic Island / Floating Pill demo
+always passed a fixed `width: 120px` override, so it never actually
+exercised `expanded`/`content` or the animated resize at all — the
+whole point of these two components. Changed to show one collapsed
+(`DynamicIslandSlot`, defaults) and one expanded with real content
+(`FloatingIslandPill { expanded: true; content: "2:34 remaining"; }`),
+so the fix is now actually visible in a static render rather than
+hidden behind an override that made both look identical either way.
+
+Files touched this round: `DynamicIslandSlot.slint`,
+`FloatingIslandPill.slint`, `AppClipMiniCard.slint`,
+`BiometricAuthPrompt.slint`, `OnboardingPager.slint`,
+`AppIconBadge.slint`, `ContactPicker.slint`, `PhotoMediaPicker.slint`,
+`SwipeToDelete.slint`, `SwipeToArchive.slint`, `SwipeToAction.slint`,
+`test.slint`.

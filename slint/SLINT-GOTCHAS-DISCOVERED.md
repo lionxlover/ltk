@@ -1577,3 +1577,95 @@ now. 25 of 30 files needed a fix, the highest ratio of any category so
 far — this one leaned heavily on OS-chrome mockups (action sheets,
 pickers, swipe rows) that had real structure but had never been wired
 for a single tap or drag.
+
+---
+
+### `Theme.text-primary` looks like a safe default background — it isn't, for anything meant to stay dark regardless of theme
+
+```slint
+// WRONG — text-primary is near-white in dark mode (by design: it's
+// meant to sit ON a dark surface, not BE one), so this renders as a
+// blank white pill instead of a dark hardware-style cutout.
+export component DynamicIslandSlot inherits Rectangle {
+    background: Theme.text-primary;
+}
+```
+Any component modeling something that's *always* dark regardless of
+the app's light/dark setting (a hardware cutout like a Dynamic Island,
+as opposed to a themed UI surface) needs a fixed literal color, not a
+theme token that flips with `dark-mode` — using a *semantic* token
+(`text-*`, `bg-*`, `surface-*`) for something that isn't semantically
+themed is the actual mistake, independent of which specific token gets
+picked.
+
+---
+
+### `horizontal-stretch: 1` on a bare `Text` didn't reliably widen its own box — wrap a `Rectangle` instead
+
+Found via a screenshot showing a "Cancel" / title / spacer header
+rendered as one concatenated run of text with zero separation, as if
+no stretch had happened at all.
+
+```slint
+// UNRELIABLE — intended to stretch "Contacts" to fill the space
+// between "Cancel" and a trailing spacer, then center it there.
+// Rendered instead as all three texts packed tight with no gap.
+Text {
+    text: "Contacts";
+    horizontal-stretch: 1;
+    horizontal-alignment: center;
+}
+```
+A very similar-looking use of `horizontal-stretch: 1` directly on a
+`Text` elsewhere in this same project (pushing a trailing chevron to a
+row's right edge, no `horizontal-alignment` involved) rendered fine —
+so this isn't "stretch never works on Text at all"; something more
+specific about combining stretch with centering on a `Text` is the
+likely culprit, not confirmed further here.
+
+```slint
+// RIGHT — Rectangle's stretch behavior is unambiguous; let it claim
+// the space, and center the Text inside it with the standard
+// x:(parent.width - self.width)/2 technique instead of leaning on
+// horizontal-alignment to do the centering.
+Rectangle {
+    horizontal-stretch: 1;
+    Text {
+        text: "Contacts";
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}
+```
+When a title needs to visibly claim remaining space in a row (not just
+sit adjacent to a fixed-width sibling), reach for a stretched
+`Rectangle` wrapper by default rather than stretch properties on the
+`Text` itself.
+
+---
+
+### An unconstrained `Rectangle` inside a `VerticalLayout` can collapse to nothing
+
+```slint
+// WRONG — no explicit height anywhere: not on the component, and the
+// caller never passed one either. Rectangle has no content-based
+// preferred size the way Text does, so inside a VerticalLayout
+// (competing with siblings for the main-axis space) it can collapse
+// to zero height instead of showing anything at all.
+export component SwipeToDelete inherits Rectangle {
+    background: Theme.bg-surface;
+    // ...no height...
+}
+```
+```slint
+// RIGHT — give it a sensible default so it's never dependent on every
+// future caller remembering to size it.
+export component SwipeToDelete inherits Rectangle {
+    background: Theme.bg-surface;
+    height: 64px;
+}
+```
+Any row-shaped or list-item-shaped component (not sized by a GridLayout
+cell, not itself wrapping height-bearing content like Text) should
+default its own height rather than assume a caller — or a wrapping
+`VerticalLayout` — will supply one.
