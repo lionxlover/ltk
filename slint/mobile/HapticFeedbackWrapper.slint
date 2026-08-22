@@ -5,4 +5,11 @@ export component HapticFeedbackWrapper inherits Rectangle {
 
     in property <bool> enabled: true;
     in property <string> feedback-type: "light";
+
+    // A sibling or the wrapped interactive element calls trigger() when it
+    // wants haptic feedback; the host (Rust) handles it, reading
+    // `enabled`/`feedback-type` to decide which native haptic pattern to
+    // play (or to skip it). Previously this component declared both
+    // properties and had no way to ever be invoked at all.
+    callback trigger();
 }

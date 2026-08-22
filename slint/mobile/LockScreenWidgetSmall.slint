@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component LockScreenWidgetSmall inherits Rectangle {
     background: Theme.glass-thin;
@@ -6,7 +7,7 @@ export component LockScreenWidgetSmall inherits Rectangle {
     width: 170px;
     height: 170px;
 
-    in property <string> icon: "🌤";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/cloud-sun.svg");
     in property <string> value: "72°";
     in property <string> label: "Weather";
 
@@ -14,7 +15,12 @@ export component LockScreenWidgetSmall inherits Rectangle {
         alignment: center;
         spacing: Theme.sp-2;
 
-        Text { text: icon; font-size: 32px; horizontal-alignment: center; }
+        FaIcon {
+            source: root.icon-source;
+            fa-size: 32px;
+            fa-color: Theme.text-primary;
+            x: (parent.width - self.width) / 2;
+        }
         Text { text: value; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
         Text { text: label; font-size: Theme.text-xs; color: Theme.text-secondary; horizontal-alignment: center; }
     }

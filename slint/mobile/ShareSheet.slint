@@ -1,12 +1,22 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component ShareSheet inherits Rectangle {
     background: Theme.bg-scrim;
     clip: true;
 
     in property <[string]> apps: ["AirDrop", "Messages", "Mail", "Notes", "Reminders"];
-    in property <[string]> app-icons: ["📡", "💬", "✉️", "📝", "⏰"];
+    in property <[image]> app-icon-sources: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/satellite-dish.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/message.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/envelope.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/note-sticky.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/clock.svg")
+    ];
     in property <[string]> actions: ["Copy Link", "Save to Files", "More Actions..."];
+    callback app-selected(int);
+    callback action-selected(int);
+    callback cancelled();
 
     VerticalLayout {
         alignment: end;
@@ -47,13 +57,19 @@ export component ShareSheet inherits Rectangle {
                                 width: 48px;
                                 height: 48px;
                                 border-radius: Theme.radius-md;
-                                background: Theme.bg-overlay;
+                                background: app-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
 
-                                Text {
-                                    text: idx < root.app-icons.length ? root.app-icons[idx] : "📦";
-                                    font-size: 20px;
+                                FaIcon {
+                                    source: idx < root.app-icon-sources.length ? root.app-icon-sources[idx] : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/box.svg");
+                                    fa-size: 20px;
+                                    fa-color: Theme.text-secondary;
                                     x: (parent.width - self.width) / 2;
                                     y: (parent.height - self.height) / 2;
+                                }
+
+                                app-ta := TouchArea {
+                                    mouse-cursor: MouseCursor.pointer;
+                                    clicked => { root.app-selected(idx); }
                                 }
                             }
                         }
@@ -72,6 +88,7 @@ export component ShareSheet inherits Rectangle {
 
                 for action[a] in actions: Rectangle {
                     height: 48px;
+                    background: action-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     HorizontalLayout {
                         padding-left: Theme.sp-4;
@@ -83,6 +100,11 @@ export component ShareSheet inherits Rectangle {
                         }
                     }
 
+                    action-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.action-selected(a); }
+                    }
+
                     Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }
                 }
 
@@ -91,7 +113,7 @@ export component ShareSheet inherits Rectangle {
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
-                    background: Theme.bg-surface;
+                    background: cancel-ta.has-hover ? Theme.hover-overlay : Theme.bg-surface;
 
                     Text {
                         text: "Cancel";
@@ -100,6 +122,11 @@ export component ShareSheet inherits Rectangle {
                         color: Theme.accent;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    cancel-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.cancelled(); }
                     }
                 }
             }

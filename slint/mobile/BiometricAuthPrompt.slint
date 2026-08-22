@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component BiometricAuthPrompt inherits Rectangle {
     background: Theme.bg-scrim;
@@ -7,6 +8,7 @@ export component BiometricAuthPrompt inherits Rectangle {
     in property <string> auth-type: "face-id";
     in property <string> title: "Authenticate";
     in property <string> subtitle: "Use Face ID to continue";
+    callback cancelled();
 
     Rectangle {
         width: 300px;
@@ -20,10 +22,13 @@ export component BiometricAuthPrompt inherits Rectangle {
             alignment: center;
             spacing: Theme.sp-4;
 
-            Text {
-                text: auth-type == "face-id" ? "😊" : "👆";
-                font-size: 48px;
-                horizontal-alignment: center;
+            FaIcon {
+                source: auth-type == "face-id"
+                    ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-smile.svg")
+                    : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fingerprint.svg");
+                fa-size: 44px;
+                fa-color: Theme.accent;
+                x: (parent.width - self.width) / 2;
             }
 
             Text {
@@ -49,6 +54,7 @@ export component BiometricAuthPrompt inherits Rectangle {
                     border-radius: Theme.radius-full;
                     border-width: 1px;
                     border-color: Theme.border-default;
+                    background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "Cancel";
@@ -56,6 +62,11 @@ export component BiometricAuthPrompt inherits Rectangle {
                         color: Theme.text-primary;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    cancel-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.cancelled(); }
                     }
                 }
             }

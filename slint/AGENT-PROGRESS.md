@@ -20,16 +20,25 @@ re-discovering things the hard way.
 | `navigation/` | 39 | ✅ Done, verified via VS Code Problems panel + live screenshots (2 rounds of post-delivery fixes) | `navigation.zip` |
 | `feedback/` | 36 | ✅ Done, verified via VS Code Problems panel (1 round of post-delivery fixes) | `feedback.zip` |
 | `typography/` | 36 | ✅ Done, pending VS Code Problems-panel check | `typography.zip` |
-| `media/` | 32 | ✅ Done, pending VS Code Problems-panel check | `media.zip` |
-| everything else | ~346 | ⬜ Not started | — |
+| `media/` | 32 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes, also surfaced a cross-cutting bug fixed in 7 other categories) | `media.zip` |
+| `mobile/` | 30 | ✅ Done, pending VS Code Problems-panel check | `mobile.zip` |
+| everything else | ~316 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`mobile` (30), `forms2` (31), `social2` (26), `overlays` (24),
-`animation` (24), `selection-controls` (25), `utility` (23),
+`forms2` (31), `social2` (26),
+`animation` (24), `overlays` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
 (12), `desktop` (10), `range-value` (10), `social` (8), `accessibility`
 (8), `theming` (6), `layout` (3), `progress` (partially touched —
 `ProgressSpinner.slint` fixed, rest untouched).
+
+Note: `desktop2/SplashScreen.slint`, `indicators/HealthBar.slint`,
+`range-value/Slider.slint`, `range-value/SteppedSlider.slint`,
+`range-value/OpacitySlider.slint`, `social2/InChatPollWidget.slint`, and
+`utility/SuspenseBoundary.slint` each already had ONE specific bug
+(the fractional-width-no-x progress-fill issue) pre-fixed during the
+`media/` cross-cutting hotfix round — see that section below. Each
+category still needs its own full pass for everything else.
 
 `core/Theme.slint`, `core/Backend.slint`, `core/FaIcon.slint`, and
 `progress/ProgressSpinner.slint` were all modified as shared dependencies
@@ -2148,3 +2157,132 @@ Files delivered this round, individually (not zipped):
 `indicators/HealthBar.slint`, `range-value/Slider.slint`,
 `range-value/SteppedSlider.slint`, `range-value/OpacitySlider.slint`,
 `social2/InChatPollWidget.slint`, `utility/SuspenseBoundary.slint`.
+
+## `mobile/` batch — the largest single-category fix count so far
+
+All 30 components reviewed; 33 files delivered (30 components +
+`export.slint`, unchanged + `test.slint`, updated). No `core/` changes
+needed. 25 of the 30 component files needed a real fix — this category
+skewed heavily toward "OS-chrome mockups with zero actual interactivity"
+rather than subtle rendering issues.
+
+**Underscore-vs-dash compile errors (2):** `HomeScreenWidget4x4`
+(bare `photo_count` against the declared `photo-count`, not even
+`root.`-qualified), `AppIconBadge` (`badge_count` used twice against
+the declared `badge-count`).
+
+**Pictographic emoji / unconfirmed-safe glyphs, converted to real FA
+icons (11 files):** `HomeScreenWidget2x2` (gear), `LockScreenWidgetSmall`
+(cloud-sun), `PullToRefresh` (down-arrow → chevron-down, see below),
+`SplashLaunchScreen` (no literal "lion" icon exists in the FA set for
+"Lion Toolkit" — used `layer-group` as a generic toolkit mark instead),
+`StatusBarOverlay` (signal + battery), `AppClipMiniCard` (link),
+`AppIconBadge` (mobile), `BiometricAuthPrompt` (face-smile /
+fingerprint, switched on `auth-type`), `OnboardingPager` (per-page
+icon array, converted `icons: [string]` → `icon-sources: [image]`,
+same array-of-images technique as below), `ShareSheet` (per-app icon
+array, same array-of-images conversion, plus a `box` fallback icon).
+Left untouched: `LockScreenWidgetSmall.value`'s default `"72°"` — a
+temperature *value* string, not an icon slot, and the degree sign is
+basic Latin-1 (near-universal font coverage) rather than the
+pictographic/symbol category this rule targets; no confirmed evidence
+it's actually broken here the way the emoji were.
+
+**Unwired animation, the `AnimatedIcon`/`spinning` shape from `media/`,
+found twice more:** `PullToRefresh`'s "refreshing" state rendered a
+hand-drawn `Path` arc that never actually rotated — also a second,
+independent problem on its own per `icons-and-theming.md` ("don't
+hand-draw glyphs as inline Path elements"). Replaced with a real FA
+spinner icon and the confirmed nudge-and-repeat rotation technique.
+`DynamicIslandSlot`/`FloatingIslandPill` had real width/height changes
+on `expanded` but no `animate` at all, so the resize snapped instantly —
+added `animate width, height` with a spring easing, since the animated
+morph is this component's entire reason for existing.
+
+**Components with literally zero interactivity despite the name
+promising it — the most common issue this round.** Three files
+(`SwipeToAction`, `SwipeToArchive`, `SwipeToDelete`) had no `TouchArea`
+anywhere at all — the hidden action button was permanently unreachable.
+Added real drag-to-reveal: a `TouchArea` on the *fixed* root tracking
+`mouse-x` (not on the `front` layer being dragged — that would have its
+own local `mouse-x` chase its own movement and never produce a usable
+delta), clamped via `.clamp()` (the confirmed method form, not assumed
+`Math.clamp(...)`), committing past a 40px threshold via a
+`pointer-event` up handler rather than relying on unconfirmed
+click-after-drag semantics. `SwipeToAction`'s `action-color-name`
+property was also declared and never read anywhere — wired to a real
+color switch. Five more sheet/picker components
+(`ActionSheetDestructive`, `LongPressActionSheet`, `ContactPicker`,
+`AppClipMiniCard`, `BiometricAuthPrompt`, `OnboardingPager`,
+`PhotoMediaPicker`, `ShareSheet` — eight, not five) had rows, buttons,
+or cancel affordances with no `TouchArea` at all; added real callbacks
+(`action-selected`, `cancelled`, `contact-selected`, `type-selected`,
+`opened`, `app-selected`, `photo-selected`, `completed`, etc.) plus
+`has-hover`-based background feedback where already touching that
+Rectangle's background.
+
+**Overlapping children, the missing-layout shape:**
+`BottomSheetMultiSnap` and `HalfSheetModal` both had a drag-handle row
+and a conditional title `Text` as two free (non-layout) children of the
+same parent — both default-center per the newly-confirmed rule from the
+`media/` round, landing directly on top of each other. Wrapped both in
+a `VerticalLayout`.
+
+**Declared-and-ignored configuration properties, worst instance yet:**
+`PhotoMediaPicker` declared `grid-columns`/`grid-rows`/`spacing` and its
+body was just one blank placeholder `Rectangle` — none of the three
+properties were used anywhere, and there was no actual photo grid at
+all. Rebuilt on a real `GridLayout` with `row:`/`col:` from the
+flattened index, `spacing` applied via `* 1px` (it's declared as an
+`int`, not a `length`), and a `photo-selected(int)` callback per cell.
+
+**Silently-ignored `padding-left` on a bare `Text`, a confirmed core
+gotcha (`padding only has effect on layout elements`) hit for real:**
+`DocumentFilePicker`'s "Select File" header had `padding-left` directly
+on a `Text` with no enclosing layout — no visual effect at all. Wrapped
+in a `HorizontalLayout`. Same file also had `vertical-stretch: 1`
+instead of `horizontal-stretch: 1` on its list-row label — a
+plausible axis-name typo — meaning the trailing "›" chevron never
+actually got pushed to the row's right edge; fixed the axis.
+
+**Bunched, uncentered header title (no stretch, no spacer), in two
+files:** `ContactPicker` ("Cancel"/"Contacts") and `PhotoMediaPicker`
+("Cancel"/"Photo Library"/"Done") both used a plain `alignment: center`
+`HorizontalLayout` with no stretch factors, which centers the whole
+row of texts *as a group* rather than positioning Cancel left / title
+center. Fixed with `horizontal-stretch: 1` + `horizontal-alignment:
+center` on the title; `ContactPicker` additionally gained an invisible
+same-text ghost spacer on the right so the title centers on the *whole*
+bar rather than just the leftover space after Cancel.
+
+**Completely inert components, fixed to actually do their one job:**
+`HapticFeedbackWrapper` had `enabled`/`feedback-type` properties and no
+callback at all — impossible to ever invoke. Reconsidered its design:
+since a wrapping wrapper with its own `TouchArea` would block touches
+from reaching whatever real interactive content it wrapped, the correct
+shape is a callable *service* a sibling invokes (`callback trigger()`),
+not a `@children`-forwarding wrapper. `ReachabilityHelper` had the
+opposite problem — it's a pure positioning wrapper with no competing
+touch-capture concern, so its bug really was a missing `@children`
+(wrapping any real screen content in it made that content vanish,
+since nothing was ever forwarded); added `@children` plus an `animate`
+on its existing `y` shift.
+
+**`test.slint` gaps:** `HapticFeedbackWrapper`, `ReachabilityHelper`,
+and `DocumentFilePicker` were all imported/exported but never actually
+instantiated anywhere in the test file. Added real demos for all three
+(the haptic demo shows the intended sibling-invokes-callback usage
+pattern directly). Also switched the `Flickable`'s hardcoded
+`viewport-height: 3600px` to `content.preferred-height` (the pattern
+`core/test.slint` already uses) — a hardcoded guess that this round's
+additions would have made stale immediately, cutting off the last
+section from ever being reachable by scrolling.
+
+**Reviewed and left as-is:** `SafeAreaBottomSpacer`, `SafeAreaTopSpacer`,
+`SwipeNavigationGestureArea` — genuinely just static spacers/affordances
+with nothing to wire up. `HomeScreenWidget2x4`'s `VerticalLayout` combines
+an explicit `y: 16px` with `vertical-stretch: 1` as a direct
+`HorizontalLayout` child; flagged as a *possible* subtle interaction
+between an explicit cross-axis offset and stretch sizing, but left
+untouched rather than guessed at — not confirmed against the docs, and
+lower confidence than everything else fixed this round.

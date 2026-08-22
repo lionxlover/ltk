@@ -7,6 +7,8 @@ export component ContactPicker inherits Rectangle {
 
     in property <[string]> contacts: ["Alice", "Bob", "Charlie", "Diana"];
     in property <[string]> avatars: ["A", "B", "C", "D"];
+    callback cancelled();
+    callback contact-selected(int);
 
     VerticalLayout {
         spacing: 0;
@@ -17,12 +19,12 @@ export component ContactPicker inherits Rectangle {
             HorizontalLayout {
                 padding-left: Theme.sp-4;
                 padding-right: Theme.sp-4;
-                alignment: center;
 
                 Text {
                     text: "Cancel";
                     font-size: Theme.text-base;
                     color: Theme.accent;
+                    vertical-alignment: center;
                 }
 
                 Text {
@@ -30,7 +32,28 @@ export component ContactPicker inherits Rectangle {
                     font-size: Theme.text-base;
                     font-weight: Theme.weight-semibold;
                     color: Theme.text-primary;
+                    horizontal-stretch: 1;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
                 }
+
+                // Invisible spacer matching "Cancel"'s own width, so the
+                // title above centers on the *whole* bar instead of just
+                // the leftover space after Cancel (which would look
+                // off-center since nothing balances it on the right).
+                Text {
+                    text: "Cancel";
+                    font-size: Theme.text-base;
+                    color: transparent;
+                    vertical-alignment: center;
+                }
+            }
+
+            cancel-ta := TouchArea {
+                x: 0px;
+                width: 80px;
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.cancelled(); }
             }
         }
 
@@ -38,6 +61,7 @@ export component ContactPicker inherits Rectangle {
 
         for contact[idx] in contacts: Rectangle {
             height: 52px;
+            background: row-ta.has-hover ? Theme.hover-overlay : transparent;
 
             HorizontalLayout {
                 padding-left: Theme.sp-4;
@@ -66,6 +90,11 @@ export component ContactPicker inherits Rectangle {
                     color: Theme.text-primary;
                     vertical-stretch: 1;
                 }
+            }
+
+            row-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.contact-selected(idx); }
             }
 
             Rectangle { height: 1px; x: 52px; background: Theme.border-subtle; }

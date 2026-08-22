@@ -8,6 +8,9 @@ export component PhotoMediaPicker inherits Rectangle {
     in property <int> grid-columns: 4;
     in property <int> grid-rows: 4;
     in property <int> spacing: 2;
+    callback cancelled();
+    callback confirmed();
+    callback photo-selected(int);
 
     VerticalLayout {
         spacing: 0;
@@ -18,12 +21,12 @@ export component PhotoMediaPicker inherits Rectangle {
             HorizontalLayout {
                 padding-left: Theme.sp-4;
                 padding-right: Theme.sp-4;
-                alignment: center;
 
                 Text {
                     text: "Cancel";
                     font-size: Theme.text-base;
                     color: Theme.accent;
+                    vertical-alignment: center;
                 }
 
                 Text {
@@ -31,6 +34,9 @@ export component PhotoMediaPicker inherits Rectangle {
                     font-size: Theme.text-base;
                     font-weight: Theme.weight-semibold;
                     color: Theme.text-primary;
+                    horizontal-stretch: 1;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
                 }
 
                 Text {
@@ -38,13 +44,50 @@ export component PhotoMediaPicker inherits Rectangle {
                     font-size: Theme.text-base;
                     font-weight: Theme.weight-semibold;
                     color: Theme.accent;
+                    vertical-alignment: center;
                 }
+            }
+
+            cancel-ta := TouchArea {
+                x: 0px;
+                width: 80px;
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.cancelled(); }
+            }
+
+            done-ta := TouchArea {
+                x: parent.width - 80px;
+                width: 80px;
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.confirmed(); }
             }
         }
 
+        Rectangle { height: 1px; background: Theme.border-default; }
+
+        // grid-columns/grid-rows/spacing were declared but never actually
+        // used anywhere — the body was just one blank placeholder
+        // Rectangle regardless of what was passed in. Rebuilt on a real
+        // GridLayout that actually reads all three.
         Rectangle {
             vertical-stretch: 1;
             background: Theme.bg-base;
+            clip: true;
+
+            GridLayout {
+                padding: root.spacing * 1px;
+                spacing: root.spacing * 1px;
+
+                for cell[i] in root.grid-columns * root.grid-rows: Rectangle {
+                    row: Math.floor(i / root.grid-columns);
+                    col: Math.mod(i, root.grid-columns);
+                    background: cell-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
+
+                    cell-ta := TouchArea {
+                        clicked => { root.photo-selected(i); }
+                    }
+                }
+            }
         }
     }
 }

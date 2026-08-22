@@ -7,9 +7,17 @@ export component SwipeToAction inherits Rectangle {
     in property <string> action-label: "More";
     in property <string> action-color-name: "accent";
     in property <string> content: "Item";
+    callback action-triggered();
+
+    private property <length> drag-offset: 0px;
+    private property <length> press-start-mouse-x: 0px;
+    private property <length> press-start-offset: 0px;
 
     Rectangle {
-        background: Theme.accent;
+        background: root.action-color-name == "error" ? Theme.error
+            : root.action-color-name == "success" ? Theme.success
+            : root.action-color-name == "warning" ? Theme.warning
+            : Theme.accent;
         x: parent.width - 80px;
         width: 80px;
         height: parent.height;
@@ -24,7 +32,8 @@ export component SwipeToAction inherits Rectangle {
         }
     }
 
-    Rectangle {
+    front := Rectangle {
+        x: root.drag-offset;
         background: Theme.bg-surface;
         height: parent.height;
 
@@ -38,6 +47,26 @@ export component SwipeToAction inherits Rectangle {
                 color: Theme.text-primary;
                 y: (parent.height - self.height) / 2;
                 vertical-stretch: 1;
+            }
+        }
+    }
+
+    drag-ta := TouchArea {
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.press-start-mouse-x = self.mouse-x;
+                root.press-start-offset = root.drag-offset;
+            }
+            if (ev.kind == PointerEventKind.up) {
+                if (root.drag-offset < -40px) {
+                    root.action-triggered();
+                }
+                root.drag-offset = 0px;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.drag-offset = (root.press-start-offset + (self.mouse-x - root.press-start-mouse-x)).clamp(-80px, 0px);
             }
         }
     }

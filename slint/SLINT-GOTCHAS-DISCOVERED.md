@@ -1479,3 +1479,101 @@ binding is provably safe).
 This is now a **standing check** for every remaining category, not just
 a one-off fix: any time a component's job is showing "how much of
 something," scan for this shape before considering that file done.
+
+---
+
+### Dragging an element using its *own* local `mouse-x` doesn't work
+
+Found while adding real drag interactivity to `mobile/SwipeToDelete`
+and its two siblings.
+
+```slint
+// WRONG — TouchArea is a child of the very element being repositioned
+front := Rectangle {
+    x: root.drag-offset;
+    ta := TouchArea {
+        moved => {
+            // self.mouse-x is LOCAL to this TouchArea, which moves
+            // every time drag-offset changes — so as soon as the
+            // element tracks the finger 1:1, mouse-x snaps back to
+            // whatever it was at press-down and the delta computes
+            // to ~0. The element never actually follows the drag.
+            root.drag-offset = self.mouse-x - root.press-start-mouse-x;
+        }
+    }
+}
+```
+The fix: put the `TouchArea` on a **fixed** reference frame — a sibling
+of the element being dragged (or the root itself), never a descendant
+of it — so its local `mouse-x` keeps tracking the finger's real,
+continuous position instead of chasing its own element's movement.
+
+```slint
+// RIGHT
+front := Rectangle { x: root.drag-offset; /* ... */ }
+drag-ta := TouchArea {   // sibling, not a child of `front`
+    pointer-event(ev) => {
+        if (ev.kind == PointerEventKind.down) {
+            root.press-start-mouse-x = self.mouse-x;
+            root.press-start-offset = root.drag-offset;
+        }
+    }
+    moved => {
+        if (self.pressed) {
+            root.drag-offset = (root.press-start-offset + (self.mouse-x - root.press-start-mouse-x)).clamp(-80px, 0px);
+        }
+    }
+}
+```
+Also confirmed here: deciding "commit or snap back" in a `pointer-event`
+handler on `PointerEventKind.up` is safer than relying on `clicked` still
+firing sensibly after a drag — that interaction isn't documented either
+way, so this sidesteps the question entirely. And `.clamp(lo, hi)` is
+used here in its confirmed *method* form (`value.clamp(...)`) — this
+project hasn't verified a bare `Math.clamp(...)` namespace-function form
+exists the way `Math.min`/`Math.max` do.
+
+---
+
+### A `@children`-forwarding wrapper and a callback-based "service" component solve different problems — don't reach for the first one by default
+
+Found while fixing two completely inert components in `mobile/`:
+`HapticFeedbackWrapper` (declared properties, no way to ever invoke it)
+and `ReachabilityHelper` (same symptom, different cause).
+
+If a component's whole job is **repositioning or restyling whatever's
+inside it** (shifting content down for one-handed reach, dimming
+disabled content, etc.), it should forward with `@children` — there's
+no touch-capture conflict, since it doesn't need its own `TouchArea`.
+
+But if a component's job is **reacting to an interaction that belongs to
+something else** (triggering a haptic pulse when a *nearby* button is
+tapped), `@children` is the wrong shape even though it looks like "the
+wrapper pattern" — a `TouchArea` on the wrapper would sit on top of and
+capture touches meant for the real interactive content inside it, and
+Slint has no click-through mechanism to hand a touch back down.  The
+right shape there is a callable service: `callback trigger();`, invoked
+directly by whatever sibling wants it —
+```slint
+haptic := HapticFeedbackWrapper { feedback-type: "medium"; }
+Button { clicked => { haptic.trigger(); /* ... */ } }
+```
+When reviewing an inert wrapper-shaped component, check which of these
+two problems it's actually solving before reaching for `@children` by
+default.
+
+---
+
+### `mobile/` batch confirmation — the recurring shapes keep paying off
+
+Every bug in this round matched a shape already on record above (the
+underscore/dash mismatch, the emoji-to-FA-icon conversion, the
+unwired-animation nudge fix, the missing-layout overlap, a declared-
+and-ignored config property, `padding-left` silently doing nothing
+outside a layout) — except the two new entries just above, both specific
+to interactive dragging and wrapper-vs-service component design, which
+hadn't come up in a category with this much raw interactivity before
+now. 25 of 30 files needed a fix, the highest ratio of any category so
+far — this one leaned heavily on OS-chrome mockups (action sheets,
+pickers, swipe rows) that had real structure but had never been wired
+for a single tap or drag.

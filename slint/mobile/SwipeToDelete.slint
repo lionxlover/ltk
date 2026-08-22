@@ -5,6 +5,17 @@ export component SwipeToDelete inherits Rectangle {
     clip: true;
 
     in property <string> label: "Swipe to delete";
+    callback deleted();
+
+    // Previously this had no TouchArea at all — despite the name, nothing
+    // ever revealed the Delete button underneath. Dragging is tracked from
+    // a TouchArea on the fixed root (not on `front` itself), since a
+    // TouchArea nested inside the very element it's repositioning would
+    // have its own local mouse-x move in lockstep with the element and
+    // never report a usable continuous delta.
+    private property <length> drag-offset: 0px;
+    private property <length> press-start-mouse-x: 0px;
+    private property <length> press-start-offset: 0px;
 
     Rectangle {
         background: Theme.error;
@@ -22,7 +33,8 @@ export component SwipeToDelete inherits Rectangle {
         }
     }
 
-    Rectangle {
+    front := Rectangle {
+        x: root.drag-offset;
         background: Theme.bg-surface;
         height: parent.height;
 
@@ -36,6 +48,26 @@ export component SwipeToDelete inherits Rectangle {
                 color: Theme.text-primary;
                 y: (parent.height - self.height) / 2;
                 vertical-stretch: 1;
+            }
+        }
+    }
+
+    drag-ta := TouchArea {
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.press-start-mouse-x = self.mouse-x;
+                root.press-start-offset = root.drag-offset;
+            }
+            if (ev.kind == PointerEventKind.up) {
+                if (root.drag-offset < -40px) {
+                    root.deleted();
+                }
+                root.drag-offset = 0px;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.drag-offset = (root.press-start-offset + (self.mouse-x - root.press-start-mouse-x)).clamp(-80px, 0px);
             }
         }
     }

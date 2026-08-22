@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component OnboardingPager inherits Rectangle {
     background: Theme.bg-surface;
@@ -7,16 +8,22 @@ export component OnboardingPager inherits Rectangle {
     in-out property <int> current-page: 0;
     in property <[string]> titles: ["Welcome", "Explore", "Get Started"];
     in property <[string]> descriptions: ["First page", "Second page", "Let's go!"];
-    in property <[string]> icons: ["👋", "🔍", "🚀"];
+    in property <[image]> icon-sources: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/door-open.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/rocket.svg")
+    ];
+    callback completed();
 
     VerticalLayout {
         alignment: center;
         spacing: Theme.sp-6;
 
-        if current-page < icons.length: Text {
-            text: icons[current-page];
-            font-size: 64px;
-            horizontal-alignment: center;
+        if current-page < icon-sources.length: FaIcon {
+            source: icon-sources[current-page];
+            fa-size: 56px;
+            fa-color: Theme.accent;
+            x: (parent.width - self.width) / 2;
         }
 
         if current-page < titles.length: Text {
@@ -43,6 +50,7 @@ export component OnboardingPager inherits Rectangle {
                 height: 8px;
                 border-radius: 4px;
                 background: idx == current-page ? Theme.accent : Theme.border-default;
+                animate width { duration: 200ms; easing: Theme.ease-standard; }
             }
         }
 
@@ -52,7 +60,7 @@ export component OnboardingPager inherits Rectangle {
                 width: 200px;
                 height: 48px;
                 border-radius: Theme.radius-full;
-                background: Theme.accent;
+                background: next-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
                 Text {
                     text: current-page == total-pages - 1 ? "Get Started" : "Next";
@@ -61,6 +69,17 @@ export component OnboardingPager inherits Rectangle {
                     color: #ffffff;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
+                }
+
+                next-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        if (root.current-page < root.total-pages - 1) {
+                            root.current-page += 1;
+                        } else {
+                            root.completed();
+                        }
+                    }
                 }
             }
         }

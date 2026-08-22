@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component StatusBarOverlay inherits Rectangle {
     background: transparent;
@@ -22,8 +23,8 @@ export component StatusBarOverlay inherits Rectangle {
         HorizontalLayout {
             spacing: Theme.sp-1;
 
-            Text { text: "📶"; font-size: 12px; }
-            Text { text: "🔋"; font-size: 12px; }
+            FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/signal.svg"); fa-size: 12px; fa-color: Theme.text-primary; y: (parent.height - self.height) / 2; }
+            FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/battery-full.svg"); fa-size: 14px; fa-color: Theme.text-primary; y: (parent.height - self.height) / 2; }
         }
     }
 }

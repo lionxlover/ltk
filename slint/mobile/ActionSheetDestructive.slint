@@ -7,6 +7,8 @@ export component ActionSheetDestructive inherits Rectangle {
     in property <string> title: "Are you sure?";
     in property <[string]> actions: ["Delete", "Move to Trash"];
     in property <int> destructive-index: 0;
+    callback action-selected(int);
+    callback cancelled();
 
     VerticalLayout {
         alignment: end;
@@ -37,6 +39,7 @@ export component ActionSheetDestructive inherits Rectangle {
                 for action[idx] in actions: Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
+                    background: row-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: action;
@@ -46,6 +49,11 @@ export component ActionSheetDestructive inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                     }
+
+                    row-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.action-selected(idx); }
+                    }
                 }
 
                 Rectangle { height: 8px; }
@@ -53,7 +61,7 @@ export component ActionSheetDestructive inherits Rectangle {
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
-                    background: Theme.bg-surface;
+                    background: cancel-ta.has-hover ? Theme.hover-overlay : Theme.bg-surface;
 
                     Text {
                         text: "Cancel";
@@ -62,6 +70,11 @@ export component ActionSheetDestructive inherits Rectangle {
                         color: Theme.accent;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    cancel-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.cancelled(); }
                     }
                 }
             }

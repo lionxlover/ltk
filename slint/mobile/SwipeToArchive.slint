@@ -5,6 +5,11 @@ export component SwipeToArchive inherits Rectangle {
     clip: true;
 
     in property <string> label: "Swipe to archive";
+    callback archived();
+
+    private property <length> drag-offset: 0px;
+    private property <length> press-start-mouse-x: 0px;
+    private property <length> press-start-offset: 0px;
 
     Rectangle {
         background: Theme.accent;
@@ -22,7 +27,8 @@ export component SwipeToArchive inherits Rectangle {
         }
     }
 
-    Rectangle {
+    front := Rectangle {
+        x: root.drag-offset;
         background: Theme.bg-surface;
         height: parent.height;
 
@@ -36,6 +42,26 @@ export component SwipeToArchive inherits Rectangle {
                 color: Theme.text-primary;
                 y: (parent.height - self.height) / 2;
                 vertical-stretch: 1;
+            }
+        }
+    }
+
+    drag-ta := TouchArea {
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.press-start-mouse-x = self.mouse-x;
+                root.press-start-offset = root.drag-offset;
+            }
+            if (ev.kind == PointerEventKind.up) {
+                if (root.drag-offset < -40px) {
+                    root.archived();
+                }
+                root.drag-offset = 0px;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.drag-offset = (root.press-start-offset + (self.mouse-x - root.press-start-mouse-x)).clamp(-80px, 0px);
             }
         }
     }

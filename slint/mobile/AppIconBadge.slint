@@ -1,9 +1,10 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component AppIconBadge inherits Rectangle {
     background: transparent;
 
-    in property <string> icon: "📱";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/mobile.svg");
     in property <int> badge-count: 0;
     in property <length> icon-size: 60px;
 
@@ -18,9 +19,10 @@ export component AppIconBadge inherits Rectangle {
         x: 8px;
         y: 8px;
 
-        Text {
-            text: icon;
-            font-size: icon-size * 0.5;
+        FaIcon {
+            source: root.icon-source;
+            fa-size: icon-size * 0.5;
+            fa-color: Theme.text-primary;
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
         }
@@ -34,7 +36,7 @@ export component AppIconBadge inherits Rectangle {
         background: Theme.error;
 
         Text {
-            text: badge_count > 99 ? "99+" : "\{Math.mod(badge_count, 100)}";
+            text: root.badge-count > 99 ? "99+" : "\{root.badge-count}";
             font-size: Theme.text-xs;
             font-weight: Theme.weight-bold;
             color: #ffffff;

@@ -7,4 +7,11 @@ export component ReachabilityHelper inherits Rectangle {
     in property <length> shift-down: 120px;
 
     y: active ? shift-down : 0px;
+    animate y { duration: 250ms; easing: Theme.ease-standard; }
+
+    // Previously had no @children — wrapping any real screen content in
+    // this component made that content simply vanish, since nothing was
+    // ever forwarded. The whole point of Reachability is shifting the
+    // wrapped content down, so it needs to actually contain it.
+    @children
 }

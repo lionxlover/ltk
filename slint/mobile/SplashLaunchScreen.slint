@@ -1,16 +1,22 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SplashLaunchScreen inherits Rectangle {
     background: Theme.bg-surface;
 
-    in property <string> icon: "🦞";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/layer-group.svg");
     in property <string> app-name: "LTK";
 
     VerticalLayout {
         alignment: center;
         spacing: Theme.sp-4;
 
-        Text { text: icon; font-size: 64px; horizontal-alignment: center; }
+        FaIcon {
+            source: root.icon-source;
+            fa-size: 64px;
+            fa-color: Theme.accent;
+            x: (parent.width - self.width) / 2;
+        }
         Text { text: app-name; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
     }
 }

@@ -9,6 +9,7 @@ export component DynamicIslandSlot inherits Rectangle {
 
     width: expanded ? 280px : 120px;
     height: expanded ? 80px : 36px;
+    animate width, height { duration: 300ms; easing: Theme.ease-spring; }
 
     if expanded && content != "": Text {
         text: content;

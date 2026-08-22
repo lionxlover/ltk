@@ -8,6 +8,7 @@ export component DocumentFilePicker inherits Rectangle {
     clip: true;
 
     in property <[string]> file-types: ["Documents", "Images", "Videos", "Audio"];
+    callback type-selected(int);
 
     VerticalLayout {
         spacing: 0;
@@ -15,13 +16,19 @@ export component DocumentFilePicker inherits Rectangle {
         Rectangle {
             height: 48px;
 
-            Text {
-                text: "Select File";
-                font-size: Theme.text-base;
-                font-weight: Theme.weight-semibold;
-                color: Theme.text-primary;
+            // `padding-left` on a bare Text outside a layout has no effect
+            // (padding only works on layout elements) — wrapped in a
+            // HorizontalLayout so the inset is actually applied.
+            HorizontalLayout {
                 padding-left: Theme.sp-4;
-                y: (parent.height - self.height) / 2;
+
+                Text {
+                    text: "Select File";
+                    font-size: Theme.text-base;
+                    font-weight: Theme.weight-semibold;
+                    color: Theme.text-primary;
+                    vertical-alignment: center;
+                }
             }
         }
 
@@ -29,6 +36,7 @@ export component DocumentFilePicker inherits Rectangle {
 
         for type[idx] in file-types: Rectangle {
             height: 48px;
+            background: row-ta.has-hover ? Theme.hover-overlay : transparent;
 
             HorizontalLayout {
                 padding-left: Theme.sp-4;
@@ -39,7 +47,7 @@ export component DocumentFilePicker inherits Rectangle {
                     font-size: Theme.text-base;
                     color: Theme.text-primary;
                     y: (parent.height - self.height) / 2;
-                    vertical-stretch: 1;
+                    horizontal-stretch: 1;
                 }
 
                 Text {
@@ -48,6 +56,11 @@ export component DocumentFilePicker inherits Rectangle {
                     color: Theme.text-tertiary;
                     y: (parent.height - self.height) / 2;
                 }
+            }
+
+            row-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.type-selected(idx); }
             }
 
             Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }

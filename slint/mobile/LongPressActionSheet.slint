@@ -6,6 +6,8 @@ export component LongPressActionSheet inherits Rectangle {
 
     in property <string> title: "";
     in property <[string]> actions: ["Copy", "Share", "Delete"];
+    callback action-selected(int);
+    callback cancelled();
 
     VerticalLayout {
         alignment: end;
@@ -36,6 +38,7 @@ export component LongPressActionSheet inherits Rectangle {
                 for action[idx] in actions: Rectangle {
                     height: 48px;
                     border-radius: Theme.radius-md;
+                    background: row-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: action;
@@ -43,6 +46,11 @@ export component LongPressActionSheet inherits Rectangle {
                         color: idx == actions.length - 1 ? Theme.error : Theme.text-primary;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    row-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.action-selected(idx); }
                     }
                 }
 
@@ -54,6 +62,7 @@ export component LongPressActionSheet inherits Rectangle {
                 Rectangle {
                     height: 48px;
                     border-radius: Theme.radius-md;
+                    background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "Cancel";
@@ -62,6 +71,11 @@ export component LongPressActionSheet inherits Rectangle {
                         color: Theme.accent;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    cancel-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.cancelled(); }
                     }
                 }
             }

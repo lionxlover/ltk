@@ -10,6 +10,7 @@ export component FloatingIslandPill inherits Rectangle {
 
     width: expanded ? 200px : 120px;
     height: expanded ? 56px : 36px;
+    animate width, height { duration: 300ms; easing: Theme.ease-spring; }
 
     if expanded && content != "": Text {
         text: content;

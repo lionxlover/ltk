@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component HomeScreenWidget2x2 inherits Rectangle {
     background: Theme.glass-regular;
@@ -6,14 +7,19 @@ export component HomeScreenWidget2x2 inherits Rectangle {
     width: 170px;
     height: 170px;
 
-    in property <string> icon: "⚙️";
+    in property <image> icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gear.svg");
     in property <string> label: "Settings";
 
     VerticalLayout {
         alignment: center;
         spacing: Theme.sp-2;
 
-        Text { text: icon; font-size: 36px; horizontal-alignment: center; }
+        FaIcon {
+            source: root.icon-source;
+            fa-size: 36px;
+            fa-color: Theme.text-primary;
+            x: (parent.width - self.width) / 2;
+        }
         Text { text: label; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; horizontal-alignment: center; }
     }
 }
