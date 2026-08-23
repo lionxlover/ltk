@@ -21,11 +21,12 @@ re-discovering things the hard way.
 | `feedback/` | 36 | ✅ Done, verified via VS Code Problems panel (1 round of post-delivery fixes) | `feedback.zip` |
 | `typography/` | 36 | ✅ Done, pending VS Code Problems-panel check | `typography.zip` |
 | `media/` | 32 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes, also surfaced a cross-cutting bug fixed in 7 other categories) | `media.zip` |
-| `mobile/` | 30 | ✅ Done, pending VS Code Problems-panel check | `mobile.zip` |
-| everything else | ~316 | ⬜ Not started | — |
+| `mobile/` | 30 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes) | `mobile.zip` |
+| `forms2/` | 31 | ✅ Done, pending VS Code Problems-panel check | `forms2.zip` |
+| everything else | ~285 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`forms2` (31), `social2` (26),
+`social2` (26),
 `animation` (24), `overlays` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
 (12), `desktop` (10), `range-value` (10), `social` (8), `accessibility`
@@ -2361,3 +2362,132 @@ Files touched this round: `DynamicIslandSlot.slint`,
 `AppIconBadge.slint`, `ContactPicker.slint`, `PhotoMediaPicker.slint`,
 `SwipeToDelete.slint`, `SwipeToArchive.slint`, `SwipeToAction.slint`,
 `test.slint`.
+
+## `forms2/` batch — the biggest structural finding of the whole project
+
+All 30 components reviewed; 33 files delivered (30 components +
+`export.slint`, unchanged + `test.slint`, heavily expanded). No `core/`
+changes needed. 23 of 30 files needed a fix, and the dominant issue
+here wasn't a small styling slip — it was foundational.
+
+**Every single layout-wrapper primitive in this category was missing
+`@children`, and `test.slint` itself was already trying to nest real
+content inside several of them.** `FormRoot`, `FormGroup`,
+`FormSection`, `FormRow`, `FieldWrapper`, `Fieldset`,
+`HorizontalLabelForm`, `StackedForm` — eight components whose entire
+purpose is wrapping arbitrary form content — had a `VerticalLayout`/
+`HorizontalLayout` with nothing forwarded into it at all. Since
+`test.slint`'s own "Form Anatomy" demo already nested a
+`FormGroup`/`Rectangle`/`FieldHelperText` tree inside a `FormSection`
+inside a `FormRoot`, this wasn't a hypothetical risk — that entire demo
+section would have rendered as just two header lines and nothing else,
+with every field silently discarded. This is the same missing-`@children`
+shape as `mobile/HapticFeedbackWrapper`/`ReachabilityHelper`, just at a
+much larger scale — every one of these needed a wrapper, not a service,
+so `@children` was unambiguously the right fix for all eight (unlike
+those two mobile components, none of these have their own `TouchArea`
+competing for touches).
+
+**The identical `Math.mod(question + 1, 10)` bug, copy-pasted into three
+separate files:** `DynamicFieldArray`, `QuizForm`, `SurveyForm` all
+showed "Item"/"Question" labels via `Math.mod(current + 1, 10)` — for
+any 10th (or 10-item) entry this wraps to 0, showing "Item 0"/"Question
+0" instead of 10. There's no reason for a modulo here at all; removed
+it in all three.
+
+**Static, non-editable text standing in for form fields, everywhere.**
+`LoginForm`, `RegistrationForm`, `PasswordResetForm`, `PaymentForm`,
+`AddressForm`, `ContactForm`, `ProfileEditForm` all rendered every field
+as a bordered box containing plain `Text` — styled exactly like an
+input, but with nothing behind it a person could actually type into.
+Converted every field across all seven to a real `TextInput` (with a
+placeholder `Text` shown only while empty, and `has-focus`-driven
+border-color for real focus feedback), and wired every Cancel/Submit/
+Save/Send button with a real callback carrying the field values.
+Password fields are real and typable but intentionally not masked —
+this project hasn't confirmed Slint's password `input-type` against a
+live compiler, so guessing at an unconfirmed enum wasn't worth the risk
+versus a plain, working field; switched the empty-state placeholder
+character from `•••••••• ` to `********` too, since bullet isn't on the
+confirmed-safe glyph list and asterisk is plain ASCII.
+
+**`padding-left`/`padding-top` silently ignored on a bare `Text`, the
+confirmed `gotchas.md` rule hit for real, repeatedly:**
+`ProfileEditForm`'s First Name/Last Name/Email/Bio fields all had
+`padding-left`/`padding-top` directly on a `Text` outside any layout —
+no visual effect at all. Fixed as part of the `TextInput` conversion
+above (the input now insets via `x: Theme.sp-3`, a binding rather than
+a layout `padding` property, so it isn't subject to this gotcha at all).
+
+**Unselectable options in both quiz-style components:** `QuizForm`'s
+four answer buttons and `SurveyForm`'s five satisfaction-level buttons
+had no `TouchArea` at all. Wired both with real selection, correct/
+incorrect highlighting (`QuizForm`, against a new `correct-option`
+property), and score/progress tracking. Also caught a subtler bug while
+wiring `QuizForm`: an early version set `selected-option` and then
+immediately reset it to advance the question, all inside one click
+handler — since Slint only re-renders after a callback finishes, not
+between statements inside it, the correct/incorrect flash would never
+actually have been visible. Fixed with a `Timer` (`interval: 700ms;
+running: root.answered;`) that delays the actual advance, so the
+feedback has time to render first. Both components' `current-question`/
+`score`/`completed` were declared `in` (not `in-out`), which would have
+made this impossible regardless — an `in` property can't be written
+from inside its own component — so both were promoted to `in-out` as
+part of the same fix. Neither component had a `total-questions`
+property before; `SurveyForm` hardcoded "of 5" and a fixed 20% progress
+width regardless of the actual question count, `QuizForm` hardcoded "of
+10" the same way — both now take a real `total-questions`/
+`total-steps`-style property and compute the label and progress width
+from it.
+
+**Unwired configuration properties, but a different shape than "should
+be fixed" — flagged instead as intentional, caller-facing config
+surface, matching the `WizardForm.branching` precedent from `mobile/`:**
+`HorizontalLabelForm`'s `label-width`/`gap` and `FormRow`'s `columns`/
+`equal-width` are declared and never read internally, but there's no
+way for a `@children`-forwarding wrapper to reach into its own opaque
+forwarded children and assign them a width or a grid column — the
+*caller's* own children have to reference the wrapper by its own id
+(`hlf.label-width`) to use these meaningfully. Demonstrated that exact
+pattern in the new `test.slint` coverage for both rather than inventing
+internal logic that isn't achievable in Slint as written.
+
+**Emoji / unconfirmed-safe glyphs, converted to real FA icons:**
+`PasswordResetForm` (key emoji → `key.svg`), `PaymentForm` (lock emoji →
+`lock.svg`), `QuizForm` (party emoji → `trophy.svg`, matching the
+"complete" moment rather than a literal party icon), `SearchFilterForm`
+(magnifying-glass emoji → `magnifying-glass.svg`, plus three `▾`
+down-triangles across its filter pills → `chevron-down.svg`).
+`AddressForm`'s "United States ▾" got the same chevron-down treatment.
+
+**A near-miss caught before it shipped:** an early pass at making
+"Forgot?" and "Sign up" tappable in `LoginForm` put a bare `TouchArea`
+as a *sibling* after the `Text`, inside a `HorizontalLayout` — with no
+content of its own to derive a preferred size from, that TouchArea
+risked collapsing to zero width and never actually being clickable.
+Reconsidered before shipping and restructured so the `TouchArea` wraps
+the clickable `Text` as its own child instead (its size then derives
+from that child, which is standard, reliable `Text`-in-a-layout
+sizing), and re-audited every other `TouchArea` written this round to
+confirm none of them share that shape — the AddressForm/SearchFilterForm
+ones are all direct children of a plain `Rectangle` (which fills it
+entirely by default), not layout siblings, so they're fine as written.
+
+**`test.slint` gaps:** nine exported components — `FieldWrapper`,
+`FormRow`, `HorizontalLabelForm`, `InlineForm`, `ProfileEditForm`,
+`QuizForm`, `SearchFilterForm`, `StackedForm`, `WizardForm` — were
+never actually instantiated anywhere in the file. Added real demos for
+all nine.
+
+**Reviewed and left as-is:** `MultiStepForm` was already fully and
+correctly wired (progress dots, step titles, Back/Next with real
+`current-step` updates) — no changes needed. `WizardForm`'s `branching`/
+`branch-step` properties are pure host-facing configuration by design,
+same reasoning as `mobile/HapticFeedbackWrapper`'s properties — a
+subclass can't intercept a `TouchArea` callback body defined in its
+base component, so the realistic, sound design is exposing these for
+the host to read and act on (`current-step` is already `in-out`,
+so external code can already override it after any click), not
+something to rearchitect via an unconfirmed inheritance-override
+mechanism.

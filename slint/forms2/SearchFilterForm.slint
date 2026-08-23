@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SearchFilterForm inherits Rectangle {
     background: Theme.bg-surface;
@@ -6,6 +7,11 @@ export component SearchFilterForm inherits Rectangle {
     border-width: 1px;
     border-color: Theme.border-default;
     padding: Theme.sp-4;
+
+    callback searched(string);
+    callback type-filter-clicked();
+    callback date-filter-clicked();
+    callback sort-filter-clicked();
 
     VerticalLayout {
         spacing: Theme.sp-4;
@@ -17,25 +23,28 @@ export component SearchFilterForm inherits Rectangle {
                 height: 36px;
                 border-radius: Theme.radius-md;
                 border-width: 1px;
-                border-color: Theme.border-default;
-                vertical-stretch: 1;
+                border-color: search-input.has-focus ? Theme.border-focus : Theme.border-default;
+                horizontal-stretch: 1;
                 clip: true;
 
                 HorizontalLayout {
                     padding-left: Theme.sp-3;
+                    padding-right: Theme.sp-3;
                     spacing: Theme.sp-2;
 
-                    Text {
-                        text: "🔍";
-                        font-size: 14px;
-                        y: (parent.height - self.height) / 2;
-                    }
+                    FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg"); fa-size: 12px; fa-color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
 
-                    Text {
-                        text: "Search...";
-                        font-size: Theme.text-sm;
-                        color: Theme.text-tertiary;
-                        y: (parent.height - self.height) / 2;
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        search-input := TextInput {
+                            text: "";
+                            font-size: Theme.text-sm;
+                            color: Theme.text-primary;
+                            y: (parent.height - self.height) / 2;
+                            single-line: true;
+                            accepted => { root.searched(self.text); }
+                        }
+                        if search-input.text == "": Text { text: "Search..."; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
                     }
                 }
             }
@@ -44,7 +53,7 @@ export component SearchFilterForm inherits Rectangle {
                 width: 80px;
                 height: 36px;
                 border-radius: Theme.radius-md;
-                background: Theme.accent;
+                background: search-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
                 Text {
                     text: "Search";
@@ -53,6 +62,11 @@ export component SearchFilterForm inherits Rectangle {
                     color: #ffffff;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
+                }
+
+                search-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.searched(search-input.text); }
                 }
             }
         }
@@ -66,14 +80,17 @@ export component SearchFilterForm inherits Rectangle {
                 border-width: 1px;
                 border-color: Theme.border-default;
                 horizontal-stretch: 1;
+                background: type-ta.has-hover ? Theme.hover-overlay : transparent;
+                clip: true;
 
-                Text {
-                    text: "All Types ▾";
-                    font-size: Theme.text-sm;
-                    color: Theme.text-secondary;
+                HorizontalLayout {
                     padding-left: Theme.sp-3;
-                    y: (parent.height - self.height) / 2;
+                    padding-right: Theme.sp-2;
+                    spacing: Theme.sp-1;
+                    Text { text: "All Types"; font-size: Theme.text-sm; color: Theme.text-secondary; y: (parent.height - self.height) / 2; horizontal-stretch: 1; }
+                    FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg"); fa-size: 9px; fa-color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
                 }
+                type-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.type-filter-clicked(); } }
             }
 
             Rectangle {
@@ -82,14 +99,17 @@ export component SearchFilterForm inherits Rectangle {
                 border-width: 1px;
                 border-color: Theme.border-default;
                 horizontal-stretch: 1;
+                background: date-ta.has-hover ? Theme.hover-overlay : transparent;
+                clip: true;
 
-                Text {
-                    text: "Any Date ▾";
-                    font-size: Theme.text-sm;
-                    color: Theme.text-secondary;
+                HorizontalLayout {
                     padding-left: Theme.sp-3;
-                    y: (parent.height - self.height) / 2;
+                    padding-right: Theme.sp-2;
+                    spacing: Theme.sp-1;
+                    Text { text: "Any Date"; font-size: Theme.text-sm; color: Theme.text-secondary; y: (parent.height - self.height) / 2; horizontal-stretch: 1; }
+                    FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg"); fa-size: 9px; fa-color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
                 }
+                date-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.date-filter-clicked(); } }
             }
 
             Rectangle {
@@ -98,14 +118,17 @@ export component SearchFilterForm inherits Rectangle {
                 border-width: 1px;
                 border-color: Theme.border-default;
                 horizontal-stretch: 1;
+                background: sort-ta.has-hover ? Theme.hover-overlay : transparent;
+                clip: true;
 
-                Text {
-                    text: "Sort: Relevance ▾";
-                    font-size: Theme.text-sm;
-                    color: Theme.text-secondary;
+                HorizontalLayout {
                     padding-left: Theme.sp-3;
-                    y: (parent.height - self.height) / 2;
+                    padding-right: Theme.sp-2;
+                    spacing: Theme.sp-1;
+                    Text { text: "Sort: Relevance"; font-size: Theme.text-sm; color: Theme.text-secondary; y: (parent.height - self.height) / 2; horizontal-stretch: 1; }
+                    FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg"); fa-size: 9px; fa-color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
                 }
+                sort-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.sort-filter-clicked(); } }
             }
         }
     }

@@ -7,6 +7,10 @@ export component LoginForm inherits Rectangle {
     border-color: Theme.border-default;
     width: 360px;
 
+    callback forgot-password-clicked();
+    callback sign-in(string, string);
+    callback sign-up-clicked();
+
     VerticalLayout {
         padding: Theme.sp-6;
         spacing: Theme.sp-4;
@@ -29,25 +33,51 @@ export component LoginForm inherits Rectangle {
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: email-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                email-input := TextInput {
+                    text: "";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    x: Theme.sp-3;
+                    width: parent.width - Theme.sp-3 * 2;
+                    y: (parent.height - self.height) / 2;
+                    single-line: true;
+                }
+                if email-input.text == "": Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             HorizontalLayout {
                 Text { text: "Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; vertical-stretch: 1; }
-                Text { text: "Forgot?"; font-size: Theme.text-xs; color: Theme.accent; y: 2px; }
+                forgot-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.forgot-password-clicked(); }
+                    Text { text: "Forgot?"; font-size: Theme.text-xs; color: Theme.accent; y: 2px; }
+                }
             }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: password-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                // Real, typable field. Not masked — this project hasn't
+                // confirmed Slint's password input-type against a live
+                // compiler, so this stays plain text rather than guess at it.
+                password-input := TextInput {
+                    text: "";
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    x: Theme.sp-3;
+                    width: parent.width - Theme.sp-3 * 2;
+                    y: (parent.height - self.height) / 2;
+                    single-line: true;
+                    accepted => { root.sign-in(email-input.text, password-input.text); }
+                }
+                if password-input.text == "": Text { text: "********"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         Rectangle {
             height: 40px;
             border-radius: Theme.radius-md;
-            background: Theme.accent;
+            background: signin-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
             Text {
                 text: "Sign In";
@@ -57,6 +87,11 @@ export component LoginForm inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            signin-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.sign-in(email-input.text, password-input.text); }
+            }
         }
 
         HorizontalLayout {
@@ -64,7 +99,11 @@ export component LoginForm inherits Rectangle {
             spacing: Theme.sp-2;
 
             Text { text: "Don't have an account?"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
-            Text { text: "Sign up"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+            signup-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.sign-up-clicked(); }
+                Text { text: "Sign up"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ export component InlineForm inherits Rectangle {
 
     in property <length> gap: 8px;
     in property <bool> compact: true;
+    callback searched(string);
 
     HorizontalLayout {
         spacing: gap;
@@ -14,15 +15,26 @@ export component InlineForm inherits Rectangle {
             height: 32px;
             border-radius: Theme.radius-md;
             border-width: 1px;
-            border-color: Theme.border-default;
-            vertical-stretch: 1;
+            border-color: search-input.has-focus ? Theme.border-focus : Theme.border-default;
+            horizontal-stretch: 1;
             clip: true;
 
-            Text {
+            search-input := TextInput {
+                text: "";
+                font-size: Theme.text-sm;
+                color: Theme.text-primary;
+                x: Theme.sp-3;
+                width: parent.width - Theme.sp-3 * 2;
+                y: (parent.height - self.height) / 2;
+                single-line: true;
+                accepted => { root.searched(self.text); }
+            }
+
+            if search-input.text == "": Text {
                 text: "Search...";
                 font-size: Theme.text-sm;
                 color: Theme.text-tertiary;
-                padding-left: Theme.sp-3;
+                x: Theme.sp-3;
                 y: (parent.height - self.height) / 2;
             }
         }
@@ -31,7 +43,7 @@ export component InlineForm inherits Rectangle {
             width: 64px;
             height: 32px;
             border-radius: Theme.radius-md;
-            background: Theme.accent;
+            background: go-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
             Text {
                 text: "Go";
@@ -40,6 +52,11 @@ export component InlineForm inherits Rectangle {
                 color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            go-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.searched(search-input.text); }
             }
         }
     }

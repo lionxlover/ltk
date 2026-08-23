@@ -7,6 +7,9 @@ export component RegistrationForm inherits Rectangle {
     border-color: Theme.border-default;
     width: 400px;
 
+    callback registered(string, string, string);
+    callback sign-in-clicked();
+
     VerticalLayout {
         padding: Theme.sp-6;
         spacing: Theme.sp-4;
@@ -18,40 +21,56 @@ export component RegistrationForm inherits Rectangle {
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Full Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: name-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                name-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if name-input.text == "": Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: email-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                email-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if email-input.text == "": Text { text: "you@example.com"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: password-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                password-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if password-input.text == "": Text { text: "********"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
             Text { text: "Must be at least 8 characters"; font-size: Theme.text-xs; color: Theme.text-tertiary; }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Confirm Password"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "••••••••"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: confirm-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                confirm-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true;
+                    accepted => { root.registered(name-input.text, email-input.text, password-input.text); } }
+                if confirm-input.text == "": Text { text: "********"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
-        Rectangle { height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+        Rectangle {
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: create-ta.has-hover ? Theme.accent-dim : Theme.accent;
             Text { text: "Create Account"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            create-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.registered(name-input.text, email-input.text, password-input.text); }
+            }
         }
 
         HorizontalLayout { alignment: center; spacing: Theme.sp-2;
             Text { text: "Already have an account?"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
-            Text { text: "Sign in"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+            signin-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.sign-in-clicked(); }
+                Text { text: "Sign in"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+            }
         }
     }
 }

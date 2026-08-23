@@ -9,15 +9,23 @@ export component ProfileEditForm inherits Rectangle {
     padding: Theme.sp-6;
     width: 480px;
 
+    callback change-photo-clicked();
+    callback cancelled();
+    callback saved(string, string, string, string);
+
     VerticalLayout {
         spacing: Theme.sp-4;
 
         Text { text: "Edit Profile"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
 
         HorizontalLayout { spacing: Theme.sp-4; alignment: center;
-            Rectangle { width: 72px; height: 72px; border-radius: 36px; background: Theme.bg-surface; }
+            Rectangle { width: 72px; height: 72px; border-radius: 36px; background: Theme.bg-overlay; }
             VerticalLayout { spacing: Theme.sp-1; y: 12px;
-                Text { text: "Change Photo"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+                photo-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.change-photo-clicked(); }
+                    Text { text: "Change Photo"; font-size: Theme.text-sm; color: Theme.accent; font-weight: Theme.weight-medium; }
+                }
                 Text { text: "JPG, PNG. Max 2MB"; font-size: Theme.text-xs; color: Theme.text-tertiary; }
             }
         }
@@ -27,38 +35,44 @@ export component ProfileEditForm inherits Rectangle {
         HorizontalLayout { spacing: Theme.sp-3;
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "First Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "John"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: first-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    first-input := TextInput { text: "John"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
                 }
             }
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "Last Name"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "Doe"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: last-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    last-input := TextInput { text: "Doe"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
                 }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Email"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                Text { text: "john@example.com"; font-size: Theme.text-sm; color: Theme.text-primary; padding-left: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: email-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                email-input := TextInput { text: "john@example.com"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Bio"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 80px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                Text { text: "Tell us about yourself..."; font-size: Theme.text-sm; color: Theme.text-tertiary; padding-left: Theme.sp-3; padding-top: Theme.sp-3; }
+            Rectangle { height: 80px; border-radius: Theme.radius-md; border-width: 1px; border-color: bio-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                bio-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: Theme.sp-3; }
+                if bio-input.text == "": Text { text: "Tell us about yourself..."; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: Theme.sp-3; }
             }
         }
 
         HorizontalLayout { spacing: Theme.sp-3; alignment: end;
-            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;
                 Text { text: "Cancel"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                cancel-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.cancelled(); } }
             }
-            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: save-ta.has-hover ? Theme.accent-dim : Theme.accent;
                 Text { text: "Save"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                save-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.saved(first-input.text, last-input.text, email-input.text, bio-input.text); }
+                }
             }
         }
     }

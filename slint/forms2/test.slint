@@ -20,6 +20,15 @@ import { PaymentForm } from "./PaymentForm.slint";
 import { AddressForm } from "./AddressForm.slint";
 import { ContactForm } from "./ContactForm.slint";
 import { SurveyForm } from "./SurveyForm.slint";
+import { QuizForm } from "./QuizForm.slint";
+import { SearchFilterForm } from "./SearchFilterForm.slint";
+import { ProfileEditForm } from "./ProfileEditForm.slint";
+import { InlineForm } from "./InlineForm.slint";
+import { FieldWrapper } from "./FieldWrapper.slint";
+import { FormRow } from "./FormRow.slint";
+import { StackedForm } from "./StackedForm.slint";
+import { HorizontalLabelForm } from "./HorizontalLabelForm.slint";
+import { WizardForm } from "./WizardForm.slint";
 
 export component FormsTest2 inherits Rectangle {
     background: Theme.bg-base;
@@ -111,6 +120,56 @@ export component FormsTest2 inherits Rectangle {
 
             Text { text: "Template: Survey"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             SurveyForm { width: 500px; }
+
+            Text { text: "Template: Quiz"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            QuizForm { width: 480px; }
+
+            Text { text: "Search / Filter Form"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            SearchFilterForm { width: 500px; }
+
+            Text { text: "Profile Edit Form"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            ProfileEditForm { }
+
+            Text { text: "Inline Form"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            InlineForm { width: 320px; }
+
+            Text { text: "Layout containers: FieldWrapper, FormRow, StackedForm"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { width: 500px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                VerticalLayout { padding: Theme.sp-4; spacing: Theme.sp-4;
+                    FieldWrapper {
+                        FieldLabel { text: "Nickname"; }
+                        Rectangle { height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                        FieldHelperText { text: "Optional"; }
+                    }
+                    FormRow { columns: 2;
+                        Rectangle { height: 36px; horizontal-stretch: 1; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                        Rectangle { height: 36px; horizontal-stretch: 1; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                    }
+                    StackedForm { gap: Theme.sp-2;
+                        Rectangle { height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                        Rectangle { height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                    }
+                }
+            }
+
+            Text { text: "Horizontal Label Form"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            Rectangle { width: 500px; background: Theme.bg-surface; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle;
+                VerticalLayout { padding: Theme.sp-4;
+                    hlf := HorizontalLabelForm { label-width: 120px; gap: Theme.sp-3;
+                        HorizontalLayout { spacing: hlf.gap;
+                            Text { text: "Company"; width: hlf.label-width; font-size: Theme.text-sm; color: Theme.text-primary; y: 10px; }
+                            Rectangle { height: 36px; horizontal-stretch: 1; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                        }
+                        HorizontalLayout { spacing: hlf.gap;
+                            Text { text: "Website"; width: hlf.label-width; font-size: Theme.text-sm; color: Theme.text-primary; y: 10px; }
+                            Rectangle { height: 36px; horizontal-stretch: 1; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; }
+                        }
+                    }
+                }
+            }
+
+            Text { text: "Wizard Form (branching)"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            WizardForm { width: 500px; height: 120px; total-steps: 3; branching: true; branch-step: 2; step-titles: ["Type", "Details", "Confirm"]; }
         }
     }
 }

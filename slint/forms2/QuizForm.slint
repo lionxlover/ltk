@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component QuizForm inherits Rectangle {
     background: Theme.bg-surface;
@@ -8,19 +9,45 @@ export component QuizForm inherits Rectangle {
     padding: Theme.sp-6;
     width: 480px;
 
-    in property <int> current-question: 0;
-    in property <int> score: 0;
-    in property <bool> completed: false;
+    in property <int> total-questions: 10;
+    in-out property <int> current-question: 0;
+    in-out property <int> score: 0;
+    in-out property <bool> completed: false;
+    in property <int> correct-option: 2;
+    in-out property <int> selected-option: -1;
+    callback answer-selected(int, bool);
+
+    // Brief delay between picking an answer and advancing, so the
+    // correct/incorrect highlight is actually visible — setting
+    // selected-option and then immediately resetting it within the same
+    // click handler would never render the feedback at all, since Slint
+    // only re-renders after a callback finishes, not between statements.
+    private property <bool> answered: false;
+    Timer {
+        interval: 700ms;
+        running: root.answered;
+        triggered => {
+            root.answered = false;
+            if (root.current-question < root.total-questions - 1) {
+                root.current-question += 1;
+                root.selected-option = -1;
+            } else {
+                root.completed = true;
+            }
+        }
+    }
 
     VerticalLayout {
         spacing: Theme.sp-4;
 
         if !completed: VerticalLayout { spacing: Theme.sp-4; vertical-stretch: 1;
             Text { text: "Quiz"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
-            Text { text: "Question " + Math.mod(current-question + 1, 10) + " of 10"; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+            Text { text: "Question " + (current-question + 1) + " of " + root.total-questions; font-size: Theme.text-sm; color: Theme.text-tertiary; }
 
             Rectangle { height: 4px; border-radius: 2px; background: Theme.border-default;
-                Rectangle { height: 4px; width: parent.width * 0.1; border-radius: 2px; background: Theme.accent; }
+                Rectangle { x: 0; height: 4px; width: parent.width * (current-question + 1) / root.total-questions; border-radius: 2px; background: Theme.accent;
+                    animate width { duration: 200ms; easing: Theme.ease-standard; }
+                }
             }
 
             Text { text: "What is the capital of France?"; font-size: Theme.text-lg; font-weight: Theme.weight-medium; color: Theme.text-primary; }
@@ -29,8 +56,9 @@ export component QuizForm inherits Rectangle {
                 for option[opt] in ["London", "Berlin", "Paris", "Madrid"]: Rectangle {
                     height: 44px;
                     border-radius: Theme.radius-md;
-                    border-width: 1px;
-                    border-color: Theme.border-default;
+                    border-width: opt == root.selected-option ? 2px : 1px;
+                    border-color: opt == root.selected-option ? (opt == root.correct-option ? Theme.success : Theme.error) : Theme.border-default;
+                    background: opt == root.selected-option ? (opt == root.correct-option ? Theme.accent-subtle : Theme.bg-overlay) : (option-ta.has-hover ? Theme.hover-overlay : transparent);
 
                     HorizontalLayout {
                         padding-left: Theme.sp-4;
@@ -41,7 +69,20 @@ export component QuizForm inherits Rectangle {
                             font-size: Theme.text-sm;
                             color: Theme.text-primary;
                             y: (parent.height - self.height) / 2;
-                            vertical-stretch: 1;
+                            horizontal-stretch: 1;
+                        }
+                    }
+
+                    option-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        enabled: !root.answered;
+                        clicked => {
+                            root.selected-option = opt;
+                            root.answered = true;
+                            root.answer-selected(root.current-question, opt == root.correct-option);
+                            if (opt == root.correct-option) {
+                                root.score += 1;
+                            }
                         }
                     }
                 }
@@ -49,9 +90,9 @@ export component QuizForm inherits Rectangle {
         }
 
         if completed: VerticalLayout { spacing: Theme.sp-4; alignment: center;
-            Text { text: "🎉"; font-size: 48px; horizontal-alignment: center; }
+            FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/trophy.svg"); fa-size: 40px; fa-color: Theme.accent; x: (parent.width - self.width) / 2; }
             Text { text: "Quiz Complete!"; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; color: Theme.text-primary; horizontal-alignment: center; }
-            Text { text: "Score: " + score + "/10"; font-size: Theme.text-xl; color: Theme.accent; font-weight: Theme.weight-semibold; horizontal-alignment: center; }
+            Text { text: "Score: " + root.score + "/" + root.total-questions; font-size: Theme.text-xl; color: Theme.accent; font-weight: Theme.weight-semibold; horizontal-alignment: center; }
         }
     }
 }

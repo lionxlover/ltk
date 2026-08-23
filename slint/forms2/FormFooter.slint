@@ -9,6 +9,8 @@ export component FormFooter inherits Rectangle {
     in property <bool> show-cancel: true;
     in property <string> submit-label: "Submit";
     in property <bool> loading: false;
+    callback cancelled();
+    callback submitted();
 
     HorizontalLayout {
         spacing: Theme.sp-3;
@@ -20,6 +22,7 @@ export component FormFooter inherits Rectangle {
             border-radius: Theme.radius-md;
             border-width: 1px;
             border-color: Theme.border-default;
+            background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;
 
             Text {
                 text: "Cancel";
@@ -28,13 +31,18 @@ export component FormFooter inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            cancel-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.cancelled(); }
+            }
         }
 
         Rectangle {
             width: 100px;
             height: 36px;
             border-radius: Theme.radius-md;
-            background: loading ? Theme.accent-dim : Theme.accent;
+            background: loading ? Theme.accent-dim : (submit-ta.has-hover ? Theme.accent-dim : Theme.accent);
 
             Text {
                 text: loading ? "..." : submit-label;
@@ -43,6 +51,11 @@ export component FormFooter inherits Rectangle {
                 color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            submit-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { if !root.loading { root.submitted(); } }
             }
         }
     }

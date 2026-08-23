@@ -1669,3 +1669,120 @@ Any row-shaped or list-item-shaped component (not sized by a GridLayout
 cell, not itself wrapping height-bearing content like Text) should
 default its own height rather than assume a caller — or a wrapping
 `VerticalLayout` — will supply one.
+
+---
+
+### Setting a property and then resetting it in the same callback never shows the intermediate state
+
+Found while wiring `forms2/QuizForm`'s answer selection.
+
+```slint
+// WRONG — Slint only re-renders after a callback finishes, not between
+// statements inside it. selected-option is set to `opt` and then reset
+// to -1 a few lines later, all within one synchronous click handler —
+// the correct/incorrect highlight this was supposed to show never
+// actually gets a frame to render.
+clicked => {
+    root.selected-option = opt;
+    root.current-question += 1;
+    root.selected-option = -1;
+}
+```
+```slint
+// RIGHT — a Timer delays the actual transition, giving the
+// intermediate (highlighted) state real time on screen first.
+private property <bool> answered: false;
+Timer {
+    interval: 700ms;
+    running: root.answered;
+    triggered => {
+        root.answered = false;
+        root.current-question += 1;
+    }
+}
+// in the click handler:
+clicked => {
+    root.selected-option = opt;
+    root.answered = true;
+}
+```
+Any "show feedback, then transition" interaction (quiz answers, form
+validation flashes, toast-then-dismiss) needs this same shape — a
+`Timer` gating the transition, not a same-callback set-then-reset.
+
+---
+
+### A `TouchArea` sibling with no content of its own can collapse to zero size inside a layout — wrap the clickable content as its child instead
+
+Caught and fixed before shipping, while wiring up small text links like
+"Forgot password?" in `forms2/LoginForm`.
+
+```slint
+// RISKY — this TouchArea has nothing of its own to derive a preferred
+// size from. Whether it reliably gets a usable hit-testing area here
+// isn't confirmed one way or the other.
+HorizontalLayout {
+    Text { text: "Forgot?"; color: Theme.accent; }
+    forgot-ta := TouchArea { clicked => { ... } }
+}
+```
+```slint
+// SAFER — the TouchArea wraps the clickable Text as its own child, so
+// its size derives from standard, reliable Text-in-a-layout sizing
+// instead of an empty sibling with nothing to size itself from.
+HorizontalLayout {
+    Text { text: "Password"; vertical-stretch: 1; }
+    forgot-ta := TouchArea {
+        clicked => { ... }
+        Text { text: "Forgot?"; color: Theme.accent; }
+    }
+}
+```
+Note this is a *different* situation from a `TouchArea` placed as a
+direct child of a plain (non-layout) `Rectangle` — there, the
+fill-parent-by-default rule applies cleanly and an empty `TouchArea`
+sibling reliably fills the whole Rectangle. The risk is specifically a
+content-less `TouchArea` competing for space as a *layout* child
+alongside other children.
+
+---
+
+### A `@children`-forwarding wrapper can't assign its own properties onto the content it forwards — that's a caller-facing config surface, not a bug to "fix"
+
+Found while deciding whether `forms2/HorizontalLabelForm`'s
+`label-width`/`gap` (declared, never read internally) needed wiring up.
+
+A component that forwards arbitrary children via `@children` has no way
+to reach into that opaque forwarded content and set a width, a column,
+or a stretch factor on it — `@children` isn't an iterable collection the
+component's own code can inspect or modify per-item. If a wrapper
+declares properties like this, they're meant for whatever the *caller*
+places inside to reference directly, by the wrapper's own id:
+```slint
+hlf := HorizontalLabelForm { label-width: 120px;
+    HorizontalLayout {
+        Text { text: "Company"; width: hlf.label-width; }
+        Rectangle { /* the field */ }
+    }
+}
+```
+Don't mistake this shape for an unwired-property bug and try to
+rearchitect the wrapper to enforce it internally — same category of
+judgment call as `mobile/WizardForm.branching` (a subclass can't
+intercept a base class's callback body either), just one step further
+removed since here it's `@children` opacity rather than inheritance
+that rules out an internal fix.
+
+---
+
+### `forms2/` batch — largest fix count and the largest single finding (missing `@children` on every layout primitive) of the project so far
+
+23 of 30 files needed a fix. The standout wasn't a new *kind* of bug —
+missing `@children` was already on record from `mobile/` — but the
+*scale* of it: every layout-composition primitive in an entire category
+had the same gap, and the category's own `test.slint` was already
+relying on the broken behavior working. Worth calling out as a reminder
+for any future "primitives" category (a folder full of small wrapper/
+layout components rather than complete widgets): check `@children` on
+literally every one before anything else, since a missing one here
+doesn't just look wrong — it silently discards everything nested inside.

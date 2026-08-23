@@ -24,7 +24,7 @@ export component DynamicFieldArray inherits Rectangle {
                 spacing: Theme.sp-2;
 
                 Text {
-                    text: "Item " + Math.mod(item + 1, 10);
+                    text: "Item " + (item + 1);
                     font-size: Theme.text-sm;
                     color: Theme.text-secondary;
                     y: (parent.height - self.height) / 2;
@@ -36,6 +36,7 @@ export component DynamicFieldArray inherits Rectangle {
                     height: 24px;
                     border-radius: 4px;
                     y: 8px;
+                    background: remove-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "×";
@@ -43,6 +44,11 @@ export component DynamicFieldArray inherits Rectangle {
                         color: Theme.text-tertiary;
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
+                    }
+
+                    remove-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { if item-count > min-items { item-count -= 1; } }
                     }
                 }
             }

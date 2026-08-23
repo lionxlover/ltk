@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 import { FormDivider } from "FormDivider.slint";
 
 export component PaymentForm inherits Rectangle {
@@ -8,6 +9,9 @@ export component PaymentForm inherits Rectangle {
     border-color: Theme.border-default;
     width: 400px;
 
+    in property <string> total: "$99.00";
+    callback pay-clicked(string, string, string, string);
+
     VerticalLayout {
         padding: Theme.sp-6;
         spacing: Theme.sp-4;
@@ -16,30 +20,34 @@ export component PaymentForm inherits Rectangle {
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Card Number"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; clip: true;
-                Text { text: "4242 4242 4242 4242"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: card-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                card-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if card-input.text == "": Text { text: "4242 4242 4242 4242"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         HorizontalLayout { spacing: Theme.sp-3;
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "Expiry"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "MM / YY"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: expiry-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    expiry-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                    if expiry-input.text == "": Text { text: "MM / YY"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
                 }
             }
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "CVC"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "123"; font-size: Theme.text-sm; color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: cvc-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    cvc-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                    if cvc-input.text == "": Text { text: "123"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
                 }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Name on Card"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-primary; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: name-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                name-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if name-input.text == "": Text { text: "John Doe"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
@@ -47,13 +55,22 @@ export component PaymentForm inherits Rectangle {
 
         HorizontalLayout { spacing: Theme.sp-2;
             Text { text: "Total:"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: Theme.text-primary; y: 2px; }
-            Text { text: "$99.00"; font-size: Theme.text-lg; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+            Text { text: root.total; font-size: Theme.text-lg; font-weight: Theme.weight-bold; color: Theme.text-primary; }
         }
 
-        Rectangle { height: 40px; border-radius: Theme.radius-md; background: Theme.accent;
-            Text { text: "Pay $99.00"; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+        Rectangle { height: 40px; border-radius: Theme.radius-md; background: pay-ta.has-hover ? Theme.accent-dim : Theme.accent;
+            Text { text: "Pay " + root.total; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+            pay-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.pay-clicked(card-input.text, expiry-input.text, cvc-input.text, name-input.text); }
+            }
         }
 
-        Text { text: "🔒 Your payment info is secure"; font-size: Theme.text-xs; color: Theme.text-tertiary; horizontal-alignment: center; }
+        HorizontalLayout {
+            alignment: center;
+            spacing: Theme.sp-1;
+            FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/lock.svg"); fa-size: 11px; fa-color: Theme.text-tertiary; y: (parent.height - self.height) / 2; }
+            Text { text: "Your payment info is secure"; font-size: Theme.text-xs; color: Theme.text-tertiary; }
+        }
     }
 }

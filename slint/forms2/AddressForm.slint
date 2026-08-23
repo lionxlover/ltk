@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component AddressForm inherits Rectangle {
     background: Theme.bg-surface;
@@ -6,6 +7,10 @@ export component AddressForm inherits Rectangle {
     border-width: 1px;
     border-color: Theme.border-default;
     width: 400px;
+
+    callback cancelled();
+    callback saved(string, string, string, string, string, string);
+    callback country-clicked();
 
     VerticalLayout {
         padding: Theme.sp-6;
@@ -15,29 +20,30 @@ export component AddressForm inherits Rectangle {
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Street Address"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                Text { text: "123 Main St"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: street-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                street-input := TextInput { text: "123 Main St"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
             }
         }
 
         VerticalLayout { spacing: Theme.sp-1;
             Text { text: "Apt / Suite"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                Text { text: "Apt 4B"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+            Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: apt-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                apt-input := TextInput { text: ""; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
+                if apt-input.text == "": Text { text: "Apt 4B"; font-size: Theme.text-sm; color: Theme.text-tertiary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
             }
         }
 
         HorizontalLayout { spacing: Theme.sp-3;
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "City"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "New York"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: city-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    city-input := TextInput { text: "New York"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
                 }
             }
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "State"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "NY"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: state-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    state-input := TextInput { text: "NY"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
                 }
             }
         }
@@ -45,24 +51,31 @@ export component AddressForm inherits Rectangle {
         HorizontalLayout { spacing: Theme.sp-3;
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "ZIP Code"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "10001"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: zip-input.has-focus ? Theme.border-focus : Theme.border-default; clip: true;
+                    zip-input := TextInput { text: "10001"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; y: (parent.height - self.height) / 2; single-line: true; }
                 }
             }
             VerticalLayout { spacing: Theme.sp-1; horizontal-stretch: 1;
                 Text { text: "Country"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: Theme.text-primary; }
-                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
-                    Text { text: "United States ▾"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                Rectangle { height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; background: country-ta.has-hover ? Theme.hover-overlay : transparent;
+                    Text { text: "United States"; font-size: Theme.text-sm; color: Theme.text-primary; x: Theme.sp-3; y: (parent.height - self.height) / 2; }
+                    FaIcon { source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg"); fa-size: 10px; fa-color: Theme.text-tertiary; x: parent.width - self.width - Theme.sp-3; y: (parent.height - self.height) / 2; }
+                    country-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.country-clicked(); } }
                 }
             }
         }
 
         HorizontalLayout { spacing: Theme.sp-3; alignment: end;
-            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; background: cancel-ta.has-hover ? Theme.hover-overlay : transparent;
                 Text { text: "Cancel"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                cancel-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.cancelled(); } }
             }
-            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: Theme.accent;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; background: save-ta.has-hover ? Theme.accent-dim : Theme.accent;
                 Text { text: "Save"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                save-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.saved(street-input.text, apt-input.text, city-input.text, state-input.text, zip-input.text, "United States"); }
+                }
             }
         }
     }
