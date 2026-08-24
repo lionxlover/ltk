@@ -9,6 +9,8 @@ export component NotificationBellDropdown inherits Rectangle {
 
     in property <int> notification-count: 5;
     in property <[string]> notifications: ["New message from Alice", "Bob liked your post", "System update available"];
+    callback notification-clicked(int);
+    callback view-all-clicked();
 
     VerticalLayout {
         Rectangle {
@@ -28,19 +30,19 @@ export component NotificationBellDropdown inherits Rectangle {
                     vertical-stretch: 1;
                 }
 
-                if notification_count > 0: Rectangle {
-                    width: 20px;
+                if root.notification-count > 0: Rectangle {
+                    width: root.notification-count > 99 ? 28px : 20px;
                     height: 20px;
                     border-radius: 10px;
                     background: Theme.error;
 
                     Text {
-                        text: "\{Math.mod(notification-count, 100)}";
+                        text: root.notification-count > 99 ? "99+" : "\{root.notification-count}";
                         font-size: Theme.text-xs;
                         font-weight: Theme.weight-bold;
                         color: #ffffff;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
                     }
                 }
             }
@@ -50,6 +52,7 @@ export component NotificationBellDropdown inherits Rectangle {
 
         for notif[n] in notifications: Rectangle {
             height: 52px;
+            background: notif-ta.has-hover ? Theme.hover-overlay : transparent;
 
             HorizontalLayout {
                 padding-left: Theme.sp-4;
@@ -74,12 +77,18 @@ export component NotificationBellDropdown inherits Rectangle {
                 }
             }
 
+            notif-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.notification-clicked(n); }
+            }
+
             Rectangle { height: 1px; x: Theme.sp-4; background: Theme.border-subtle; }
         }
 
         Rectangle {
             height: 40px;
             border-radius: Theme.radius-lg;
+            background: viewall-ta.has-hover ? Theme.hover-overlay : transparent;
 
             Text {
                 text: "View all notifications";
@@ -87,6 +96,11 @@ export component NotificationBellDropdown inherits Rectangle {
                 color: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            viewall-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.view-all-clicked(); }
             }
         }
     }

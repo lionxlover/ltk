@@ -1,13 +1,16 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component DirectMessageHeader inherits Rectangle {
     background: Theme.bg-raised;
-    border-color: Theme.border-default;
     height: 56px;
+    clip: true;
 
     in property <string> user-name: "Alice";
     in property <string> status: "online";
     in property <string> avatar: "A";
+    callback call-clicked();
+    callback video-clicked();
 
     HorizontalLayout {
         padding-left: Theme.sp-4;
@@ -69,12 +72,19 @@ export component DirectMessageHeader inherits Rectangle {
             height: 32px;
             border-radius: 16px;
             y: 12px;
+            background: call-ta.has-hover ? Theme.hover-overlay : transparent;
 
-            Text {
-                text: "📞";
-                font-size: 14px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/phone.svg");
+                fa-size: 14px;
+                fa-color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            call-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.call-clicked(); }
             }
         }
 
@@ -83,13 +93,29 @@ export component DirectMessageHeader inherits Rectangle {
             height: 32px;
             border-radius: 16px;
             y: 12px;
+            background: video-ta.has-hover ? Theme.hover-overlay : transparent;
 
-            Text {
-                text: "📹";
-                font-size: 14px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/video-camera.svg");
+                fa-size: 14px;
+                fa-color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            video-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.video-clicked(); }
+            }
         }
+    }
+
+    // Bottom separator — border-color with no border-width never
+    // rendered anything at all; a real accent Rectangle instead of
+    // guessing at an unconfirmed per-side border API.
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.border-default;
     }
 }

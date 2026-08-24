@@ -1,26 +1,52 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component MessageReactionsStrip inherits Rectangle {
     background: transparent;
     height: 28px;
 
-    in property <[string]> reactions: ["👍 3", "❤️ 1", "😂 2"];
+    in property <[image]> reaction-icons: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-laugh.svg")
+    ];
+    in property <[int]> reaction-counts: [3, 1, 2];
+    callback reaction-toggled(int);
+    callback add-reaction-clicked();
 
     HorizontalLayout {
         spacing: Theme.sp-1;
 
-        for reaction[r] in reactions: Rectangle {
+        for count[r] in reaction-counts: Rectangle {
             height: 24px;
             border-radius: 12px;
-            background: Theme.bg-overlay;
+            background: pill-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
             border-width: 1px;
             border-color: Theme.border-subtle;
 
-            Text {
-                text: reaction;
-                font-size: Theme.text-xs;
-                color: Theme.text-secondary;
-                y: (parent.height - self.height) / 2;
+            HorizontalLayout {
+                padding-left: Theme.sp-2;
+                padding-right: Theme.sp-2;
+                spacing: 4px;
+
+                FaIcon {
+                    source: r < root.reaction-icons.length ? root.reaction-icons[r] : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-smile.svg");
+                    fa-size: 11px;
+                    fa-color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                Text {
+                    text: count;
+                    font-size: Theme.text-xs;
+                    color: Theme.text-secondary;
+                    y: (parent.height - self.height) / 2;
+                }
+            }
+
+            pill-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.reaction-toggled(r); }
             }
         }
 
@@ -28,7 +54,7 @@ export component MessageReactionsStrip inherits Rectangle {
             width: 24px;
             height: 24px;
             border-radius: 12px;
-            background: Theme.bg-overlay;
+            background: add-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
             border-width: 1px;
             border-color: Theme.border-subtle;
 
@@ -38,6 +64,11 @@ export component MessageReactionsStrip inherits Rectangle {
                 color: Theme.text-tertiary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            add-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.add-reaction-clicked(); }
             }
         }
     }

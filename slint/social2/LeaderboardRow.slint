@@ -22,7 +22,7 @@ export component LeaderboardRow inherits Rectangle {
             y: 10px;
 
             Text {
-                text: "\{Math.mod(rank, 10)}";
+                text: "\{rank}";
                 font-size: Theme.text-xs;
                 font-weight: Theme.weight-bold;
                 color: rank <= 3 ? Theme.accent : Theme.text-secondary;

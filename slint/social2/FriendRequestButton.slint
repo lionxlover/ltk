@@ -4,6 +4,9 @@ export component FriendRequestButton inherits Rectangle {
     background: transparent;
 
     in property <string> state: "pending";
+    callback add-friend-clicked();
+    callback accept-clicked();
+    callback decline-clicked();
 
     width: 120px;
     height: 36px;
@@ -11,8 +14,8 @@ export component FriendRequestButton inherits Rectangle {
     if state == "none": Rectangle {
         width: 120px;
         height: 36px;
-        border-radius: Theme.radius-full;
-        background: Theme.accent;
+        border-radius: self.height / 2;
+        background: add-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
         Text {
             text: "Add Friend";
@@ -22,12 +25,17 @@ export component FriendRequestButton inherits Rectangle {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
         }
+
+        add-ta := TouchArea {
+            mouse-cursor: MouseCursor.pointer;
+            clicked => { root.add-friend-clicked(); }
+        }
     }
 
     if state == "pending": Rectangle {
         width: 120px;
         height: 36px;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         border-width: 1px;
         border-color: Theme.border-default;
 
@@ -46,8 +54,8 @@ export component FriendRequestButton inherits Rectangle {
         Rectangle {
             width: 60px;
             height: 36px;
-            border-radius: Theme.radius-full;
-            background: Theme.accent;
+            border-radius: self.height / 2;
+            background: accept-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
             Text {
                 text: "Accept";
@@ -57,14 +65,20 @@ export component FriendRequestButton inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            accept-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.accept-clicked(); }
+            }
         }
 
         Rectangle {
             width: 60px;
             height: 36px;
-            border-radius: Theme.radius-full;
+            border-radius: self.height / 2;
             border-width: 1px;
             border-color: Theme.border-default;
+            background: decline-ta.has-hover ? Theme.hover-overlay : transparent;
 
             Text {
                 text: "Decline";
@@ -72,6 +86,11 @@ export component FriendRequestButton inherits Rectangle {
                 color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            decline-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.decline-clicked(); }
             }
         }
     }

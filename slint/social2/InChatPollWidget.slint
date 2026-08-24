@@ -11,7 +11,15 @@ export component InChatPollWidget inherits Rectangle {
     in property <[string]> options: ["Dashboard", "Mobile App", "API"];
     in property <[int]> votes: [12, 8, 5];
     in property <int> total-votes: 25;
-    in property <bool> voted: false;
+    in-out property <bool> voted: false;
+    in-out property <int> voted-index: -1;
+    callback vote-cast(int);
+
+    // Arrays are read-only from inside the component (can't index-assign
+    // into `votes`), so the actual vote is reported via callback for the
+    // host to apply to its real data — this is just an optimistic local
+    // bump purely for immediate visual feedback.
+    private property <int> optimistic-total: total-votes + (voted ? 1 : 0);
 
     VerticalLayout {
         padding: Theme.sp-4;
@@ -27,42 +35,62 @@ export component InChatPollWidget inherits Rectangle {
         for opt[idx] in options: Rectangle {
             height: 40px;
             border-radius: Theme.radius-md;
-            border-width: 1px;
-            border-color: Theme.border-default;
+            border-width: idx == root.voted-index ? 2px : 1px;
+            border-color: idx == root.voted-index ? Theme.accent : Theme.border-default;
             clip: true;
 
             Rectangle {
                 x: 0;
-                width: total-votes > 0 ? parent.width * votes[idx] / total-votes : 0px;
+                width: root.optimistic-total > 0 ? parent.width * (votes[idx] + (root.voted && idx == root.voted-index ? 1 : 0)) / root.optimistic-total : 0px;
                 height: parent.height;
                 background: Theme.accent-subtle;
                 border-radius: Theme.radius-md;
+                animate width { duration: 200ms; easing: Theme.ease-standard; }
             }
 
             HorizontalLayout {
                 padding-left: Theme.sp-3;
                 padding-right: Theme.sp-3;
+                spacing: Theme.sp-1;
+
+                if idx == root.voted-index: Text {
+                    text: "✓";
+                    font-size: Theme.text-sm;
+                    font-weight: Theme.weight-bold;
+                    color: Theme.accent;
+                    y: (parent.height - self.height) / 2;
+                }
 
                 Text {
                     text: opt;
                     font-size: Theme.text-sm;
                     color: Theme.text-primary;
                     y: (parent.height - self.height) / 2;
-                    vertical-stretch: 1;
+                    horizontal-stretch: 1;
                 }
 
                 Text {
-                    text: total-votes > 0 ? Math.round(votes[idx] * 100 / total-votes) + "%" : "0%";
+                    text: root.optimistic-total > 0 ? Math.round((votes[idx] + (root.voted && idx == root.voted-index ? 1 : 0)) * 100 / root.optimistic-total) + "%" : "0%";
                     font-size: Theme.text-sm;
                     font-weight: Theme.weight-medium;
                     color: Theme.text-secondary;
                     y: (parent.height - self.height) / 2;
                 }
             }
+
+            option-ta := TouchArea {
+                enabled: !root.voted;
+                mouse-cursor: root.voted ? MouseCursor.default : MouseCursor.pointer;
+                clicked => {
+                    root.voted = true;
+                    root.voted-index = idx;
+                    root.vote-cast(idx);
+                }
+            }
         }
 
         Text {
-            text: total-votes + " votes";
+            text: root.optimistic-total + " votes";
             font-size: Theme.text-xs;
             color: Theme.text-tertiary;
         }

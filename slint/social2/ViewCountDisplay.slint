@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component ViewCountDisplay inherits Rectangle {
     background: transparent;
@@ -8,10 +9,11 @@ export component ViewCountDisplay inherits Rectangle {
     HorizontalLayout {
         spacing: Theme.sp-1;
 
-        Text {
-            text: "👁";
-            font-size: Theme.text-sm;
-            y: 1px;
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/eye.svg");
+            fa-size: 12px;
+            fa-color: Theme.text-tertiary;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {

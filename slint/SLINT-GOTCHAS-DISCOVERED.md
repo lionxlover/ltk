@@ -1786,3 +1786,86 @@ for any future "primitives" category (a folder full of small wrapper/
 layout components rather than complete widgets): check `@children` on
 literally every one before anything else, since a missing one here
 doesn't just look wrong — it silently discards everything nested inside.
+
+---
+
+### `border-color` alone does nothing — `border-width` defaults to zero
+
+```slint
+// WRONG — no border-width anywhere on this element. Slint's border
+// defaults to 0px width, so a border-color with nothing to give it
+// thickness renders completely invisibly, regardless of which color
+// was chosen.
+export component ThreadReplyPreview inherits Rectangle {
+    border-color: Theme.accent;
+    border-radius: Theme.radius-sm;
+}
+```
+```slint
+// RIGHT (uniform border)
+border-width: 1px;
+border-color: Theme.accent;
+```
+For a *specific-edge* accent (a left quote-bar, a bottom header
+separator) rather than a uniform border, don't reach for an assumed
+per-side `border-left-width`-style property — this project has
+confirmed per-corner `border-*-radius` properties exist, but never a
+per-side *width* one. Use a real thin `Rectangle` positioned on that
+edge instead:
+```slint
+HorizontalLayout {
+    Rectangle { width: 3px; background: Theme.accent; }  // left accent bar
+    VerticalLayout { /* content */ }
+}
+```
+Found 3 times in one category (`social2/ThreadReplyPreview`,
+`DirectMessageHeader`, `GroupChatHeader`) — worth a standing check
+anywhere `border-color` appears: confirm `border-width` is set
+somewhere on that same element before assuming the border is real.
+
+---
+
+### The recurring `Math.mod(x, N)` count/rank/index bug — now at 5 confirmed instances
+
+First found in `forms2/` (`DynamicFieldArray`, `QuizForm`,
+`SurveyForm`), and turned up twice more in `social2/`
+(`LeaderboardRow`'s `Math.mod(rank, 10)`, `NotificationBellDropdown`'s
+`Math.mod(notification-count, 100)`). The shape is always the same: a
+count, rank, or index gets wrapped with a modulo for no real reason,
+so the value right at the boundary (the 10th item, the 100th
+notification) silently displays as if it were the 0th/1st instead of
+its real number. There's essentially never a legitimate reason to wrap
+a *display* value like this — if a cap is genuinely wanted (matching
+the established `AppIconBadge`/`NotificationBellDropdown` "99+"
+convention), express it with a comparison and a literal string, not a
+modulo:
+```slint
+// WRONG
+text: "\{Math.mod(count, 100)}";
+
+// RIGHT — no wrap, or an honest cap
+text: "\{count}";
+text: count > 99 ? "99+" : "\{count}";
+```
+Contrast with `VoiceMessagePlayer`'s *legitimate* uses of `Math.mod` in
+the same category: computing "seconds within the current minute" for a
+clock display (`Math.mod(progress, 60)`, paired with
+`Math.floor(progress / 60)` for the minutes — this is just how
+time-of-day math works) and generating varied waveform-bar heights for
+visual texture. Both of those actually need the wraparound behavior;
+a displayed count/rank/index never does. The distinguishing question:
+would wrapping this value ever show something *false* about a real
+quantity? If yes, it's this bug.
+
+---
+
+### `social2/` batch confirmation — no genuinely new bug shapes beyond the two above, but two of the highest-recurrence bugs in the project hit again
+
+20 of 26 files needed a fix. Both new entries above matter enough to
+document on their own, but everything else this round — the emoji
+conversions, the underscore/dash compile errors, the zero-interactivity
+components, the static-text-pretending-to-be-input fields — matched
+shapes already on record. Worth noting for the categories still ahead:
+`Math.mod`-on-a-displayed-count and missing-border-width are now
+proven enough to check on sight, the same way `radius-full`-on-non-
+square and missing-`@children` already were.

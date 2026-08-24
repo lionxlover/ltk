@@ -1,12 +1,15 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component GroupChatHeader inherits Rectangle {
     background: Theme.bg-raised;
-    border-color: Theme.border-default;
     height: 56px;
+    clip: true;
 
     in property <string> group-name: "Team Chat";
     in property <int> member-count: 8;
+    callback search-clicked();
+    callback more-clicked();
 
     HorizontalLayout {
         padding-left: Theme.sp-4;
@@ -20,9 +23,10 @@ export component GroupChatHeader inherits Rectangle {
             background: Theme.accent-subtle;
             y: 8px;
 
-            Text {
-                text: "👥";
-                font-size: 18px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/users.svg");
+                fa-size: 16px;
+                fa-color: Theme.accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
@@ -41,7 +45,7 @@ export component GroupChatHeader inherits Rectangle {
             }
 
             Text {
-                text: member_count + " members";
+                text: root.member-count + " members";
                 font-size: Theme.text-xs;
                 color: Theme.text-tertiary;
             }
@@ -54,12 +58,19 @@ export component GroupChatHeader inherits Rectangle {
             height: 32px;
             border-radius: 16px;
             y: 12px;
+            background: search-ta.has-hover ? Theme.hover-overlay : transparent;
 
-            Text {
-                text: "🔍";
-                font-size: 14px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+                fa-size: 13px;
+                fa-color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            search-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.search-clicked(); }
             }
         }
 
@@ -68,14 +79,26 @@ export component GroupChatHeader inherits Rectangle {
             height: 32px;
             border-radius: 16px;
             y: 12px;
+            background: more-ta.has-hover ? Theme.hover-overlay : transparent;
 
-            Text {
-                text: "⋯";
-                font-size: 14px;
-                color: Theme.text-secondary;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/ellipsis.svg");
+                fa-size: 14px;
+                fa-color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            more-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.more-clicked(); }
+            }
         }
+    }
+
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.border-default;
     }
 }

@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component NestedCommentThread inherits Rectangle {
     background: transparent;
@@ -6,6 +7,9 @@ export component NestedCommentThread inherits Rectangle {
     in property <string> author: "Alice";
     in property <string> text: "Great work!";
     in property <int> depth: 0;
+    in property <int> like-count: 2;
+    in-out property <bool> liked: false;
+    callback reply-clicked();
 
     HorizontalLayout {
         spacing: Theme.sp-2;
@@ -64,18 +68,34 @@ export component NestedCommentThread inherits Rectangle {
                 spacing: Theme.sp-3;
                 height: 24px;
 
-                Text {
-                    text: "👍 2";
-                    font-size: Theme.text-xs;
-                    color: Theme.text-tertiary;
-                    y: 2px;
+                like-ta := TouchArea {
+                    clicked => { root.liked = !root.liked; }
+
+                    HorizontalLayout {
+                        spacing: 3px;
+                        FaIcon {
+                            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg");
+                            fa-size: 10px;
+                            fa-color: root.liked ? Theme.accent : Theme.text-tertiary;
+                            y: (parent.height - self.height) / 2;
+                        }
+                        Text {
+                            text: root.liked ? root.like-count + 1 : root.like-count;
+                            font-size: Theme.text-xs;
+                            color: root.liked ? Theme.accent : Theme.text-tertiary;
+                            y: 1px;
+                        }
+                    }
                 }
 
-                Text {
-                    text: "Reply";
-                    font-size: Theme.text-xs;
-                    color: Theme.accent;
-                    y: 2px;
+                reply-ta := TouchArea {
+                    clicked => { root.reply-clicked(); }
+                    Text {
+                        text: "Reply";
+                        font-size: Theme.text-xs;
+                        color: Theme.accent;
+                        y: 2px;
+                    }
                 }
             }
         }

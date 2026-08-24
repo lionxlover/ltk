@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component ShareCountDisplay inherits Rectangle {
     background: transparent;
@@ -8,11 +9,11 @@ export component ShareCountDisplay inherits Rectangle {
     HorizontalLayout {
         spacing: Theme.sp-1;
 
-        Text {
-            text: "↗";
-            font-size: Theme.text-sm;
-            color: Theme.text-tertiary;
-            y: 1px;
+        FaIcon {
+            source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/arrow-up-right-from-square.svg");
+            fa-size: 11px;
+            fa-color: Theme.text-tertiary;
+            y: (parent.height - self.height) / 2;
         }
 
         Text {

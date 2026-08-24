@@ -1,13 +1,37 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component EmojiPickerPanel inherits Rectangle {
     background: Theme.bg-elevated;
     border-radius: Theme.radius-lg;
     border-width: 1px;
     border-color: Theme.border-default;
+    clip: true;
 
     in property <[string]> categories: ["Recent", "Smileys", "People", "Nature", "Food", "Activities", "Travel", "Objects"];
-    in property <[string]> emojis: ["😀", "😂", "❤️", "👍", "🎉", "🔥", "💯", "✨", "👀", "🙏", "😭", "🥰"];
+    in-out property <int> selected-category: 1;
+    // A curated stand-in set, not a literal emoji keyboard — this
+    // project's Slint Preview environment doesn't render raw emoji
+    // reliably, and there's no finite icon set that honestly represents
+    // "all emoji," so this mirrors the same simplified-mockup approach
+    // used throughout the library (e.g. ImageGallery's numbered tiles)
+    // rather than shipping tofu boxes.
+    in property <[image]> emoji-icons: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-smile.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-laugh.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/hands-clapping.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fire.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gem.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/star.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/eye.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paw.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-sad-tear.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/gift.svg")
+    ];
+    callback emoji-selected(int);
+    callback searched(string);
 
     VerticalLayout {
         spacing: 0;
@@ -19,13 +43,19 @@ export component EmojiPickerPanel inherits Rectangle {
             for cat[idx] in categories: Rectangle {
                 height: 36px;
                 horizontal-stretch: 1;
+                background: cat-ta.has-hover ? Theme.hover-overlay : transparent;
 
                 Text {
                     text: cat;
                     font-size: Theme.text-xs;
-                    color: idx == 1 ? Theme.accent : Theme.text-tertiary;
+                    color: idx == root.selected-category ? Theme.accent : Theme.text-tertiary;
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
+                }
+
+                cat-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.selected-category = idx; }
                 }
             }
         }
@@ -43,13 +73,26 @@ export component EmojiPickerPanel inherits Rectangle {
                     border-radius: Theme.radius-md;
                     background: Theme.bg-surface;
                     border-width: 1px;
-                    border-color: Theme.border-default;
+                    border-color: emoji-search.has-focus ? Theme.border-focus : Theme.border-default;
+                    clip: true;
 
-                    Text {
+                    emoji-search := TextInput {
+                        text: "";
+                        font-size: Theme.text-xs;
+                        color: Theme.text-primary;
+                        x: Theme.sp-2;
+                        width: parent.width - Theme.sp-2 * 2;
+                        y: (parent.height - self.height) / 2;
+                        single-line: true;
+                        accepted => { root.searched(self.text); }
+                    }
+
+                    if emoji-search.text == "": Text {
                         text: "Search emoji...";
                         font-size: Theme.text-xs;
                         color: Theme.text-placeholder;
-                        vertical-alignment: center;
+                        x: Theme.sp-2;
+                        y: (parent.height - self.height) / 2;
                     }
                 }
             }
@@ -65,16 +108,23 @@ export component EmojiPickerPanel inherits Rectangle {
                     HorizontalLayout {
                         spacing: Theme.sp-1;
 
-                        for emoji[e] in emojis: Rectangle {
+                        for icon[e] in emoji-icons: Rectangle {
                             width: 36px;
                             height: 36px;
                             border-radius: Theme.radius-sm;
+                            background: emoji-ta.has-hover ? Theme.hover-overlay : transparent;
 
-                            Text {
-                                text: emoji;
-                                font-size: 20px;
+                            FaIcon {
+                                source: icon;
+                                fa-size: 17px;
+                                fa-color: Theme.text-primary;
                                 x: (parent.width - self.width) / 2;
                                 y: (parent.height - self.height) / 2;
+                            }
+
+                            emoji-ta := TouchArea {
+                                mouse-cursor: MouseCursor.pointer;
+                                clicked => { root.emoji-selected(e); }
                             }
                         }
                     }

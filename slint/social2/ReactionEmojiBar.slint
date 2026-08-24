@@ -1,28 +1,41 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component ReactionEmojiBar inherits Rectangle {
     background: transparent;
     height: 36px;
 
-    in property <[string]> emojis: ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+    in property <[image]> reaction-icons: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/heart.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-laugh.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-surprise.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/face-sad-tear.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/fire.svg")
+    ];
+    callback reaction-picked(int);
 
     HorizontalLayout {
         spacing: Theme.sp-1;
 
-        for emoji[e] in emojis: Rectangle {
+        for icon[e] in reaction-icons: Rectangle {
             width: 32px;
             height: 32px;
             border-radius: 16px;
-            background: Theme.bg-overlay;
+            background: reaction-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
 
-            Text {
-                text: emoji;
-                font-size: 16px;
+            FaIcon {
+                source: icon;
+                fa-size: 15px;
+                fa-color: Theme.text-primary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
 
-            TouchArea { }
+            reaction-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.reaction-picked(e); }
+            }
         }
     }
 }

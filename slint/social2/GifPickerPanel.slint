@@ -8,6 +8,11 @@ export component GifPickerPanel inherits Rectangle {
     clip: true;
 
     in property <[string]> categories: ["Trending", "Reactions", "Animals", "Pop Culture"];
+    in-out property <int> selected-category: 0;
+    in property <int> grid-columns: 3;
+    in property <int> grid-count: 9;
+    callback searched(string);
+    callback gif-selected(int);
 
     VerticalLayout {
         spacing: 0;
@@ -15,19 +20,35 @@ export component GifPickerPanel inherits Rectangle {
         Rectangle {
             height: 40px;
 
-            Rectangle {
-                height: 32px;
-                border-radius: Theme.radius-md;
-                background: Theme.bg-surface;
-                border-width: 1px;
-                border-color: Theme.border-default;
-                clip: true;
+            VerticalLayout {
+                padding: Theme.sp-2;
 
-                Text {
-                    text: "Search GIFs...";
-                    font-size: Theme.text-xs;
-                    color: Theme.text-placeholder;
-                    y: (parent.height - self.height) / 2;
+                Rectangle {
+                    height: 32px;
+                    border-radius: Theme.radius-md;
+                    background: Theme.bg-surface;
+                    border-width: 1px;
+                    border-color: gif-search.has-focus ? Theme.border-focus : Theme.border-default;
+                    clip: true;
+
+                    gif-search := TextInput {
+                        text: "";
+                        font-size: Theme.text-xs;
+                        color: Theme.text-primary;
+                        x: Theme.sp-2;
+                        width: parent.width - Theme.sp-2 * 2;
+                        y: (parent.height - self.height) / 2;
+                        single-line: true;
+                        accepted => { root.searched(self.text); }
+                    }
+
+                    if gif-search.text == "": Text {
+                        text: "Search GIFs...";
+                        font-size: Theme.text-xs;
+                        color: Theme.text-placeholder;
+                        x: Theme.sp-2;
+                        y: (parent.height - self.height) / 2;
+                    }
                 }
             }
         }
@@ -35,29 +56,42 @@ export component GifPickerPanel inherits Rectangle {
         HorizontalLayout {
             height: 28px;
             padding-left: Theme.sp-3;
+            spacing: Theme.sp-3;
 
-            for cat[idx] in categories: Text {
-                text: cat;
-                font-size: Theme.text-xs;
-                color: idx == 0 ? Theme.accent : Theme.text-tertiary;
-                font-weight: idx == 0 ? Theme.weight-semibold : Theme.weight-regular;
-                y: 4px;
+            for cat[idx] in categories: cat-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.selected-category = idx; }
+
+                Text {
+                    text: cat;
+                    font-size: Theme.text-xs;
+                    color: idx == root.selected-category ? Theme.accent : Theme.text-tertiary;
+                    font-weight: idx == root.selected-category ? Theme.weight-semibold : Theme.weight-regular;
+                    y: 4px;
+                }
             }
         }
 
         Rectangle {
             vertical-stretch: 1;
             background: Theme.bg-surface;
+            clip: true;
 
-            VerticalLayout {
+            GridLayout {
                 padding: Theme.sp-2;
+                spacing: Theme.sp-1;
 
-                Text {
-                    text: "GIF Grid";
-                    font-size: Theme.text-sm;
-                    color: Theme.text-tertiary;
-                    horizontal-alignment: center;
-                    vertical-alignment: center;
+                for cell[i] in root.grid-count: Rectangle {
+                    row: Math.floor(i / root.grid-columns);
+                    col: Math.mod(i, root.grid-columns);
+                    min-height: 60px;
+                    border-radius: Theme.radius-sm;
+                    background: gif-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
+
+                    gif-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => { root.gif-selected(i); }
+                    }
                 }
             }
         }

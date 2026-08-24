@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component LikeDislikeButtons inherits Rectangle {
     background: transparent;
@@ -13,7 +14,7 @@ export component LikeDislikeButtons inherits Rectangle {
 
         Rectangle {
             height: 32px;
-            border-radius: Theme.radius-full;
+            border-radius: self.height / 2;
             background: liked ? Theme.accent-subtle : transparent;
             border-width: 1px;
             border-color: liked ? Theme.accent : Theme.border-default;
@@ -23,14 +24,15 @@ export component LikeDislikeButtons inherits Rectangle {
                 padding-right: Theme.sp-2;
                 spacing: Theme.sp-1;
 
-                Text {
-                    text: "👍";
-                    font-size: 14px;
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-up.svg");
+                    fa-size: 12px;
+                    fa-color: liked ? Theme.accent : Theme.text-secondary;
                     y: (parent.height - self.height) / 2;
                 }
 
                 Text {
-                    text: "\{like_count}";
+                    text: "\{root.like-count}";
                     font-size: Theme.text-xs;
                     font-weight: Theme.weight-medium;
                     color: liked ? Theme.accent : Theme.text-secondary;
@@ -39,13 +41,13 @@ export component LikeDislikeButtons inherits Rectangle {
             }
 
             TouchArea {
-                clicked => { root.liked = !root.liked; }
+                clicked => { root.liked = !root.liked; if root.liked { root.disliked = false; } }
             }
         }
 
         Rectangle {
             height: 32px;
-            border-radius: Theme.radius-full;
+            border-radius: self.height / 2;
             background: disliked ? Theme.error : transparent;
             border-width: 1px;
             border-color: disliked ? Theme.error : Theme.border-default;
@@ -55,23 +57,24 @@ export component LikeDislikeButtons inherits Rectangle {
                 padding-right: Theme.sp-2;
                 spacing: Theme.sp-1;
 
-                Text {
-                    text: "👎";
-                    font-size: 14px;
+                FaIcon {
+                    source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/thumbs-down.svg");
+                    fa-size: 12px;
+                    fa-color: disliked ? #ffffff : Theme.text-secondary;
                     y: (parent.height - self.height) / 2;
                 }
 
                 Text {
-                    text: "\{dislike_count}";
+                    text: "\{root.dislike-count}";
                     font-size: Theme.text-xs;
                     font-weight: Theme.weight-medium;
-                    color: disliked ? Theme.error : Theme.text-secondary;
+                    color: disliked ? #ffffff : Theme.text-secondary;
                     y: (parent.height - self.height) / 2;
                 }
             }
 
             TouchArea {
-                clicked => { root.disliked = !root.disliked; }
+                clicked => { root.disliked = !root.disliked; if root.disliked { root.liked = false; } }
             }
         }
     }

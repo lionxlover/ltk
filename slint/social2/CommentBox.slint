@@ -1,12 +1,14 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component CommentBox inherits Rectangle {
     background: Theme.bg-surface;
     border-radius: Theme.radius-lg;
     border-width: 1px;
-    border-color: Theme.border-default;
+    border-color: comment-input.has-focus ? Theme.border-focus : Theme.border-default;
 
     in property <string> placeholder: "Write a comment...";
+    callback posted(string);
 
     HorizontalLayout {
         padding: Theme.sp-3;
@@ -36,11 +38,24 @@ export component CommentBox inherits Rectangle {
             background: Theme.bg-overlay;
             border-width: 1px;
             border-color: Theme.border-subtle;
+            clip: true;
 
-            Text {
+            comment-input := TextInput {
+                text: "";
+                font-size: Theme.text-sm;
+                color: Theme.text-primary;
+                x: Theme.sp-3;
+                width: parent.width - Theme.sp-3 * 2;
+                y: (parent.height - self.height) / 2;
+                single-line: true;
+                accepted => { if self.text != "" { root.posted(self.text); self.text = ""; } }
+            }
+
+            if comment-input.text == "": Text {
                 text: placeholder;
                 font-size: Theme.text-sm;
                 color: Theme.text-placeholder;
+                x: Theme.sp-3;
                 y: (parent.height - self.height) / 2;
             }
         }
@@ -49,16 +64,20 @@ export component CommentBox inherits Rectangle {
             width: 36px;
             height: 36px;
             border-radius: 18px;
-            background: Theme.accent;
             y: 2px;
+            background: send-ta.has-hover ? Theme.accent-dim : Theme.accent;
 
-            Text {
-                text: "↑";
-                font-size: 14px;
-                font-weight: Theme.weight-bold;
-                color: #ffffff;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paper-plane.svg");
+                fa-size: 13px;
+                fa-color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            send-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { if comment-input.text != "" { root.posted(comment-input.text); comment-input.text = ""; } }
             }
         }
     }

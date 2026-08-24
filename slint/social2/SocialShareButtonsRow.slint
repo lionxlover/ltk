@@ -1,10 +1,17 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SocialShareButtonsRow inherits Rectangle {
     background: transparent;
 
     in property <[string]> platforms: ["Twitter", "Facebook", "LinkedIn", "Reddit"];
-    in property <[string]> platform-icons: ["🐦", "📘", "💼", "🔴"];
+    in property <[image]> platform-icons: [
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/twitter.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/facebook-f.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/linkedin-in.svg"),
+        @image-url("../../fontawesome-free-7.3.0-desktop/svgs/brands/reddit-alien.svg")
+    ];
+    callback platform-selected(int);
 
     HorizontalLayout {
         spacing: Theme.sp-2;
@@ -13,18 +20,22 @@ export component SocialShareButtonsRow inherits Rectangle {
             width: 40px;
             height: 40px;
             border-radius: 20px;
-            background: Theme.bg-overlay;
+            background: share-ta.has-hover ? Theme.hover-overlay : Theme.bg-overlay;
             border-width: 1px;
             border-color: Theme.border-subtle;
 
-            Text {
-                text: idx < root.platform-icons.length ? root.platform-icons[idx] : "🔗";
-                font-size: 16px;
+            FaIcon {
+                source: idx < root.platform-icons.length ? root.platform-icons[idx] : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/link.svg");
+                fa-size: 15px;
+                fa-color: Theme.text-primary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
 
-            TouchArea { }
+            share-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.platform-selected(idx); }
+            }
         }
     }
 }

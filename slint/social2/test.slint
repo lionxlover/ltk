@@ -32,9 +32,11 @@ export component SocialTest2 inherits Rectangle {
     height: 700px;
 
     Flickable {
-        viewport-height: 3200px;
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
 
-        VerticalLayout {
+        content := VerticalLayout {
             padding: Theme.sp-6;
             spacing: Theme.sp-6;
 
@@ -43,7 +45,7 @@ export component SocialTest2 inherits Rectangle {
             Text { text: "Chat Bubbles & System Messages"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             VerticalLayout { spacing: Theme.sp-2;
                 ChatBubbleSystem { width: 400px; text: "Alice joined the chat"; }
-                MessageReactionsStrip { width: 400px; reactions: ["👍 5", "❤️ 2", "😂 1"]; }
+                MessageReactionsStrip { width: 400px; }
             }
 
             Text { text: "Typing Indicator & Read Receipts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
@@ -121,6 +123,7 @@ export component SocialTest2 inherits Rectangle {
                 LeaderboardRow { rank: 1; user-name: "Alice"; score: 1500; avatar: "A"; }
                 LeaderboardRow { rank: 2; user-name: "Bob"; score: 1200; avatar: "B"; }
                 LeaderboardRow { rank: 3; user-name: "Charlie"; score: 980; avatar: "C"; }
+                LeaderboardRow { rank: 10; user-name: "Dana"; score: 640; avatar: "D"; }
             }
 
             Text { text: "Block / Report Sheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }

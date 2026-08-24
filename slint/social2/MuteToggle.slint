@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component MuteToggle inherits Rectangle {
     background: transparent;
@@ -14,9 +15,12 @@ export component MuteToggle inherits Rectangle {
         border-radius: 20px;
         background: muted ? Theme.bg-overlay : transparent;
 
-        Text {
-            text: muted ? "🔇" : "🔊";
-            font-size: 16px;
+        FaIcon {
+            source: muted
+                ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-xmark.svg")
+                : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/volume-high.svg");
+            fa-size: 16px;
+            fa-color: Theme.text-primary;
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
         }

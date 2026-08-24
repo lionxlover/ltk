@@ -22,16 +22,17 @@ re-discovering things the hard way.
 | `typography/` | 36 | ✅ Done, pending VS Code Problems-panel check | `typography.zip` |
 | `media/` | 32 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes, also surfaced a cross-cutting bug fixed in 7 other categories) | `media.zip` |
 | `mobile/` | 30 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes) | `mobile.zip` |
-| `forms2/` | 31 | ✅ Done, pending VS Code Problems-panel check | `forms2.zip` |
-| everything else | ~285 | ⬜ Not started | — |
+| `forms2/` | 31 | ✅ Done, verified in a follow-up pass | `forms2.zip` |
+| `social2/` | 26 | ✅ Done, pending VS Code Problems-panel check | `social2.zip` |
+| everything else | ~259 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`social2` (26),
 `animation` (24), `overlays` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
 (12), `desktop` (10), `range-value` (10), `social` (8), `accessibility`
-(8), `theming` (6), `layout` (3), `progress` (partially touched —
-`ProgressSpinner.slint` fixed, rest untouched).
+(8), `theming` (6), `layout` (3), `progress` (1 component total —
+`ProgressSpinner` — already reviewed and fixed; this category is
+complete, not partial, despite how this note used to read).
 
 Note: `desktop2/SplashScreen.slint`, `indicators/HealthBar.slint`,
 `range-value/Slider.slint`, `range-value/SteppedSlider.slint`,
@@ -2491,3 +2492,113 @@ the host to read and act on (`current-step` is already `in-out`,
 so external code can already override it after any click), not
 something to rearchitect via an unconfirmed inheritance-override
 mechanism.
+
+## `social2/` batch — the `Math.mod` bug recurs a 4th and 5th time
+
+All 26 components reviewed; 28 files delivered (26 components +
+`export.slint`, unchanged + `test.slint`, expanded). No `core/` changes
+needed beyond the earlier cross-cutting fix already applied to
+`InChatPollWidget` (this round gave that file its first full pass —
+previously it only got the one targeted fractional-width fix during
+`media/`'s cross-cutting hotfix). 20 of 26 files needed a fix.
+
+**The `Math.mod(x, N)` bug from `forms2/`, twice more:**
+`LeaderboardRow` showed `Math.mod(rank, 10)` — rank 10 would show as
+"0", rank 11 as "1" (indistinguishable from actual rank 1). Added a
+`rank: 10` case to `test.slint` specifically to exercise this.
+`NotificationBellDropdown` showed `Math.mod(notification-count, 100)` —
+same shape, now capped honestly at "99+" instead (matching the
+established `AppIconBadge` badge-count convention) rather than
+wrapping. That's 5 confirmed instances of this exact copy-pasted bug
+across the project now (`forms2/DynamicFieldArray`, `QuizForm`,
+`SurveyForm`, plus these two) — genuinely worth a standing check in any
+future category that displays a count, rank, or index.
+
+**Compile errors — underscore vs. dash, 4 more instances across 3
+files:** `GroupChatHeader` (`member_count`), `LikeDislikeButtons`
+(`like_count` *and* `dislike_count`, both wrong in the same file), and
+`VoiceMessagePlayer` (`duration_seconds`).
+
+**`border-color` set with no `border-width` — a new, real gotcha, found
+3 times:** `ThreadReplyPreview`, `DirectMessageHeader`,
+`GroupChatHeader` all set only `border-color` with no `border-width`
+anywhere on that element — Slint's border defaults to zero width, so
+none of the three ever rendered any border at all regardless of the
+color chosen. Fixed all three with a thin accent `Rectangle` (a left
+bar for the reply preview, a bottom separator for the two chat headers)
+rather than guessing at an unconfirmed per-side `border-width`
+property — this project has confirmed per-corner *radius* properties
+exist, but never a per-side *width* one.
+
+**A broken MM:SS time format, caught while fixing the
+`duration_seconds` compile error in the same line:**
+`VoiceMessagePlayer`'s elapsed/duration display hardcoded a `"0:"`
+minutes prefix and only ever mod-60'd the seconds — anything past 60
+seconds would show a wrong, stuck-at-zero minute count (e.g. 90 seconds
+as "0:30" instead of "1:30"). Fixed with a real `Math.floor(x / 60)`
+for the minutes part. Its *other* two `Math.mod` uses (waveform bar
+height variety, and the seconds-within-a-minute part of the same clock
+format) are correct, intentional uses — documented inline so a future
+pass doesn't mistake them for the bug above.
+
+**Emoji / unconfirmed-safe glyphs, converted to real FA icons (12
+files):** `MuteToggle`, `ShareCountDisplay`, `ViewCountDisplay`,
+`AttachmentPreview`, `CommentBox`, `DirectMessageHeader`,
+`GroupChatHeader`, `LikeDislikeButtons`, `VoiceMessagePlayer`,
+`SocialShareButtonsRow` (this one got actual brand icons —
+`fontawesome-free`'s `svgs/brands/` set has real Twitter/Facebook/
+LinkedIn/Reddit-alien logos, not just generic substitutes),
+`NestedCommentThread`. Two components — `ReactionEmojiBar` and
+`MessageReactionsStrip` — needed the same fix despite the emoji being
+the actual semantic *content* rather than decoration (a reaction pill
+*is* the thumbs-up/heart/laugh), because the rendering problem doesn't
+discriminate based on semantic role: raw emoji tofu in this environment
+either way. `MessageReactionsStrip` additionally had emoji *embedded*
+inside compound strings (`"👍 3"`) rather than as standalone icon
+slots — split into parallel `reaction-icons: [image]` /
+`reaction-counts: [int]` arrays instead of trying to parse a compound
+string apart.
+
+**`EmojiPickerPanel` deserves its own note:** unlike every other emoji
+case this project has hit, this component's entire purpose is browsing
+a *wide, open-ended* set of emoji — there's no finite FA icon set that
+honestly represents "all emoji ever," so a literal 1:1 substitution
+strategy doesn't really apply. Treated it the same way this whole
+library treats other necessarily-simplified mockups (`ImageGallery`'s
+numbered tiles standing in for real photos, `VideoPlayer`'s generic
+video area): a curated 12-icon stand-in set, clearly commented as an
+approximation rather than a real emoji keyboard, so the panel is at
+least visually functional instead of a grid of tofu boxes.
+
+**Zero interactivity despite the component's entire purpose being
+interaction, four more instances of the shape found repeatedly in
+`mobile/`:** `FriendRequestButton` (not one button in any of its three
+states had a `TouchArea` — Add Friend, Accept, and Decline all did
+nothing), `BlockReportSheet` (same as `mobile/ActionSheetDestructive` —
+Mute/Block/Report/Cancel all inert), `HashtagAutocomplete` and
+`MentionAutocomplete` (rows not selectable — the entire point of
+"autocomplete" is picking a suggestion), `GroupChatHeader`'s
+search/more buttons, `DirectMessageHeader`'s call/video buttons,
+`AttachmentPreview`'s remove button, `VoiceMessagePlayer`'s play
+button, `NotificationBellDropdown`'s rows and "view all," `GifPickerPanel`'s
+category tabs. All wired with real callbacks (and `has-hover` feedback
+where cheap to add alongside).
+
+**`InChatPollWidget`'s `voted: bool` was declared and never read
+anywhere** — voting was entirely non-functional, just a static results
+display. Since `votes: [int]` is `in` (can't be index-assigned from
+inside the component — a confirmed, already-documented gotcha), wired
+real voting as a `vote-cast(int)` callback plus a `private` optimistic
+local total purely for immediate visual feedback, leaving the actual
+vote-count source of truth for the host to update. Also fixed
+`CommentBox` and two picker search boxes (`EmojiPickerPanel`,
+`GifPickerPanel`) the same way `forms2/` fixed static-text-pretending-
+to-be-an-input: real `TextInput`, not decorative `Text`.
+
+**`test.slint` fixes:** `MessageReactionsStrip`'s invocation still
+passed the old `reactions: [string]` property after the rewrite to
+`reaction-icons`/`reaction-counts` — caught and updated before
+delivery. Also switched the hardcoded `viewport-height: 3200px` to
+`content.preferred-height` (same stale-guess issue already fixed in
+`mobile/`'s and `forms2/`'s `test.slint`), since this round's additions
+would have made the fixed number stale immediately.

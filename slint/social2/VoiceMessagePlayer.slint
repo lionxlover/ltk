@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component VoiceMessagePlayer inherits Rectangle {
     background: Theme.bg-overlay;
@@ -6,8 +7,9 @@ export component VoiceMessagePlayer inherits Rectangle {
     clip: true;
 
     in property <int> duration-seconds: 12;
-    in property <bool> playing: false;
+    in-out property <bool> playing: false;
     in property <int> progress: 0;
+    callback play-toggle();
 
     width: 240px;
     height: 48px;
@@ -24,12 +26,22 @@ export component VoiceMessagePlayer inherits Rectangle {
             background: Theme.accent;
             y: 8px;
 
-            Text {
-                text: playing ? "⏸" : "▶";
-                font-size: 12px;
-                color: #ffffff;
+            FaIcon {
+                source: root.playing
+                    ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/pause.svg")
+                    : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/play.svg");
+                fa-size: 12px;
+                fa-color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            play-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    root.playing = !root.playing;
+                    root.play-toggle();
+                }
             }
         }
 
@@ -41,6 +53,10 @@ export component VoiceMessagePlayer inherits Rectangle {
                 spacing: 2px;
                 y: 12px;
 
+                // Deliberately varying bar heights for a waveform look —
+                // Math.mod here creates visual variety, unlike the
+                // count/index-display bug this project has fixed
+                // elsewhere; not the same shape at all.
                 for bar[b] in 20: Rectangle {
                     width: 3px;
                     height: Math.mod(b * 3 + 5, 20) * 1px;
@@ -51,7 +67,8 @@ export component VoiceMessagePlayer inherits Rectangle {
             }
 
             Text {
-                text: "0:" + (progress < 10 ? "0" : "") + Math.mod(progress, 60) + " / 0:" + (duration_seconds < 10 ? "0" : "") + Math.mod(duration_seconds, 60);
+                text: Math.floor(root.progress / 60) + ":" + (Math.mod(root.progress, 60) < 10 ? "0" : "") + Math.mod(root.progress, 60)
+                    + " / " + Math.floor(root.duration-seconds / 60) + ":" + (Math.mod(root.duration-seconds, 60) < 10 ? "0" : "") + Math.mod(root.duration-seconds, 60);
                 font-size: Theme.text-xs;
                 color: Theme.text-tertiary;
                 y: 28px;

@@ -1,0 +1,91 @@
+import { Theme } from "../core/Theme.slint";
+
+export component SurveyForm inherits Rectangle {
+    background: Theme.bg-surface;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border-default;
+    width: 480px;
+
+    in property <int> total-questions: 5;
+    in-out property <int> current-question: 0;
+    in-out property <int> selected-option: -1;
+    callback answer-selected(int, int);
+    callback back-clicked();
+    callback next-clicked();
+
+    VerticalLayout {
+        padding: Theme.sp-6;
+        spacing: Theme.sp-4;
+
+        Text { text: "Survey"; font-size: Theme.text-xl; font-weight: Theme.weight-bold; color: Theme.text-primary; }
+
+        Text { text: "Question " + (current-question + 1) + " of " + root.total-questions; font-size: Theme.text-sm; color: Theme.text-tertiary; }
+
+        Rectangle { height: 4px; border-radius: 2px; background: Theme.border-default;
+            Rectangle { x: 0; height: 4px; width: parent.width * (current-question + 1) / root.total-questions; border-radius: 2px; background: Theme.accent;
+                animate width { duration: 200ms; easing: Theme.ease-standard; }
+            }
+        }
+
+        VerticalLayout { spacing: Theme.sp-4; vertical-stretch: 1;
+            Text { text: "How satisfied are you with our service?"; font-size: Theme.text-lg; font-weight: Theme.weight-medium; color: Theme.text-primary; }
+
+            HorizontalLayout { spacing: Theme.sp-3;
+                for option[opt] in ["Very Unsatisfied", "Unsatisfied", "Neutral", "Satisfied", "Very Satisfied"]: Rectangle {
+                    height: 40px;
+                    border-radius: Theme.radius-md;
+                    border-width: opt == root.selected-option ? 2px : 1px;
+                    border-color: opt == root.selected-option ? Theme.accent : Theme.border-default;
+                    background: opt == root.selected-option ? Theme.accent-subtle : (option-ta.has-hover ? Theme.hover-overlay : transparent);
+                    horizontal-stretch: 1;
+
+                    Text {
+                        text: option;
+                        font-size: Theme.text-sm;
+                        color: opt == root.selected-option ? Theme.accent : Theme.text-secondary;
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                    }
+
+                    option-ta := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => {
+                            root.selected-option = opt;
+                            root.answer-selected(root.current-question, opt);
+                        }
+                    }
+                }
+            }
+        }
+
+        HorizontalLayout { spacing: Theme.sp-3; alignment: end;
+            Rectangle { width: 80px; height: 36px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default; background: back-ta.has-hover ? Theme.hover-overlay : transparent;
+                Text { text: "Back"; font-size: Theme.text-sm; color: Theme.text-primary; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                back-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        if (root.current-question > 0) {
+                            root.current-question -= 1;
+                            root.selected-option = -1;
+                        }
+                        root.back-clicked();
+                    }
+                }
+            }
+            Rectangle { width: 100px; height: 36px; border-radius: Theme.radius-md; background: next-ta.has-hover ? Theme.accent-dim : Theme.accent;
+                Text { text: current-question == root.total-questions - 1 ? "Finish" : "Next"; font-size: Theme.text-sm; font-weight: Theme.weight-medium; color: #ffffff; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                next-ta := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        if (root.current-question < root.total-questions - 1) {
+                            root.current-question += 1;
+                            root.selected-option = -1;
+                        }
+                        root.next-clicked();
+                    }
+                }
+            }
+        }
+    }
+}

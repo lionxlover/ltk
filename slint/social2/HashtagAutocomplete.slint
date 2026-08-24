@@ -8,10 +8,12 @@ export component HashtagAutocomplete inherits Rectangle {
     clip: true;
 
     in property <[string]> tags: ["design", "development", "launch"];
+    callback tag-selected(int);
 
     VerticalLayout {
         for tag[t] in tags: Rectangle {
             height: 40px;
+            background: tag-ta.has-hover ? Theme.hover-overlay : transparent;
 
             HorizontalLayout {
                 padding-left: Theme.sp-3;
@@ -33,6 +35,11 @@ export component HashtagAutocomplete inherits Rectangle {
                     y: (parent.height - self.height) / 2;
                     vertical-stretch: 1;
                 }
+            }
+
+            tag-ta := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.tag-selected(t); }
             }
 
             Rectangle { height: 1px; x: Theme.sp-3; background: Theme.border-subtle; }

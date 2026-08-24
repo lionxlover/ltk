@@ -5,6 +5,10 @@ export component BlockReportSheet inherits Rectangle {
     clip: true;
 
     in property <string> user-name: "User";
+    callback muted();
+    callback blocked();
+    callback reported();
+    callback cancelled();
 
     VerticalLayout {
         alignment: end;
@@ -35,6 +39,7 @@ export component BlockReportSheet inherits Rectangle {
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
+                    background: mute-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "Mute " + user-name;
@@ -43,11 +48,14 @@ export component BlockReportSheet inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                     }
+
+                    mute-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.muted(); } }
                 }
 
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
+                    background: block-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "Block " + user-name;
@@ -56,11 +64,14 @@ export component BlockReportSheet inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                     }
+
+                    block-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.blocked(); } }
                 }
 
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
+                    background: report-ta.has-hover ? Theme.hover-overlay : transparent;
 
                     Text {
                         text: "Report " + user-name;
@@ -69,6 +80,8 @@ export component BlockReportSheet inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                     }
+
+                    report-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.reported(); } }
                 }
 
                 Rectangle { height: 8px; }
@@ -76,7 +89,7 @@ export component BlockReportSheet inherits Rectangle {
                 Rectangle {
                     height: 50px;
                     border-radius: Theme.radius-md;
-                    background: Theme.bg-surface;
+                    background: cancel-ta.has-hover ? Theme.hover-overlay : Theme.bg-surface;
 
                     Text {
                         text: "Cancel";
@@ -86,6 +99,8 @@ export component BlockReportSheet inherits Rectangle {
                         x: (parent.width - self.width) / 2;
                         y: (parent.height - self.height) / 2;
                     }
+
+                    cancel-ta := TouchArea { mouse-cursor: MouseCursor.pointer; clicked => { root.cancelled(); } }
                 }
             }
         }
