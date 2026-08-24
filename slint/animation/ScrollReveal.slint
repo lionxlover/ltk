@@ -9,4 +9,6 @@ export component ScrollReveal inherits Rectangle {
     opacity: revealed ? 1 : 0;
     y: direction == "up" ? (revealed ? 0px : 40px) : (revealed ? 0px : -40px);
     animate opacity, y { duration: Theme.dur-slower; easing: Theme.ease-decelerate; }
+
+    @children
 }

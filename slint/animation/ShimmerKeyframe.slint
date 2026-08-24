@@ -13,10 +13,17 @@ export component ShimmerKeyframe inherits Rectangle {
 
     if active: Rectangle {
         width: 200px;
+        height: parent.height;
         background: Theme.glass-thin;
-        x: -200px;
         opacity: 0.5;
 
-        animate x { duration: 1500ms; easing: Theme.ease-standard; }
+        // The old `x: -200px` was a static binding — animate had
+        // nothing to actually interpolate, so the sweep bar sat off-
+        // screen forever and never moved. Nudge-and-repeat: bump the
+        // position once on mount, loop forever.
+        property <length> sweep-x: -200px;
+        x: sweep-x;
+        animate sweep-x { duration: 1500ms; easing: Theme.ease-standard; iteration-count: -1; }
+        init => { sweep-x = parent.width + 200px; }
     }
 }

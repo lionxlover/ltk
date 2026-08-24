@@ -21,6 +21,8 @@ import { MorphingSvgPath } from "MorphingSvgPath.slint";
 import { CounterNumberTween } from "CounterNumberTween.slint";
 import { CssVariableSpring } from "CssVariableSpring.slint";
 import { ViewTransitionWrapper } from "ViewTransitionWrapper.slint";
+import { InertiaMomentumScroll } from "InertiaMomentumScroll.slint";
+import { SwipeGestureHandler } from "SwipeGestureHandler.slint";
 
 export component AnimationTest inherits Rectangle {
     background: Theme.bg-base;
@@ -28,9 +30,11 @@ export component AnimationTest inherits Rectangle {
     height: 700px;
 
     Flickable {
-        viewport-height: 2800px;
+        width: parent.width;
+        height: parent.height;
+        viewport-height: content.preferred-height;
 
-        VerticalLayout {
+        content := VerticalLayout {
             padding: Theme.sp-6;
             spacing: Theme.sp-6;
 
@@ -41,10 +45,10 @@ export component AnimationTest inherits Rectangle {
                 PageTransitionFade { width: 120px; height: 80px; show: true;
                     Rectangle { background: Theme.accent; border-radius: Theme.radius-md; }
                 }
-                PageTransitionSlide { width: 120px; height: 80px; slide_visible: true; direction: "right";
+                PageTransitionSlide { width: 120px; height: 80px; slide-visible: true; direction: "right";
                     Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
                 }
-                PageTransitionScale { width: 120px; height: 80px; scale_visible: true;
+                PageTransitionScale { width: 120px; height: 80px; scale-visible: true;
                     Rectangle { background: Theme.warning; border-radius: Theme.radius-md; }
                 }
             }
@@ -120,6 +124,24 @@ export component AnimationTest inherits Rectangle {
                     Rectangle { background: Theme.success; border-radius: Theme.radius-md; }
                 }
                 CounterNumberTween { width: 120px; height: 80px; to-value: 42; }
+            }
+
+            Text { text: "Inertia Momentum Scroll / Swipe Gesture Handler"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                Rectangle { width: 160px; height: 120px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-subtle; clip: true;
+                    InertiaMomentumScroll { width: 160px; height: 120px;
+                        VerticalLayout {
+                            for i in 8: Rectangle { height: 32px; background: Theme.bg-overlay; border-radius: Theme.radius-sm;
+                                Text { text: "Row " + (i + 1); font-size: Theme.text-xs; color: Theme.text-secondary; x: Theme.sp-2; y: (parent.height - self.height) / 2; }
+                            }
+                        }
+                    }
+                }
+                Rectangle { width: 160px; height: 120px; border-radius: Theme.radius-md; background: Theme.bg-surface;
+                    SwipeGestureHandler { width: 160px; height: 120px; swipe-threshold: 60px;
+                        Text { text: "Swipe me"; color: Theme.text-secondary; font-size: Theme.text-sm; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                    }
+                }
             }
         }
     }

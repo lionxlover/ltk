@@ -5,6 +5,20 @@ export component MorphingSvgPath inherits Rectangle {
 
     in property <bool> morphed: false;
 
-    opacity: morphed ? 1 : 0.6;
-    animate opacity { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+    // True SVG path-data interpolation isn't achievable in Slint — Path
+    // uses a fixed path-data string, not a smoothly interpolatable
+    // shape — so this demonstrates the same "morph between two forms"
+    // idea with what Slint actually supports: shape via border-radius
+    // (square ↔ circle) applied to the wrapped content itself, the way
+    // HeroMorphLayout demonstrates size morphing elsewhere in this
+    // category. The old version only dimmed opacity on an empty,
+    // unwrapped Rectangle — no shape change, and no @children, so any
+    // content a caller nested inside it (as test.slint already does)
+    // was silently discarded.
+    clip: true;
+    border-radius: morphed ? self.height / 2 : 8px;
+    transform-rotation: morphed ? 90deg : 0deg;
+    animate border-radius, transform-rotation { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+
+    @children
 }

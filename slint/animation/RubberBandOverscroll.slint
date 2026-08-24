@@ -9,4 +9,6 @@ export component RubberBandOverscroll inherits Rectangle {
 
     y: overscrolling ? 30px : 0px;
     animate y { duration: Theme.dur-slow; easing: Theme.ease-spring; }
+
+    @children
 }

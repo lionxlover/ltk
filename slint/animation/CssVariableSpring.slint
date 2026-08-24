@@ -7,6 +7,19 @@ export component CssVariableSpring inherits Rectangle {
     in property <float> tension: 1.0;
     in property <float> friction: 0.7;
 
+    // tension/friction were declared and completely unused — only a
+    // barely-visible opacity flicker (0.95↔1) that ignored both. A true
+    // parameterized spring simulation isn't achievable through Slint's
+    // static easing curves, but tension can at least drive something
+    // real and visible: a higher tension snaps faster, and the actual
+    // motion (a genuine pop via transform-scale, not just opacity)
+    // makes the "spring" character legible at all.
     opacity: active ? 1 : 0.95;
-    animate opacity { duration: Theme.dur-slowest; easing: Theme.ease-spring; }
+    transform-scale: active ? 1.0 : 0.9;
+    animate opacity, transform-scale {
+        duration: (500 / max(0.1, tension)) * 1ms;
+        easing: Theme.ease-spring;
+    }
+
+    @children
 }

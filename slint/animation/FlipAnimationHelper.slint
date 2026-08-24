@@ -2,6 +2,7 @@ import { Theme } from "../core/Theme.slint";
 
 export component FlipAnimationHelper inherits Rectangle {
     background: transparent;
+    clip: true;
 
     in property <length> from-x: 0px;
     in property <length> from-y: 0px;
@@ -10,8 +11,11 @@ export component FlipAnimationHelper inherits Rectangle {
     in property <bool> playing: false;
 
     content := Rectangle {
-    opacity: playing ? 1 : 0;
-    animate opacity { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+        x: playing ? to-x : from-x;
+        y: playing ? to-y : from-y;
         background: transparent;
+        animate x, y { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+
+        @children
     }
 }

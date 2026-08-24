@@ -23,11 +23,12 @@ re-discovering things the hard way.
 | `media/` | 32 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes, also surfaced a cross-cutting bug fixed in 7 other categories) | `media.zip` |
 | `mobile/` | 30 | ✅ Done, verified via live screenshots (1 round of post-delivery fixes) | `mobile.zip` |
 | `forms2/` | 31 | ✅ Done, verified in a follow-up pass | `forms2.zip` |
-| `social2/` | 26 | ✅ Done, pending VS Code Problems-panel check | `social2.zip` |
-| everything else | ~259 | ⬜ Not started | — |
+| `social2/` | 26 | ✅ Done, verified in a follow-up pass | `social2.zip` |
+| `animation/` | 24 | ✅ Done, pending VS Code Problems-panel check | `animation.zip` |
+| everything else | ~235 | ⬜ Not started | — |
 
 Untouched categories, roughly by size:
-`animation` (24), `overlays` (24), `selection-controls` (25), `utility` (23),
+`overlays` (24), `selection-controls` (25), `utility` (23),
 `indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
 (12), `desktop` (10), `range-value` (10), `social` (8), `accessibility`
 (8), `theming` (6), `layout` (3), `progress` (1 component total —
@@ -2602,3 +2603,134 @@ delivery. Also switched the hardcoded `viewport-height: 3200px` to
 `content.preferred-height` (same stale-guess issue already fixed in
 `mobile/`'s and `forms2/`'s `test.slint`), since this round's additions
 would have made the fixed number stale immediately.
+
+## `animation/` batch — every single file needed a fix
+
+All 24 components reviewed; 26 files delivered (24 components +
+`export.slint`, unchanged + `test.slint`, expanded). No `core/` changes
+needed. This is the first category where **100% of files** needed
+something fixed — the dominant shape wasn't one bug repeated, but two:
+components whose entire declared purpose (a set of `from`/`to`
+properties, a `tension`/`friction` pair, a `morphed`/`playing` flag)
+was never actually wired to anything visible, and wrapper components
+with no `@children` at all.
+
+**Missing `@children`, 15 files:** `HeroMorphLayout`, `ParallaxLayer`,
+`RubberBandOverscroll`, `ScrollReveal`, `PinchToZoomHandler`,
+`PageTransitionFade`, `PageTransitionScale`, `ViewTransitionWrapper`,
+`IntersectionObserverTrigger`, `InertiaMomentumScroll` (its `Flickable`
+wrapped nothing at all), plus the inner `content` wrapper inside
+`FlipAnimationHelper`, `PageTransitionSlide`, `SharedElementTransition`,
+and `MorphingSvgPath`/`SwipeGestureHandler`/`DragToDismiss` (added as
+part of their larger rewrites below). `test.slint` already nested real
+content into most of these — confirmed by cross-referencing against
+it, the same way `forms2/`'s gap was confirmed.
+
+**One case where `@children` was the *wrong* fix, caught before
+shipping:** `ListStaggerEntrance` generates `item-count` placeholder
+rows via a `for` loop. `@children` inside that loop body would forward
+the *same* single set of children into every generated row — there's
+no way for a `for`-generated set of rows to each receive different
+per-index content through one opaque `@children` slot. Used an optional
+`item-labels: [string]` array instead, read by index, which respects
+the real constraint while still letting a caller show real per-row text
+instead of only blank placeholder boxes.
+
+**Declared parameters that drove nothing, or drove the wrong thing —
+the component's entire premise, absent (9 files):**
+- `CounterNumberTween`: showed `to-value` directly with no tween at
+  all; `from-value` and a property literally named `animate` (also the
+  Slint keyword for `animate propname {}` — likely why this was never
+  implemented) were both unused. Renamed the property to
+  `should-animate` and implemented a real nudge-and-repeat tween.
+- `PinchToZoomHandler`: `scale` drove *opacity* — nothing to do with
+  zoom. Switched to `transform-scale`, now actually clamped to
+  `min-scale`/`max-scale` (both previously unused too).
+- `PageTransitionScale`: only faded opacity; a component named "Scale"
+  never scaled anything. Added real `transform-scale`. Also fixed
+  `scale_visible` → `scale-visible` (and the equivalent `slide_visible`
+  → `slide-visible` in `PageTransitionSlide`) — the only underscore-
+  named property *declarations* found in the whole project so far,
+  as opposed to the usual underscore-vs-dash *reference* mismatches.
+- `MorphingSvgPath`: only dimmed opacity — no shape morph despite the
+  name. True SVG path-data interpolation isn't achievable in Slint
+  (`Path` uses a fixed path-data string), so this morphs `border-radius`
+  + rotation instead, applied to wrapped `@children` content rather
+  than a fixed shape of its own (an earlier draft made it self-
+  contained with its own color, which conflicted with `test.slint`
+  already nesting a colored `Rectangle` into it — reconsidered and
+  fixed before delivery).
+- `SharedElementTransition`: all 8 declared `from-x/y/w/h`/`to-x/y/w/h`
+  properties unused, only opacity fading. Now actually animates
+  position and size between them.
+- `FlipAnimationHelper`: all 4 `from-x/y`/`to-x/y` properties unused.
+  Same fix, plus added `clip: true` on the root — without it, a wrapped
+  element sliding by its full `to-x`/`to-y` offset would visibly bleed
+  into whatever sits next to it in a layout.
+- `CssVariableSpring` and `SpringPhysicsContainer`: near-duplicate
+  components, both declaring `tension`/`friction` and only producing a
+  barely-visible opacity flicker that ignored both. A true parameterized
+  spring simulation isn't expressible through Slint's static easing
+  curves, but `tension` now at least drives real duration, and both now
+  use `transform-scale` for an actual visible "pop" instead of a 5%
+  opacity change. `SpringPhysicsContainer`'s default `tension`/`friction`
+  values (0.34, 1.56) were also clearly just copy-pasted from
+  `ease-spring`'s cubic-bezier control points, not real spring-physics
+  numbers (typical values run in the hundreds) — replaced with values
+  that actually mean what they claim to.
+- `ViewTransitionWrapper`: `transition-type: string` was declared and
+  never read — always the same opacity fade regardless of what type
+  was passed. Now branches on `"cross-fade"`/`"zoom"`/`"slide-up"`.
+
+**An inverted, unreachable logic bug:** `RippleEffect`'s
+`opacity: active ? 0 : 0.4` lived inside `if active: Rectangle {...}` —
+since that whole element only exists when `active` is already true, the
+ternary's condition was *always* true, always evaluating to 0. The
+ripple was invisible every single time it ever appeared. Fixed with the
+confirmed nudge-and-repeat-once technique (start visible, animate down
+to 0 on mount).
+
+**The confirmed "static binding, animate has nothing to play" shape,
+once more:** `ShimmerKeyframe`'s sweep bar had `x: -200px` as a static
+binding with an `animate x {}` attached — since the value never
+changed, it sat off-screen forever and the shimmer never actually
+swept. Same nudge-and-repeat fix as `media/AnimatedIcon`.
+
+**A hardcoded assumption that would break on any non-default size:**
+`ConfettiOverlay` positioned particles via
+`Math.mod(i * 37, 400) * 1px` — hardcoding an assumed 400px container
+width. Any container of a different width would cluster all the
+confetti in one region or overflow. Fixed to compute from
+`parent.width` directly.
+
+**A completely empty component, built from scratch:**
+`SwipeGestureHandler` had 3 declared properties and *no body at all* —
+no rendering, no `@children`, no gesture detection. Worse, the two
+"detected gesture" properties (`swiped-left`/`swiped-right`) were `in`,
+which is backwards for a component whose entire job is detecting the
+gesture itself — an `in` property means the host would already have to
+know a swipe happened to set it. Rebuilt with real `TouchArea`-based
+detection (on the fixed root, not a moved child — the confirmed
+drag-tracking gotcha) reporting via callback instead, plus real
+`@children` forwarding.
+
+**Reviewed and left as honest, clearly-commented simplifications, not
+"fixed" further:** `LottieRivePlayer` (real Lottie/Rive rendering needs
+a full animation-file interpreter that doesn't exist in pure Slint —
+enhanced the placeholder to at least reflect `playing` state and show
+the `source` filename rather than being a completely inert gray box,
+consistent with how this whole library treats necessarily-simplified
+mockups). `IntersectionObserverTrigger`'s `threshold` and
+`RubberBandOverscroll`'s `overscrolling` are legitimate host-facing
+config/state — real viewport-intersection math and Flickable bounce
+physics both live outside what Slint itself can compute, matching the
+same reasoning already applied to `mobile/WizardForm.branching` and
+`PinchToZoomHandler`'s gesture math.
+
+**`test.slint` gaps:** `InertiaMomentumScroll` and `SwipeGestureHandler`
+were exported but never instantiated. Added real demos for both — the
+momentum-scroll one with actual overflowing list content so there's
+something to scroll. Also fixed the two renamed properties above where
+`test.slint` still called the old names, and switched the `Flickable`'s
+hardcoded `viewport-height: 2800px` to `content.preferred-height` (same
+fix now applied in every category's `test.slint` so far).

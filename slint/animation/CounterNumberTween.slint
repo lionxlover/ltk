@@ -5,12 +5,25 @@ export component CounterNumberTween inherits Rectangle {
 
     in property <int> from-value: 0;
     in property <int> to-value: 100;
-    in property <bool> animate: true;
+    // Renamed from `animate` — that's also the keyword used for
+    // `animate propname { ... }` blocks, and a property named exactly
+    // that is likely why this component's tween was never actually
+    // implemented in the first place.
+    in property <bool> should-animate: true;
 
     height: 48px;
 
+    // Nudge-and-repeat-once: current-value starts at from-value, and
+    // is bumped to to-value on mount (or immediately if should-animate
+    // is false), giving the attached `animate` an actual value change
+    // to play — a static binding directly to to-value, which is what
+    // this had before, never gives `animate` anything to interpolate.
+    private property <float> current-value: should-animate ? from-value : to-value;
+    animate current-value { duration: 800ms; easing: Theme.ease-decelerate; }
+    init => { if (should-animate) { current-value = to-value; } }
+
     Text {
-        text: "\{to-value}";
+        text: "\{Math.round(root.current-value)}";
         font-size: Theme.text-3xl;
         font-weight: Theme.weight-bold;
         color: Theme.text-primary;

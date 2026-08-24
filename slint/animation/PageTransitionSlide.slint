@@ -4,15 +4,17 @@ export component PageTransitionSlide inherits Rectangle {
     background: transparent;
     clip: true;
 
-    in property <bool> slide_visible: false;
+    in property <bool> slide-visible: false;
     in property <string> direction: "right";
 
     content := Rectangle {
-        x: direction == "left" ? (slide_visible ? 0px : -root.width) : (slide_visible ? 0px : root.width);
+        x: direction == "left" ? (slide-visible ? 0px : -root.width) : (slide-visible ? 0px : root.width);
         animate x { duration: Theme.dur-slow; easing: Theme.ease-standard; }
         background: transparent;
+
+        @children
     }
 
-    opacity: slide_visible ? 1 : 0;
+    opacity: slide-visible ? 1 : 0;
     animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 }

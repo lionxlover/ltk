@@ -7,6 +7,10 @@ export component ViewTransitionWrapper inherits Rectangle {
     in property <bool> transitioning: false;
     in property <string> transition-type: "cross-fade";
 
-    opacity: transitioning ? 0.8 : 1;
-    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+    opacity: transition-type == "cross-fade" ? (transitioning ? 0.8 : 1) : 1;
+    transform-scale: transition-type == "zoom" ? (transitioning ? 0.95 : 1.0) : 1.0;
+    y: transition-type == "slide-up" ? (transitioning ? -12px : 0px) : 0px;
+    animate opacity, transform-scale, y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+    @children
 }

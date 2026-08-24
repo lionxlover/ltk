@@ -8,6 +8,10 @@ export component PinchToZoomHandler inherits Rectangle {
     in property <float> min-scale: 0.5;
     in property <float> max-scale: 3.0;
 
-    opacity: scale;
-    animate opacity { duration: Theme.dur-fast; easing: Theme.ease-standard; }
+    // `scale` was driving opacity, which has nothing to do with zoom —
+    // transform-scale is the confirmed real property for this, and the
+    // declared min/max-scale were never used to clamp anything.
+    transform-scale: scale.clamp(min-scale, max-scale);
+
+    @children
 }

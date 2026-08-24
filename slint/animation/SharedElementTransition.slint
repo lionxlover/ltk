@@ -14,8 +14,13 @@ export component SharedElementTransition inherits Rectangle {
     in property <length> to-h: 200px;
 
     content := Rectangle {
-    opacity: active ? 1 : 0;
-    animate opacity { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+        x: active ? to-x : from-x;
+        y: active ? to-y : from-y;
+        width: active ? to-w : from-w;
+        height: active ? to-h : from-h;
         background: transparent;
+        animate x, y, width, height { duration: Theme.dur-slower; easing: Theme.ease-spring; }
+
+        @children
     }
 }

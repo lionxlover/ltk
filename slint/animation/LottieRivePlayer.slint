@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component LottieRivePlayer inherits Rectangle {
     background: transparent;
@@ -8,8 +9,36 @@ export component LottieRivePlayer inherits Rectangle {
     in property <int> speed: 1;
     in property <bool> loop: true;
 
+    // Real Lottie/Rive rendering needs a full animation-file interpreter
+    // that doesn't exist in pure Slint — this can't actually play those
+    // formats. The old version was a completely inert gray box that
+    // ignored all four declared properties; this at least reflects
+    // playing state and the source filename, honestly, rather than
+    // pretending nothing was passed in at all.
     Rectangle {
         border-radius: Theme.radius-md;
         background: Theme.bg-overlay;
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Theme.sp-2;
+
+            FaIcon {
+                source: root.playing
+                    ? @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/film.svg")
+                    : @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/clapperboard.svg");
+                fa-size: 28px;
+                fa-color: Theme.text-tertiary;
+                x: (parent.width - self.width) / 2;
+            }
+
+            if root.source != "": Text {
+                text: root.source;
+                font-size: Theme.text-xs;
+                color: Theme.text-tertiary;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
     }
 }

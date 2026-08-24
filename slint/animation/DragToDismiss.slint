@@ -3,10 +3,46 @@ import { Theme } from "../core/Theme.slint";
 export component DragToDismiss inherits Rectangle {
     background: transparent;
 
-    in property <bool> dismissed: false;
+    in-out property <bool> dismissed: false;
     in property <length> dismiss-threshold: 100px;
+    callback dismiss-requested();
+
+    // Was purely externally-controlled — no TouchArea at all despite
+    // the name promising drag interactivity. y is intentionally NOT
+    // animated during the live drag (drag-offset updates it directly,
+    // 1:1) — same confirmed reasoning as mobile/'s Swipe* components:
+    // animating a continuously-updating value produces a laggy, trailing
+    // feel instead of tracking the finger. Only the dismiss fade is
+    // animated, since that's a single discrete state change, not a
+    // per-frame update.
+    private property <length> drag-offset: 0px;
+    private property <length> press-start-mouse-y: 0px;
+    private property <length> press-start-offset: 0px;
 
     opacity: dismissed ? 0 : 1;
-    y: dismissed ? 200px : 0px;
-    animate opacity, y { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+    y: dismissed ? 200px : drag-offset;
+    animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
+
+    @children
+
+    TouchArea {
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.press-start-mouse-y = self.mouse-y;
+                root.press-start-offset = root.drag-offset;
+            }
+            if (ev.kind == PointerEventKind.up) {
+                if (root.drag-offset > root.dismiss-threshold) {
+                    root.dismissed = true;
+                    root.dismiss-requested();
+                }
+                root.drag-offset = 0px;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.drag-offset = max(0px, root.press-start-offset + (self.mouse-y - root.press-start-mouse-y));
+            }
+        }
+    }
 }

@@ -12,7 +12,7 @@ export component ConfettiOverlay inherits Rectangle {
         width: 8px;
         height: 8px;
         border-radius: 2px;
-        x: Math.mod(i * 37, 400) * 1px;
+        x: parent.width * Math.mod(i * 37, 100) / 100;
         y: active ? root.height + 20px : -10px;
         background: colors[Math.mod(i, colors.length)];
 

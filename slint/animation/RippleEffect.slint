@@ -15,7 +15,16 @@ export component RippleEffect inherits Rectangle {
         height: 100px;
         border-radius: 50px;
         background: Theme.accent-glow;
-        opacity: active ? 0 : 0.4;
+
+        // The old `opacity: active ? 0 : 0.4` was unreachable — this
+        // Rectangle only exists at all when `active` is true (per the
+        // `if` above), so that ternary's condition was always true,
+        // always evaluating to 0: the ripple was invisible every time
+        // it ever appeared. Nudge-and-repeat-once instead: start
+        // visible, animate down to 0 on mount.
+        property <float> ripple-opacity: 0.4;
+        opacity: ripple-opacity;
         animate opacity { duration: Theme.dur-slow; easing: Theme.ease-standard; }
+        init => { ripple-opacity = 0; }
     }
 }

@@ -4,9 +4,22 @@ export component SpringPhysicsContainer inherits Rectangle {
     background: transparent;
 
     in property <bool> active: false;
-    in property <float> spring-tension: 0.34;
-    in property <float> spring-friction: 1.56;
+    in property <float> spring-tension: 300;
+    in property <float> spring-friction: 20;
 
+    // Same unwired-properties shape as CssVariableSpring in this same
+    // category — was only a subtle opacity flicker, ignoring both
+    // properties entirely. Also: the old defaults (0.34, 1.56) were
+    // clearly just the ease-spring cubic-bezier control points, not
+    // real spring-physics values (typical tension/friction in e.g.
+    // react-spring run in the hundreds/tens) — replaced with values
+    // that actually mean what they claim to.
     opacity: active ? 1 : 0.8;
-    animate opacity { duration: Theme.dur-slowest; easing: Theme.ease-spring; }
+    transform-scale: active ? 1.0 : 0.9;
+    animate opacity, transform-scale {
+        duration: (60000 / max(1, spring-tension) + spring-friction * 5) * 1ms;
+        easing: Theme.ease-spring;
+    }
+
+    @children
 }

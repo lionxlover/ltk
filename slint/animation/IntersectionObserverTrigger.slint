@@ -8,4 +8,6 @@ export component IntersectionObserverTrigger inherits Rectangle {
 
     opacity: in-viewport ? 1 : 0;
     animate opacity { duration: Theme.dur-slow; easing: Theme.ease-standard; }
+
+    @children
 }

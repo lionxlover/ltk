@@ -6,6 +6,7 @@ export component ListStaggerEntrance inherits Rectangle {
     in property <int> item-count: 5;
     in property <bool> animate-in: true;
     in property <int> stagger-delay: 80;
+    in property <[string]> item-labels: [];
 
     VerticalLayout {
         spacing: Theme.sp-2;
@@ -19,6 +20,14 @@ export component ListStaggerEntrance inherits Rectangle {
                 opacity: animate-in ? 1 : 0;
                 y: animate-in ? 0px : 20px;
                 animate opacity, y { duration: Theme.dur-slow; easing: Theme.ease-spring; delay: i * stagger-delay * 1ms; }
+
+                if i < item-labels.length: Text {
+                    text: item-labels[i];
+                    font-size: Theme.text-sm;
+                    color: Theme.text-primary;
+                    x: Theme.sp-3;
+                    y: (parent.height - self.height) / 2;
+                }
             }
         }
     }

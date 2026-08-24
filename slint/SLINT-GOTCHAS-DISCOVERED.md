@@ -1869,3 +1869,66 @@ shapes already on record. Worth noting for the categories still ahead:
 `Math.mod`-on-a-displayed-count and missing-border-width are now
 proven enough to check on sight, the same way `radius-full`-on-non-
 square and missing-`@children` already were.
+
+---
+
+### `@children` inside a `for` loop forwards the *same* children to every iteration — it isn't per-item
+
+```slint
+// WRONG — every generated row gets the identical forwarded children,
+// not a different one per index. @children is one opaque slot, not
+// an indexable collection a for-loop can distribute across iterations.
+for item[i] in item-count: Rectangle {
+    @children
+}
+```
+If a "list" component needs genuinely different content per row from
+the caller, `@children` can't do it — either accept a data array
+(`item-labels: [string]`, read by index inside the loop) or require the
+caller to build the full list of rows themselves outside this
+component. Caught before shipping in `animation/ListStaggerEntrance`,
+which had otherwise looked like every other missing-`@children` wrapper
+in the same category.
+
+---
+
+### A property literally named `animate` is asking for trouble
+
+`animate` is also the keyword used for `animate propname { ... }`
+blocks. `animation/CounterNumberTween` declared
+`in property <bool> animate: true;` and its actual tween was never
+implemented at all — plausibly *because* naming a property this way
+made the real animation syntax awkward or ambiguous in the same scope.
+Renamed to `should-animate` before wiring the real fix. Worth checking
+for on sight: any property named after a Slint keyword (`animate`,
+`for`, `if`, `property` itself) is worth renaming even where it happens
+to compile, since it signals the original author may have hit friction
+implementing the very feature the property was meant to control.
+
+---
+
+### A `from`/`to`-style property pair being declared doesn't mean anything reads them — check for the visible effect matching the component's name
+
+The single most common shape in the `animation/` category: components
+named for a specific effect (`CounterNumberTween`, `MorphingSvgPath`,
+`SharedElementTransition`, `FlipAnimationHelper`, `PinchToZoomHandler`,
+`PageTransitionScale`) that declared exactly the properties you'd
+expect for that effect, and then only ever animated `opacity` — a
+generic, unrelated fallback — while the actual `from-x`/`to-value`/
+`scale`/`morphed` properties sat completely unread. Reviewing "does
+this property exist" isn't enough; the check that actually catches
+this is "does changing this property produce the effect the component's
+name promises," which usually means rendering it (or reading the code
+path all the way through) rather than confirming the property parses.
+
+---
+
+### `animation/` batch — highest fix rate of any category (24/24), but genuinely two dominant shapes, not many small ones
+
+Every file needed a change, but almost all of them reduce to two
+things already covered above in depth: missing `@children` on a
+content-wrapping component, and declared effect-defining properties
+that drive nothing (or drive the wrong generic property, usually
+opacity). Worth treating "does the visible effect match the component's
+name" as a standing question for any future category built around named
+visual effects rather than data display or forms.

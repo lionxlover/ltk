@@ -3,7 +3,35 @@ import { Theme } from "../core/Theme.slint";
 export component SwipeGestureHandler inherits Rectangle {
     background: transparent;
 
-    in property <bool> swiped-left: false;
-    in property <bool> swiped-right: false;
     in property <length> swipe-threshold: 80px;
+    callback swiped-left();
+    callback swiped-right();
+
+    // swiped-left/swiped-right were `in` properties before — backwards
+    // for a component whose whole job is *detecting* the gesture itself;
+    // an `in` property means the host would have to already know a
+    // swipe happened to set it, making this component pointless. Real
+    // detection via a TouchArea on the fixed root (not a moved child —
+    // see the confirmed drag-tracking gotcha), reporting via callback.
+    private property <length> press-start-mouse-x: 0px;
+    private property <length> delta: 0px;
+
+    @children
+
+    TouchArea {
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.press-start-mouse-x = self.mouse-x;
+            }
+            if (ev.kind == PointerEventKind.up) {
+                root.delta = self.mouse-x - root.press-start-mouse-x;
+                if (root.delta < -root.swipe-threshold) {
+                    root.swiped-left();
+                }
+                if (root.delta > root.swipe-threshold) {
+                    root.swiped-right();
+                }
+            }
+        }
+    }
 }
