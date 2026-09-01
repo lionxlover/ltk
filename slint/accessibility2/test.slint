@@ -2,6 +2,7 @@ import { Theme } from "../core/Theme.slint";
 import { FocusRingCustom } from "FocusRingCustom.slint";
 import { AriaLivePolite } from "AriaLivePolite.slint";
 import { AriaLiveAssertive } from "AriaLiveAssertive.slint";
+import { AriaAnnouncer } from "AriaAnnouncer.slint";
 import { FocusTrapGuard } from "FocusTrapGuard.slint";
 import { RovingTabIndexGroup } from "RovingTabIndexGroup.slint";
 import { LineHeightAdjuster } from "LineHeightAdjuster.slint";
@@ -62,6 +63,14 @@ export component AccessibilityTest2 inherits Rectangle {
 
             Text { text: "Accessible Error Summary"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             AccessibleErrorSummary { width: 400px; title: "2 errors found"; errors: ["Email is required", "Password must be 8+ characters"]; }
+            AccessibleErrorSummary { width: 400px; title: "Validation"; errors: []; }
+            AccessibleErrorSummary { width: 400px; title: ""; errors: []; }
+
+            Text { text: "ARIA Announcer / Roving Tab Index"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+            HorizontalLayout { spacing: Theme.sp-3;
+                AriaAnnouncer { width: 200px; height: 40px; message: "Item added to cart"; }
+                RovingTabIndexGroup { width: 200px; height: 40px; item-count: 5; active-index: 2; }
+            }
         }
     }
 }

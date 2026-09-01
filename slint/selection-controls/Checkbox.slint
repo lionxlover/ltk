@@ -4,6 +4,7 @@ export component Checkbox inherits Rectangle {
     in-out property <bool> checked: false;
     in-out property <bool> enabled: true;
     in-out property <string> label: "Option";
+    callback toggled(bool);
 
     height: 32px;
     horizontal-stretch: 1;
@@ -43,6 +44,7 @@ export component Checkbox inherits Rectangle {
         clicked => {
             if (root.enabled) {
                 root.checked = !root.checked;
+                root.toggled(root.checked);
             }
         }
     }

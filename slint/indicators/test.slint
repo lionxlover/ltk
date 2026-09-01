@@ -9,6 +9,16 @@ import { EnvironmentBadge } from "EnvironmentBadge.slint";
 import { SignalBars } from "SignalBars.slint";
 import { BatteryIndicator } from "BatteryIndicator.slint";
 import { VersionBadge } from "VersionBadge.slint";
+import { ActivityIndicator } from "ActivityIndicator.slint";
+import { AssistChip } from "AssistChip.slint";
+import { DeprecatedBadge } from "DeprecatedBadge.slint";
+import { FilterChip } from "FilterChip.slint";
+import { HealthBar } from "HealthBar.slint";
+import { InputChip } from "InputChip.slint";
+import { LabelBadge } from "LabelBadge.slint";
+import { Pill } from "Pill.slint";
+import { StatusChip } from "StatusChip.slint";
+import { VerifiedBadge } from "VerifiedBadge.slint";
 
 export component IndicatorsTest inherits Rectangle {
     background: Theme.bg-base;
@@ -106,6 +116,43 @@ export component IndicatorsTest inherits Rectangle {
             VersionBadge { version: "0.1.0"; }
             VersionBadge { version: "1.0.0"; }
             VersionBadge { version: "2.3.1-beta"; }
+        }
+
+        Text { text: "ActivityIndicator"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            ActivityIndicator { active: true; }
+            ActivityIndicator { active: false; }
+        }
+
+        Text { text: "AssistChip / FilterChip / InputChip"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            AssistChip { text: "Summarize"; }
+            FilterChip { text: "Active"; selected: true; }
+            FilterChip { text: "Archived"; selected: false; }
+            InputChip { text: "design-system"; }
+        }
+
+        Text { text: "DeprecatedBadge / LabelBadge / VerifiedBadge"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            DeprecatedBadge { }
+            LabelBadge { text: "New"; variant: 0; }
+            LabelBadge { text: "Beta"; variant: 1; }
+            VerifiedBadge { }
+        }
+
+        Text { text: "Pill / StatusChip"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4; alignment: start;
+            Pill { text: "Draft"; variant: 0; }
+            Pill { text: "Live"; variant: 1; }
+            StatusChip { text: "Active"; variant: 0; }
+            StatusChip { text: "Failed"; variant: 1; }
+        }
+
+        Text { text: "HealthBar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        VerticalLayout { spacing: Theme.sp-2;
+            HealthBar { width: 240px; score: 92; }
+            HealthBar { width: 240px; score: 55; }
+            HealthBar { width: 240px; score: 15; }
         }
         }
     }

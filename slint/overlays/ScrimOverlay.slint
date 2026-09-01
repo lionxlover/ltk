@@ -10,11 +10,11 @@ export component ScrimOverlay inherits Rectangle {
     height: 100%;
     background: Theme.backdrop;
     opacity: active ? scrim-opacity : 0;
-    visible: active;
 
     animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
     ta := TouchArea {
+        enabled: root.active;
         clicked => { root.clicked(); }
     }
 }

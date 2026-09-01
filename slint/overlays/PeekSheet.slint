@@ -15,7 +15,6 @@ export component PeekSheet inherits Rectangle {
         height: 100%;
         background: Theme.backdrop;
         opacity: root.sheet-visible ? 1 : 0;
-        visible: root.sheet-visible;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
     }
 
@@ -53,6 +52,8 @@ export component PeekSheet inherits Rectangle {
             // Content slot
             Rectangle {
                 vertical-stretch: 1;
+
+                @children
             }
 
             // Expand indicator
@@ -81,11 +82,12 @@ export component PeekSheet inherits Rectangle {
                 }
 
                 expand-ta := TouchArea {
+                    enabled: root.sheet-visible;
                     clicked => { root.expand(); }
                 }
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.sheet-visible; }
     }
 }

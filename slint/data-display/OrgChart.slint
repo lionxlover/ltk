@@ -15,7 +15,7 @@ export component OrgChart inherits Rectangle {
 
     in property <[string]> demo-titles: ["CEO", "VP Eng", "VP Design"];
     in property <[int]> demo-levels: [0, 1, 1];
-    in property <[color]> demo-colors: [Theme.accent, Theme.green-500, #CD7F32];
+    in property <[color]> demo-colors: [Theme.accent, Theme.green_500, #CD7F32];
 
     // CEO Node
     Rectangle {
@@ -72,13 +72,13 @@ export component OrgChart inherits Rectangle {
         border-radius: Theme.radius-md;
         background: Theme.bg-surface;
         border-width: 1px;
-        border-color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green-500;
+        border-color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green_500;
 
         Text {
             x: (parent.width - self.width) / 2;
             y: (parent.height - self.height) / 2;
             text: root.demo-titles.length > 1 ? root.demo-titles[1] : "VP Eng";
-            color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green-500;
+            color: root.demo-colors.length > 1 ? root.demo-colors[1] : Theme.green_500;
             font-family: Theme.font-ui;
             font-size: Theme.text-sm;
             font-weight: Theme.weight-semibold;

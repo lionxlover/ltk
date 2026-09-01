@@ -11,15 +11,59 @@ export component PreviewSandboxCanvas inherits Rectangle {
     in property <length> canvas-height: 300px;
     in property <bool> show-grid: false;
     in property <bool> show-rulers: false;
+    in property <length> grid-spacing: 20px;
+    in property <length> ruler-size: 16px;
 
     width: canvas-width;
     height: canvas-height;
 
-    if show-grid: Rectangle {
-        background: Theme.border-subtle;
-    }
-
+    // Base fill goes first — it must render *behind* the grid/rulers, not
+    // on top of them. The original had this Rectangle last (a later
+    // sibling renders on top per Slint's z-order rule), which fully
+    // covered the grid regardless of `show-grid`.
     Rectangle {
         background: Theme.bg-base;
+    }
+
+    if show-grid: Rectangle {
+        x: show-rulers ? ruler-size : 0px;
+        y: show-rulers ? ruler-size : 0px;
+        width: parent.width - self.x;
+        height: parent.height - self.y;
+        clip: true;
+
+        for col in Math.floor((root.canvas-width - self.x) / root.grid-spacing) + 1: Rectangle {
+            x: col * root.grid-spacing;
+            width: 1px;
+            height: parent.height;
+            background: Theme.border-subtle;
+        }
+
+        for row in Math.floor((root.canvas-height - self.y) / root.grid-spacing) + 1: Rectangle {
+            y: row * root.grid-spacing;
+            height: 1px;
+            width: parent.width;
+            background: Theme.border-subtle;
+        }
+    }
+
+    if show-rulers: Rectangle {
+        x: 0;
+        y: 0;
+        width: parent.width;
+        height: ruler-size;
+        background: Theme.bg-overlay;
+        border-width: 1px;
+        border-color: Theme.border-default;
+    }
+
+    if show-rulers: Rectangle {
+        x: 0;
+        y: 0;
+        width: ruler-size;
+        height: parent.height;
+        background: Theme.bg-overlay;
+        border-width: 1px;
+        border-color: Theme.border-default;
     }
 }

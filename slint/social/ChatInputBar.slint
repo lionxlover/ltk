@@ -4,6 +4,8 @@ import { FaIcon } from "../core/FaIcon.slint";
 export component ChatInputBar inherits Rectangle {
     in property <string> placeholder: "";
 
+    callback message-sent(string);
+
     width: 100%;
     height: 48px;
     background: Theme.bg-surface;
@@ -17,13 +19,19 @@ export component ChatInputBar inherits Rectangle {
         spacing: Theme.sp-2;
         alignment: stretch;
 
-        TextInput {
+        chat-input := TextInput {
             text: "";
             color: Theme.text-primary;
             font-family: Theme.font-ui;
             font-size: Theme.text-base;
             vertical-alignment: center;
             horizontal-stretch: 1;
+            accepted => {
+                if (self.text != "") {
+                    root.message-sent(self.text);
+                    self.text = "";
+                }
+            }
 
             Text {
                 x: 0;
@@ -41,7 +49,7 @@ export component ChatInputBar inherits Rectangle {
             width: 36px;
             height: 36px;
             y: (parent.height - self.height) / 2;
-            background: Theme.accent;
+            background: send-area.has-hover ? Theme.accent-dim : Theme.accent;
             border-radius: Theme.radius-full;
             horizontal-stretch: 0;
 
@@ -51,6 +59,16 @@ export component ChatInputBar inherits Rectangle {
                 fa-color: Theme.on-accent;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            send-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    if (chat-input.text != "") {
+                        root.message-sent(chat-input.text);
+                        chat-input.text = "";
+                    }
+                }
             }
         }
     }

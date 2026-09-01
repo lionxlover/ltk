@@ -3,6 +3,8 @@ import { Theme } from "../core/Theme.slint";
 export component SkipLink inherits Rectangle {
     in property <string> target: "";
 
+    callback activated(string);
+
     visible: false;
     height: 36px;
     background: Theme.accent;
@@ -11,13 +13,21 @@ export component SkipLink inherits Rectangle {
 
     TouchArea {
         clicked => {
+            root.activated(root.target);
             root.visible = false;
         }
     }
 
     FocusScope {
         key-pressed(event) => {
-            if (event.text == "tab" || event.text == "enter" || event.text == " ") {
+            if (event.text == "tab") {
+                root.visible = true;
+                return accept;
+            }
+            if (event.text == "enter" || event.text == " ") {
+                if (root.visible) {
+                    root.activated(root.target);
+                }
                 root.visible = true;
                 return accept;
             }

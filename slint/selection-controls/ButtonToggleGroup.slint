@@ -3,6 +3,10 @@ import { Theme } from "../core/Theme.slint";
 export component ButtonToggleGroup inherits Rectangle {
     in-out property <[string]> items: ["Bold", "Italic", "Underline"];
     in-out property <[bool]> active: [false, false, false];
+    // Arrays can't be index-assigned from inside a component (confirmed
+    // gotcha) — report which index changed and let the host reassign
+    // the whole `active` array with the new value applied.
+    callback item-toggled(int, bool);
 
     horizontal-stretch: 1;
 
@@ -12,15 +16,15 @@ export component ButtonToggleGroup inherits Rectangle {
         for itm[idx] in root.items: Rectangle {
             height: 36px;
             border-radius: Theme.radius-md;
-            background: root.active[idx] ? Theme.accent-subtle : Theme.bg-surface;
+            background: (idx < root.active.length && root.active[idx]) ? Theme.accent-subtle : Theme.bg-surface;
             border-width: 1px;
-            border-color: root.active[idx] ? Theme.accent : Theme.border-base;
+            border-color: (idx < root.active.length && root.active[idx]) ? Theme.accent : Theme.border-base;
 
             Text {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
                 text: itm;
-                color: root.active[idx] ? Theme.accent : Theme.text-secondary;
+                color: (idx < root.active.length && root.active[idx]) ? Theme.accent : Theme.text-secondary;
                 font-size: 13px;
                 font-weight: Theme.weight-medium;
                 vertical-alignment: center;
@@ -29,7 +33,7 @@ export component ButtonToggleGroup inherits Rectangle {
 
             TouchArea {
                 clicked => {
-                    root.active[idx] = !root.active[idx];
+                    root.item-toggled(idx, !(idx < root.active.length && root.active[idx]));
                 }
             }
         }

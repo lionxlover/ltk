@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { SrOnlyText } from "SrOnlyText.slint";
 
 export component ReduceMotionToggle inherits Rectangle {
     in-out property <bool> active: false;
@@ -6,7 +7,7 @@ export component ReduceMotionToggle inherits Rectangle {
     height: Theme.toggle-height;
     width: Theme.toggle-width;
     background: active ? Theme.accent : Theme.toggle-track-off;
-    border-radius: Theme.radius-full;
+    border-radius: self.height / 2;
 
     TouchArea {
         clicked => {
@@ -27,12 +28,8 @@ export component ReduceMotionToggle inherits Rectangle {
         padding-right: Theme.sp-2;
         alignment: center;
 
-        Text {
+        SrOnlyText {
             text: "Reduce Motion";
-            color: Theme.text-primary;
-            font-size: Theme.text-xs;
-            vertical-alignment: center;
-            visible: false;
         }
     }
 }

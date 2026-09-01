@@ -12,8 +12,7 @@ export component FollowButton inherits Rectangle {
         width: parent.width;
         height: parent.height;
         background: root.following ? Theme.bg-overlay : Theme.accent;
-        border-radius: Theme.radius-full;
-        border-width: root.following ? 1px : 0px;
+        border-radius: self.height / 2;
         border-color: root.following ? Theme.border-strong : #00000000;
 
         HorizontalLayout {

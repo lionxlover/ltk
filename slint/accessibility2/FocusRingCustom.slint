@@ -9,6 +9,9 @@ export component FocusRingCustom inherits Rectangle {
     in property <string> ring-color-name: "accent";
 
     border-width: active ? ring-width : 0px;
-    border-color: Theme.accent;
+    border-color: ring-color-name == "error" ? Theme.error
+        : ring-color-name == "success" ? Theme.success
+        : ring-color-name == "warning" ? Theme.warning
+        : Theme.accent;
     border-radius: Theme.radius-sm;
 }

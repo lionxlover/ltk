@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component FlagPicker inherits Rectangle {
     in-out property <string> flag: "US";
@@ -21,16 +22,15 @@ export component FlagPicker inherits Rectangle {
         vertical-alignment: center;
     }
 
-    Text {
+    FaIcon {
         x: parent.width - 24px;
         y: (parent.height - self.height) / 2;
-        text: "\u{25BE}";
-        color: Theme.text-tertiary;
-        font-size: 12px;
-        vertical-alignment: center;
+        fa-size: 10px;
+        fa-color: Theme.text-tertiary;
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
     }
 
     TouchArea {
-        clicked => { root.has-focus = true; }
+        clicked => { root.has-focus = !root.has-focus; }
     }
 }

@@ -1,7 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
 export component MinimizedWindowChip inherits Rectangle {
-    background: Theme.bg-surface;
+    background: chip-area.has-hover ? Theme.hover-overlay : Theme.bg-surface;
     border-radius: Theme.radius-sm;
     border-width: 1px;
     border-color: Theme.border-default;
@@ -12,6 +12,8 @@ export component MinimizedWindowChip inherits Rectangle {
     in property <string> title: "App";
     in property <string> icon: "📄";
     in property <bool> active: false;
+
+    callback restore-requested();
 
     HorizontalLayout {
         padding-left: Theme.sp-2;
@@ -38,5 +40,10 @@ export component MinimizedWindowChip inherits Rectangle {
         y: parent.height - 2px;
         height: 2px;
         background: active ? Theme.accent : transparent;
+    }
+
+    chip-area := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => { root.restore-requested(); }
     }
 }

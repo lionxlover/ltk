@@ -39,7 +39,7 @@ export component KPITile inherits Rectangle {
 
             Text {
                 text: root.trend == 1 ? "▲" : (root.trend == 2 ? "▼" : "");
-                color: root.trend == 1 ? Theme.green-700 : (root.trend == 2 ? Theme.red-600 : Theme.text-tertiary);
+                color: root.trend == 1 ? Theme.green_700 : (root.trend == 2 ? Theme.red_600 : Theme.text-tertiary);
                 font-family: Theme.font-ui;
                 font-size: Theme.text-xs;
                 vertical-alignment: center;
@@ -47,7 +47,7 @@ export component KPITile inherits Rectangle {
 
             Text {
                 text: root.change;
-                color: root.trend == 1 ? Theme.green-700 : (root.trend == 2 ? Theme.red-600 : Theme.text-tertiary);
+                color: root.trend == 1 ? Theme.green_700 : (root.trend == 2 ? Theme.red_600 : Theme.text-tertiary);
                 font-family: Theme.font-ui;
                 font-size: Theme.text-sm;
                 font-weight: Theme.weight-medium;

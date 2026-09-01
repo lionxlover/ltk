@@ -3,6 +3,10 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component InspectorPanel inherits Rectangle {
     in property <string> title: "Inspector";
+    in-out property <string> obj-x: "0";
+    in-out property <string> obj-y: "0";
+    in-out property <string> obj-width: "100";
+    in-out property <string> obj-height: "100";
 
     background: Theme.bg-sidebar;
     border-radius: Theme.radius-md;
@@ -66,15 +70,17 @@ export component InspectorPanel inherits Rectangle {
                         background: Theme.bg-raised;
                         border-radius: Theme.radius-xs;
                         border-width: 1px;
-                        border-color: Theme.border-subtle;
+                        border-color: x-input.has-focus ? Theme.accent : Theme.border-subtle;
                         height: 26px;
 
-                        Text {
-                            text: "0";
+                        x-input := TextInput {
+                            text <=> root.obj-x;
+                            input-type: InputType.decimal;
                             color: Theme.text-primary;
                             font-size: Theme.text-xs;
                             font-family: Theme.font-mono;
                             x: Theme.sp-2;
+                            width: parent.width - Theme.sp-2 * 2;
                             vertical-alignment: center;
                         }
                     }
@@ -97,15 +103,17 @@ export component InspectorPanel inherits Rectangle {
                         background: Theme.bg-raised;
                         border-radius: Theme.radius-xs;
                         border-width: 1px;
-                        border-color: Theme.border-subtle;
+                        border-color: y-input.has-focus ? Theme.accent : Theme.border-subtle;
                         height: 26px;
 
-                        Text {
-                            text: "0";
+                        y-input := TextInput {
+                            text <=> root.obj-y;
+                            input-type: InputType.decimal;
                             color: Theme.text-primary;
                             font-size: Theme.text-xs;
                             font-family: Theme.font-mono;
                             x: Theme.sp-2;
+                            width: parent.width - Theme.sp-2 * 2;
                             vertical-alignment: center;
                         }
                     }
@@ -128,15 +136,17 @@ export component InspectorPanel inherits Rectangle {
                         background: Theme.bg-raised;
                         border-radius: Theme.radius-xs;
                         border-width: 1px;
-                        border-color: Theme.border-subtle;
+                        border-color: w-input.has-focus ? Theme.accent : Theme.border-subtle;
                         height: 26px;
 
-                        Text {
-                            text: "100";
+                        w-input := TextInput {
+                            text <=> root.obj-width;
+                            input-type: InputType.decimal;
                             color: Theme.text-primary;
                             font-size: Theme.text-xs;
                             font-family: Theme.font-mono;
                             x: Theme.sp-2;
+                            width: parent.width - Theme.sp-2 * 2;
                             vertical-alignment: center;
                         }
                     }
@@ -159,15 +169,17 @@ export component InspectorPanel inherits Rectangle {
                         background: Theme.bg-raised;
                         border-radius: Theme.radius-xs;
                         border-width: 1px;
-                        border-color: Theme.border-subtle;
+                        border-color: h-input.has-focus ? Theme.accent : Theme.border-subtle;
                         height: 26px;
 
-                        Text {
-                            text: "100";
+                        h-input := TextInput {
+                            text <=> root.obj-height;
+                            input-type: InputType.decimal;
                             color: Theme.text-primary;
                             font-size: Theme.text-xs;
                             font-family: Theme.font-mono;
                             x: Theme.sp-2;
+                            width: parent.width - Theme.sp-2 * 2;
                             vertical-alignment: center;
                         }
                     }

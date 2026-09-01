@@ -43,7 +43,6 @@ export component FloatingToolbar inherits Rectangle {
 
     min-width: 40px;
     height: 40px;
-    visible: active;
     background: Theme.bg-raised;
     border-radius: Theme.radius-lg;
     border-width: 1px;
@@ -67,5 +66,5 @@ export component FloatingToolbar inherits Rectangle {
         }
     }
 
-    ta := TouchArea { }
+    ta := TouchArea { enabled: root.active; }
 }

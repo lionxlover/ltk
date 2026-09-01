@@ -31,10 +31,10 @@ export component AccessibilityAuditOverlay inherits Rectangle {
                 Rectangle {
                     height: 20px;
                     border-radius: 10px;
-                    background: issues_count > 0 ? Theme.error : Theme.success;
+                    background: issues-count > 0 ? Theme.error : Theme.success;
 
                     Text {
-                        text: issues_count;
+                        text: issues-count;
                         font-size: Theme.text-xs;
                         font-weight: Theme.weight-bold;
                         color: #ffffff;

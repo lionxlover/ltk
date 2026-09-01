@@ -4,6 +4,7 @@ export component RadioButton inherits Rectangle {
     in-out property <bool> selected: false;
     in-out property <bool> enabled: true;
     in-out property <string> label: "Option";
+    callback picked();
 
     height: 32px;
     horizontal-stretch: 1;
@@ -40,6 +41,7 @@ export component RadioButton inherits Rectangle {
         clicked => {
             if (root.enabled) {
                 root.selected = true;
+                root.picked();
             }
         }
     }

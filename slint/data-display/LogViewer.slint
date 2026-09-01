@@ -10,7 +10,7 @@ export component LogViewer inherits Rectangle {
     clip: true;
 
     in property <[string]> levels: ["INFO", "WARN", "ERROR", "INFO", "DEBUG", "ERROR"];
-    in property <[brush]> colors: [Theme.text-secondary, Theme.amber-600, Theme.red-600, Theme.text-secondary, Theme.text-tertiary, Theme.red-600];
+    in property <[brush]> colors: [Theme.text-secondary, Theme.amber_600, Theme.red_600, Theme.text-secondary, Theme.text-tertiary, Theme.red_600];
     in property <[string]> timestamps: ["10:23:01", "10:23:04", "10:23:07", "10:23:10", "10:23:12", "10:23:15"];
     in property <[string]> messages: ["Application started successfully", "Cache miss for key: user_session", "Connection refused: db-primary:5432", "Retrying connection (attempt 2)", "WebSocket frame received: 128 bytes", "Unhandled exception in worker thread"];
 

@@ -1,7 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
 export component AppMenuItem inherits Rectangle {
-    background: transparent;
+    background: item-area.has-hover ? Theme.hover-overlay : transparent;
     height: 28px;
 
     in property <string> label: "";
@@ -9,6 +9,8 @@ export component AppMenuItem inherits Rectangle {
     in property <bool> show-check: false;
     in property <bool> checked: false;
     in property <bool> danger: false;
+
+    callback clicked();
 
     HorizontalLayout {
         padding-left: Theme.sp-3;
@@ -46,5 +48,8 @@ export component AppMenuItem inherits Rectangle {
         background: Theme.border-default;
     }
 
-    TouchArea { }
+    item-area := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => { root.clicked(); }
+    }
 }

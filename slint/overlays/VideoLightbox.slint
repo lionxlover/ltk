@@ -2,7 +2,7 @@ import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component VideoLightbox inherits Rectangle {
-    visible: false;
+    in-out property <bool> active: false;
     in property <string> title: "";
 
     callback close();
@@ -16,11 +16,11 @@ export component VideoLightbox inherits Rectangle {
         width: 100%;
         height: 100%;
         background: Theme.backdrop;
-        opacity: root.visible ? 1 : 0;
-        visible: root.visible;
+        opacity: root.active ? 1 : 0;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
         TouchArea {
+            enabled: root.active;
             clicked => { root.close(); }
         }
     }
@@ -35,8 +35,7 @@ export component VideoLightbox inherits Rectangle {
         border-radius: Theme.radius-dialog;
         border-width: 1px;
         border-color: Theme.border-subtle;
-        visible: root.visible;
-        opacity: root.visible ? 1 : 0;
+        opacity: root.active ? 1 : 0;
 
         drop-shadow-offset-x: 0px;
         drop-shadow-offset-y: Theme.elevation-3-y;
@@ -123,6 +122,6 @@ export component VideoLightbox inherits Rectangle {
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.active; }
     }
 }

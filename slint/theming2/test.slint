@@ -98,11 +98,31 @@ export component ThemingTest2 inherits Rectangle {
                 PreviewSandboxCanvas {
                     height: 260px;
                     show-grid: true;
+                    show-rulers: true;
                 }
 
                 ComponentPlayground {
                     height: 300px;
                     component-name: "Button";
+                    Rectangle {
+                        width: 100px;
+                        height: 36px;
+                        background: Theme.accent;
+                        border-radius: Theme.radius-md;
+                        Text { text: "Preview"; color: #ffffff; font-size: Theme.text-sm; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
+                    }
+                }
+            }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 300px;
+
+                AccessibilityAuditOverlay {
+                    height: 260px;
+                    active: true;
+                    issues-count: 2;
+                    issues: ["Low contrast on secondary text", "Missing label on icon button"];
                 }
             }
         }

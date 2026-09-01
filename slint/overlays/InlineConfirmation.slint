@@ -9,7 +9,6 @@ export component InlineConfirmation inherits Rectangle {
 
     min-width: 200px;
     height: 44px;
-    visible: active;
     background: Theme.bg-elevated;
     border-radius: Theme.radius-md;
     border-width: 1px;
@@ -65,6 +64,7 @@ export component InlineConfirmation inherits Rectangle {
             }
 
             no-ta := TouchArea {
+                enabled: root.active;
                 clicked => { root.cancelled(); }
             }
         }
@@ -94,6 +94,7 @@ export component InlineConfirmation inherits Rectangle {
             }
 
             yes-ta := TouchArea {
+                enabled: root.active;
                 clicked => { root.confirmed(); }
             }
         }

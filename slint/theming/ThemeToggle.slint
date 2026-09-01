@@ -7,7 +7,7 @@ export component ThemeToggle inherits Rectangle {
     width: 48px;
     height: 28px;
     border-radius: 14px;
-    background: root.dark-mode ? Theme.surface-base : Theme.surface-base;
+    background: Theme.surface-base;
     border-width: 1px;
     border-color: Theme.border-base;
 
@@ -18,7 +18,7 @@ export component ThemeToggle inherits Rectangle {
         width: 24px;
         height: 24px;
         border-radius: 12px;
-        background: root.dark-mode ? Theme.btn-primary-bg : Theme.amber-400;
+        background: root.dark-mode ? Theme.btn-primary-bg : Theme.amber_400;
 
         animate x { duration: Theme.dur-normal; easing: Theme.ease-soft; }
         animate background { duration: Theme.dur-normal; easing: Theme.ease-standard; }

@@ -1,8 +1,14 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SelectMultiTags inherits Rectangle {
-    in-out property <string> text: "Select...";
+    // Was hardcoded static "React"/"Slint" tags with no backing
+    // property at all — could never actually show a caller's real
+    // selection. Rebuilt on a real tags array, rendered via for-loop,
+    // each with a working remove button.
+    in-out property <[string]> tags: ["React", "Slint"];
     in-out property <bool> has-focus: false;
+    callback tag-removed(int);
 
     background: Theme.bg-surface;
     border-radius: Theme.radius-md;
@@ -10,12 +16,21 @@ export component SelectMultiTags inherits Rectangle {
     border-color: has-focus ? Theme.accent : Theme.border-base;
     height: 40px;
     horizontal-stretch: 1;
+    clip: true;
+
+    // Declared before the tag pills, so their own remove buttons
+    // (rendered later / on top) take priority over this catch-all when
+    // their bounds overlap.
+    TouchArea {
+        clicked => { root.has-focus = !root.has-focus; }
+    }
 
     HorizontalLayout {
         padding-left: 8px;
+        padding-right: 32px;
         spacing: 4px;
 
-        Rectangle {
+        for tag[idx] in root.tags: Rectangle {
             height: 26px;
             border-radius: 13px;
             background: Theme.accent-subtle;
@@ -24,52 +39,39 @@ export component SelectMultiTags inherits Rectangle {
             HorizontalLayout {
                 padding-left: 10px;
                 padding-right: 6px;
-                spacing: 2px;
+                spacing: 4px;
                 alignment: center;
 
                 Text {
-                    text: "React";
+                    text: tag;
                     color: Theme.accent;
                     font-size: 11px;
                     font-weight: Theme.weight-medium;
                     vertical-alignment: center;
                 }
-            }
-        }
 
-        Rectangle {
-            height: 26px;
-            border-radius: 13px;
-            background: Theme.accent-subtle;
-            vertical-stretch: 0;
+                remove-ta := TouchArea {
+                    width: 14px;
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.tag-removed(idx); }
 
-            HorizontalLayout {
-                padding-left: 10px;
-                padding-right: 6px;
-                spacing: 2px;
-                alignment: center;
-
-                Text {
-                    text: "Slint";
-                    color: Theme.accent;
-                    font-size: 11px;
-                    font-weight: Theme.weight-medium;
-                    vertical-alignment: center;
+                    Text {
+                        text: "\u{00D7}";
+                        color: Theme.accent;
+                        font-size: 12px;
+                        font-weight: Theme.weight-bold;
+                        vertical-alignment: center;
+                    }
                 }
             }
         }
     }
 
-    Text {
+    FaIcon {
         x: parent.width - 24px;
         y: (parent.height - self.height) / 2;
-        text: "\u{25BE}";
-        color: Theme.text-tertiary;
-        font-size: 12px;
-        vertical-alignment: center;
-    }
-
-    TouchArea {
-        clicked => { root.has-focus = !root.has-focus; }
+        fa-size: 10px;
+        fa-color: Theme.text-tertiary;
+        source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/chevron-down.svg");
     }
 }

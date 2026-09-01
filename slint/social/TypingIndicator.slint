@@ -6,6 +6,20 @@ export component TypingIndicator inherits Rectangle {
     background: Theme.bg-overlay;
     border-radius: Theme.radius-lg;
 
+    // The dots pulse in sequence, one at a time, driven by this counter —
+    // an `animate` on opacity does nothing unless something actually
+    // changes the value it's watching (SLINT-GOTCHAS-DISCOVERED.md:
+    // "Infinite animation loop needs a nudge, not a static binding").
+    private property <int> active-dot: 0;
+
+    Timer {
+        interval: 300ms;
+        running: true;
+        triggered => {
+            root.active-dot = Math.mod(root.active-dot + 1, 3);
+        }
+    }
+
     HorizontalLayout {
         alignment: center;
         spacing: 4px;
@@ -18,7 +32,8 @@ export component TypingIndicator inherits Rectangle {
             background: Theme.text-tertiary;
             border-radius: Theme.radius-full;
             y: (parent.height - self.height) / 2;
-            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+            opacity: root.active-dot == 0 ? 1.0 : 0.3;
+            animate opacity { duration: 200ms; easing: Theme.ease-in-out; }
         }
 
         Rectangle {
@@ -27,7 +42,8 @@ export component TypingIndicator inherits Rectangle {
             background: Theme.text-tertiary;
             border-radius: Theme.radius-full;
             y: (parent.height - self.height) / 2;
-            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+            opacity: root.active-dot == 1 ? 1.0 : 0.3;
+            animate opacity { duration: 200ms; easing: Theme.ease-in-out; }
         }
 
         Rectangle {
@@ -36,7 +52,8 @@ export component TypingIndicator inherits Rectangle {
             background: Theme.text-tertiary;
             border-radius: Theme.radius-full;
             y: (parent.height - self.height) / 2;
-            animate opacity { duration: 600ms; easing: Theme.ease-in-out; }
+            opacity: root.active-dot == 2 ? 1.0 : 0.3;
+            animate opacity { duration: 200ms; easing: Theme.ease-in-out; }
         }
     }
 }

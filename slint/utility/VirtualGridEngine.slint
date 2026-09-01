@@ -11,5 +11,5 @@ export component VirtualGridEngine inherits Rectangle {
     in property <length> cell-height: 80px;
     in property <length> gap: 8px;
 
-    out property <length> total-height: Math.ceil(total_items / cols) * (cell_height + gap);
+    out property <length> total-height: Math.ceil(total-items / cols) * (cell-height + gap);
 }

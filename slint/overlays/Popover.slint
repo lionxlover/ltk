@@ -18,12 +18,11 @@ export component Popover inherits Rectangle {
             : root.placement == "top" ? root.anchor-x - 8px
             : root.placement == "left" ? root.anchor-x - 8px
             : root.anchor-x - 8px;
-        y: root.placement == "bottom" ? root.anchor_y - 18px
-            : root.placement == "top" ? root.anchor_y + 8px
-            : root.anchor_y - 8px;
+        y: root.placement == "bottom" ? root.anchor-y - 18px
+            : root.placement == "top" ? root.anchor-y + 8px
+            : root.anchor-y - 8px;
         width: 16px;
         height: 8px;
-        visible: root.active;
         background: Theme.bg-surface;
         border-radius: 2px;
         opacity: root.active ? 1 : 0;
@@ -33,20 +32,19 @@ export component Popover inherits Rectangle {
 
     // Panel
     Rectangle {
-        x: root.placement == "bottom" ? root.anchor_x - self.width / 2
-            : root.placement == "top" ? root.anchor_x - self.width / 2
-            : root.placement == "left" ? root.anchor_x - self.width - 12px
-            : root.anchor_x + 12px;
-        y: root.placement == "bottom" ? root.anchor_y + 12px
-            : root.placement == "top" ? root.anchor_y - self.height - 12px
-            : root.anchor_y - self.height / 2;
+        x: root.placement == "bottom" ? root.anchor-x - self.width / 2
+            : root.placement == "top" ? root.anchor-x - self.width / 2
+            : root.placement == "left" ? root.anchor-x - self.width - 12px
+            : root.anchor-x + 12px;
+        y: root.placement == "bottom" ? root.anchor-y + 12px
+            : root.placement == "top" ? root.anchor-y - self.height - 12px
+            : root.anchor-y - self.height / 2;
         min-width: 160px;
         min-height: 40px;
         background: Theme.bg-surface;
         border-radius: Theme.radius-md;
         border-width: 1px;
         border-color: Theme.border-subtle;
-        visible: root.active;
         opacity: root.active ? 1 : 0;
 
         drop-shadow-offset-x: 0px;
@@ -59,9 +57,11 @@ export component Popover inherits Rectangle {
         // Content slot
         Rectangle {
             vertical-stretch: 1;
+
+            @children
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.active; }
     }
 
     // Dismiss catcher

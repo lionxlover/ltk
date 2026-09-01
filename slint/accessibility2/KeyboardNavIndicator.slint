@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component KeyboardNavIndicator inherits Rectangle {
     background: transparent;
@@ -9,7 +10,7 @@ export component KeyboardNavIndicator inherits Rectangle {
         x: parent.width - 200px;
         width: 180px;
         height: 32px;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: keyboard-mode ? Theme.accent-subtle : transparent;
         border-width: keyboard-mode ? 1px : 0px;
         border-color: Theme.accent;
@@ -19,9 +20,10 @@ export component KeyboardNavIndicator inherits Rectangle {
             padding-right: Theme.sp-3;
             spacing: Theme.sp-2;
 
-            Text {
-                text: "⌨️";
-                font-size: 14px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/keyboard.svg");
+                fa-size: 14px;
+                fa-color: Theme.accent;
                 y: (parent.height - self.height) / 2;
             }
 

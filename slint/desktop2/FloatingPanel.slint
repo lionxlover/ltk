@@ -12,6 +12,8 @@ export component FloatingPanel inherits Rectangle {
     in property <length> panel-width: 300px;
     in property <length> panel-height: 400px;
 
+    callback close-requested();
+
     width: panel-width;
     height: panel-height;
 
@@ -39,6 +41,19 @@ export component FloatingPanel inherits Rectangle {
                 border-radius: 10px;
                 background: Theme.traffic-close;
                 y: 8px;
+
+                Text {
+                    text: "×";
+                    font-size: 12px;
+                    color: #ffffff;
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                }
+
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.close-requested(); }
+                }
             }
         }
     }
@@ -47,5 +62,7 @@ export component FloatingPanel inherits Rectangle {
         y: title != "" ? 36px : 0px;
         vertical-stretch: 1;
         background: transparent;
+
+        @children
     }
 }

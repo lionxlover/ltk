@@ -35,7 +35,9 @@ export component Desktop2Test inherits Rectangle {
             ResizableDraggableWindow { title: "My App"; win-width: 400px; win-height: 200px; win-x: 0px; win-y: 0px; }
 
             Text { text: "Maximized / Fullscreen Window"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-            MaximizedWindow { width: 400px; height: 160px; title: "Full App"; }
+            MaximizedWindow { width: 400px; height: 160px; title: "Full App";
+                Text { text: "Window content area"; color: Theme.text-secondary; font-size: Theme.text-sm; x: Theme.sp-3; y: Theme.sp-3; }
+            }
 
             Text { text: "Minimized Window Chips"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3;
@@ -45,7 +47,9 @@ export component Desktop2Test inherits Rectangle {
             }
 
             Text { text: "Floating Panel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-            FloatingPanel { title: "Palette"; panel-width: 260px; panel-height: 160px; }
+            FloatingPanel { title: "Palette"; panel-width: 260px; panel-height: 160px;
+                Text { text: "Panel content goes here"; color: Theme.text-secondary; font-size: Theme.text-sm; x: Theme.sp-3; y: Theme.sp-3; }
+            }
 
             Text { text: "Overflow Toolbar / Ribbon Bar"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3;
@@ -64,7 +68,9 @@ export component Desktop2Test inherits Rectangle {
 
             Text { text: "Desktop Widget / Notification Center"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3;
-                DesktopWidgetContainer { title: "Clock"; widget-width: 180px; widget-height: 120px; }
+                DesktopWidgetContainer { title: "Clock"; widget-width: 180px; widget-height: 120px;
+                    Text { text: "10:42 AM"; color: Theme.text-primary; font-size: Theme.text-2xl; font-weight: Theme.weight-bold; x: Theme.sp-2; y: Theme.sp-2; }
+                }
                 NotificationCenterPanel { panel-width: 300px; notification-count: 2; }
             }
 
@@ -74,14 +80,21 @@ export component Desktop2Test inherits Rectangle {
             }
 
             Text { text: "Spotlight / Quick Launch"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
-            Rectangle { height: 100px; background: Theme.bg-base; border-radius: Theme.radius-md;
-                SpotlightDialog { }
+            Rectangle { height: 260px; background: Theme.bg-base; border-radius: Theme.radius-md;
+                SpotlightDialog {
+                    Text { text: "Calculator"; color: Theme.text-primary; font-size: Theme.text-sm; x: Theme.sp-3; y: Theme.sp-3; }
+                    Text { text: "Camera"; color: Theme.text-secondary; font-size: Theme.text-sm; x: Theme.sp-3; y: Theme.sp-3 + 28px; }
+                }
             }
 
             Text { text: "Control Panel / Preferences"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
             HorizontalLayout { spacing: Theme.sp-3;
-                ControlPanelLayout { width: 300px; height: 180px; title: "Settings"; }
-                PreferencesWindow { win-width: 300px; win-height: 200px; }
+                ControlPanelLayout { width: 300px; height: 180px; title: "Settings";
+                    Text { text: "Panel body"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+                }
+                PreferencesWindow { win-width: 300px; win-height: 200px;
+                    Text { text: "General settings"; color: Theme.text-secondary; font-size: Theme.text-sm; }
+                }
             }
 
             Text { text: "Splash Screen / About / Shortcuts"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }

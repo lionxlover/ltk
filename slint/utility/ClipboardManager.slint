@@ -10,6 +10,8 @@ export component ClipboardManager inherits Rectangle {
     in property <string> clipboard-text: "";
     in property <bool> copied: false;
 
+    callback copy-requested();
+
     height: 40px;
 
     HorizontalLayout {
@@ -30,7 +32,7 @@ export component ClipboardManager inherits Rectangle {
         Rectangle {
             width: 60px;
             border-radius: Theme.radius-sm;
-            background: copied ? Theme.success : Theme.accent;
+            background: copy-area.has-hover ? Theme.accent-dim : (copied ? Theme.success : Theme.accent);
 
             Text {
                 text: copied ? "Copied!" : "Copy";
@@ -39,6 +41,11 @@ export component ClipboardManager inherits Rectangle {
                 color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            copy-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.copy-requested(); }
             }
         }
     }

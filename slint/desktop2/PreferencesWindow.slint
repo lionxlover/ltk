@@ -10,6 +10,10 @@ export component PreferencesWindow inherits Rectangle {
     in property <length> sidebar-width: 180px;
     in property <length> win-width: 640px;
     in property <length> win-height: 480px;
+    in property <[string]> sections: ["General", "Appearance", "Keyboard", "Privacy", "Advanced"];
+    in-out property <int> active-section: 0;
+
+    callback section-selected(int);
 
     width: win-width;
     height: win-height;
@@ -56,18 +60,26 @@ export component PreferencesWindow inherits Rectangle {
                     padding: Theme.sp-2;
                     spacing: Theme.sp-1;
 
-                    for item[idx] in ["General", "Appearance", "Keyboard", "Privacy", "Advanced"]: Rectangle {
+                    for item[idx] in root.sections: Rectangle {
                         height: 32px;
                         border-radius: Theme.radius-sm;
-                        background: idx == 0 ? Theme.accent-subtle : transparent;
+                        background: root.active-section == idx ? Theme.accent-subtle : (section-area.has-hover ? Theme.hover-overlay : transparent);
 
                         HorizontalLayout {
                             padding-left: Theme.sp-3;
                             Text {
                                 text: item;
                                 font-size: Theme.text-sm;
-                                color: idx == 0 ? Theme.accent : Theme.text-primary;
+                                color: root.active-section == idx ? Theme.accent : Theme.text-primary;
                                 vertical-alignment: center;
+                            }
+                        }
+
+                        section-area := TouchArea {
+                            mouse-cursor: MouseCursor.pointer;
+                            clicked => {
+                                root.active-section = idx;
+                                root.section-selected(idx);
                             }
                         }
                     }
@@ -79,6 +91,7 @@ export component PreferencesWindow inherits Rectangle {
                 background: Theme.bg-surface;
                 HorizontalLayout {
                     padding: Theme.sp-4;
+                    @children
                 }
             }
         }

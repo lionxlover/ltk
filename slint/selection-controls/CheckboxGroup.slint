@@ -4,6 +4,10 @@ import { Checkbox } from "Checkbox.slint";
 export component CheckboxGroup inherits Rectangle {
     in-out property <[string]> labels: ["Option A", "Option B", "Option C"];
     in-out property <[bool]> checked: [true, false, false];
+    // Arrays can't be index-assigned from inside a component (confirmed
+    // gotcha) — report which index changed and let the host reassign
+    // the whole `checked` array with the new value applied.
+    callback item-toggled(int, bool);
 
     horizontal-stretch: 1;
 
@@ -11,11 +15,8 @@ export component CheckboxGroup inherits Rectangle {
         spacing: 4px;
         for lbl[idx] in root.labels: Checkbox {
             label: lbl;
-            checked: root.checked[idx];
+            checked: idx < root.checked.length && root.checked[idx];
+            toggled(new-state) => { root.item-toggled(idx, new-state); }
         }
-    }
-
-    TouchArea {
-        clicked => { }
     }
 }

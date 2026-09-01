@@ -284,7 +284,7 @@ export component DesignTokensTest inherits Rectangle {
             for r in ["0","3","6","10","14","18","24","9999"]: Rectangle {
                 width: 40px;
                 height: 40px;
-                border-radius: Theme.radius-sm;
+                border-radius: min(r.to-float() * 1px, self.height / 2);
                 background: Theme.accent-subtle;
                 border-width: 1px;
                 border-color: Theme.border-subtle;
@@ -366,8 +366,8 @@ export component DesignTokensTest inherits Rectangle {
         SectionHeader { title: "33 \u{2014} ICON SIZE SCALE"; }
         HorizontalLayout { spacing: Theme.sp-3; alignment: start;
             for s in ["10","12","14","16","20","24","32","40","48"]: Rectangle {
-                width: 48px;
-                height: 48px;
+                width: s.to-float() * 1px;
+                height: s.to-float() * 1px;
                 border-radius: Theme.radius-sm;
                 background: Theme.accent-subtle;
                 Text {
@@ -409,6 +409,7 @@ export component DesignTokensTest inherits Rectangle {
                 height: 48px;
                 border-radius: Theme.radius-sm;
                 background: Theme.accent;
+                opacity: o.to-float();
             }
         }
         }

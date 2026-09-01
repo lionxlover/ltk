@@ -15,7 +15,7 @@ export component IndeterminateProgress inherits Rectangle {
     background: transparent;
 
     Rectangle {
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: track-color;
     }
 
@@ -25,7 +25,7 @@ export component IndeterminateProgress inherits Rectangle {
         y: 0;
         width: parent.width * 0.4;
         height: parent.height;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: bar-color;
         animate sweep { duration: 1400ms; easing: Theme.ease-in-out; iteration-count: -1; }
         init => { sweep = 1; }

@@ -9,6 +9,20 @@ import { DropdownMenu, DropdownMenuItem } from "DropdownMenu.slint";
 import { ActionSheet, ActionSheetItem } from "ActionSheet.slint";
 import { FloatingToolbar, FloatingToolbarButton } from "FloatingToolbar.slint";
 import { InlineConfirmation } from "InlineConfirmation.slint";
+import { AlertDialog } from "AlertDialog.slint";
+import { ContextTooltip } from "ContextTooltip.slint";
+import { FloatingActionPanel } from "FloatingActionPanel.slint";
+import { FloatingLabel } from "FloatingLabel.slint";
+import { FullScreenDialog } from "FullScreenDialog.slint";
+import { HoverCard } from "HoverCard.slint";
+import { ImageLightbox } from "ImageLightbox.slint";
+import { NestedDropdownMenu } from "NestedDropdownMenu.slint";
+import { NotificationDrawer, NotificationItem } from "NotificationDrawer.slint";
+import { OnboardingOverlay } from "OnboardingOverlay.slint";
+import { PeekSheet } from "PeekSheet.slint";
+import { SimpleTooltip } from "SimpleTooltip.slint";
+import { SpotlightOverlay } from "SpotlightOverlay.slint";
+import { VideoLightbox } from "VideoLightbox.slint";
 
 export component OverlaysTest inherits Rectangle {
     background: Theme.bg-base;
@@ -259,11 +273,11 @@ export component OverlaysTest inherits Rectangle {
                     padding: Theme.sp-1;
                     spacing: 0px;
 
-                    DropdownMenuItem { label: "Copy"; icon-text: "📋"; }
-                    DropdownMenuItem { label: "Paste"; icon-text: "📄"; }
-                    DropdownMenuItem { label: "Cut"; icon-text: "✂"; }
+                    DropdownMenuItem { label: "Copy"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/clipboard.svg"); }
+                    DropdownMenuItem { label: "Paste"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/paste.svg"); }
+                    DropdownMenuItem { label: "Cut"; icon-source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/scissors.svg"); }
                     Rectangle { height: 1px; background: Theme.divider; x: Theme.sp-4; width: parent.width - Theme.sp-4 * 2; }
-                    DropdownMenuItem { label: "Delete"; destructive: true; }
+                    DropdownMenuItem { label: "Delete"; show-icon: false; destructive: true; }
                 }
             }
         }
@@ -416,6 +430,105 @@ export component OverlaysTest inherits Rectangle {
                     }
                 }
             }
+        }
+
+        // AlertDialog
+        Text { text: "AlertDialog"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        AlertDialog {
+            active: true;
+            title: "Session expiring";
+            width: 100%;
+            height: 200px;
+        }
+
+        // FullScreenDialog
+        Text { text: "FullScreenDialog"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        FullScreenDialog {
+            active: true;
+            title: "Details";
+            width: 100%;
+            height: 220px;
+
+            Text { text: "Full screen content goes here."; color: Theme.text-secondary; font-size: Theme.text-sm; x: Theme.sp-4; y: Theme.sp-4; }
+        }
+
+        // ImageLightbox / VideoLightbox
+        Text { text: "ImageLightbox / VideoLightbox"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            Rectangle { horizontal-stretch: 1; height: 220px; clip: true;
+                ImageLightbox { active: true; width: 100%; height: 220px; }
+            }
+            Rectangle { horizontal-stretch: 1; height: 220px; clip: true;
+                VideoLightbox { active: true; width: 100%; height: 220px; }
+            }
+        }
+
+        // SpotlightOverlay
+        Text { text: "SpotlightOverlay"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 220px; clip: true;
+            SpotlightOverlay { active: true; width: 100%; height: 220px; }
+        }
+
+        // OnboardingOverlay
+        Text { text: "OnboardingOverlay"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 240px; clip: true;
+            OnboardingOverlay { active: true; width: 100%; height: 240px; }
+        }
+
+        // PeekSheet
+        Text { text: "PeekSheet"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 220px; clip: true;
+            PeekSheet {
+                sheet-visible: true;
+                peek-height: 180px;
+                width: 100%;
+                height: 220px;
+
+                Text { text: "Peek sheet content"; color: Theme.text-primary; font-size: Theme.text-sm; x: (parent.width - self.width) / 2; }
+            }
+        }
+
+        // NotificationDrawer
+        Text { text: "NotificationDrawer"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 260px; clip: true;
+            NotificationDrawer {
+                drawer-visible: true;
+                width: 100%;
+                height: 260px;
+
+                NotificationItem { title: "New message"; body: "Alice sent you a message"; }
+                NotificationItem { title: "Update available"; body: "Version 2.0 is ready to install"; }
+            }
+        }
+
+        // NestedDropdownMenu
+        Text { text: "NestedDropdownMenu"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 160px; clip: true;
+            NestedDropdownMenu {
+                active: true;
+                items: ["File", "Edit", "View"];
+                submenu-items: ["New", "Open", "Save"];
+            }
+        }
+
+        // FloatingActionPanel
+        Text { text: "FloatingActionPanel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { height: 220px; clip: true;
+            FloatingActionPanel { active: true; width: 100%; height: 220px; }
+        }
+
+        // SimpleTooltip / ContextTooltip / HoverCard
+        Text { text: "SimpleTooltip / ContextTooltip / HoverCard"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-4;
+            SimpleTooltip { active: true; text: "Tooltip text"; }
+            ContextTooltip { active: true; text: "More info"; }
+            HoverCard { active: true; title: "Card Title"; description: "A short description shown on hover."; }
+        }
+
+        // FloatingLabel
+        Text { text: "FloatingLabel"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Rectangle { width: 220px; height: 40px; border-radius: Theme.radius-md; border-width: 1px; border-color: Theme.border-default;
+            FloatingLabel { label: "Email"; focused: true; x: Theme.sp-3; width: parent.width - Theme.sp-3 * 2; }
         }
         }
     }

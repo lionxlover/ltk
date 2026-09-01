@@ -12,10 +12,7 @@ export component RadioGroup inherits Rectangle {
         for lbl[idx] in root.labels: RadioButton {
             label: lbl;
             selected: idx == root.selected-index;
+            picked => { root.selected-index = idx; }
         }
-    }
-
-    TouchArea {
-        clicked => { }
     }
 }

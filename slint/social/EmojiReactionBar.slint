@@ -3,13 +3,16 @@ import { Theme } from "../core/Theme.slint";
 component EmojiReaction inherits Rectangle {
     in property <string> emoji: "";
     in property <int> count: 0;
+    in-out property <bool> reacted: false;
+
+    callback toggled();
 
     width: self.preferred-width;
     height: 30px;
-    background: Theme.bg-overlay;
-    border-radius: Theme.radius-full;
+    background: root.reacted ? Theme.accent-subtle : (reaction-area.has-hover ? Theme.hover-overlay : Theme.bg-overlay);
+    border-radius: self.height / 2;
     border-width: 1px;
-    border-color: Theme.border-subtle;
+    border-color: root.reacted ? Theme.accent : Theme.border-subtle;
 
     HorizontalLayout {
         alignment: center;
@@ -25,11 +28,19 @@ component EmojiReaction inherits Rectangle {
 
         Text {
             text: root.count;
-            color: Theme.text-secondary;
+            color: root.reacted ? Theme.accent : Theme.text-secondary;
             font-family: Theme.font-ui;
             font-size: Theme.text-xs;
             font-weight: Theme.weight-medium;
             vertical-alignment: center;
+        }
+    }
+
+    reaction-area := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.reacted = !root.reacted;
+            root.toggled();
         }
     }
 }
@@ -38,27 +49,33 @@ export component EmojiReactionBar inherits Rectangle {
     width: 100%;
     height: self.preferred-height;
 
+    callback reaction-toggled(string);
+
     HorizontalLayout {
         spacing: Theme.sp-1;
 
         EmojiReaction {
             emoji: "❤";
             count: 12;
+            toggled => { root.reaction-toggled("❤"); }
         }
 
         EmojiReaction {
             emoji: "😂";
             count: 5;
+            toggled => { root.reaction-toggled("😂"); }
         }
 
         EmojiReaction {
             emoji: "👍";
             count: 8;
+            toggled => { root.reaction-toggled("👍"); }
         }
 
         EmojiReaction {
             emoji: "🔥";
             count: 3;
+            toggled => { root.reaction-toggled("🔥"); }
         }
     }
 }

@@ -3,6 +3,7 @@ import { FaIcon } from "../core/FaIcon.slint";
 
 export component FullScreenDialog inherits Rectangle {
     in property <string> title: "";
+    in-out property <bool> active: false;
 
     callback close();
 
@@ -14,7 +15,7 @@ export component FullScreenDialog inherits Rectangle {
         width: 100%;
         height: 100%;
         background: Theme.bg-surface;
-        opacity: root.visible ? 1 : 0;
+        opacity: root.active ? 1 : 0;
         animate opacity { duration: Theme.dur-normal; }
 
         VerticalLayout {
@@ -51,6 +52,7 @@ export component FullScreenDialog inherits Rectangle {
                         }
 
                         back-ta := TouchArea {
+                            enabled: root.active;
                             clicked => { root.close(); }
                         }
                     }
@@ -90,6 +92,7 @@ export component FullScreenDialog inherits Rectangle {
                         }
 
                         close-ta := TouchArea {
+                            enabled: root.active;
                             clicked => { root.close(); }
                         }
                     }
@@ -99,6 +102,8 @@ export component FullScreenDialog inherits Rectangle {
             // Content slot
             Rectangle {
                 vertical-stretch: 1;
+
+                @children
             }
         }
     }

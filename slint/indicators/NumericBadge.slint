@@ -7,13 +7,13 @@ export component NumericBadge inherits Rectangle {
     min-width: 20px;
     height: 20px;
     background: Theme.state-error;
-    border-radius: Theme.radius-full;
+    border-radius: self.height / 2;
     horizontal-stretch: 0;
 
     label := Text {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
-        text: count > root.max-count ? (root.max-count > 9 ? "99+" : "+" + root.max-count) : "" + count;
+        text: count > root.max-count ? ("" + root.max-count + "+") : "" + count;
         color: #ffffff;
         font-family: Theme.font-ui;
         font-size: Theme.text-xs;

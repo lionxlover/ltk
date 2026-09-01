@@ -19,7 +19,7 @@ export component StripedProgress inherits Rectangle {
     background: transparent;
 
     track-bg := Rectangle {
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: track-color;
     }
 
@@ -28,7 +28,7 @@ export component StripedProgress inherits Rectangle {
         y: 0;
         width: parent.width * Math.min(value, max) / max;
         height: parent.height;
-        border-radius: Theme.radius-full;
+        border-radius: self.height / 2;
         background: bar-color;
         clip: true;
 

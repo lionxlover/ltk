@@ -6,7 +6,7 @@ export component TextBadge inherits Rectangle {
 
     min-width: 24px;
     height: 22px;
-    background: variant == 1 ? Theme.accent-subtle : (variant == 2 ? Theme.green-100 : (variant == 3 ? Theme.amber-100 : (variant == 4 ? Theme.red-100 : Theme.bg-overlay)));
+    background: variant == 1 ? Theme.accent-subtle : (variant == 2 ? Theme.green_100 : (variant == 3 ? Theme.amber_100 : (variant == 4 ? Theme.red_100 : Theme.bg-overlay)));
     border-radius: Theme.radius-sm;
     horizontal-stretch: 0;
 
@@ -14,7 +14,7 @@ export component TextBadge inherits Rectangle {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
         text: root.label;
-        color: variant == 1 ? Theme.accent : (variant == 2 ? Theme.green-700 : (variant == 3 ? Theme.amber-600 : (variant == 4 ? Theme.red-600 : Theme.text-secondary)));
+        color: variant == 1 ? Theme.accent : (variant == 2 ? Theme.green_700 : (variant == 3 ? Theme.amber_600 : (variant == 4 ? Theme.red_600 : Theme.text-secondary)));
         font-family: Theme.font-ui;
         font-size: Theme.text-xs;
         font-weight: Theme.weight-semibold;

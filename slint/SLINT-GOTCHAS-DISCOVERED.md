@@ -1362,6 +1362,343 @@ Rectangle {
 
 ---
 
+### A button-shaped `Rectangle` with no `TouchArea` is permanently inert
+
+```slint
+// WRONG — looks exactly like a clickable button, but nothing is wired.
+// No TouchArea, no callback — a click here goes absolutely nowhere.
+Rectangle {
+    background: Theme.accent;
+    Text { text: "Try Again"; /* ... */ }
+}
+```
+Distinct from the already-documented "`enabled:` binding missing" gotcha
+above (that one is a *real* control that stays clickable while looking
+disabled). This is the inverse: something that renders as a normal,
+enabled-looking button but was never given any interactivity at all.
+Found twice in the same category (`utility/`) — a "Copy" button and a
+"Try Again" button, both fully static.
+
+```slint
+// RIGHT
+callback retry();
+Rectangle {
+    background: retry-area.has-hover ? Theme.accent-dim : Theme.accent;
+    Text { text: "Try Again"; /* ... */ }
+    retry-area := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => { root.retry(); }
+    }
+}
+```
+
+---
+
+### `Theme`'s primitive palette is underscore-named — referencing it with a dash is the *same* bug in the other direction
+
+```slint
+// WRONG — Theme.slint's primitive palette section declares these with
+// underscores (green_500, amber_100, red_600, ...); there is no dash form.
+background: Theme.green-500;
+color: Theme.red-600;
+```
+Every other instance of the underscore/dash bug in this project was a
+locally-declared `dash-property` mistakenly referenced as `underscore_typo`.
+This is the mirror image: `core/Theme.slint`'s primitive palettes
+(`slate_50`...`slate_900`, `blue_50`...`blue_900`, `green_*`, `amber_*`,
+`red_*`, etc.) are genuinely, deliberately underscore-named — confirmed by
+reading `Theme.slint` directly rather than assuming the project's usual
+dash convention applies everywhere. Referencing one of these with a dash
+compiles to nothing, because the underscore identifier is the only one
+that exists.
+
+```slint
+// RIGHT
+background: Theme.green_500;
+color: Theme.red_600;
+```
+Always check `core/Theme.slint` itself before "fixing" a `Theme.foo_bar`
+reference — semantic tokens (`Theme.bg-surface`, `Theme.text-primary`,
+`Theme.sp-2`, …) are dash-named as expected, but the primitive palette
+section specifically is not, and "fixing" a correct underscore reference
+to a dash would introduce the bug rather than remove it.
+
+---
+
+### `radius-full` on a content-sized badge is only square by coincidence
+
+```slint
+// WRONG — min-width is a floor, not the actual rendered width. Once a
+// label/count makes the badge wider than its fixed height, radius-full's
+// circle-clamp renders an ellipse instead of a pill.
+min-width: 20px;
+height: 22px;
+border-radius: Theme.radius-full;
+```
+Same root cause as the plain non-square case already documented above, but
+sneakier: the component *looks* square in its default/short-content state
+and only breaks once real data (a longer label, a 3-digit count) pushes the
+rendered width past the fixed height. Confirmed in `StatusBadge` (grows with
+`label`) and `NumericBadge` (grows once `count` needs 3 digits) —- both
+passed a casual glance but broke the moment `test.slint` exercised them with
+real values.
+
+```slint
+// RIGHT — self.height/2 is correct regardless of how wide content pushes
+// the rendered width; it only ever describes a pill, never an ellipse.
+min-width: 20px;
+height: 22px;
+border-radius: self.height / 2;
+```
+
+---
+
+### A container component's "content area" is silent unless it actually has `@children`
+
+```slint
+// WRONG — looks exactly like a content slot (a dedicated Rectangle set
+// aside below a header), but anything a caller puts inside this
+// component just vanishes. There is no @children anywhere in the file.
+export component FloatingPanel inherits Rectangle {
+    // ... header ...
+    Rectangle {
+        y: 36px;
+        vertical-stretch: 1;
+        background: transparent;
+    }
+}
+```
+Easy to miss because it doesn't fail to compile and doesn't look broken in
+isolation — the component renders fine with zero children, which is exactly
+how it's usually instantiated in a demo/test file. The tell is structural:
+a dedicated, separately-styled "content" `Rectangle` sitting below a
+header/chrome section, in a component whose whole purpose is to wrap
+caller-supplied content (a panel, a window, a widget container). Confirmed
+in six components across one category (`ControlPanelLayout`,
+`DesktopWidgetContainer`, `FloatingPanel`, `MaximizedWindow`,
+`PreferencesWindow`, `ResizableDraggableWindow`), all with the identical
+shape. `layout-containers/ResizablePanelGroup.slint` already does this
+correctly — use it as the reference.
+
+```slint
+// RIGHT
+Rectangle {
+    y: 36px;
+    vertical-stretch: 1;
+    background: transparent;
+    @children
+}
+```
+Since a missing `@children` doesn't error, `test.slint` won't catch it
+either unless the component is instantiated *with* actual child content —
+instantiating it empty (the common case) proves nothing.
+
+---
+
+### An unconditional background sibling placed *after* a conditional layer silently hides it
+
+```slint
+// WRONG — show-grid's Rectangle is a real child, renders, and is
+// immediately covered: later siblings render on top, and this
+// unconditional fill comes after it.
+if show-grid: Rectangle {
+    background: Theme.border-subtle;
+}
+Rectangle {
+    background: Theme.bg-base;
+}
+```
+This isn't a new rule — `language-and-layout.md`'s "later siblings render
+on top" already covers it — but it's easy to introduce anyway, because the
+conditional layer compiles fine, the component renders fine, and nothing
+about it *looks* broken until you toggle the condition and notice nothing
+changed. Confirmed in `theming2/PreviewSandboxCanvas`, where `test.slint`
+already set `show-grid: true` — so the grid was invisible in the existing,
+already-instantiated demo, not merely untested.
+
+```slint
+// RIGHT — base fill first, conditional/overlay layers after it
+Rectangle {
+    background: Theme.bg-base;
+}
+if show-grid: Rectangle {
+    background: Theme.border-subtle;
+}
+```
+When reviewing a component with both a full-bleed base layer and a
+conditional overlay/pattern layer, check declaration order, not just that
+each renders in isolation.
+
+---
+
+### `visible: false` removes an element from accessibility too — it isn't a screen-reader-only technique
+
+```slint
+// WRONG — this doesn't create an accessible-but-invisible label, it
+// removes the label entirely. Neither sighted nor screen-reader users
+// ever get this text.
+Text {
+    text: "High Contrast";
+    visible: false;
+}
+```
+Confirmed in two components (`HighContrastToggle`, `ReduceMotionToggle`)
+in the same project that also ships the *correct* pattern one file over:
+
+```slint
+// RIGHT — visually imperceptible (1px, transparent) but still rendered,
+// so it remains part of the accessible tree.
+export component SrOnlyText inherits Text {
+    font-size: 1px;
+    color: #00000000;
+    width: 1px;
+    height: 1px;
+    visible: true;
+}
+```
+If a project has an `SrOnlyText`-shaped component anywhere in it, that's
+the tell: reach for it (or the identical pattern) instead of `visible:
+false` any time a label needs to exist for assistive tech without a
+visible caption.
+
+---
+
+### A generic multi-slot container can't use `@children` at all — inherit the built-in layout instead
+
+```slint
+// WRONG — compiles, instantiates, renders nothing a caller puts inside it.
+// @children can only appear ONCE per component, but this design would need
+// one per generated cell — so there's nowhere valid to put it at all.
+export component Grid inherits Rectangle {
+    in property <[int]> columns: [0, 1];
+    HorizontalLayout {
+        for col[i] in root.columns: VerticalLayout {
+            horizontal-stretch: 1;   // `col` itself is never even read
+        }
+    }
+}
+```
+This is a step beyond the already-catalogued "shell with no `@children`"
+bug: here there's no single fixed slot to put `@children` into, since the
+container's whole point is a variable number of caller-filled cells. The
+fix isn't adding `@children` somewhere — it's not wrapping a layout in a
+`Rectangle` at all:
+```slint
+// RIGHT — inheriting the built-in layout directly means children placed
+// at the usage site become direct children of the layout itself, positioned
+// automatically. No forwarding mechanism needed because there's no wrapper.
+export component Grid inherits GridLayout {
+    in property <length> gap: Theme.sp-3;
+    spacing: root.gap;
+}
+// usage: Grid { Foo { row: 0; col: 0; } Bar { row: 0; col: 1; } }
+```
+Same applies to `HorizontalLayout`/`VerticalLayout` if a component's entire
+job is "be a styled layout" rather than "be a shape with one designated
+content area" — inherit the layout, don't nest one.
+
+---
+
+### A `for` loop's index/item can be displayed without ever being *used*
+
+```slint
+// WRONG — renders N identical swatches with different numbers printed
+// next to them; the scale itself (radius/size/opacity) never changes.
+for r in ["0","3","6","10","14","18","24","9999"]: Rectangle {
+    width: 40px; height: 40px;
+    border-radius: Theme.radius-sm;   // ignores `r` entirely
+    Text { text: r; }                  // only the label uses it
+}
+```
+Found three instances of this same shape in one test/demo file (border
+radius, icon size, and opacity scale sections) — each one iterated a list
+of values whose whole purpose was to *demonstrate a scale*, but only ever
+plugged the loop variable into the visible label text, never into the
+property the section claimed to be showing. Same underlying mistake as the
+already-documented `Grid.slint` case above (an unread loop variable), just
+in a test file instead of a shipped component. Fix is to actually consume
+the value, converting from the demo's string list via the confirmed
+`.to-float()` API:
+```slint
+// RIGHT
+for r in ["0","3","6","10","14","18","24","9999"]: Rectangle {
+    width: 40px; height: 40px;
+    border-radius: min(r.to-float() * 1px, self.height / 2); // clamped, see radius-full gotcha above
+    Text { text: r; }
+}
+```
+
+---
+
+### `radius-full` + `horizontal-stretch: 1` is the same square-element bug wearing a layout disguise
+
+```slint
+// WRONG — "circle" mode still inherits the default stretch-to-fill-width
+// behavior, so it's circular only by accident (only when its container
+// happens to be exactly as wide as skeleton-height, which a layout won't
+// guarantee).
+export component Skeleton inherits Rectangle {
+    in property <bool> circle: false;
+    horizontal-stretch: 1;
+    height: skeleton-height;
+    border-radius: circle ? Theme.radius-full : Theme.radius-sm;
+}
+```
+Same root cause as the literal-elongated-rectangle version of this bug
+(`ProgressBar`, toggle switch tracks, pill buttons, …), just reached
+through a layout stretch factor instead of a hardcoded wide `width`. The
+tell is the same: `radius-full` is only ever safe when `width == height`
+is actually guaranteed, however that size is arrived at.
+```slint
+// RIGHT — circle mode overrides both the stretch factor AND the width,
+// so it's genuinely square before the radius is ever applied
+horizontal-stretch: circle ? 0 : 1;
+width: circle ? skeleton-height : 100%;
+height: skeleton-height;
+border-radius: circle ? self.height / 2 : Theme.radius-sm;
+```
+
+---
+
+### A visual/runtime gotcha (not a compile error) can hide in already-"verified" files — grep for it across the whole tree, not just file-by-file
+
+Every category in this project was verified per-file (read the code, cross
+reference the gotchas list, check VS Code's Problems panel). That workflow
+reliably catches *compile* errors, but both `radius-full`-on-non-square and
+the mirrored-token-naming typo are **runtime/visual** bugs — the file
+compiles and instantiates fine, and only looks wrong once rendered. A
+same-session, same-category near-neighbor got this right
+(`theming/ThemeToggle.slint` correctly hardcoded `border-radius: 14px;`
+for its toggle track) while two sibling toggle components in a *different*
+category (`accessibility/HighContrastToggle.slint`,
+`ReduceMotionToggle.slint`) had the exact same shape wrong with
+`Theme.radius-full`. Once one instance of a non-compile-error gotcha turns
+up, grep the *entire* tree for the pattern (`grep -rn
+"Theme\.<hue>-[0-9]"`, `grep -rn "radius-full"` + manually check each
+hit's width/height) rather than assuming a category marked "done" is
+actually free of it — 25 mirrored-token hits and 14 non-square
+`radius-full` hits were found this way across categories that had each
+individually passed their own review rounds already.
+
+---
+
+### Grepping for a bug pattern must strip `//` comments first, or the project's own bug-history notes become false positives
+
+This project's files accumulate explanatory comments documenting
+previously-fixed bugs (e.g. "STRUCTURAL BUG: `ta-touch` was a completely
+empty `TouchArea { }` with no properties set..." in
+`inputs/SegmentedControl.slint`). A naive text/regex search for a bug
+signature (`TouchArea { }`, `TouchArea {` without a nearby `enabled:`,
+etc.) matches that comment text just as readily as live code, and will
+flag an already-fixed file as still-broken. Any project-wide grep sweep
+for a code pattern needs to strip `//` line comments from each file
+*before* searching — otherwise every well-documented past fix looks like
+a fresh bug, and the false-positive rate can dominate the results. (Two of
+four hits in one such sweep were exactly this — the file's own comment
+about a bug it no longer has.)
+
+---
+
 ### Unconfirmed — don't guess, verify first if you need these
 
 - Whether a `FocusScope` wrapping a `TextInput` or a `PopupWindow`
@@ -1932,3 +2269,162 @@ that drive nothing (or drive the wrong generic property, usually
 opacity). Worth treating "does the visible effect match the component's
 name" as a standing question for any future category built around named
 visual effects rather than data display or forms.
+
+---
+
+### `visible: false` and an `opacity` fade fight each other — `visible` wins, and it wins instantly
+
+The dominant bug in the `overlays/` category, found in some form in 17
+of 24 files.
+
+```slint
+// WRONG — visible is a hard, immediate on/off switch (unlike opacity,
+// which is why gotchas.md's "element not visible" checklist treats
+// them as two separate causes to check). The moment `active` goes
+// false, visible cuts rendering *immediately* — before the opacity
+// animation below ever gets a single frame to play. Fade-in works
+// (visible flips true immediately, then opacity animates 0→1 normally
+// on an already-rendering element); fade-out is completely broken —
+// it snaps shut instantly, and the animate block is dead code.
+opacity: active ? 1 : 0;
+visible: active;
+animate opacity { duration: 200ms; }
+```
+```slint
+// RIGHT — opacity alone handles the fade correctly in both directions.
+// Since the element still technically exists at opacity 0, gate
+// interactivity separately so it isn't invisibly clickable while
+// logically closed:
+opacity: active ? 1 : 0;
+animate opacity { duration: 200ms; }
+
+TouchArea {
+    enabled: active;
+    clicked => { ... }
+}
+```
+An even more severe variant of the same mistake: binding `visible`
+directly to a hardcoded literal (`visible: false;`) on a component's
+root with no backing `in`/`in-out` property at all. Since an internal
+binding is authoritative, this makes the component permanently
+unable to ever show, under any circumstances — found in four separate
+dialog/lightbox components in this category, none of which had ever
+been exercised in `test.slint`, which is almost certainly why it went
+unnoticed.
+
+---
+
+### `// Content slot` comments over an empty Rectangle are a giveaway — check for `@children` there specifically
+
+Five components in `overlays/` (`Popover`, `SideSheet`, `PeekSheet`,
+`NotificationDrawer`, `FullScreenDialog`) had a literal comment marking
+where wrapped content was supposed to go, directly above a `Rectangle`
+with nothing forwarded into it. When a component's own authored
+comments describe an unrealized intent this explicitly, trust the
+comment over the code — it's a strong, low-effort signal to check for
+missing `@children` before looking anywhere else.
+
+---
+
+### `overlays/` batch confirmation — one dominant architectural bug, not many small ones
+
+21 of 24 files needed a fix, but almost all of them reduce to the
+`visible`+`opacity` conflict above, at varying severity (mild:
+fade-out-broken; severe: permanently unshowable). Worth treating as a
+standing check on sight for any future category with dialogs, sheets,
+tooltips, or other show/hide overlays: search for `visible:` bound to
+anything other than a plain `in`/`in-out` property intended purely for
+native use, and check whether it sits alongside an `opacity`-based
+fade in the same element.
+
+---
+
+### Array index-assignment, confirmed for real — and the correct fix depends on whether the data is a single value or a collection
+
+This project's own gotchas file already flagged `array[idx] = val` as
+"likely wrong, unconfirmed" based on the language reference describing
+`array[index]` as retrieval-only. `selection-controls/` turned up three
+real, shipped instances doing exactly that
+(`ButtonToggleGroup`/`MultiChipSelect`/`ListboxMulti`, all
+`root.something[idx] = !root.something[idx];`), plus two more
+components (`CheckboxGroup`/`ToggleGroup`) with the same underlying
+problem expressed differently — binding each generated child's display
+straight from an array read with no way for the child's own internal
+toggle to ever propagate back.
+
+The fix differs by shape:
+
+**Single selected value (radio-style, one-of-many):** reassign the
+index directly — this is just an `int`, not a collection, so there's no
+array-mutation question at all:
+```slint
+// RadioButton
+callback picked();
+clicked => { root.selected = true; root.picked(); }
+
+// RadioGroup
+for lbl[idx] in labels: RadioButton {
+    selected: idx == root.selected-index;
+    picked => { root.selected-index = idx; }
+}
+```
+
+**Independent per-item state (checkbox/toggle/multi-chip group,
+many-of-many):** don't attempt to touch the array at all — report
+which index changed via callback and let the host reassign the whole
+array, per this file's original entry:
+```slint
+// Checkbox
+callback toggled(bool);
+clicked => { root.checked = !root.checked; root.toggled(root.checked); }
+
+// CheckboxGroup
+callback item-toggled(int, bool);
+for lbl[idx] in labels: Checkbox {
+    checked: idx < root.checked.length && root.checked[idx];
+    toggled(new-state) => { root.item-toggled(idx, new-state); }
+}
+```
+The tell for which shape applies: if only one item can ever be "active"
+at a time, it reduces to a single index and the simple fix applies. If
+multiple items can be independently on/off at once, it's genuinely an
+array and needs the report-only fix — there's no way around it in
+current Slint.
+
+---
+
+### Binding a child's editable property directly to a parent property fights the user's own typing — same root cause as the group-item conflict above
+
+```slint
+// RISKY — same shape as binding checked: root.checked[idx] on a group
+// item. input.text has an ACTIVE external binding to root.text, so
+// there's a real question whether the user's own typing (which
+// modifies input.text internally) can persist against it, or gets
+// fought/overridden the next time the binding's dependency changes.
+input := TextInput { text: root.text; }
+```
+```slint
+// SAFER — input owns its text natively, unbound. Mirror it OUT to the
+// parent one-way instead of binding the parent's value IN — this
+// avoids the conflict entirely rather than betting on which direction
+// wins.
+input := TextInput {
+    text: "";
+    changed text => { root.text = self.text; }
+}
+```
+Found and corrected in `selection-controls/Combobox` before shipping,
+by recognizing it as the same shape as the array-binding conflict
+above rather than as a new, unrelated question.
+
+---
+
+### `selection-controls/` batch confirmation
+
+21 of 25 files needed a fix, dominated by the array-index-assignment
+gotcha now confirmed at scale (not a one-off) plus the usual glyph
+sweep. Worth treating "does this group's child-item state ever actually
+reach the group's own public property" as a standing check for any
+future category with multi-select or grouped-toggle components — the
+visual control can look completely normal while the underlying data
+model silently never updates.

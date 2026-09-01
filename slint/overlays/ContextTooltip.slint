@@ -2,6 +2,7 @@ import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component ContextTooltip inherits Rectangle {
+    in-out property <bool> active: false;
     in property <string> text: "";
 
     min-width: 60px;
@@ -10,7 +11,7 @@ export component ContextTooltip inherits Rectangle {
     border-radius: Theme.radius-xs;
     border-width: 1px;
     border-color: Theme.border-subtle;
-    opacity: root.visible ? 1 : 0;
+    opacity: root.active ? 1 : 0;
 
     drop-shadow-offset-x: 0px;
     drop-shadow-offset-y: Theme.elevation-1-y;

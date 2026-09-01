@@ -2,6 +2,7 @@ import { Theme } from "../core/Theme.slint";
 import { FaIcon } from "../core/FaIcon.slint";
 
 export component OnboardingOverlay inherits Rectangle {
+    in-out property <bool> active: false;
     in property <int> step: 1;
     in property <[int]> total-steps: [0, 1, 2];
     in property <string> title: "";
@@ -19,11 +20,11 @@ export component OnboardingOverlay inherits Rectangle {
         width: 100%;
         height: 100%;
         background: Theme.bg-base.with-alpha(0.5);
-        opacity: root.visible ? 1 : 0;
-        visible: root.visible;
+        opacity: root.active ? 1 : 0;
         animate opacity { duration: Theme.dur-normal; }
 
         TouchArea {
+            enabled: root.active;
             clicked => { root.skip(); }
         }
     }
@@ -38,8 +39,7 @@ export component OnboardingOverlay inherits Rectangle {
         border-width: 2px;
         border-color: Theme.accent;
         background: transparent;
-        visible: root.visible;
-        opacity: root.visible ? 1 : 0;
+        opacity: root.active ? 1 : 0;
 
         animate opacity { duration: Theme.dur-fast; }
 
@@ -72,8 +72,7 @@ export component OnboardingOverlay inherits Rectangle {
         border-radius: Theme.radius-xl;
         border-width: 1px;
         border-color: Theme.border-subtle;
-        visible: root.visible;
-        opacity: root.visible ? 1 : 0;
+        opacity: root.active ? 1 : 0;
 
         drop-shadow-offset-x: 0px;
         drop-shadow-offset-y: Theme.elevation-2-y;
@@ -152,6 +151,7 @@ export component OnboardingOverlay inherits Rectangle {
                         animate background { duration: Theme.dur-fast; }
 
                         skip-ta := TouchArea {
+                            enabled: root.active;
                             clicked => { root.skip(); }
                         }
 
@@ -179,6 +179,7 @@ export component OnboardingOverlay inherits Rectangle {
                         animate background { duration: Theme.dur-fast; }
 
                         next-ta := TouchArea {
+                            enabled: root.active;
                             clicked => { root.next(); }
                         }
 
@@ -197,6 +198,6 @@ export component OnboardingOverlay inherits Rectangle {
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.active; }
     }
 }

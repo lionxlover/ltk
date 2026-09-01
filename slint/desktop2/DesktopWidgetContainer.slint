@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component DesktopWidgetContainer inherits Rectangle {
     background: Theme.bg-surface;
@@ -13,6 +14,8 @@ export component DesktopWidgetContainer inherits Rectangle {
 
     width: widget-width;
     height: widget-height;
+
+    callback menu-requested();
 
     HorizontalLayout {
         padding: Theme.sp-2;
@@ -31,13 +34,19 @@ export component DesktopWidgetContainer inherits Rectangle {
             width: 20px;
             height: 20px;
             border-radius: 4px;
+            background: menu-area.has-hover ? Theme.hover-overlay : transparent;
 
-            Text {
-                text: "⋯";
-                font-size: Theme.text-sm;
-                color: Theme.text-tertiary;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/ellipsis.svg");
+                fa-size: 12px;
+                fa-color: Theme.text-tertiary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            menu-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.menu-requested(); }
             }
         }
     }
@@ -46,5 +55,7 @@ export component DesktopWidgetContainer inherits Rectangle {
         y: 32px;
         vertical-stretch: 1;
         background: transparent;
+
+        @children
     }
 }

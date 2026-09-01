@@ -7,7 +7,7 @@ export component StatusBadge inherits Rectangle {
     min-width: 20px;
     height: 22px;
     background: variant == 0 ? Theme.state-success : (variant == 1 ? Theme.text-tertiary : (variant == 2 ? Theme.state-warning : Theme.state-error));
-    border-radius: Theme.radius-full;
+    border-radius: self.height / 2;
     horizontal-stretch: 0;
 
     HorizontalLayout {

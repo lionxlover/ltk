@@ -8,8 +8,10 @@ export component ShortcutReferenceSheet inherits Rectangle {
     clip: true;
 
     in property <length> panel-width: 400px;
+    in property <length> panel-height: 320px;
 
     width: panel-width;
+    height: panel-height;
 
     Rectangle {
         height: 40px;
@@ -30,8 +32,11 @@ export component ShortcutReferenceSheet inherits Rectangle {
 
     Flickable {
         y: 40px;
+        width: parent.width;
+        height: parent.height - 40px;
+        viewport-height: content.preferred-height;
 
-        VerticalLayout {
+        content := VerticalLayout {
             padding: Theme.sp-3;
             spacing: Theme.sp-3;
 

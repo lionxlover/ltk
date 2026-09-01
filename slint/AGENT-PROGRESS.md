@@ -25,15 +25,25 @@ re-discovering things the hard way.
 | `forms2/` | 31 | ✅ Done, verified in a follow-up pass | `forms2.zip` |
 | `social2/` | 26 | ✅ Done, verified in a follow-up pass | `social2.zip` |
 | `animation/` | 24 | ✅ Done, pending VS Code Problems-panel check | `animation.zip` |
-| everything else | ~235 | ⬜ Not started | — |
+| `overlays/` | 24 | ✅ Done, pending VS Code Problems-panel check | `overlays.zip` |
+| `selection-controls/` | 25 | ✅ Done, pending VS Code Problems-panel check | `selection-controls.zip` |
+| `utility/` | 23 | ✅ Done, pending VS Code Problems-panel check | `utility.zip` |
+| `indicators/` | 20 | ✅ Done, pending VS Code Problems-panel check | `indicators.zip` |
+| `desktop2/` | 17 | ✅ Done, pending VS Code Problems-panel check | `desktop2.zip` |
+| `theming2/` | 12 | ✅ Done, pending VS Code Problems-panel check | `theming2.zip` |
+| `accessibility2/` | 12 | ✅ Done, pending VS Code Problems-panel check | `accessibility2.zip` |
+| `desktop/` | 10 | ✅ Done, pending VS Code Problems-panel check | `desktop.zip` |
+| `range-value/` | 10 | ✅ Done, pending VS Code Problems-panel check | `range-value.zip` |
+| `social/` | 8 | ✅ Done, pending VS Code Problems-panel check | `social.zip` |
+| `accessibility/` | 8 | ✅ Done, pending VS Code Problems-panel check | `accessibility.zip` |
+| `theming/` | 6 | ✅ Done, pending VS Code Problems-panel check | `theming.zip` |
+| `layout/` | 3 | ✅ Done, pending VS Code Problems-panel check | `layout.zip` |
+| `design-tokens/` | 33 | ✅ Done, pending VS Code Problems-panel check | `design-tokens.zip` |
+| `progress/` | 1 | ✅ Done (fixed earlier in the fractional-width-no-x hotfix round) | — |
 
-Untouched categories, roughly by size:
-`overlays` (24), `selection-controls` (25), `utility` (23),
-`indicators` (20), `desktop2` (17), `theming2` (12), `accessibility2`
-(12), `desktop` (10), `range-value` (10), `social` (8), `accessibility`
-(8), `theming` (6), `layout` (3), `progress` (1 component total —
-`ProgressSpinner` — already reviewed and fixed; this category is
-complete, not partial, despite how this note used to read).
+**Every category in the library has now had a full pass.** `progress/`
+(`ProgressSpinner`, 1 component) was already reviewed and fixed during an
+earlier cross-cutting hotfix round, so nothing remains marked "Not started."
 
 Note: `desktop2/SplashScreen.slint`, `indicators/HealthBar.slint`,
 `range-value/Slider.slint`, `range-value/SteppedSlider.slint`,
@@ -2734,3 +2744,989 @@ something to scroll. Also fixed the two renamed properties above where
 `test.slint` still called the old names, and switched the `Flickable`'s
 hardcoded `viewport-height: 2800px` to `content.preferred-height` (same
 fix now applied in every category's `test.slint` so far).
+
+## `overlays/` batch — a category-wide architectural bug affecting nearly every file
+
+All 24 components reviewed; 26 files delivered (24 components +
+`export.slint`, unchanged + `test.slint`, heavily expanded). No `core/`
+changes needed. 21 of 24 files needed a fix, and the overwhelming
+majority trace back to one systemic pattern repeated across the whole
+category.
+
+**The headline bug: `visible: <condition>;` bound alongside an
+`opacity`-based fade, in 17 files.** Slint's native `visible` cuts
+rendering immediately (it's a hard binary switch, unlike `opacity`,
+which is why `gotchas.md`'s "element not visible" checklist lists them
+as two separate, independent causes) — so the moment a dialog/sheet/
+tooltip's condition flips to closed, `visible` removes it from
+rendering *before* the `opacity` transition ever gets a frame to show.
+Fade-**in** always worked (the element starts rendering immediately,
+then the opacity animation plays normally); fade-**out** was
+completely broken — every one of these snapped shut instantly instead
+of fading, with the animation code being silently dead. Fixed by
+removing the `visible:` binding and relying on `opacity` alone for the
+fade (correct in both directions), then adding `enabled: <condition>;`
+to the relevant `TouchArea`s so the now-still-technically-rendered
+overlay doesn't become invisibly clickable while logically closed.
+
+**Four of those seventeen were worse — completely non-functional,
+never shown at all:** `AlertDialog`, `ImageLightbox`, `VideoLightbox`,
+and `SpotlightOverlay` all had `visible: false;` hardcoded directly on
+the root as a static binding, with no `in`/`in-out` property backing
+it — an internal binding like that is authoritative, so there was no
+way for any caller to ever override it back to `true`. These four
+components could never be shown under any circumstances. Replaced the
+hardcoded binding with a proper `in-out property <bool> active: false;`
+(matching the convention every other dialog/sheet in this category
+already uses) throughout. `OnboardingOverlay` and `FloatingActionPanel`
+had a related but distinct problem — no `active`-style property
+*declared at all*, just bare references to the native `root.visible`
+(one of them via an imperative `root.visible = false;` assignment,
+whose write-semantics on a built-in property aren't confirmed one way
+or the other) — same fix applied for consistency and to remove that
+uncertainty entirely. `SimpleTooltip`, `HoverCard`, `ContextTooltip`,
+and `FullScreenDialog` shared the milder version of this (no redundant
+binding, just relying on the bare native `visible` with nothing to set
+it), fixed the same way for consistency with the rest of the category.
+
+**Compile errors — underscore vs. dash, 10 instances in one file:**
+`Popover` referenced `root.anchor_x`/`root.anchor_y` throughout its
+arrow and panel positioning while the declared properties are
+`anchor-x`/`anchor-y`.
+
+**Missing `@children` on five "content slot" wrappers, each with a
+literal `// Content slot` comment sitting directly above an empty
+Rectangle:** `Popover`, `SideSheet`, `PeekSheet`, `NotificationDrawer`,
+`FullScreenDialog`. The comment made the intent unambiguous — these
+were clearly meant to forward wrapped content and simply never did.
+
+**Two harmless-but-redundant ternaries, cleaned up:** `ActionSheet`'s
+hover background and text color both branched on `root.cancel` with
+*identical* values on both sides of the ternary — dead conditional
+logic that always evaluated to the same result regardless of `cancel`.
+Simplified to the single value directly; not a functional bug, just
+noise a future reader could mistake for meaningful branching.
+
+**A freeform icon-as-text property, the same shape fixed repeatedly in
+earlier categories:** `DropdownMenuItem.icon-text: string` (with
+`test.slint` passing 📋/📄/✂ emoji) converted to
+`icon-source: image` + a `show-icon: bool` sentinel (avoiding an
+unconfirmed "is this image empty" check based on `.width`), with
+`DropdownMenu.icons` promoted from `[string]` to `[image]` to match.
+
+**`test.slint` gaps — the largest of any category so far:** 14 of 24
+exported components (`AlertDialog`, `ContextTooltip`,
+`FloatingActionPanel`, `FloatingLabel`, `FullScreenDialog`, `HoverCard`,
+`ImageLightbox`, `NestedDropdownMenu`, `NotificationDrawer`,
+`OnboardingOverlay`, `PeekSheet`, `SimpleTooltip`, `SpotlightOverlay`,
+`VideoLightbox`) were never instantiated anywhere in the test file at
+all. This plausibly explains why the four permanently-broken
+components went uncaught for so long — they were never actually
+rendered to look at. Added real demos for all 14. While inserting
+these, caught and fixed a self-introduced brace-count slip during the
+rewrite (traced with a line-by-line depth script rather than guessed
+at) before it shipped.
+
+## `selection-controls/` batch — the array-index-assignment gotcha confirmed for real, at scale
+
+All 25 components reviewed; 27 files delivered (25 components +
+`export.slint`, unchanged + `test.slint`, unchanged — full coverage
+already existed). No `core/` changes needed. 21 of 25 files needed a
+fix.
+
+**The dominant bug: group/multi-select components whose child items'
+internal state could never propagate back to the group's own data —
+a real-world confirmation of the "arrays can't be index-assigned"
+gotcha this project already suspected but hadn't fully proven.**
+`CheckboxGroup`, `ToggleGroup` bound each generated child's state
+straight from an array read (`checked: root.checked[idx];`) while the
+child's own click handler only ever modified its own *local* copy —
+with no callback wiring anything back, the group's own `checked`/
+`selected` array data could never reflect what the user actually
+clicked, regardless of what the checkbox visually appeared to do. Both
+also had a literal `TouchArea { clicked => {} }` — an empty no-op
+placeholder — at the top level. `ButtonToggleGroup`, `MultiChipSelect`,
+and `ListboxMulti` went a step further and attempted
+`root.active[idx] = !root.active[idx];` directly — the exact
+unconfirmed-and-flagged pattern from `SLINT-GOTCHAS-DISCOVERED.md`'s
+"Arrays: read and reassign, don't index-assign" entry, now confirmed
+as a real, shipped instance rather than a hypothetical risk. Fixed all
+five with the gotcha's own prescribed pattern: each leaf control
+(`Checkbox`, `ToggleSwitch`) gained a `callback toggled(bool);`, and
+each group reports `callback item-toggled(int, bool);` upward instead
+of ever touching the array by index.
+
+**`RadioButton`/`RadioGroup` had a related but distinct problem: no
+mutual exclusivity at all.** Clicking a radio button only ever set
+`root.selected = true` on itself, with nothing telling any sibling to
+deselect — multiple radios in the same group could show as selected
+simultaneously, and `RadioGroup` had the same dead top-level
+`TouchArea` as above. Unlike the boolean-array cases, this was
+straightforward to fix properly rather than just report upward:
+`selected-index: int` is a single value, not an array, so it can be
+reassigned directly without hitting the index-assignment gotcha at
+all. Added `callback picked();` to `RadioButton`, wired
+`picked => { root.selected-index = idx; }` in `RadioGroup` — this
+single fix resolves both the dead-click and the no-exclusivity
+problems together. Confirmed by checking `OptionGroup`/`ListboxSingle`/
+`ChipSelectSingle`/`ColorSwatchPicker`/`SegmentedControl`/
+`SizeVariantPicker` first — all six *already* correctly use this same
+`selected-index` reassignment pattern, which is exactly what confirmed
+it as the right, low-risk fix for the single-select case rather than
+something to guess at.
+
+**9 files with the same unconfirmed-safe glyph, `▾` (U+25BE):**
+`SelectMultiTags`, `Combobox`, `SelectDropdown`, `CascadingSelect`,
+`CountryPicker`, `CurrencyPicker`, `FlagPicker`, `LanguagePicker`,
+`TimezonePicker` — every "click to open a picker" component in the
+category used it for the dropdown indicator. Converted all nine to a
+real `chevron-down.svg` `FaIcon`. `TimezonePicker` also had a 🌍 globe
+emoji, converted to `globe.svg`. Six of the nine additionally only ever
+set `has-focus = true` on click (never toggling back false on a second
+click) — made all six consistently toggle, matching how
+`SelectDropdown`/`Combobox` already correctly behaved.
+
+**`SelectMultiTags` was hardcoded — no backing property at all.** Both
+visible tag chips ("React", "Slint") were static `Text` literals; there
+was no `tags` property, no way to show a caller's actual selection, and
+no remove functionality. Rebuilt on a real `tags: [string]` array
+rendered via `for`, each chip with a working "×" remove button
+(`callback tag-removed(int)`). While wiring the remove buttons, caught
+and fixed a z-order risk before it shipped: the outer "open dropdown"
+`TouchArea` was declared *after* the tag chips (rendering on top),
+which could have intercepted clicks meant for the small per-tag remove
+buttons underneath it. Reordered so it's declared first instead, so the
+more specific remove buttons take priority.
+
+**`Combobox` needed the same "static text pretending to be an input"
+fix as `forms2/`'s form templates — but with a twist caught before
+shipping:** an early version bound the `TextInput`'s `text` directly to
+the component's own public `text` property (`input.text: root.text;`).
+That's the exact same conflict as the group components above — an
+active external binding on a property fights any attempt to write to it
+internally, and native text entry is an internal write. Reworked to the
+proven-safe direction instead: `input` owns its text natively and
+unbound, mirrored *out* to `root.text` one-way via
+`changed text => { root.text = self.text; }`, avoiding the conflict
+entirely rather than guessing at whether it would have worked.
+
+**Reviewed and confirmed correct, no changes:** `Checkbox`,
+`CheckboxIndeterminate`, `ToggleSwitch`, `OptionGroup`, `ListboxSingle`,
+`ChipSelectSingle`, `ColorSwatchPicker`, `SegmentedControl`,
+`SizeVariantPicker` — all either standalone controls with no group-
+coordination problem to have, or group components already using the
+correct `selected-index` pattern from the start.
+
+## `utility/` batch — the "headless hook" category (React-hook-style ports), plus two silently dead buttons
+
+All 23 components reviewed; 25 files delivered (23 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 6 of 23 files
+needed a fix.
+
+**Category shape, noted up front so it isn't mistaken for bugs:** most of
+this category deliberately mirrors a React-hooks pattern — `DebounceHook`,
+`ThrottleHook`, `IntersectionObserverHook`, `ResizeObserverHook`,
+`ScrollPositionHook`, `MutationObserverHook`, `MediaQueryHook`,
+`PointerNormalizer`, `PortalTeleport` are bare property-holders with no visual
+template at all, meant for the host language to read state out of rather than
+for the UI to render distinctly. That's intentional, not the
+"effect-defining-properties-driving-nothing-visible" bug from `animation/` —
+there the properties were meant to drive a visible effect and didn't; here
+there was never a visible effect to drive.
+
+**Underscore-vs-dash, 3 files, one of them a real compile error and two
+hidden by non-instantiation:** `InfiniteLoaderEngine` declared
+`loaded-count` but referenced `loaded_count` in two places inside a reachable
+`if !has-more && ... :` branch — Slint type-checks every conditional branch
+regardless of whether it's active, so this was a live compile error, not a
+dormant one. `VirtualGridEngine` (`total_items`/`cell_height` vs. declared
+`total-items`/`cell-height`) and `VirtualListEngine`
+(`visible_count` vs. declared `visible-count`) had the identical mistake, but
+both components were imported in `test.slint` and never actually
+instantiated — textbook instance of the "components never instantiated in
+test.slint" masking pattern this project already watches for.
+
+**`test.slint` gaps: 7 of 23 components imported but never placed in the
+layout tree** — `ContentSlot`, `DebounceHook`, `ThrottleHook`,
+`PointerNormalizer`, `PortalTeleport2`, `VirtualListEngine`,
+`VirtualGridEngine`. Added real instantiations for all seven in a new fourth
+column; this is exactly what surfaced the two hidden underscore/dash bugs
+above.
+
+**New pattern, not seen before: a button-shaped `Rectangle` with no
+`TouchArea` at all — visually a button, but permanently inert.** Two
+instances: `ClipboardManager`'s "Copy" button and
+`ErrorBoundaryFallback`'s "Try Again" button. Neither had a `TouchArea`,
+a `callback`, or any way for a click to go anywhere — unlike the
+"disabled but still clickable" gotcha already in
+`SLINT-GOTCHAS-DISCOVERED.md`, this is the inverse: fully rendered as
+interactive, fully non-functional. Fixed both by adding a `callback
+copy-requested()` / `callback retry()` respectively, wiring a `TouchArea`
+with `mouse-cursor: pointer`, and a hover-state background swap so the
+button reads as interactive. Added as a new entry in
+`SLINT-GOTCHAS-DISCOVERED.md` since it's a distinct failure mode worth
+checking for explicitly in remaining categories.
+
+**One unconfirmed-safe glyph:** `DragSourcePrimitive` used the braille
+grip-dots character `⠿` (U+283F) as a drag handle. Converted to a real
+`grip-vertical.svg` `FaIcon`, matching the established icon convention.
+
+**Reviewed and confirmed correct, no changes:** `DropTargetPrimitive`,
+`FocusManager`, `KeyboardShortcutListener`, `NetworkDetector`,
+`IdleDetector`, `StateMachineProvider`, `SuspenseBoundary` (its fractional
+`width: parent.width * (progress / 100)` fill bar already carries an
+explicit `x: 0`, so it doesn't hit the fractional-width-no-x bug), and all
+nine bare property-holder "hooks" listed above — no visual template to have
+a bug in, and each is now at least instantiated in `test.slint` so a future
+compile-time mistake in them won't go unnoticed again.
+
+## `indicators/` batch — the mirrored underscore/dash bug (dash used where Theme actually declares underscore)
+
+All 20 components reviewed; 22 files delivered (20 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 4 of 20 files
+needed a fix.
+
+**A new variant of the underscore/dash bug — this time pointing the wrong
+way.** Every prior instance of this bug in the project was a locally-declared
+`dash-property` referenced with an `underscore_typo`. Here it's the mirror
+image: `core/Theme.slint`'s primitive palette section legitimately declares
+its shades with underscores (`green_500`, `amber_100`, `red_600`, …, per the
+project's own established exception already noted in the `media/` batch for
+`LivestreamPill`'s `Theme.red_500`) — but `EnvironmentBadge` and `TextBadge`
+referenced `Theme.green-500`, `Theme.amber-500`, `Theme.red-500`,
+`Theme.green-100`, `Theme.amber-100`, `Theme.red-100`, `Theme.green-700`,
+`Theme.amber-600`, and `Theme.red-600` with dashes — none of which exist;
+`Theme.slint` has no dash-named palette entries at all. Real compile errors
+in both files, and since `EnvironmentBadge`/`TextBadge` are instantiated in
+`test.slint` across every `variant`/`env` value, every ternary branch is
+live — this wasn't hiding behind non-instantiation. Fixed by switching to the
+underscore form that actually matches `Theme.slint`'s declarations.
+
+**`radius-full` on a badge that's only square by coincidence, 2 instances:**
+`StatusBadge` (`min-width: 20px; height: 22px;` with `Theme.radius-full`) and
+`NumericBadge` (`min-width: 20px; height: 20px;`, same). Both are
+content-sized — `StatusBadge` grows once a `label` is supplied, `NumericBadge`
+grows once the count exceeds two digits (confirmed live in `test.slint`,
+which instantiates `NumericBadge { count: 150; }` against the default
+`max-count: 99`, forcing the "99+" three-character case) — so the instant
+either badge's width exceeds its height, `radius-full`'s circle-clamp renders
+an ellipse instead of a pill, same failure mode as `AvatarBadge` and
+`LivestreamPill` from earlier categories. Fixed both with
+`border-radius: self.height / 2`, rule 2 from `SLINT-GOTCHAS-DISCOVERED.md`.
+(`StatusBadge`'s own small 6×6 status dot also uses `radius-full`, left as-is
+— that one truly is fixed-square.)
+
+**`NumericBadge` overflow-count logic bug, found while fixing the radius:**
+`text: count > max-count ? (max-count > 9 ? "99+" : "+" + max-count) : ...`
+hardcoded the literal string `"99+"` for *any* `max-count` over 9, so a badge
+configured with `max-count: 15` would still show "99+" instead of "15+" once
+overflowed — mislabeling the actual ceiling. Replaced with a generic
+`(root.max-count + "+")`, which reduces to "99+" in the default case anyway
+but is correct for any configured ceiling.
+
+**`test.slint` gaps: 10 of 20 components imported but never placed in the
+layout tree** — `ActivityIndicator`, `AssistChip`, `DeprecatedBadge`,
+`FilterChip`, `HealthBar`, `InputChip`, `LabelBadge`, `Pill`, `StatusChip`,
+`VerifiedBadge`. Exactly half the category was unverified by compilation.
+Added real instantiations for all ten.
+
+**Reviewed and confirmed correct, no changes:** `ActivityIndicator`,
+`BatteryIndicator` (fractional fill width already carries an explicit
+`x: 1px`), `DeprecatedBadge`, `DotBadge`, `HealthBar` (fractional width
+already carries `x: 0`), `SignalBars`, `StatusChip`, `TagLabel`,
+`VerifiedBadge` (its `✓` glyph matches the checkmark already accepted
+project-wide in `cards/`, `feedback/`, `forms/`, `navigation/`, and others),
+`VersionBadge`, `AssistChip`/`FilterChip`/`InputChip` (all three already
+wire a real `TouchArea` + callback — no repeat of the `utility/` dead-button
+bug here), and `Pill`/`StatusChip`/`AssistChip`/`FilterChip`/`InputChip`'s
+hardcoded pill radii (all already computed as exactly half their fixed
+height, so no `radius-full` clamp risk).
+
+## `desktop2/` batch — the biggest one yet: a component named for behavior it doesn't implement, six missing `@children` slots, and five dead buttons
+
+All 17 components reviewed; 19 files delivered (17 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 13 of 17 files
+needed a fix — by far the highest hit rate of any category so far. All 17
+components were already instantiated in `test.slint`, so unlike prior
+categories this wasn't a coverage problem — every bug here was a real,
+already-live one.
+
+**The headline bug: `ResizableDraggableWindow` had no drag and no resize.**
+Same failure class already caught once in this project —
+`animation/DragToDismiss.slint`'s changelog note reads "was purely
+externally-controlled — no TouchArea at all despite the name promising drag
+interactivity" — except this time it's a window with `in-out` `win-x`,
+`win-y`, `win-width`, `win-height` and `in property <bool> resizable,
+draggable`, and there was no `TouchArea` anywhere in the file. Fixed with two
+distinct, separately-precedented techniques rather than inventing a new one:
+- **Dragging** the title bar uses the exact press-start-offset pattern from
+  `DragToDismiss`: capture `press-start-mouse-x/y` and
+  `press-start-win-x/y` on `PointerEventKind.down`, then on `moved`,
+  `win-x = press-start-win-x + (mouse-x - press-start-mouse-x)`. Tried the
+  simpler `mouse-x - pressed-x` shortcut first and rejected it — that's
+  exactly the frozen-snapshot gotcha already in
+  `SLINT-GOTCHAS-DISCOVERED.md`, and it compounds error every frame instead
+  of converging.
+- **Resizing** (right edge, bottom edge, corner handles) uses the absolute-
+  position formula from `layout-containers/ResizablePanelGroup.slint`:
+  `new-size = self.mouse-x + <handle's own x within the window>`. Got the
+  arithmetic wrong on the first pass (used a bare fixed offset instead of
+  the handle's actual current position) and caught it by re-deriving the
+  formula against the working reference file rather than trusting the first
+  draft.
+
+**Six container/shell components had a designated content area that
+silently swallowed anything placed inside them — no `@children` at all:**
+`ControlPanelLayout`, `DesktopWidgetContainer`, `FloatingPanel`,
+`MaximizedWindow`, `PreferencesWindow`, `ResizableDraggableWindow` (as part
+of the fix above). `layout-containers/ResizablePanelGroup.slint` already
+established `@children` as the correct pattern for exactly this kind of
+"stretch pane" in this project — these six just didn't have it. Added
+`@children` to each, and added real demo content into every one of them in
+`test.slint` (previously none were ever instantiated *with* children, so the
+gap wouldn't have been visible even on a render pass, only by noticing the
+missing directive while reading the source).
+
+**Five dead buttons — a visually complete, interactive-looking control with
+no `TouchArea`/callback wiring at all, the same failure class first found in
+`utility/`'s `ClipboardManager`/`ErrorBoundaryFallback`:** `AppMenuItem`'s
+row-level `TouchArea {}` had no `clicked =>` handler and no callback to fire
+regardless; `DesktopWidgetContainer`'s "⋯" more-options glyph; `FloatingPanel`'s
+close indicator (which also had no "×" glyph at all — just a colored dot);
+`OsNotificationToast`'s close button (had the "×" glyph but no touch/callback);
+`OverflowToolbar`'s toolbar-item cells and its "···" overflow indicator; and
+`MinimizedWindowChip` (the whole chip, meant to restore a minimized window).
+All six now have a `callback` and a wired `TouchArea` with a hover state.
+`PreferencesWindow`'s sidebar was a milder version of the same thing — it
+hardcoded `idx == 0` as "selected" with no way to ever change it — promoted
+`active-section` to real `in-out` state with a `section-selected(int)`
+callback, matching how `RibbonBar`'s tabs (already correct, no changes
+needed) work.
+
+**`SpotlightDialog`'s search box couldn't be typed into.** `query` was
+bound into a plain `Text`, never a `TextInput` — a "spotlight search" that
+can only ever show whatever string the host sets, never react to a
+keystroke. Replaced with a real `TextInput` two-way-bound via `text <=>
+root.query`, matching the established `input.text`/placeholder-visibility
+pattern from `inputs/SearchInput.slint`, and added `@children` to the empty
+results panel below it (previously a blank box with no binding of any
+kind — nothing could ever appear there).
+
+**One real compile error:** `NotificationCenterPanel` referenced
+`notification_count` (underscore) inside a live, always-reachable
+`if notification-count > 0:` branch, while the declared property is
+`notification-count` (dash). Ordinary instance of the standard underscore/
+dash bug, not the Theme-palette mirror case from `indicators/`.
+
+**One sizing bug:** `ShortcutReferenceSheet`'s `Flickable` had no `width`,
+`height`, or `viewport-height` bound at all — every other `Flickable` in
+this project sets all three. Gave the sheet an explicit `panel-height`,
+sized the `Flickable` to `parent.width` / `parent.height - 40px`, and bound
+`viewport-height` to the named content layout's `preferred-height`.
+
+**Icon conversions, for consistency with established precedent, not because
+the originals were unsafe:** `DesktopWidgetContainer`'s "⋯" and
+`OverflowToolbar`'s "···" → FaIcon `ellipsis.svg` (no existing precedent
+either way, chose consistency with the rest of the "chrome icon" family);
+`SpotlightDialog`'s 🔍 → FaIcon `magnifying-glass.svg` (strong precedent —
+already the standard search icon in `inputs/SearchInput.slint`,
+`forms2/SearchFilterForm.slint`, and four other completed categories).
+
+**Reviewed and confirmed correct, no changes:** `AppSwitcher` (its
+`app-icons` are per-app placeholder content, same reasoning as
+`MinimizedWindowChip`'s `icon` default — not a fixed UI-chrome glyph with a
+FontAwesome equivalent); `RibbonBar` (tabs already wire `TouchArea` +
+state correctly); `PanelSash` (its `is-hovered` is an `in` property by
+design — the host wraps it and drives hover/drag externally, same headless
+pattern already established for `utility/`'s hooks); `SplashScreen` (its 🦞
+is a branding/content choice, not a code bug — worth a human glance since a
+"Lion Toolkit" splash showing a lobster looks like a mismatch, but that's a
+design decision, not something in this review's scope); the traffic-light
+triplets in `MaximizedWindow`, `PreferencesWindow`, and
+`ResizableDraggableWindow` (confirmed decorative-only by cross-checking
+`desktop/WindowChrome.slint`, which has the identical non-interactive
+three-dot cluster — consistent, deliberate chrome, not the same bug as the
+single standalone `show-close` buttons that got fixed).
+
+## `theming2/` batch — a grid that's covered by its own background, and the "Configurator" naming pattern used as a consistency check
+
+All 12 components reviewed; 14 files delivered (12 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 6 of 12 files
+needed a fix.
+
+**`PreviewSandboxCanvas`'s grid was permanently invisible — hidden by its
+own background, not by non-instantiation.** The original had `if show-grid:
+Rectangle { background: Theme.border-subtle; }` *before* an unconditional
+`Rectangle { background: Theme.bg-base; }`. Later siblings render on top, so
+the base fill always painted over the grid regardless of `show-grid`'s
+value — and `test.slint` already instantiated it with `show-grid: true`,
+so this was a live, visible bug in the existing demo, not one hiding behind
+missing coverage. On top of the z-order bug, `show-grid`'s implementation
+was a single flat-tinted rectangle, not an actual grid — and `show-rulers`
+was a declared property with zero effect anywhere in the file, the
+"effect-defining-properties-driving-nothing-visible" pattern from
+`animation/`. Rebuilt properly: base fill first, then a real grid of 1px
+lines spaced by a new `grid-spacing` property (using the same
+`for x in Math.floor(...)` integer-count idiom already established
+elsewhere in this project), then actual ruler strips along the top and left
+edges gated by `show-rulers`.
+
+**One underscore/dash compile error, hidden by non-instantiation:**
+`AccessibilityAuditOverlay` referenced `issues_count` in two places (a
+background-color ternary and a `Text.text` binding) against the declared
+`issues-count`. Both are inside its `if active:` panel, but the component
+was never actually instantiated anywhere in `test.slint` (imported, never
+placed) — exactly the coverage gap this project keeps finding. Fixed the
+identifier and added a real instantiation with `active: true` and sample
+`issues`.
+
+**Three dead buttons, same class already found in `utility/` and
+`desktop2/`:** `ComponentPlayground`'s "📋 Copy" header action had no
+`TouchArea`/callback at all — added `callback copy-requested()`, wired a
+`TouchArea`, and swapped the emoji for a real `copy.svg` `FaIcon` since the
+button is now actually functional. `CustomThemeBuilder` had two: every
+section row (styled with a "›" nav chevron, strongly implying it opens
+something) and the accent-colored "Apply Theme" submit button were both
+fully static. Added `callback section-opened(string)` and
+`callback apply-clicked()` respectively, with hover states on both.
+
+**One missing `@children`:** `ComponentPlayground`'s "component preview"
+content area (a dedicated `Rectangle` between the header and the props
+panel, structurally identical to the six shell components already fixed in
+`desktop2/`) had no way to receive anything to preview. Added `@children`
+and gave it a real demo child in `test.slint`.
+
+**One consistency gap, not a compile/render bug but a real functional
+gap:** `SpacingConfigurator` was the only "Configurator"/"Switcher" in this
+category with no selection state or interactivity at all —
+`TypographyConfigurator` and `IconSetSwitcher`, its direct siblings by
+naming convention, both implement click-to-select with a highlighted active
+row. Brought `SpacingConfigurator` in line: added `in-out property <int>
+selected-scale`, a `callback scale-selected(int)`, row highlighting, and a
+`TouchArea` per row, matching the exact pattern already used by its
+siblings rather than inventing a new one.
+
+**Reviewed and confirmed correct, no changes:** `CssPropertyInjector`
+(a deliberately read-only name/value display row); `HighContrastAdapter`,
+`SystemColorSchemeAdapter`, `ThemeProvider` (all three are the same
+headless, host-driven pattern already established as correct in
+`utility/`); `IconSetSwitcher` (already wires `TouchArea` + active-state
+correctly); `TypographyConfigurator` (font-family selection is already
+interactive; the `sizes` list is intentionally reference-only — no
+`selected-size` property was ever declared, so unlike `SpacingConfigurator`
+there's no half-wired state to fix); `WcagContrastChecker` (a pure
+calculator/display driven entirely by `in` properties, no interactivity
+implied by its name or shape).
+
+## `accessibility2/` batch — an error summary that says "No errors" in alarm red, and a repeat of the "square by coincidence" radius trap
+
+All 12 components reviewed; 14 files delivered (12 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 4 of 12 files
+needed a fix.
+
+**`AccessibleErrorSummary` displayed "No errors" in white text on a solid,
+unconditional `Theme.error` (red) background.** The background was hardcoded
+regardless of whether `errors` actually had anything in it — so the
+zero-errors, zero-title state (which `test.slint` didn't previously
+exercise) rendered as an alarming red banner announcing that there's
+nothing wrong. Fixed by conditioning the background on `errors.length > 0`,
+green (`Theme.success`) otherwise, and added a dedicated `test.slint`
+instance for exactly that empty-errors case, plus one for the
+title-with-no-errors case, so both paths are now actually exercised.
+
+**`FocusRingCustom` declared `in property <string> ring-color-name` and
+never read it anywhere** — `border-color` was hardcoded to `Theme.accent`
+regardless of what the property was set to. Same
+"effect-defining-property-driving-nothing-visible" class documented from
+`animation/`, just on a string-keyed color selector instead of a boolean
+effect toggle. Wired it up: `error`/`success`/`warning`/anything else map to
+their matching `Theme` token, `accent` (and any unrecognized value) falls
+back to the existing hardcoded behavior so nothing regresses.
+
+**Repeat instance of the "square by coincidence" `radius-full` bug from
+`indicators/`, this time not even content-dependent:**
+`KeyboardNavIndicator`'s pill was a *fixed* `180px × 32px` — never square,
+not even conditionally — yet used `Theme.radius-full`. Per the confirmed
+rule in `SLINT-GOTCHAS-DISCOVERED.md`, an oversized radius only clamps to a
+circle on a square element; here it would always render as a full ellipse
+rather than a stadium shape. Fixed with `self.height / 2`, same as the
+`indicators/` instances, and worth noting this one wasn't even
+coincidentally-square-in-the-common-case — it was wrong under every
+possible input.
+
+**Two components never instantiated in `test.slint`:** `RovingTabIndexGroup`
+(imported, never placed) and `AriaAnnouncer` (not even imported). Both are
+fully headless with no internal references that could typo — so this
+wasn't hiding a live bug the way it has in other categories — but added
+real instantiations for both anyway, consistent with keeping every
+component under actual compilation coverage for whenever they're next
+touched.
+
+**One icon conversion for consistency:** `KeyboardNavIndicator`'s "⌨️"
+emoji → FaIcon `keyboard.svg`. No existing precedent either way in this
+project, same reasoning as the `ellipsis`/`copy` conversions in
+`desktop2/`/`theming2/` — a chrome-level standard icon with a clean FA
+match, converted for consistency with the rest of the icon family rather
+than because the emoji itself was unsafe.
+
+**Reviewed and confirmed correct, no changes:** `AriaLiveAssertive`,
+`AriaLivePolite` (headless, host-driven — actual live-region announcement
+happens at the accessibility-tree level, no visual needed by design);
+`ColorBlindnessToggle`, `DyslexiaFontToggle` (both already wire
+`TouchArea`/state correctly); `FocusTrapGuard`, `FocusVisibleIndicator`
+(passive visual indicators reflecting `in`-only state — the actual
+trapping/focus-detection logic is host-managed, same headless pattern
+already established for `PanelSash` in `desktop2/` and the hook family in
+`utility/`); `LineHeightAdjuster` (its A−/A+ buttons already work and clamp
+correctly; no live text preview was implied by the component's shape, so
+none was added).
+
+## `desktop/` batch — an entire category authored as static chrome, systemically missing every interaction it visually implies
+
+All 10 components reviewed; 12 files delivered (10 components + `export.slint`,
+unchanged + `test.slint`, updated). No `core/` changes needed. 8 of 10 files
+needed a fix — every component except `AboutDialog` and `StatusBar`. This
+category reads like it was built purely as a visual style reference and
+never wired up: every interactive-looking element in it (menus, toolbar
+buttons, resize handles, a properties panel) was completely static.
+
+**Two components named for drag/resize behavior that had neither, same class
+as `desktop2/ResizableDraggableWindow`:** `ColumnResizer` and `DragHandle`
+were each just a decorative bar — no `TouchArea`, no properties, no
+callback, nothing. Confirmed both are used as vertical divider bars (in
+`test.slint`, stretched to `parent.height` inside a narrow wrapper) so both
+now do a horizontal drag: `MouseCursor.col-resize`, a `resized(length)` /
+`dragged(length)` callback emitting the incremental delta since the last
+move event, plus hover/pressed tinting. Deliberately emits a *delta* rather
+than an absolute position — neither component has any size/position state
+of its own to be absolute *about*, so a delta the host adds to its own
+column-width/pane-size state is the only shape that makes sense here,
+unlike `ResizableDraggableWindow`'s resize handles (which had `win-width`/
+`win-height` to set directly) or its drag (which had `win-x`/`win-y`).
+
+**Three components with a fully hand-rolled, fully inert menu/toolbar UI:**
+`ContextMenu` (Copy/Paste/Cut/Delete), `MenuBar` (File/Edit/View/Help), and
+`Toolbar` (six icon buttons: copy, paste, undo, redo, search, settings) —
+thirteen individual controls across three files, all styled exactly like
+clickable rows/buttons, none with a `TouchArea` or callback of any kind.
+Added a callback to each (`copy-clicked()` etc. for `ContextMenu`,
+`menu-clicked(string)` for `MenuBar`, `action-clicked(string)` for
+`Toolbar`) with hover-state backgrounds on every item. `events-and-
+overlays.md` recommends the builtin `ContextMenuArea` for the open/dismiss
+mechanics of a context menu specifically — out of scope for this pass since
+`ContextMenu` here is just the styled content list, not the popup
+mechanism — but every item inside it needing to actually fire something on
+click is unambiguous regardless of how it's ultimately opened.
+
+**`InspectorPanel`'s X/Y/W/H fields were the "static text masquerading as
+form inputs" bug, called out explicitly as a pattern to watch for:** each
+field was a `Rectangle` styled exactly like a text box (background, border,
+padding) containing a hardcoded `Text { text: "0"; }` / `"100"` — not bound
+to any property, because the component had no properties besides `title` at
+all. A properties inspector that can't actually show or edit the selected
+object's geometry. Added `obj-x`/`obj-y`/`obj-width`/`obj-height` as real
+`in-out` string properties and replaced all four fields with real
+`TextInput`s (`input-type: InputType.decimal`, focus-ring border), matching
+the exact established pattern from `text-input/NumberInput.slint`.
+
+**One missing `@children`:** `WindowChrome`'s content area, the same shape
+as the six shells already fixed in `desktop2/` and `theming2/`.
+
+**One dead button:** `SystemTray`'s single tray icon had no
+`TouchArea`/callback — real system tray icons are always clickable (to open
+a menu or panel). Added `callback clicked()` with a hover state.
+
+**Confirmed correct, no changes — and the reference point for every
+"decorative, not broken" call made in this and prior categories:**
+`WindowChrome`'s traffic lights are the ORIGINAL precedent this project has
+been checking new traffic-light instances against (`desktop2/MaximizedWindow`,
+`ResizableDraggableWindow`, `PreferencesWindow` were all confirmed correct
+by comparing to this exact file). Here it's finally reviewed directly:
+`closable`/`minimizable`/`maximizable` only ever toggle the dot's color
+between active and `Theme.traffic-inactive` — by design, this component is
+window chrome for previews/mockups, not functioning window controls, and
+that's consistent with every other instance already found. `AboutDialog`
+and `StatusBar` are both correct as pure static/read-only displays with no
+interactive affordance implied by their content.
+
+## `range-value/` batch — three of ten sliders/knobs had zero drag interactivity at all, plus a step-count/step-size semantic bug
+
+All 10 components reviewed; 12 files delivered (10 components + `export.slint`,
+unchanged + `test.slint`, unchanged — no new instantiations were needed,
+every component was already covered). No `core/` changes needed. 4 of 10
+files needed a fix.
+
+**Three sliders/knobs had no `TouchArea` anywhere in the file — the exact
+"component named for behavior it doesn't implement" bug already found
+repeatedly in `desktop2/` and `desktop/`, but this time on the most basic
+possible control, a slider that can't be dragged:**
+- `CircularKnob` — implemented as a vertical drag (press-start-offset
+  technique, same as `DragToDismiss`/`ResizableDraggableWindow`): drag up
+  increases `value`, drag down decreases it. Chose vertical-drag over
+  computing a true angle relative to the knob's center — it's the
+  conventional interaction for this class of control (audio/DAW-style
+  knobs) and avoids relying on unconfirmed trig-function availability.
+- `RangeSlider` — a dual-handle slider with *neither* handle wired. Added a
+  `TouchArea` inside each handle individually (rather than one full-width
+  area with hit-testing to figure out which handle is closer), using the
+  same absolute-position formula from `layout-containers/
+  ResizablePanelGroup.slint` (`self.mouse-x + handle.x`) already reused for
+  `ResizableDraggableWindow`'s resize handles. Each handle's drag is clamped
+  against the other (`low` can't pass `high` and vice versa).
+- `VerticalSlider` — same gap, single handle, fixed with the vertical
+  mirror of `Slider.slint`'s existing (correct) horizontal drag pattern.
+
+**`SteppedSlider`'s `steps` property was used as a step *size* while its
+name (and its only real property, `step`, is dead — see below) both imply
+step *count*.** With the demo's actual values (`minimum: 0`, `maximum: 10`,
+`steps: 5`), the original formula rounded to the nearest multiple of 5,
+producing only 3 reachable positions (0, 5, 10) instead of the 5 positions
+a "5 steps" slider should have (0, 2, 4, 6, 8, 10 — 6 endpoints across 5
+equal steps). Fixed by computing the step size from the step *count*
+(`(maximum - minimum) / steps`) rather than using `steps` directly as the
+increment. Left the `in-out property <int> step` declaration in place
+rather than deleting it — it's genuinely unused by anything in the file (and
+`test.slint` never sets it either), but removing a public property is a
+larger, separate call than fixing the interaction logic itself; flagging it
+here for whoever next touches this file.
+
+**Reviewed and confirmed correct, no changes:** `EmojiRating`, `StarRating`
+(both already wire one `TouchArea` per option); `HueSlider`, `Slider`,
+`OpacitySlider` (all three already use the standard full-width
+`self.mouse-x / parent.width` drag pattern correctly); `NumberStepper`
+(+/− buttons already clamp correctly). `HueSlider`'s six-segment rainbow
+strip looks like it should be a `radius-full`/`fractional-width-no-x`-style
+bug at first glance — the first (red) segment has no explicit `x`/`width`
+at all — but it's actually correct: as a container it fills the full
+track by default, and being the first-listed (thus bottom-most in z-order)
+child, it only remains visible in the 0–17% region the later five segments
+don't cover, which is exactly the intended red-first hue layout. Confirmed
+by tracing the z-order rather than assuming it was broken.
+
+## `social/` batch — a typing indicator that never animates, and a reaction bar where nothing can be reacted to
+
+All 8 components reviewed; 10 files delivered (8 components + `export.slint`,
+unchanged + `test.slint`, unchanged — every component was already
+instantiated). No `core/` changes needed. 3 of 8 files needed a fix.
+
+**`TypingIndicator`'s three dots had `animate opacity { ... }` declared but
+nothing anywhere in the file ever changed `opacity`.** An `animate` only
+plays when the property it's watching actually changes value — this is the
+same root cause as the already-documented "Infinite animation loop needs a
+nudge, not a static binding" gotcha, just without even an `init =>` attempt
+at a first nudge. The component whose entire purpose is showing an animated
+"someone is typing…" cue rendered three permanently static dots. Fixed with
+a `Timer` driving a `active-dot` counter (0/1/2, cycling via `Math.mod`),
+each dot's opacity keyed off whether it's the current active index — the
+standard sequential-pulse typing-indicator look, and one that actually
+requires the `animate` block to do something (a real value change each
+300ms) rather than relying on a single from-A-to-B replay the way a
+seamlessly-wrapping property like rotation can.
+
+**`EmojiReactionBar`'s four reaction pills (❤️/😂/👍/🔥) had no
+`TouchArea` at all** — a reaction bar, the entire point of which is
+letting someone react, that could not register a single click. Added a
+`toggled()` callback and `reacted` state per pill (with the accent
+highlight this project already uses for other selectable-pill components),
+and a `reaction-toggled(string)` callback on the bar itself so the host
+knows which emoji was toggled. Left `count` as `in`-only rather than having
+the component increment it locally — the pill's own `reacted` state is
+local UI feedback, but the actual count is server/host truth that should
+come back down through a prop update in response to the callback, not be
+guessed at client-side.
+
+**`ChatInputBar`'s send button did nothing, and there was no way to ever
+retrieve what was typed.** The `TextInput` held its own text internally but
+exposed no callback and no bound property, and the paper-plane send button
+had no `TouchArea` — a chat input that could accept keystrokes but never
+actually send a message anywhere. Added `callback message-sent(string)`,
+fired identically from the send button's `clicked` and the input's
+`accepted` (Enter key), and clear the field after sending.
+
+**Reviewed and confirmed correct, no changes:** `ChatBubbleSent`,
+`ChatBubbleReceived` (pure display, correctly aligned via
+`alignment: start`/`end` on their layouts — their `max-width: parent.width
+* 0.75` looked like it might be the fractional-width-no-x bug at a glance,
+but `max-width` only caps size, it doesn't position, and positioning here
+correctly comes from the parent layout's alignment); `ReadReceipt` (a
+read-only status glyph, no interactivity implied); `FollowButton`,
+`UpvoteDownvote`/`VoteButton` (both already wire `TouchArea` + callbacks
+correctly, and `VoteButton`'s `@children` icon slot already works).
+
+## `accessibility/` batch — two toggle switches with a label that's both invisible and inaccessible, in a category that has the correct pattern sitting right next to them
+
+All 8 components reviewed; 10 files delivered (8 components + `export.slint`,
+unchanged + `test.slint`, unchanged — every component already instantiated).
+No `core/` changes needed. 3 of 8 files needed a fix.
+
+**`HighContrastToggle` and `ReduceMotionToggle` both had `visible: false`
+on their descriptive label** — not screen-reader-only, just gone entirely.
+The tell that this was a bug rather than a deliberate accessible-name
+pattern: this very category ships `SrOnlyText.slint`, a component that
+exists specifically to be visually-imperceptible-but-still-rendered
+(`font-size: 1px`, transparent, 1×1px, and critically `visible: true`) —
+the established, correct way to give a control an accessible name without a
+visible caption. Both toggles reached for a plain `Text { visible: false;
+}` instead, which is a different thing: fully removed, not
+"present but tiny." Replaced both with `SrOnlyText`, matching the pattern
+already sitting in the same folder rather than inventing a new one.
+
+**`SkipLink` never actually skipped anywhere.** Clicking it (or activating
+it via Enter/Space per its own `key-pressed` handler) only ever set
+`root.visible = false` — the link would disappear, but nothing was ever
+told to move focus or scroll to `target`. Added `callback
+activated(string)`, fired with `root.target` from both the click handler
+and, when the link is already visible, from Enter/Space in the
+`FocusScope`'s key handler (kept Tab as pure "reveal" — Enter/Space are the
+activation keys once it's showing, not the reveal trigger).
+
+**Reviewed and confirmed correct, no changes:** `FocusRing`,
+`KeyboardShortcutLegend`, `ScreenReaderStatus` (all pure, correctly-bound
+displays); `SrOnlyText` itself (the reference pattern used to fix the two
+toggles above); `FontSizeAdjuster` (its +/− buttons work and adjust
+`level` with no explicit min/max clamp — unlike `FocusRingCustom`'s dead
+`ring-color-name` property in `accessibility2/`, there's no orphaned
+property here pointing to an intended-but-missing bound, so this reads as
+deliberately open-ended rather than broken, and wasn't changed).
+
+## `theming/` batch — a mirrored-token typo and a color palette you could look at but never pick
+
+All 6 components reviewed; 8 files delivered (6 components + `export.slint`,
+unchanged + `test.slint`, unchanged — every component was already
+instantiated). No `core/` changes needed. 2 of 6 files needed a fix.
+
+**`ThemeToggle`'s light-mode thumb color used `Theme.amber-400` (dash),
+which doesn't exist — the real token is `Theme.amber_400` (underscore).**
+Exactly the mirrored-naming gotcha already catalogued: Theme's palette
+tokens (slate/blue/violet/green/amber/red/…) keep their underscore casing
+while everything else on Theme uses dashes. Also simplified an adjacent
+dead ternary on the toggle's track background (`root.dark-mode ?
+Theme.surface-base : Theme.surface-base`) to plain `Theme.surface-base` —
+both branches were identical, so the ternary did nothing (harmless, but
+confusing to read as if it were meaningful).
+
+**`ColorPaletteEditor`'s six color swatches and its "+" add button all had
+empty `TouchArea { }` elements — a palette editor where nothing was
+clickable.** Added `in-out property <int> selected`, a `color-selected(int)`
+callback wired to each swatch (with a selection ring matching the pattern
+already used by this same file's siblings `BrandKitSwitcher` and
+`FontLoaderItem`), and an `add-clicked()` callback with a hover state on the
+"+" button.
+
+**Reviewed and confirmed correct, no changes:** `AnimationPresetSelector`,
+`BrandKitSwitcher`, `FontLoader`, `TokenExporter` (all already wire
+`TouchArea`/`clicked` correctly and manage selection state properly).
+
+## `layout/` batch — a Grid that couldn't hold anything
+
+All 3 components reviewed; 5 files delivered (3 components + `export.slint`,
+unchanged + `test.slint`, updated to actually exercise `Grid` and
+`RoundedRect`, which had no demo instantiation before). No `core/` changes
+needed. 1 of 3 files needed a fix.
+
+**`Grid` was a `Rectangle` wrapping a `HorizontalLayout` of `VerticalLayout`
+cells, one per entry in a `columns: [int]` weights array — but none of those
+cells had `@children`, and couldn't, since `@children` can only appear once
+per component and this design would have needed one per generated cell.**
+The component compiled and instantiated fine but rendered nothing a caller
+put inside it: a silent-swallow bug in the family already catalogued
+("shell/container components with no `@children`"), just one level more
+subtle because the *reason* `@children` was missing is structural, not a
+simple oversight. Also, the loop's own iteration variable (`col`, the column
+weight) was never read — `horizontal-stretch: 1` was hardcoded regardless.
+Rewrote `Grid` to inherit the built-in `GridLayout` directly instead of
+wrapping one in a `Rectangle`: children placed at the usage site
+(`Grid { Foo { row: 0; col: 0; } }`) become direct children of the layout
+and are positioned automatically by Slint itself — the idiomatic pattern,
+and the only one that actually works for a generic grid container. Dropped
+the now-meaningless `columns` property as part of this fix (flagging here
+since removing a public property is a real API change, not just a bugfix,
+for whoever next touches this file); kept `gap` bound to the layout's
+`spacing`.
+
+**Reviewed and confirmed correct, no changes:** `RoundedRect`, `Spacer`
+(both simple, correctly-bound wrappers with no interactivity implied).
+
+## `design-tokens/` batch — a token layer with no logic bugs, but a demo file that only pretended to vary
+
+All 33 token globals reviewed (each a pure `export global` of `out
+property` constants — colors, lengths, durations, eased curves, ints,
+floats, strings — with no elements, no callbacks, no interactivity to
+break). 35 files delivered (33 token files + `export.slint`, unchanged +
+`test.slint`, fixed — see below). No `core/` changes needed.
+
+**None of the 33 token files themselves had bugs** — this category is
+exactly what it looks like: hex literals, `px`/`ms` constants, and
+`cubic-bezier(...)` curves, each just a name-to-value mapping with nothing
+to compile-fail or misbehave at runtime. `core/Theme.slint` already
+consumes two of these (`ColorPrimitives`, `TouchTarget`) as its own
+upstream source of truth (see the note at the top of `core/Theme.slint`
+itself) — confirmed those two imports and property names line up correctly
+on both sides.
+
+**`test.slint`'s demo *did* have bugs: three `for` loops rendered a fixed,
+non-varying box on every iteration, using the loop variable only for the
+text label next to it — so the border-radius, icon-size, and opacity scale
+sections each showed 7–9 visually-identical swatches with different
+numbers printed beside them, rather than actually demonstrating the scale.**
+Same root pattern as `layout/Grid.slint`'s unread `col` variable: the loop
+index existed and was displayed, but never consumed by the property it was
+meant to drive.
+- Border radius section: was hardcoded to `Theme.radius-sm` on every swatch
+  regardless of `r`; fixed to `min(r.to-float() * 1px, self.height / 2)` —
+  the `min()` clamp reuses the project's own `radius-full`
+  circle-vs-ellipse fix (`self.height / 2`) so the `"9999"` entry renders as
+  a proper circle on the square swatch instead of overflowing.
+- Icon size section: was hardcoded to a fixed 48×48px box regardless of
+  `s`; fixed to size each box at `s.to-float() * 1px` so the scale is
+  visually apparent (10px through 48px), not just numerically labeled.
+- Opacity scale section: had no `opacity:` binding at all; added
+  `opacity: o.to-float()` so the swatches actually fade across the row.
+
+Confirmed via the same `.to-float()` string-conversion API already
+catalogued as real (`SLINT-GOTCHAS-DISCOVERED.md`'s primitive-types member
+list) — no new unconfirmed API surface introduced.
+
+---
+
+## Status: full library pass complete
+
+Every category listed in the status table above has now had a complete
+read-fix-verify pass. `progress/` (`ProgressSpinner`) was already handled
+in the earlier `media/` cross-cutting hotfix round. No categories remain
+in "Not started" state.
+
+## Post-completion cross-cutting audit — grep-based sweep for the two highest-value gotchas across all 830 files
+
+With every category individually reviewed, ran a project-wide grep for the
+two bug patterns most likely to have slipped through *compile-clean* code
+(both are runtime/visual bugs, not compile errors, so VS Code's Problems
+panel — the primary verification method used throughout this project —
+would never have caught them): the mirrored Theme palette token naming,
+and `radius-full` on non-square elements. This is not a new category, just
+a targeted re-check of already-"done" work using a search method the
+per-file read-through didn't systematically apply.
+
+**Mirrored token naming (`Theme.<hue>-<NNN>` instead of
+`Theme.<hue>_<NNN>`): found 25 occurrences across 13 files, all in
+`data-display/`** (`TerminalOutput`, `ActivityFeed`, `JsonTreeViewer`,
+`LogViewer`, `DiffViewer`, `KPITile`, `ChatMessageThread`, `test.slint`,
+`DayAgendaCalendar`, `AvatarList`, `GanttTimeline`, `NestedCommentSection`,
+`OrgChart`) — every one a real "no such property" compile error
+(`Theme.green-500`, `Theme.amber-600`, `Theme.red-100`, etc., none of
+which exist; only the underscore forms do). Confirmed against
+`core/Theme.slint` line-by-line before fixing. Fixed all 25 with a
+scoped regex substitution (`Theme.<hue>-<digits>` → `Theme.<hue>_<digits>`,
+run only across `data-display/`, verified zero remaining hits
+project-wide afterward). No other category was affected.
+
+**`radius-full` on a non-square (elongated) element: found and fixed 14
+occurrences across 10 files in 5 categories** — every other `radius-full`
+usage in the project (100+ checked) was confirmed to sit on a genuinely
+square element (avatar circles, status dots, stepper nodes, chart rings,
+icon buttons with matching focus rings) and left untouched:
+- `feedback/ProgressBar.slint` — track, determinate fill, and
+  indeterminate sweep bar (all 3 rectangles in the file) were a 6px-tall,
+  full-width bar with `radius-full`; would render as a stretched ellipse,
+  not a pill. Fixed to `self.height / 2` on all three.
+- `feedback/StripedProgress.slint` — same shape, same fix, on `track-bg`
+  and `fill-rect` (the individual barber-pole `stripeN` rectangles were
+  already plain unrounded 6px squares, correctly untouched).
+- `feedback/IndeterminateProgress.slint` — same shape, same fix, on the
+  track and the `pulse` sweep rectangle.
+- `feedback/Skeleton.slint` — subtler case: `circle: true` mode kept
+  `horizontal-stretch: 1` from the default (line-shaped) mode, so a
+  "circular" skeleton placeholder (e.g. standing in for an avatar while
+  loading) would stretch to fill its container's width instead of staying
+  square — `radius-full` on a stretched-wide rectangle is exactly this
+  bug, just reached through a layout-stretch path rather than a hardcoded
+  wide literal. Fixed by making `circle` mode override both
+  `horizontal-stretch` (0 instead of 1) and `width` (bound to
+  `skeleton-height`, matching the fixed `height`) so it's genuinely square
+  before the radius is even applied.
+- `social/FollowButton.slint` and `social/EmojiReactionBar.slint` — both
+  pill-shaped buttons sized by `self.preferred-width` (variable, based on
+  their label text) × a fixed height — the definition of an elongated
+  shape. Fixed both to `self.height / 2`.
+- `navigation/NavBadge.slint` — the unread-count badge used `height: 20px;
+  min-width: 20px;` (no fixed `width`), so it grows wider than tall for
+  two-digit counts — the exact dynamic-width-pill pattern already
+  identified and fixed in `data-display/Badge.slint` and
+  `data-display/Chip.slint` (both of which even carry an explanatory
+  comment about it), just missed in this one sibling file in a different
+  category. Fixed to `self.height / 2`.
+- `cards/StatTileCard.slint` — a small 24×3px accent underline bar, the
+  most visually-obvious case in this batch (an 8:1 aspect ratio can't
+  read as anything but an ellipse at `radius: 9999px`). Fixed to
+  `self.height / 2`.
+- `accessibility/HighContrastToggle.slint` and
+  `accessibility/ReduceMotionToggle.slint` — both toggle-switch tracks
+  (`Theme.toggle-width` × `Theme.toggle-height`, 38×22px, inherently
+  elongated by design). Notably, `theming/ThemeToggle.slint` — a
+  near-identical toggle-switch component reviewed **in this same
+  session** — already had this right (hardcoded `border-radius: 14px;`,
+  i.e. half its own 28px height), which is what surfaced the inconsistency
+  worth grepping for in the first place. Fixed both tracks to
+  `self.height / 2`; left their (already-square) thumbs alone.
+
+No other gotcha category (dead `TouchArea`s, missing `@children`, missing
+`enabled:` bindings, etc.) was re-swept project-wide in this pass — those
+are harder to grep reliably (need reading each button's actual
+interactivity intent) and were already covered by the systematic
+per-category read-throughs earlier in this log. This pass specifically
+targeted the two patterns that are (a) mechanically greppable and (b)
+invisible to the compile-time verification method used everywhere else in
+this project.
+
+Full-project structural re-verification: all 830 `.slint` files in the
+repository re-checked for brace balance after every fix in this round —
+all balance cleanly.
+
+## Second sweep — missing `enabled:` bindings on interactive elements, width/height aliasing, one-way `TextInput` bindings
+
+Followed up with a properly comment-stripped, brace-matched script (the
+first pass at this — see the note in `SLINT-GOTCHAS-DISCOVERED.md` — had
+a false-positive problem: naive text search matched `TouchArea { }`
+mentioned *inside explanatory comments* about already-fixed historical
+bugs, which this project's files are full of). Three patterns checked
+project-wide:
+
+**Missing `enabled:` on a `TouchArea` in a component that defines an
+`enabled` property: found and fixed 2 real cases** (out of the whole
+tree — everywhere else, `enabled` was already threaded through correctly,
+confirming the per-category reviews mostly caught this one already):
+- `data-display/Chip.slint` — the chip's own click area had no `enabled:`
+  binding, even though the same component already dims via `opacity:
+  enabled ? 1.0 : Theme.opacity-disabled` and changes its border/background/
+  text colors for the disabled state. A "disabled" chip stayed fully
+  clickable. Added `enabled: root.enabled;`.
+- `text-input/PasswordInput.slint` — the main text-entry `TouchArea` and
+  the `TextInput` itself both correctly disable via `root.enabled`, but
+  the reveal/hide-password eye-icon's own separate `TouchArea` didn't —
+  so toggling password visibility kept working even on a disabled field.
+  Added `enabled: root.enabled;`.
+
+Two other hits from the first (uncleaned) grep pass turned out to be
+false positives on inspection: `inputs/SegmentedControl.slint`'s hit was
+the file's own explanatory comment describing a *previously*-fixed empty
+`TouchArea`, not live code — its real `TouchArea` already has `enabled:
+root.enabled` correctly wired.
+
+**`width`/`min-width` (or `height`/`min-height`) both bound on the same
+element — the aliasing compile error: 0 real cases found.** One hit
+(`overlays/ActionSheet.slint:60`) turned out to be a regex false
+positive: the pattern matched `self.height :` inside a ternary
+expression (`parent.height - self.height : parent.height`), not an
+actual `height:` property binding — the element only ever sets
+`min-height`, no conflict.
+
+**One-way `TextInput { text: ... }` bound to a changing external
+property (the "fights typing" bug): 0 real cases found.** The single
+grep hit (`forms2/PaymentForm.slint`) was a same-window false positive —
+its `TextInput`s bind `text: "";` (a static initial literal, read later
+via `card-input.text` etc., never re-derived from an outside property),
+which is the correct, ordinary pattern for a local unbound form field —
+not the two-way-binding bug at all.
+
+Re-ran the full 830-file brace-balance check after this round too — still
+clean.

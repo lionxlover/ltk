@@ -21,10 +21,10 @@ export component ModalDialog inherits Rectangle {
         height: 100%;
         background: Theme.backdrop;
         opacity: root.active ? 1 : 0;
-        visible: root.active;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
         TouchArea {
+            enabled: root.active;
             clicked => { root.cancelled(); }
         }
     }
@@ -39,7 +39,6 @@ export component ModalDialog inherits Rectangle {
         border-radius: Theme.radius-dialog;
         border-width: 1px;
         border-color: Theme.border-subtle;
-        visible: root.active;
         opacity: root.active ? 1 : 0;
 
         drop-shadow-offset-x: 0px;
@@ -91,6 +90,7 @@ export component ModalDialog inherits Rectangle {
                     animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
                     cancel-ta := TouchArea {
+                        enabled: root.active;
                         clicked => { root.cancelled(); }
                     }
 
@@ -118,6 +118,7 @@ export component ModalDialog inherits Rectangle {
                     animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
                     confirm-ta := TouchArea {
+                        enabled: root.active;
                         clicked => { root.confirmed(); }
                     }
 
@@ -135,6 +136,6 @@ export component ModalDialog inherits Rectangle {
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.active; }
     }
 }

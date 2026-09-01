@@ -1,10 +1,12 @@
 import { Theme } from "../core/Theme.slint";
 import { Spacer } from "Spacer.slint";
+import { Grid } from "Grid.slint";
+import { RoundedRect } from "RoundedRect.slint";
 
 export component LayoutTest inherits Rectangle {
     background: Theme.bg-base;
     width: 800px;
-    height: 400px;
+    height: 700px;
 
     Flickable {
         width: parent.width;
@@ -55,6 +57,24 @@ export component LayoutTest inherits Rectangle {
                 Spacer { }
                 Rectangle { height: 24px; border-radius: Theme.radius-sm; background: Theme.state-error; horizontal-stretch: 1; }
             }
+        }
+
+        Text { text: "Grid"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        Grid {
+            height: 120px;
+            gap: Theme.sp-3;
+
+            Rectangle { row: 0; col: 0; background: Theme.accent; border-radius: Theme.radius-sm; }
+            Rectangle { row: 0; col: 1; background: Theme.state-success; border-radius: Theme.radius-sm; }
+            Rectangle { row: 1; col: 0; background: Theme.state-warning; border-radius: Theme.radius-sm; }
+            Rectangle { row: 1; col: 1; background: Theme.state-error; border-radius: Theme.radius-sm; }
+        }
+
+        Text { text: "RoundedRect"; color: Theme.text-secondary; font-size: Theme.text-sm; font-weight: Theme.weight-semibold; }
+        HorizontalLayout { spacing: Theme.sp-3;
+            RoundedRect { width: 100px; height: 60px; root-color: Theme.bg-surface; }
+            RoundedRect { width: 100px; height: 60px; root-color: Theme.accent; root-radius: Theme.radius-xl; }
+            RoundedRect { width: 100px; height: 60px; root-color: Theme.bg-raised; border-enabled: false; }
         }
         }
     }

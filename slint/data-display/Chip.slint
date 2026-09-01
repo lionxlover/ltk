@@ -35,6 +35,7 @@ export component Chip inherits Rectangle {
     }
 
     ta := TouchArea {
+        enabled: root.enabled;
         clicked => { root.clicked(); }
     }
 }

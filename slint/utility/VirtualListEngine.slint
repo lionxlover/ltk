@@ -10,7 +10,7 @@ export component VirtualListEngine inherits Rectangle {
     in property <length> scroll-offset: 0px;
 
     out property <length> total-height: total-items * item-height;
-    out property <int> visible-end: Math.min(visible-start + visible_count, total-items);
+    out property <int> visible-end: Math.min(visible-start + visible-count, total-items);
 
     function clamp-start(val: int, count: int, total: int) -> int {
         return Math.max(0, Math.min(val, total - count));

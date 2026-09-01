@@ -1,6 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
 export component HoverCard inherits Rectangle {
+    in-out property <bool> active: false;
     in property <string> title: "";
     in property <string> description: "";
 
@@ -9,7 +10,7 @@ export component HoverCard inherits Rectangle {
     border-radius: Theme.radius-md;
     border-width: 1px;
     border-color: Theme.border-subtle;
-    opacity: root.visible ? 1 : 0;
+    opacity: root.active ? 1 : 0;
 
     drop-shadow-offset-x: 0px;
     drop-shadow-offset-y: Theme.elevation-2-y;

@@ -4,6 +4,8 @@ export component MenuBar inherits Rectangle {
     background: Theme.bg-headerbar;
     height: 32px;
 
+    callback menu-clicked(string);
+
     HorizontalLayout {
         padding-left: Theme.sp-2;
         padding-right: Theme.sp-2;
@@ -13,7 +15,7 @@ export component MenuBar inherits Rectangle {
             width: 70px;
             height: 28px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: file-area.has-hover ? Theme.hover-overlay : #00000000;
             y: 2px;
 
             Text {
@@ -24,13 +26,18 @@ export component MenuBar inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            file-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.menu-clicked("File"); }
+            }
         }
 
         Rectangle {
             width: 70px;
             height: 28px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: edit-area.has-hover ? Theme.hover-overlay : #00000000;
             y: 2px;
 
             Text {
@@ -41,13 +48,18 @@ export component MenuBar inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            edit-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.menu-clicked("Edit"); }
+            }
         }
 
         Rectangle {
             width: 70px;
             height: 28px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: view-area.has-hover ? Theme.hover-overlay : #00000000;
             y: 2px;
 
             Text {
@@ -58,13 +70,18 @@ export component MenuBar inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            view-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.menu-clicked("View"); }
+            }
         }
 
         Rectangle {
             width: 70px;
             height: 28px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: help-area.has-hover ? Theme.hover-overlay : #00000000;
             y: 2px;
 
             Text {
@@ -74,6 +91,11 @@ export component MenuBar inherits Rectangle {
                 font-weight: Theme.weight-medium;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            help-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.menu-clicked("Help"); }
             }
         }
     }

@@ -7,10 +7,11 @@ export component Skeleton inherits Rectangle {
     in property <length> skeleton-height: 16px;
     in property <bool> circle: false;
 
-    horizontal-stretch: 1;
+    horizontal-stretch: circle ? 0 : 1;
+    width: circle ? skeleton-height : 100%;
     height: skeleton-height;
     background: Theme.bg-overlay;
-    border-radius: circle ? Theme.radius-full : Theme.radius-sm;
+    border-radius: circle ? self.height / 2 : Theme.radius-sm;
     clip: true;
 
     property <float> pulse: 1.0;

@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component SpotlightDialog inherits Rectangle {
     background: Theme.bg-scrim;
@@ -6,6 +7,8 @@ export component SpotlightDialog inherits Rectangle {
 
     in property <string> placeholder: "Search apps, files, commands...";
     in-out property <string> query: "";
+
+    callback accepted(string);
 
     Rectangle {
         width: 560px;
@@ -22,18 +25,30 @@ export component SpotlightDialog inherits Rectangle {
             padding-right: Theme.sp-4;
             spacing: Theme.sp-3;
 
-            Text {
-                text: "🔍";
-                font-size: 18px;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/magnifying-glass.svg");
+                fa-size: 18px;
+                fa-color: Theme.text-tertiary;
                 y: (parent.height - self.height) / 2;
             }
 
-            Text {
-                text: query != "" ? query : placeholder;
+            search-input := TextInput {
+                text <=> root.query;
                 font-size: Theme.text-lg;
-                color: query != "" ? Theme.text-primary : Theme.text-tertiary;
-                y: (parent.height - self.height) / 2;
+                color: Theme.text-primary;
+                vertical-alignment: center;
                 vertical-stretch: 1;
+                single-line: true;
+                accepted => { root.accepted(self.text); }
+            }
+
+            placeholder-text := Text {
+                x: search-input.x;
+                text: root.placeholder;
+                font-size: Theme.text-lg;
+                color: Theme.text-tertiary;
+                vertical-alignment: center;
+                visible: root.query == "" && !search-input.has-focus;
                 overflow: elide;
             }
         }
@@ -48,5 +63,7 @@ export component SpotlightDialog inherits Rectangle {
         border-color: Theme.border-default;
         x: (parent.width - self.width) / 2;
         y: parent.height / 3 + 72px;
+
+        @children
     }
 }

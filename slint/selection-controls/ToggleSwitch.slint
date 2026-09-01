@@ -3,6 +3,7 @@ import { Theme } from "../core/Theme.slint";
 export component ToggleSwitch inherits Rectangle {
     in-out property <bool> checked: false;
     in-out property <bool> enabled: true;
+    callback toggled(bool);
 
     width: 44px;
     height: 24px;
@@ -32,6 +33,7 @@ export component ToggleSwitch inherits Rectangle {
         clicked => {
             if (root.enabled) {
                 root.checked = !root.checked;
+                root.toggled(root.checked);
             }
         }
     }

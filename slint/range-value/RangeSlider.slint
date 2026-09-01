@@ -37,6 +37,16 @@ export component RangeSlider inherits Rectangle {
 
         drop-shadow-color: Theme.border-default;
         drop-shadow-blur: 4px;
+
+        TouchArea {
+            mouse-cursor: MouseCursor.pointer;
+            moved => {
+                if (self.pressed) {
+                    root.low = max(root.minimum, min(root.high,
+                        root.minimum + (self.mouse-x + parent.x) / max(1px, root.width - parent.width) * (root.maximum - root.minimum)));
+                }
+            }
+        }
     }
 
     high-handle := Rectangle {
@@ -52,5 +62,15 @@ export component RangeSlider inherits Rectangle {
 
         drop-shadow-color: Theme.border-default;
         drop-shadow-blur: 4px;
+
+        TouchArea {
+            mouse-cursor: MouseCursor.pointer;
+            moved => {
+                if (self.pressed) {
+                    root.high = max(root.low, min(root.maximum,
+                        root.minimum + (self.mouse-x + parent.x) / max(1px, root.width - parent.width) * (root.maximum - root.minimum)));
+                }
+            }
+        }
     }
 }

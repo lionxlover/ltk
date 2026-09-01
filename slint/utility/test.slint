@@ -145,6 +145,74 @@ export component UtilityTest inherits Rectangle {
                     matched-viewport: "desktop";
                 }
             }
+
+            VerticalLayout {
+                spacing: Theme.sp-4;
+                width: 280px;
+
+                ContentSlot {
+                    height: 60px;
+                    slot-name: "header";
+                    filled: true;
+                    content: "Injected content";
+                }
+
+                ContentSlot {
+                    height: 60px;
+                    slot-name: "sidebar";
+                    filled: false;
+                }
+
+                PointerNormalizer {
+                    height: 32px;
+                    pointer-x: 120px;
+                    pointer-y: 40px;
+                    is-touch: false;
+                    is-primary: true;
+                    pressure: 0.6;
+                    pointer-count: 1;
+                }
+
+                PortalTeleport2 {
+                    height: 32px;
+                    active: true;
+                    target-x: 0;
+                    target-y: 0;
+                }
+
+                DebounceHook {
+                    height: 24px;
+                    value: "typing...";
+                    delay-ms: 300;
+                    pending: true;
+                }
+
+                ThrottleHook {
+                    height: 24px;
+                    value: "scroll-y:120";
+                    interval-ms: 100;
+                    throttled: false;
+                }
+
+                VirtualListEngine {
+                    height: 32px;
+                    total-items: 500;
+                    visible-start: 20;
+                    visible-count: 10;
+                    item-height: 40px;
+                }
+
+                VirtualGridEngine {
+                    height: 32px;
+                    total-items: 120;
+                    cols: 3;
+                    visible-row-start: 0;
+                    visible-row-count: 5;
+                    cell-width: 120px;
+                    cell-height: 80px;
+                    gap: 8px;
+                }
+            }
         }
     }
 }

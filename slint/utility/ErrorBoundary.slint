@@ -11,6 +11,8 @@ export component ErrorBoundaryFallback inherits Rectangle {
     in property <string> error-code: "";
     in property <bool> show-retry: true;
 
+    callback retry();
+
     VerticalLayout {
         padding: Theme.sp-4;
         spacing: Theme.sp-3;
@@ -59,7 +61,7 @@ export component ErrorBoundaryFallback inherits Rectangle {
         if show-retry: Rectangle {
             height: 36px;
             border-radius: Theme.radius-md;
-            background: Theme.accent;
+            background: retry-area.has-hover ? Theme.accent-dim : Theme.accent;
 
             Text {
                 text: "Try Again";
@@ -68,6 +70,11 @@ export component ErrorBoundaryFallback inherits Rectangle {
                 color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            retry-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.retry(); }
             }
         }
     }

@@ -1,6 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
 export component SimpleTooltip inherits Rectangle {
+    in-out property <bool> active: false;
     in property <string> text: "";
 
     min-width: 40px;
@@ -9,7 +10,7 @@ export component SimpleTooltip inherits Rectangle {
     border-radius: Theme.radius-xs;
     border-width: 1px;
     border-color: Theme.border-subtle;
-    opacity: root.visible ? 1 : 0;
+    opacity: root.active ? 1 : 0;
 
     drop-shadow-offset-x: 0px;
     drop-shadow-offset-y: Theme.elevation-1-y;

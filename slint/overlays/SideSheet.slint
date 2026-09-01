@@ -17,10 +17,10 @@ export component SideSheet inherits Rectangle {
         height: 100%;
         background: Theme.backdrop;
         opacity: root.active ? 1 : 0;
-        visible: root.active;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
         TouchArea {
+            enabled: root.active;
             clicked => { root.closed(); }
         }
     }
@@ -97,9 +97,11 @@ export component SideSheet inherits Rectangle {
             // Content slot
             Rectangle {
                 vertical-stretch: 1;
+
+                @children
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.active; }
     }
 }

@@ -49,11 +49,100 @@ export component ResizableDraggableWindow inherits Rectangle {
                 vertical-stretch: 1;
             }
         }
+
+        // The component's namesake behavior — the title bar is the drag
+        // handle. Same offset-capture technique already established in
+        // animation/DragToDismiss.slint: snapshot the press-local mouse
+        // position and the window's own position at press time, then on
+        // each move set the position to press-start + delta. Using
+        // self.mouse-x directly against a stale pressed-x (rather than
+        // this snapshot-plus-delta form) would compound error every frame
+        // since the titlebar moves out from under the cursor between events.
+        private property <length> press-start-mouse-x: 0px;
+        private property <length> press-start-mouse-y: 0px;
+        private property <length> press-start-win-x: 0px;
+        private property <length> press-start-win-y: 0px;
+
+        TouchArea {
+            enabled: root.draggable;
+            mouse-cursor: root.draggable ? MouseCursor.grab : MouseCursor.default;
+            pointer-event(ev) => {
+                if (ev.kind == PointerEventKind.down) {
+                    parent.press-start-mouse-x = self.mouse-x;
+                    parent.press-start-mouse-y = self.mouse-y;
+                    parent.press-start-win-x = root.win-x;
+                    parent.press-start-win-y = root.win-y;
+                }
+            }
+            moved => {
+                if (self.pressed) {
+                    root.win-x = parent.press-start-win-x + (self.mouse-x - parent.press-start-mouse-x);
+                    root.win-y = parent.press-start-win-y + (self.mouse-y - parent.press-start-mouse-y);
+                }
+            }
+        }
     }
 
     Rectangle {
         y: 38px;
         vertical-stretch: 1;
         background: transparent;
+
+        @children
+    }
+
+    // The component's other namesake behavior — edge/corner handles that
+    // resize the window. Kept inline rather than importing PanelSash:
+    // no sibling component in this category imports another, and these
+    // handles need direct read/write access to win-width/win-height
+    // rather than PanelSash's host-driven is-hovered display model.
+    if root.resizable: Rectangle {
+        x: root.width - 6px;
+        width: 6px;
+        y: 38px;
+        height: root.height - 38px;
+        background: transparent;
+
+        TouchArea {
+            mouse-cursor: MouseCursor.ew-resize;
+            moved => {
+                if (self.pressed) {
+                    root.win-width = max(200px, self.mouse-x + parent.x);
+                }
+            }
+        }
+    }
+
+    if root.resizable: Rectangle {
+        y: root.height - 6px;
+        height: 6px;
+        background: transparent;
+
+        TouchArea {
+            mouse-cursor: MouseCursor.ns-resize;
+            moved => {
+                if (self.pressed) {
+                    root.win-height = max(120px, self.mouse-y + parent.y);
+                }
+            }
+        }
+    }
+
+    if root.resizable: Rectangle {
+        x: root.width - 12px;
+        y: root.height - 12px;
+        width: 12px;
+        height: 12px;
+        background: transparent;
+
+        TouchArea {
+            mouse-cursor: MouseCursor.nwse-resize;
+            moved => {
+                if (self.pressed) {
+                    root.win-width = max(200px, self.mouse-x + parent.x);
+                    root.win-height = max(120px, self.mouse-y + parent.y);
+                }
+            }
+        }
     }
 }

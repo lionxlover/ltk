@@ -2,14 +2,33 @@ import { Theme } from "../core/Theme.slint";
 
 export component DragHandle inherits Rectangle {
     width: 6px;
-    background: #00000000;
+    background: drag-area.pressed ? Theme.accent-subtle : (drag-area.has-hover ? Theme.hover-overlay : #00000000);
+
+    callback dragged(length);
 
     Rectangle {
         width: 2px;
         height: 24px;
-        background: Theme.border-strong;
+        background: drag-area.has-hover || drag-area.pressed ? Theme.accent : Theme.border-strong;
         border-radius: 1px;
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
+    }
+
+    private property <length> last-mouse-x: 0px;
+
+    drag-area := TouchArea {
+        mouse-cursor: MouseCursor.col-resize;
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.last-mouse-x = self.mouse-x;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.dragged(self.mouse-x - root.last-mouse-x);
+                root.last-mouse-x = self.mouse-x;
+            }
+        }
     }
 }

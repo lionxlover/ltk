@@ -42,7 +42,10 @@ export component SteppedSlider inherits Rectangle {
 
     TouchArea {
         moved => {
-            root.value = round((self.mouse-x / parent.width) * (root.maximum - root.minimum) / root.steps) * root.steps + root.minimum;
+            if (self.pressed) {
+                root.value = root.minimum + round(round(max(0.0, min(1.0, self.mouse-x / parent.width)) * max(1, root.steps))
+                    * (root.maximum - root.minimum) / max(1, root.steps));
+            }
         }
     }
 }

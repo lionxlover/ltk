@@ -2,12 +2,31 @@ import { Theme } from "../core/Theme.slint";
 
 export component ColumnResizer inherits Rectangle {
     width: 4px;
-    background: #00000000;
+    background: drag-area.pressed ? Theme.accent-subtle : (drag-area.has-hover ? Theme.hover-overlay : #00000000);
+
+    callback resized(length);
 
     Rectangle {
         width: 1px;
         height: parent.height;
-        background: Theme.border-subtle;
+        background: drag-area.has-hover || drag-area.pressed ? Theme.accent : Theme.border-subtle;
         x: (parent.width - self.width) / 2;
+    }
+
+    private property <length> last-mouse-x: 0px;
+
+    drag-area := TouchArea {
+        mouse-cursor: MouseCursor.col-resize;
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.last-mouse-x = self.mouse-x;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.resized(self.mouse-x - root.last-mouse-x);
+                root.last-mouse-x = self.mouse-x;
+            }
+        }
     }
 }

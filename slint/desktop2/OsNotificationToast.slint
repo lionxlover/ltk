@@ -13,6 +13,8 @@ export component OsNotificationToast inherits Rectangle {
     in property <string> icon: "🔔";
     in property <bool> show-close: true;
 
+    callback dismissed();
+
     width: 340px;
     height: 80px;
 
@@ -65,6 +67,7 @@ export component OsNotificationToast inherits Rectangle {
             width: 20px;
             height: 20px;
             border-radius: 10px;
+            background: close-area.has-hover ? Theme.hover-overlay : transparent;
             y: 4px;
 
             Text {
@@ -73,6 +76,11 @@ export component OsNotificationToast inherits Rectangle {
                 color: Theme.text-tertiary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            close-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.dismissed(); }
             }
         }
     }

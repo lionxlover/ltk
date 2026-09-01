@@ -34,8 +34,8 @@ export component InfiniteLoaderEngine inherits Rectangle {
             y: (parent.height - self.height) / 2;
         }
 
-        if !has-more && loaded_count > 0: Text {
-            text: "End of list (" + loaded_count + " items)";
+        if !has-more && loaded-count > 0: Text {
+            text: "End of list (" + loaded-count + " items)";
             font-size: Theme.text-xs;
             color: Theme.text-tertiary;
             x: (parent.width - self.width) / 2;

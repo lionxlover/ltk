@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component DragSourcePrimitive inherits Rectangle {
     background: Theme.bg-surface;
@@ -21,10 +22,10 @@ export component DragSourcePrimitive inherits Rectangle {
             padding-left: Theme.sp-3;
             padding-right: Theme.sp-3;
 
-            Text {
-                text: "⠿";
-                font-size: Theme.text-sm;
-                color: Theme.text-tertiary;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/grip-vertical.svg");
+                fa-size: Theme.icon-sm;
+                fa-color: Theme.text-tertiary;
                 y: (parent.height - self.height) / 2;
             }
 

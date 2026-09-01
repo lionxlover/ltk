@@ -1,6 +1,11 @@
 import { Theme } from "../core/Theme.slint";
 
 export component ColorPaletteEditor inherits Rectangle {
+    in-out property <int> selected: 0;
+
+    callback color-selected(int);
+    callback add-clicked();
+
     width: 100%;
     height: 48px;
     background: #00000000;
@@ -14,11 +19,16 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #5B9DFA;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 0 ? 2px : 1px;
+            border-color: root.selected == 0 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 0;
+                    root.color-selected(0);
+                }
+            }
         }
 
         Rectangle {
@@ -26,11 +36,16 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #A78BFA;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 1 ? 2px : 1px;
+            border-color: root.selected == 1 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 1;
+                    root.color-selected(1);
+                }
+            }
         }
 
         Rectangle {
@@ -38,11 +53,16 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #F472B6;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 2 ? 2px : 1px;
+            border-color: root.selected == 2 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 2;
+                    root.color-selected(2);
+                }
+            }
         }
 
         Rectangle {
@@ -50,11 +70,16 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #34D399;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 3 ? 2px : 1px;
+            border-color: root.selected == 3 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 3;
+                    root.color-selected(3);
+                }
+            }
         }
 
         Rectangle {
@@ -62,11 +87,16 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #FBBF24;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 4 ? 2px : 1px;
+            border-color: root.selected == 4 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 4;
+                    root.color-selected(4);
+                }
+            }
         }
 
         Rectangle {
@@ -74,35 +104,47 @@ export component ColorPaletteEditor inherits Rectangle {
             height: 36px;
             border-radius: Theme.radius-sm;
             background: #F87171;
-            border-width: 1px;
-            border-color: Theme.border-subtle;
+            border-width: root.selected == 5 ? 2px : 1px;
+            border-color: root.selected == 5 ? Theme.text-primary : Theme.border-subtle;
             y: (parent.height - self.height) / 2;
 
-            TouchArea { }
+            TouchArea {
+                clicked => {
+                    root.selected = 5;
+                    root.color-selected(5);
+                }
+            }
         }
 
         // Add button
-        Rectangle {
+        add-ta := TouchArea {
             width: 36px;
             height: 36px;
-            border-radius: Theme.radius-sm;
-            background: Theme.bg-overlay;
-            border-width: 1px;
-            border-color: Theme.border-default;
             y: (parent.height - self.height) / 2;
 
-            Text {
-                x: (parent.width - self.width) / 2;
-                y: (parent.height - self.height) / 2;
-                text: "+";
-                color: Theme.text-secondary;
-                font-family: Theme.font-ui;
-                font-size: Theme.text-xl;
-                font-weight: Theme.weight-light;
-                vertical-alignment: center;
+            Rectangle {
+                width: 36px;
+                height: 36px;
+                border-radius: Theme.radius-sm;
+                background: add-ta.has-hover ? Theme.surface-hover : Theme.bg-overlay;
+                border-width: 1px;
+                border-color: Theme.border-default;
+
+                animate background { duration: Theme.dur-fast; }
+
+                Text {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    text: "+";
+                    color: Theme.text-secondary;
+                    font-family: Theme.font-ui;
+                    font-size: Theme.text-xl;
+                    font-weight: Theme.weight-light;
+                    vertical-alignment: center;
+                }
             }
 
-            TouchArea { }
+            clicked => { root.add-clicked(); }
         }
     }
 }

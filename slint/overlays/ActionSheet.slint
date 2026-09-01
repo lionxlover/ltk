@@ -8,9 +8,7 @@ export component ActionSheetItem inherits Rectangle {
     callback activated();
 
     height: Theme.button-height-lg;
-    background: item-ta.has-hover
-        ? (root.cancel ? Theme.surface-hover : Theme.surface-hover)
-        : #00000000;
+    background: item-ta.has-hover ? Theme.surface-hover : #00000000;
 
     animate background { duration: Theme.dur-fast; easing: Theme.ease-standard; }
 
@@ -18,7 +16,7 @@ export component ActionSheetItem inherits Rectangle {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
         text: root.label;
-        color: root.destructive ? Theme.state-error : (root.cancel ? Theme.text-primary : Theme.text-primary);
+        color: root.destructive ? Theme.state-error : Theme.text-primary;
         font-family: Theme.font-ui;
         font-size: root.cancel ? Theme.text-base : Theme.text-md;
         font-weight: root.cancel ? Theme.weight-semibold : Theme.weight-regular;
@@ -50,10 +48,10 @@ export component ActionSheet inherits Rectangle {
         height: 100%;
         background: Theme.backdrop;
         opacity: root.active ? 1 : 0;
-        visible: root.active;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
         TouchArea {
+            enabled: root.active;
             clicked => { root.cancelled(); }
         }
     }

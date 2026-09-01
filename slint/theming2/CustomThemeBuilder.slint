@@ -9,6 +9,9 @@ export component CustomThemeBuilder inherits Rectangle {
 
     in property <string> theme-name: "My Theme";
 
+    callback section-opened(string);
+    callback apply-clicked();
+
     VerticalLayout {
         padding: Theme.sp-4;
         spacing: Theme.sp-4;
@@ -35,6 +38,7 @@ export component CustomThemeBuilder inherits Rectangle {
                 border-radius: Theme.radius-md;
                 border-width: 1px;
                 border-color: Theme.border-default;
+                background: section-area.has-hover ? Theme.hover-overlay : transparent;
 
                 HorizontalLayout {
                     padding-left: Theme.sp-3;
@@ -55,13 +59,18 @@ export component CustomThemeBuilder inherits Rectangle {
                         y: (parent.height - self.height) / 2;
                     }
                 }
+
+                section-area := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => { root.section-opened(s); }
+                }
             }
         }
 
         Rectangle {
             height: 40px;
             border-radius: Theme.radius-md;
-            background: Theme.accent;
+            background: apply-area.has-hover ? Theme.accent-dim : Theme.accent;
 
             Text {
                 text: "Apply Theme";
@@ -70,6 +79,11 @@ export component CustomThemeBuilder inherits Rectangle {
                 color: #ffffff;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            apply-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.apply-clicked(); }
             }
         }
     }

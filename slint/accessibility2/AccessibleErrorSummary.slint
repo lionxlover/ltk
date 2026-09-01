@@ -1,7 +1,7 @@
 import { Theme } from "../core/Theme.slint";
 
 export component AccessibleErrorSummary inherits Rectangle {
-    background: Theme.error;
+    background: errors.length > 0 ? Theme.error : Theme.success;
     border-radius: Theme.radius-md;
     clip: true;
 

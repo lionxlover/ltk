@@ -10,7 +10,6 @@ export component RichTooltip inherits Rectangle {
 
     width: 260px;
     min-height: 60px;
-    visible: active;
     background: Theme.bg-elevated;
     border-radius: Theme.radius-tooltip;
     border-width: 1px;
@@ -51,9 +50,7 @@ export component RichTooltip inherits Rectangle {
 
             action-bg := Rectangle {
                 border-radius: Theme.radius-xs;
-                background: action-ta.pressed ? Theme.accent-subtle
-                    : action-ta.has-hover ? Theme.accent-subtle
-                    : #00000000;
+                background: (action-ta.pressed || action-ta.has-hover) ? Theme.accent-subtle : #00000000;
             }
 
             Text {
@@ -68,10 +65,11 @@ export component RichTooltip inherits Rectangle {
             }
 
             action-ta := TouchArea {
+                enabled: root.active;
                 clicked => { root.action-clicked(); }
             }
         }
     }
 
-    ta := TouchArea { }
+    ta := TouchArea { enabled: root.active; }
 }

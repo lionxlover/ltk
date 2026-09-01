@@ -87,10 +87,10 @@ export component NotificationDrawer inherits Rectangle {
         height: 100%;
         background: Theme.backdrop;
         opacity: root.drawer-visible ? 1 : 0;
-        visible: root.drawer-visible;
         animate opacity { duration: Theme.dur-normal; easing: Theme.ease-standard; }
 
         TouchArea {
+            enabled: root.drawer-visible;
             clicked => { root.close(); }
         }
     }
@@ -167,9 +167,11 @@ export component NotificationDrawer inherits Rectangle {
             // Notification list slot
             Rectangle {
                 vertical-stretch: 1;
+
+                @children
             }
         }
 
-        TouchArea { }
+        TouchArea { enabled: root.drawer-visible; }
     }
 }

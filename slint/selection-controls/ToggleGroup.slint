@@ -4,6 +4,7 @@ import { ToggleSwitch } from "ToggleSwitch.slint";
 export component ToggleGroup inherits Rectangle {
     in-out property <[string]> labels: ["Wi-Fi", "Bluetooth", "Airplane"];
     in-out property <[bool]> checked: [true, false, false];
+    callback item-toggled(int, bool);
 
     horizontal-stretch: 1;
 
@@ -22,12 +23,9 @@ export component ToggleGroup inherits Rectangle {
             }
 
             ToggleSwitch {
-                checked: root.checked[idx];
+                checked: idx < root.checked.length && root.checked[idx];
+                toggled(new-state) => { root.item-toggled(idx, new-state); }
             }
         }
-    }
-
-    TouchArea {
-        clicked => { }
     }
 }

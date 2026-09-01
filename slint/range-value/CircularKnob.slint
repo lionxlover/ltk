@@ -8,6 +8,9 @@ export component CircularKnob inherits Rectangle {
     width: 64px;
     height: 64px;
 
+    private property <float> drag-start-y: 0px;
+    private property <float> drag-start-value: 0;
+
     Rectangle {
         width: 56px;
         height: 56px;
@@ -30,5 +33,25 @@ export component CircularKnob inherits Rectangle {
         font-weight: Theme.weight-bold;
         horizontal-alignment: center;
         vertical-alignment: center;
+    }
+
+    // Knobs are conventionally dragged vertically rather than in a true
+    // radial motion (dragging up increases, down decreases) — simpler and
+    // more robust than computing an angle relative to the knob's center,
+    // and it's the standard convention for this kind of control.
+    TouchArea {
+        mouse-cursor: MouseCursor.ns-resize;
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                root.drag-start-y = self.mouse-y / 1px;
+                root.drag-start-value = root.value;
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                root.value = max(root.minimum, min(root.maximum,
+                    root.drag-start-value + (root.drag-start-y - self.mouse-y / 1px) * (root.maximum - root.minimum) / 150));
+            }
+        }
     }
 }

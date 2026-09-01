@@ -1,4 +1,5 @@
 import { Theme } from "../core/Theme.slint";
+import { FaIcon } from "../core/FaIcon.slint";
 
 export component OverflowToolbar inherits Rectangle {
     background: Theme.bg-raised;
@@ -11,6 +12,9 @@ export component OverflowToolbar inherits Rectangle {
     in property <int> visible-items: 5;
     in property <int> total-items: 10;
 
+    callback item-clicked(int);
+    callback overflow-clicked();
+
     HorizontalLayout {
         padding-left: Theme.sp-2;
         padding-right: Theme.sp-2;
@@ -20,6 +24,7 @@ export component OverflowToolbar inherits Rectangle {
             width: 32px;
             height: 32px;
             border-radius: Theme.radius-sm;
+            background: this-item-area.has-hover ? Theme.hover-overlay : transparent;
             y: 4px;
 
             Text {
@@ -28,21 +33,31 @@ export component OverflowToolbar inherits Rectangle {
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
             }
+
+            this-item-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.item-clicked(item); }
+            }
         }
 
         if total-items > visible-items: Rectangle {
             width: 32px;
             height: 32px;
             border-radius: Theme.radius-sm;
+            background: overflow-area.has-hover ? Theme.hover-overlay : transparent;
             y: 4px;
 
-            Text {
-                text: "···";
-                font-size: Theme.text-sm;
-                font-weight: Theme.weight-bold;
-                color: Theme.text-secondary;
+            FaIcon {
+                source: @image-url("../../fontawesome-free-7.3.0-desktop/svgs/solid/ellipsis.svg");
+                fa-size: 14px;
+                fa-color: Theme.text-secondary;
                 x: (parent.width - self.width) / 2;
                 y: (parent.height - self.height) / 2;
+            }
+
+            overflow-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.overflow-clicked(); }
             }
         }
     }

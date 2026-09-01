@@ -8,6 +8,11 @@ export component ContextMenu inherits Rectangle {
     border-color: Theme.border-base;
     width: 200px;
 
+    callback copy-clicked();
+    callback paste-clicked();
+    callback cut-clicked();
+    callback delete-clicked();
+
     drop-shadow-color: Theme.border-default;
     drop-shadow-blur: 20px;
     drop-shadow-offset-y: 8px;
@@ -19,7 +24,7 @@ export component ContextMenu inherits Rectangle {
         Rectangle {
             height: 30px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: copy-area.has-hover ? Theme.hover-overlay : #00000000;
 
             HorizontalLayout {
                 padding-left: Theme.sp-2;
@@ -40,12 +45,17 @@ export component ContextMenu inherits Rectangle {
                     vertical-alignment: center;
                 }
             }
+
+            copy-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.copy-clicked(); }
+            }
         }
 
         Rectangle {
             height: 30px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: paste-area.has-hover ? Theme.hover-overlay : #00000000;
 
             HorizontalLayout {
                 padding-left: Theme.sp-2;
@@ -66,12 +76,17 @@ export component ContextMenu inherits Rectangle {
                     vertical-alignment: center;
                 }
             }
+
+            paste-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.paste-clicked(); }
+            }
         }
 
         Rectangle {
             height: 30px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: cut-area.has-hover ? Theme.hover-overlay : #00000000;
 
             HorizontalLayout {
                 padding-left: Theme.sp-2;
@@ -92,6 +107,11 @@ export component ContextMenu inherits Rectangle {
                     vertical-alignment: center;
                 }
             }
+
+            cut-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.cut-clicked(); }
+            }
         }
 
         // Separator
@@ -107,7 +127,7 @@ export component ContextMenu inherits Rectangle {
         Rectangle {
             height: 30px;
             border-radius: Theme.radius-xs;
-            background: #00000000;
+            background: delete-area.has-hover ? Theme.hover-overlay : #00000000;
 
             HorizontalLayout {
                 padding-left: Theme.sp-2;
@@ -127,6 +147,11 @@ export component ContextMenu inherits Rectangle {
                     font-size: Theme.text-sm;
                     vertical-alignment: center;
                 }
+            }
+
+            delete-area := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => { root.delete-clicked(); }
             }
         }
     }

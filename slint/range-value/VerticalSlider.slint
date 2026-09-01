@@ -38,4 +38,16 @@ export component VerticalSlider inherits Rectangle {
         drop-shadow-color: Theme.border-default;
         drop-shadow-blur: 4px;
     }
+
+    TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        moved => {
+            // Inverted because the track fills from the bottom: the
+            // topmost pixel (mouse-y == 0) represents maximum, matching
+            // the fill/handle position bindings above which use
+            // (1 - fraction) for the same reason.
+            root.value = max(root.minimum, min(root.maximum,
+                (1 - (self.mouse-y / parent.height)) * (root.maximum - root.minimum) + root.minimum));
+        }
+    }
 }
